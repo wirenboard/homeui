@@ -126,6 +126,7 @@ export const ModeCapability = ({
         {t('alice.labels.function-type')}
       </label>
       <Dropdown
+        size="small"
         id={instanceId}
         value={capability.parameters?.instance}
         options={instanceOptions}
@@ -161,6 +162,7 @@ export const ModeCapability = ({
                 <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode-value')}</div>
               )}
               <Dropdown
+                size="small"
                 value={mode.value}
                 options={getModeOptions(mode.value, rowIdx) as any[]}
                 isSearchable
@@ -175,6 +177,7 @@ export const ModeCapability = ({
                 const mqttValueMatchError = getMqttValueMatchError(mode.mqtt_value_match, rowIdx);
                 return (
                   <Input
+                    size="small"
                     value={mode.mqtt_value_match}
                     isInvalid={!!mqttValueMatchError}
                     title={mqttValueMatchError ?? undefined}

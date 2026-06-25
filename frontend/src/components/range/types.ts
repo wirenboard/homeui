@@ -13,4 +13,8 @@ export interface RangeProps {
   ariaLabel?: string;
   labelPosition?: RangeLabelPosition;
   onChange: (_val: number) => void;
+  // Fires continuously while the thumb is being dragged (on every `input` event),
+  // unlike `onChange` which only fires on release. Use it for live readouts that
+  // should track the thumb without committing the value on every pixel.
+  onLiveChange?: (_val: number) => void;
 }

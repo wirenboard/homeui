@@ -8,6 +8,7 @@ import {
   Capability,
   Color,
   ColorModel,
+  getCapabilityDefaults,
   type CapabilityParameters,
   type SmartDeviceCapability,
   rangeUnitByInstance,
@@ -17,6 +18,7 @@ import {
 } from '@/stores/alice';
 import { devicesStore } from '@/stores/devices';
 import {
+  CapabilityOptionsButton,
   ColorSettingCapability,
   getAvailableModeInstances,
   getAvailableToggleInstances,
@@ -155,6 +157,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             {t('alice.labels.capability')}
           </label>
           <Dropdown
+            size="small"
             id={capabilityId}
             value={capability.type}
             options={Object.keys(Capability).map((cap) => ({
@@ -170,6 +173,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             {t('alice.labels.topic')}
           </label>
           <Dropdown
+            size="small"
             id={topicId}
             className="aliceDeviceSkills-dropdown"
             value={capability.mqtt}
@@ -186,6 +190,15 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
         </div>
 
         {renderCapabilityFields(capability, key)}
+
+        <div className="aliceDeviceSkills-optionsButton">
+          <CapabilityOptionsButton
+            capability={capability}
+            index={key}
+            capabilities={capabilities}
+            onCapabilityChange={onCapabilityChange}
+          />
+        </div>
 
         <div className="aliceDeviceSkills-deleteButton">
           <Button
@@ -216,7 +229,17 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
           disabled={!getAvailableCapabilities().length}
           onClick={() => {
             const type = getAvailableCapabilities().at(0);
-            onCapabilityChange([...capabilities, { type, mqtt: '', parameters: getCapabilityParameters(type) }]);
+            const defaults = getCapabilityDefaults(type);
+            onCapabilityChange([
+              ...capabilities,
+              {
+                type,
+                mqtt: '',
+                parameters: { ...defaults.parameters, ...getCapabilityParameters(type) },
+                retrievable: defaults.retrievable,
+                reportable: defaults.reportable,
+              },
+            ]);
           }}
         />
       </div>

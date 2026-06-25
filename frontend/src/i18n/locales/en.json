@@ -599,6 +599,7 @@
          "compact": "Hide labels",
          "warning": "The changes will affect all panels that use this widget:",
          "invert": "Invert",
+         "readOnly": "Read only",
          "add": "Add widget",
          "available": "Available widgets",
          "add-control": "Add control",
@@ -738,7 +739,8 @@
          "dock-bottom": "Dock to bottom",
          "dock-right": "Dock to right",
          "close": "Close",
-         "close-tab": "Close tab"
+         "close-tab": "Close tab",
+         "more-tabs": "More tabs"
       }
    },
    "logs":{
@@ -856,6 +858,7 @@
          "color-scenes": "Color scenes",
          "property": "Property",
          "property-settings": "Property settings",
+         "property-unit": "Unit of measurement",
          "property-capability": "Capability/Property",
          "topic": "MQTT topic",
          "scenes-input": "Scenes (comma separated)",
@@ -870,6 +873,14 @@
          "mqtt-value-match-duplicate": "Value already used in another mode",
          "recommended-for": "Recommended for {{instance}}",
          "other-modes": "Other modes",
+         "split": "Separate on/off buttons",
+         "split-hint": "split. Only changes the display in the Yandex Smart Home app. MQTT commands are published as usual.",
+         "retrievable": "Allow state queries",
+         "retrievable-hint": "retrievable. Disable for write-only devices (e.g. IR remotes) — Alice won't poll their state.",
+         "reportable": "Send state updates",
+         "reportable-hint": "reportable. Disable to stop pushing this item to Alice. Alice can still request the state if retrievable is on.",
+         "capability-options": "Capability options",
+         "property-options": "Property options",
          "min": "Min",
          "max": "Max",
          "no-units": "Unitless",
@@ -995,9 +1006,14 @@
    },
    "dali": {
       "title": "DALI devices",
+      "placeholders": {
+         "address-filter": "Filter by address"
+      },
       "labels": {
          "group": "Group #{{name}}",
+         "bus": "Bus {{num}}",
          "bus-monitor": "Bus Monitor",
+         "bus-monitor-syslog": "Save to syslog",
          "bus-settings": "Broadcast settings",
          "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",
          "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
@@ -1028,7 +1044,13 @@
          "commands-catalog-title": "Insert command",
          "commands-catalog-search": "Search commands…",
          "commands-catalog-empty": "No commands match",
-         "commands-catalog-error": "Failed to load commands list"
+         "commands-catalog-error": "Failed to load commands list",
+         "monitor-col-time": "Time",
+         "monitor-col-hex": "Hex",
+         "monitor-col-command": "Command",
+         "monitor-col-response": "Response",
+         "monitor-foreign": "foreign",
+         "monitor-broadcast": "Broadcast"
       },
       "buttons": {
          "rescan": "Rescan",
@@ -1038,6 +1060,8 @@
          "clear-log": "Clear log",
          "pause-log": "Pause log",
          "resume-log": "Resume log",
+         "save-log": "Save log to file",
+         "menu": "Menu",
          "set": "Set",
          "identify": "Identify",
          "reset": "Reset…",

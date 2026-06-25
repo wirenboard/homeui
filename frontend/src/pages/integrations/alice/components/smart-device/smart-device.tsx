@@ -60,6 +60,7 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
         await updateDevice(id, payload);
         await fetchData();
       }
+      setSaveError('');
       setIsEditingTitle(false);
     } catch (err) {
       setSaveError(err.response.data.detail);
@@ -150,12 +151,22 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
           />
         </form>
 
-        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+        {!!saveError && (
+          <Alert
+            className="alice-saveAlert"
+            variant="danger"
+            size="small"
+            onClose={() => setSaveError('')}
+          >
+            {saveError}
+          </Alert>
+        )}
 
         <div>
           <label className="aliceSmartDevice-label">
             <div>{t('alice.labels.room')}</div>
             <Dropdown
+              size="small"
               value={data.room_id}
               options={Array.from(rooms.keys()).map((room) => ({ label: rooms.get(room).name, value: room }))}
               onChange={({ value: roomId }: any) => setData({ ...data, room_id: roomId })}
@@ -166,6 +177,7 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
             <label className="aliceSmartDevice-label">
               <div>{t('alice.labels.device-category')}</div>
               <Dropdown
+                size="small"
                 value={category}
                 options={Object.keys(deviceTypes).map((val) => ({ label: t(`alice.device-types.${val}`), value: val }))}
                 onChange={({ value }: Option<string>) => {
@@ -177,6 +189,7 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
             <label className="aliceSmartDevice-label">
               <div>{t('alice.labels.device-type')}</div>
               <Dropdown
+                size="small"
                 value={data.type}
                 isDisabled={!category}
                 options={!category ? [] : deviceTypes[category].map((value) => ({ label: value, value }))}

@@ -628,6 +628,7 @@
          "compact": "Скрыть подписи",
          "warning": "Изменения затронут все панели, в которых используется данный виджет:",
          "invert": "Инвертировать",
+         "readOnly": "Только чтение",
          "add": "Добавить виджет",
          "available": "Доступные виджеты",
          "add-control": "Добавить контрол",
@@ -767,7 +768,8 @@
          "dock-bottom": "Закрепить снизу",
          "dock-right": "Закрепить справа",
          "close": "Закрыть",
-         "close-tab": "Закрыть вкладку"
+         "close-tab": "Закрыть вкладку",
+         "more-tabs": "Ещё вкладки"
       }
    },
    "logs":{
@@ -885,6 +887,7 @@
          "color-scenes": "Цветовые сцены",
          "property": "Свойство",
          "property-settings": "Настройки свойства",
+         "property-unit": "Единица измерения",
          "property-capability": "Умение/свойство",
          "topic": "MQTT топик",
          "scenes-input": "Сцены (через запятую)",
@@ -899,6 +902,14 @@
          "mqtt-value-match-duplicate": "Значение уже используется в другом режиме",
          "recommended-for": "Рекомендуемые для {{instance}}",
          "other-modes": "Прочие режимы",
+         "split": "Раздельные кнопки вкл/выкл",
+         "split-hint": "split. Меняет только вид в приложении умного дома Яндекса. MQTT-команды публикуются как обычно.",
+         "retrievable": "Разрешить запрашивать состояние",
+         "retrievable-hint": "retrievable. Отключите для устройств без обратной связи (например, ИК-пультов) — Алиса не будет опрашивать их состояние.",
+         "reportable": "Отправлять обновления состояния",
+         "reportable-hint": "reportable. Отключите, чтобы не пушить обновления в Алису. Алиса всё ещё сможет запрашивать состояние, если включена опция выше.",
+         "capability-options": "Настройки умения",
+         "property-options": "Настройки свойства",
          "min": "Минимум",
          "max": "Максимум",
          "no-units": "Безразмерно",
@@ -1024,9 +1035,14 @@
    },
    "dali": {
       "title": "Устройства DALI",
+      "placeholders": {
+         "address-filter": "Фильтр по адресу"
+      },
       "labels": {
          "group": "Группа {{name}}",
+         "bus": "Шина {{num}}",
          "bus-monitor": "Монитор шины",
+         "bus-monitor-syslog": "Сохранять в syslog",
          "bus-settings": "Широковещательные настройки",
          "websocket-enabled": "Эмуляция шлюза Lunatone DALI-2 IoT",
          "websocket-description": "Включение этой опции запустит WebSocket-сервер, который эмулирует Lunatone DALI-2 IoT Gateway. К нему можно подключить Lunatone DALI Cockpit для управления устройствами. В DALI Cockpit надо выбрать Network в качестве интерфейса шины, указать DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, ввести адрес контроллера и порт, заданный ниже.",
@@ -1057,7 +1073,13 @@
          "commands-catalog-title": "Вставить команду",
          "commands-catalog-search": "Поиск команд…",
          "commands-catalog-empty": "Ничего не найдено",
-         "commands-catalog-error": "Не удалось загрузить список команд"
+         "commands-catalog-error": "Не удалось загрузить список команд",
+         "monitor-col-time": "Время",
+         "monitor-col-hex": "Hex",
+         "monitor-col-command": "Команда",
+         "monitor-col-response": "Ответ",
+         "monitor-foreign": "сторонний",
+         "monitor-broadcast": "Широковещательные"
       },
       "buttons": {
          "rescan": "Пересканировать",
@@ -1067,6 +1089,8 @@
          "clear-log": "Очистить журнал",
          "pause-log": "Приостановить получение сообщений",
          "resume-log": "Возобновить получение сообщений",
+         "save-log": "Сохранить журнал в файл",
+         "menu": "Меню",
          "set": "Задать",
          "identify": "Идентифицировать",
          "reset": "Сброс…",

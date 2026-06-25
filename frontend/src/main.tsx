@@ -5,6 +5,7 @@ import { APP_NAME, APP_SHORT_NAME } from '@/common/constants';
 import { App } from '@/layouts/app';
 import { deviceManagerProxy, mqttClient } from '@/services';
 import { authStore, UserRole } from '@/stores/auth';
+import { daliGlobalStore } from '@/stores/dali';
 import { dashboardsStore } from '@/stores/dashboards';
 import { registerRulesTab, rulesStore } from '@/stores/rules';
 import { uiStore } from '@/stores/ui';
@@ -43,6 +44,9 @@ when(() => authStore.isAuthenticated).then(() => {
         rulesStore.subscribeRulesLogs();
         rulesStore.subscribeRuleDebugging();
         registerRulesTab();
+        daliGlobalStore.refresh().catch((err) => {
+          console.warn('Failed to load DALI gateways on startup', err);
+        });
         return dashboardsStore.loadData();
       })
       .catch(() => {

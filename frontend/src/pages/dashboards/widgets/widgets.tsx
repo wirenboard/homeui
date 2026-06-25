@@ -115,6 +115,7 @@ const WidgetsPage = observer(() => {
                           <Cell
                             cell={cells.get(cell.id)}
                             name={cell.name}
+                            isReadOnly={cell.readOnly}
                             hideHistory
                             isCompact
                           />
@@ -149,6 +150,7 @@ const WidgetsPage = observer(() => {
                             <Cell
                               cell={cells.get(cell.id)}
                               name={cell.name}
+                              isReadOnly={cell.readOnly}
                               isCompact={dashboardsStore.widgets.get(widget.id).compact}
                               extra={cell.extra}
                             />

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, useCallback, useMemo } from 'react';
+import { Fragment, useCallback, useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
@@ -7,6 +7,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import {
   events,
   floats,
+  getPropertyDefaults,
   Property,
   floatUnitsByInstance,
   valueEventsByInstance,
@@ -15,6 +16,7 @@ import {
   unitLabels,
 } from '@/stores/alice';
 import { devicesStore } from '@/stores/devices';
+import { PropertyOptionsButton } from './property-options-button';
 import { type DevicePropertiesProps } from './types';
 
 const floatUnitOptionsForInstance = (instance?: string): Option<string>[] => {
@@ -28,10 +30,7 @@ const eventValueOptionsForInstance = (instance?: string): Option<string>[] => {
 };
 
 // Returns float instances that are unused or belong to current property
-const getAvailableFloatInstances = (
-  properties: any[],
-  currentPropertyIndex?: number,
-) => {
+const getAvailableFloatInstances = (properties: any[], currentPropertyIndex?: number) => {
   const usedInstances = new Set(
     properties
       .filter((property) => property.type === Property.Float)
@@ -41,11 +40,9 @@ const getAvailableFloatInstances = (
   const currentInstance = typeof currentPropertyIndex === 'number'
     ? properties[currentPropertyIndex]?.parameters?.instance
     : undefined;
-
   return floats.filter((instance) => {
     const isUnused = !usedInstances.has(instance);
     const isCurrentSelection = instance === currentInstance;
-
     return isUnused || isCurrentSelection;
   });
 };
@@ -70,6 +67,7 @@ const getAvailableEventInstances = (properties: any[]) => {
 
 export const DeviceProperties = observer(({ properties, onPropertyChange }: DevicePropertiesProps) => {
   const { t } = useTranslation();
+  const idPrefix = useId();
 
   const getFloatInstanceOptions = useMemo(() => {
     return (currentProperty: any, currentPropertyIndex: number) => {
@@ -216,120 +214,147 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
       <div className="aliceDeviceSkills">
         <p>{t('alice.labels.device-properties-description')}</p>
         <div className="aliceDeviceSkills-grid">
-          {properties.map((property, key) => (
-            <Fragment key={key}>
-              <div>
-                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                  {t('alice.labels.property')}
+          {properties.map((property, key) => {
+            const id = (s: string) => `${idPrefix}-${s}-${key}`;
+            const labelCls = 'aliceDeviceSkills-gridLabel';
+            return (
+              <Fragment key={key}>
+                <div>
+                  <label className={labelCls} htmlFor={id('property')}>
+                    {t('alice.labels.property')}
+                  </label>
+                  <Dropdown
+                    size="small"
+                    id={id('property')}
+                    value={property.type}
+                    options={Object.keys(Property).map((prop) => ({ label: prop, value: Property[prop] }))}
+                    onChange={(option: Option<Property>) => onPropertyTypeChange(option.value, key)}
+                  />
                 </div>
-                <Dropdown
-                  value={property.type}
-                  options={Object.keys(Property).map((prop) => ({ label: prop, value: Property[prop] }))}
-                  onChange={(option: Option<Property>) => onPropertyTypeChange(option.value, key)}
-                />
-              </div>
-              <div>
-                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                  {t('alice.labels.topic')}
+                <div>
+                  <label className={labelCls} htmlFor={id('topic')}>
+                    {t('alice.labels.topic')}
+                  </label>
+                  <Dropdown
+                    size="small"
+                    id={id('topic')}
+                    className="aliceDeviceSkills-dropdown"
+                    value={property.mqtt}
+                    placeholder={devicesStore.topics.flatMap((g) => g.options)
+                      .find((o) => o.value === property.mqtt)?.label}
+                    options={devicesStore.topics as any[]}
+                    isSearchable
+                    onChange={({ value }: Option<string>) => {
+                      onPropertyChange(properties.map((item, i) => i === key ? { ...item, mqtt: value } : item));
+                    }}
+                  />
                 </div>
-                <Dropdown
-                  className="aliceDeviceSkills-dropdown"
-                  value={property.mqtt}
-                  placeholder={devicesStore.topics.flatMap((g) => g.options)
-                    .find((o) => o.value === property.mqtt)?.label}
-                  options={devicesStore.topics as any[]}
-                  isSearchable
-                  onChange={({ value }: Option<string>) => {
-                    onPropertyChange(properties.map((item, i) => i === key ? { ...item, mqtt: value } : item));
-                  }}
-                />
-              </div>
 
-              {property.type === Property.Float && (
-                <>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                      {t('alice.labels.property-settings')}
-                    </div>
-                    <Dropdown
-                      value={property.parameters?.instance}
-                      options={getFloatInstanceOptions(property, key)}
-                      onChange={({ value: instance }: Option<string>) =>
-                        handleFloatInstanceChange(instance, key)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                    {floatUnitOptionsForInstance(property.parameters?.instance).length ? (
+                {property.type === Property.Float && (
+                  <>
+                    <div>
+                      <label className={labelCls} htmlFor={id('settings')}>
+                        {t('alice.labels.property-settings')}
+                      </label>
                       <Dropdown
-                        value={property.parameters?.unit}
-                        options={floatUnitOptionsForInstance(property.parameters?.instance)}
-                        onChange={({ value: unit }: Option<string>) => {
-                          const val = properties.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, unit } }
-                            : item);
-                          onPropertyChange(val);
-                        }}
+                        size="small"
+                        id={id('settings')}
+                        value={property.parameters?.instance}
+                        options={getFloatInstanceOptions(property, key)}
+                        onChange={({ value: instance }: Option<string>) =>
+                          handleFloatInstanceChange(instance, key)
+                        }
                       />
-                    ) : (
-                      <div className="aliceDeviceSkills-noUnits">
-                        {t('alice.labels.no-units')}
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
+                    </div>
+                    <div>
+                      <label className={labelCls} htmlFor={id('unit')}>
+                        {t('alice.labels.property-unit')}
+                      </label>
+                      {floatUnitOptionsForInstance(property.parameters?.instance).length ? (
+                        <Dropdown
+                          size="small"
+                          id={id('unit')}
+                          value={property.parameters?.unit}
+                          options={floatUnitOptionsForInstance(property.parameters?.instance)}
+                          onChange={({ value: unit }: Option<string>) => {
+                            const val = properties.map((item, i) => i === key
+                              ? { ...item, parameters: { ...item.parameters, unit } }
+                              : item);
+                            onPropertyChange(val);
+                          }}
+                        />
+                      ) : (
+                        <div className="aliceDeviceSkills-noUnits">
+                          {t('alice.labels.no-units')}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
 
-              {property.type === Property.Event && (
-                <>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                      {t('alice.labels.property-settings')}
-                    </div>
-                    <Dropdown
-                      value={property.parameters?.instance}
-                      options={events.map((event) => ({ label: event, value: event }))}
-                      onChange={({ value: instance }: Option<string>) =>
-                        handleEventInstanceChange(instance, key)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                      {t('alice.labels.event-value')}
-                    </div>
-                    {getEventValueOptions(property.parameters?.instance, key).length ? (
+                {property.type === Property.Event && (
+                  <>
+                    <div>
+                      <label className={labelCls} htmlFor={id('settings')}>
+                        {t('alice.labels.property-settings')}
+                      </label>
                       <Dropdown
-                        value={property.parameters?.value}
-                        options={getEventValueOptions(property.parameters?.instance, key)}
-                        onChange={({ value }: Option<string>) => {
-                          const val = properties.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, value } }
-                            : item);
-                          onPropertyChange(val);
-                        }}
+                        size="small"
+                        id={id('settings')}
+                        value={property.parameters?.instance}
+                        options={events.map((event) => ({ label: event, value: event }))}
+                        onChange={({ value: instance }: Option<string>) =>
+                          handleEventInstanceChange(instance, key)
+                        }
                       />
-                    ) : (
-                      <div className="aliceDeviceSkills-noUnits">
-                        {t('alice.labels.no-units')}
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-              <div className="aliceDeviceSkills-deleteButton">
-                <Button
-                  size="small"
-                  type="button"
-                  icon={<TrashIcon />}
-                  variant="secondary"
-                  isOutlined
-                  onClick={() => onPropertyChange(properties.filter((_item, i) => i !== key))}
-                />
-              </div>
-            </Fragment>
-          ))}
+                    </div>
+                    <div>
+                      <label className={labelCls} htmlFor={id('unit')}>
+                        {t('alice.labels.event-value')}
+                      </label>
+                      {getEventValueOptions(property.parameters?.instance, key).length ? (
+                        <Dropdown
+                          size="small"
+                          id={id('unit')}
+                          value={property.parameters?.value}
+                          options={getEventValueOptions(property.parameters?.instance, key)}
+                          onChange={({ value }: Option<string>) => {
+                            const val = properties.map((item, i) => i === key
+                              ? { ...item, parameters: { ...item.parameters, value } }
+                              : item);
+                            onPropertyChange(val);
+                          }}
+                        />
+                      ) : (
+                        <div className="aliceDeviceSkills-noUnits">
+                          {t('alice.labels.no-units')}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+                <div className="aliceDeviceSkills-optionsButton">
+                  <PropertyOptionsButton
+                    property={property}
+                    index={key}
+                    properties={properties}
+                    onPropertyChange={onPropertyChange}
+                  />
+                </div>
+
+                <div className="aliceDeviceSkills-deleteButton">
+                  <Button
+                    size="small"
+                    type="button"
+                    icon={<TrashIcon />}
+                    variant="secondary"
+                    isOutlined
+                    onClick={() => onPropertyChange(properties.filter((_item, i) => i !== key))}
+                  />
+                </div>
+              </Fragment>
+            );
+          })}
         </div>
         {(() => {
           const freeFloatInstances = getAvailableFloatInstances(properties);
@@ -350,7 +375,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   if (units.length) params.unit = units[0];
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Float, mqtt: '', parameters: params },
+                    { type: Property.Float, mqtt: '', parameters: params, ...getPropertyDefaults(Property.Float) },
                   ]);
                 } else if (freeEventInstances.length > 0) {
                   // Add Event property with first available instance
@@ -371,7 +396,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
 
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Event, mqtt: '', parameters: params },
+                    { type: Property.Event, mqtt: '', parameters: params, ...getPropertyDefaults(Property.Event) },
                   ]);
                 }
               }}

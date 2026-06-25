@@ -152,6 +152,14 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
       dest.wb.dali_tc = dest.wb.dali_tc || {};
       dest.wb.dali_tc.mode = source.wb.dali_tc.mode;
     }
+    if (typeof source.wb.dali_tc?.min_limit === 'string') {
+      dest.wb.dali_tc = dest.wb.dali_tc || {};
+      dest.wb.dali_tc.min_limit = source.wb.dali_tc.min_limit;
+    }
+    if (typeof source.wb.dali_tc?.max_limit === 'string') {
+      dest.wb.dali_tc = dest.wb.dali_tc || {};
+      dest.wb.dali_tc.max_limit = source.wb.dali_tc.max_limit;
+    }
   }
   if (Array.isArray(source.enum_titles)) {
     dest.enum_titles = source.enum_titles;
