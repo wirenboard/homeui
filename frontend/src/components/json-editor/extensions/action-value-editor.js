@@ -72,12 +72,16 @@ export function makeActionValueEditor() {
       if (!this.input) return;
       const type = inputTypeForAction(this.currentActionType());
       if (this.input.type === type) return;
+
+      // Read value before the switch: a color input coerces a non-hex value
+      // to #000000 on switch, which would mask the check below.
+      const prevValue = this.input.value;
       this.input.type = type;
 
-      if (type === 'color' && !HEX_RE.test(this.input.value)) {
+      if (type === 'color' && !HEX_RE.test(prevValue)) {
         this.input.value = '#ffffff';
         this.refreshValue();
-      } else if (type !== 'color' && HEX_RE.test(this.input.value)) {
+      } else if (type !== 'color' && HEX_RE.test(prevValue)) {
         this.input.value = '';
         this.refreshValue();
       }

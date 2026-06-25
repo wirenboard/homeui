@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.234.0) stable; urgency=medium
 
   * Add wb-action-value json-editor widget for scenario output value
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Fri, 25 Jun 2026 11:21:00 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Fri, 25 Jun 2026 18:52:00 +0300
 
 wb-mqtt-homeui (2.233.0) stable; urgency=medium
 
