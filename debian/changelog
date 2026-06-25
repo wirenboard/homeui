@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.234.1) stable; urgency=medium
+
+  * Fix json editor responsive table width
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:56:00 +0300
+
 wb-mqtt-homeui (2.234.0) stable; urgency=medium
 
   * Add drawer component
