@@ -57,7 +57,15 @@ vi.mock('react-infinite-scroll-component', () => ({
   ),
 }));
 vi.mock('./componentns/filters', () => ({
-  LogsFilters: () => <div data-testid="logs-filters" />,
+  LogsFilters: ({ filter, onFilterChange }: any) => (
+    <div data-testid="logs-filters">
+      <span data-testid="filter-json">{JSON.stringify(filter)}</span>
+      <button
+        data-testid="change-filter"
+        onClick={() => onFilterChange({ ...filter, service: 'wb-rules', levels: [3, 4] })}
+      />
+    </div>
+  ),
 }));
 vi.mock('@/assets/icons/download.svg', () => ({
   default: () => <span data-testid="download-icon" />,
@@ -224,5 +232,60 @@ describe('LogsPage', () => {
     expect(screen.getByText('First')).toBeInTheDocument();
     expect(screen.getByText('Second')).toBeInTheDocument();
     expect(screen.getByText('Third')).toBeInTheDocument();
+  });
+
+  describe('search params sync', () => {
+    test('initializes filter from URL params', () => {
+      render(<LogsPage />, {
+        initialEntries: ['/?service=wb-mqtt-serial&levels=3,4&time=1700000000&pattern=error&regex=1&case=0'],
+      });
+      const filterJson = JSON.parse(screen.getByTestId('filter-json').textContent);
+      expect(filterJson.service).toBe('wb-mqtt-serial');
+      expect(filterJson.levels).toEqual([3, 4]);
+      expect(filterJson.time).toBe(1700000000);
+      expect(filterJson.pattern).toBe('error');
+      expect(filterJson.regex).toBe(true);
+      expect(filterJson['case-sensitive']).toBe(false);
+    });
+
+    test('defaults filter when no URL params', () => {
+      render(<LogsPage />);
+      const filterJson = JSON.parse(screen.getByTestId('filter-json').textContent);
+      expect(filterJson.service).toBeNull();
+      expect(filterJson.levels).toBeNull();
+      expect(filterJson.time).toBeNull();
+      expect(filterJson.pattern).toBe('');
+      expect(filterJson.regex).toBe(false);
+      expect(filterJson['case-sensitive']).toBe(true);
+    });
+
+    test('syncs filter change to loadLogs call', async () => {
+      render(<LogsPage />);
+      storeMock.loadLogs.mockClear();
+      fireEvent.click(screen.getByTestId('change-filter'));
+      await vi.waitFor(() => {
+        expect(storeMock.loadLogs).toHaveBeenCalled();
+      });
+      const callArg = storeMock.loadLogs.mock.calls[0][0];
+      expect(callArg.service).toBe('wb-rules');
+      expect(callArg.levels).toEqual([3, 4]);
+    });
+
+    test('passes URL-restored filter to loadLogs', () => {
+      render(<LogsPage />, {
+        initialEntries: ['/?service=wb-rules&levels=3'],
+      });
+      const callArg = storeMock.loadLogs.mock.calls[0][0];
+      expect(callArg.service).toBe('wb-rules');
+      expect(callArg.levels).toEqual([3]);
+    });
+
+    test('initializes boot from URL params', () => {
+      render(<LogsPage />, {
+        initialEntries: ['/?boot=abc123'],
+      });
+      const filterJson = JSON.parse(screen.getByTestId('filter-json').textContent);
+      expect(filterJson.boot).toBe('abc123');
+    });
   });
 });
