@@ -1,3 +1,15 @@
+wb-mqtt-homeui (2.235.0) stable; urgency=medium
+
+  * Serve dashboards from the HTTP backend (wb.homeui_backend) instead of confed:
+    a lightweight index without inline SVG, lazy per-dashboard SVG GET, and atomic
+    PUT writes that preserve inline svg.current
+  * Move board detection, initial config seeding and default-dashboard
+    reconciliation into the backend service; drop generate-system-config.sh
+  * Switch the dashboards UI to the HTTP backend (lazy SVG, load/SVG error states)
+    and remove the now-unused wb-webui.conf confed schema
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jun 2026 17:51:20 +0500
+
 wb-mqtt-homeui (2.234.1) stable; urgency=medium
 
   * Fix json editor responsive table width
