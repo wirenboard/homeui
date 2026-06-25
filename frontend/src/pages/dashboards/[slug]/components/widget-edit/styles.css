@@ -1,6 +1,6 @@
-.widgetEdit {
-    max-width: 700px;
-    width: 100%;
+.widgetEdit .drawer-content {
+    display: flex;
+    flex-direction: column;
 }
 
 .widgetEdit-cellsContainer {
@@ -28,7 +28,7 @@
     grid-gap: 12px 12px;
     align-self: center;
     display: grid;
-    grid-template-columns: 20px 160px 1fr 70px 60px 20px;
+    grid-template-columns: 20px 160px minmax(0, 1fr) 70px 60px 20px;
     border: 1px solid var(--border-color);
     border-radius: var(--input-border-radius);
     padding: 6px;
@@ -57,7 +57,7 @@
 }
 
 .widgetEdit-editedCellWithInverted {
-    grid-template-columns: 20px 160px 1fr 70px 90px 60px 20px;
+    grid-template-columns: 20px 160px minmax(0, 1fr) 70px 90px 60px 20px;
     grid-template-areas: "sort id control type invert readonly remove";
 
     @media(max-width: 700px) {
@@ -134,8 +134,10 @@
 }
 
 .widgetEdit-content {
-    max-height: 50vh;
+    flex: 1;
     min-height: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
 .widgetEdit-warn {

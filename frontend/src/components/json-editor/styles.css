@@ -270,6 +270,10 @@
   color: var(--danger-color) !important;
 }
 
+.json-editor .table-responsive .table {
+  width: 100% !important;
+}
+
 .json-editor table th {
   background: var(--border-color);
 }

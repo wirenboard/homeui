@@ -9,7 +9,7 @@ export interface DropdownProps<T = string | boolean | number | null | string[]> 
   id?: string;
   className?: string;
   options: Option<T>[];
-  value: T;
+  value: T | T[];
   placeholder?: string;
   onChange: (_val: Option<T> | Option<T>[]) => void;
   size?: 'default' | 'small';
@@ -22,6 +22,8 @@ export interface DropdownProps<T = string | boolean | number | null | string[]> 
   minWidth?: string;
   noOptionsMessage?: string;
   multiselect?: boolean;
+  menuPortal?: boolean;
+  captureMenuScroll?: boolean;
   isLoading?: boolean;
   isCreatable?: boolean;
   formatCreateLabel?: (_inputValue: string) => string;
