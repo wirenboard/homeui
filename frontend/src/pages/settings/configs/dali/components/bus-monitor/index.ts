@@ -1,1 +1,1 @@
-export { BusMonitor } from './bus-monitor';
+export { registerBusTab } from './register-bus-tab';
