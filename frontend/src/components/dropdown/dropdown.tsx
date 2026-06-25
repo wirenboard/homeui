@@ -187,9 +187,6 @@ export const Dropdown = ({
     }),
     classNamePrefix: 'dropdown' as const,
     options,
-    value: multiselect && Array.isArray(value)
-      ? value.map((v) => findOption(options, v)).filter(Boolean)
-      : findOption(options, value) ?? null,
     value: resolveValue(),
     placeholder: placeholder || '',
     isDisabled,
