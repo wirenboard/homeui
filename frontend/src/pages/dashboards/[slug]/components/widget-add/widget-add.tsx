@@ -8,7 +8,7 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Cell } from '@/components/cell';
-import { Dialog } from '@/components/dialog';
+import { Drawer } from '@/components/drawer';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { TabContent, Tabs, useTabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
@@ -66,10 +66,10 @@ export const WidgetAdd = observer(({
 
   return (
     <>
-      <Dialog
+      <Drawer
         className="widgetAdd"
         isOpened={isOpened}
-        width={800}
+        width={{ 0: 750, 1200: 850, 1600: 1050 }}
         heading={t('widget.labels.add')}
         onClose={onClose}
       >
@@ -183,7 +183,7 @@ export const WidgetAdd = observer(({
             ))}
           </div>
         </div>
-      </Dialog>
+      </Drawer>
 
       {isEditing && (
         <WidgetEdit

@@ -780,6 +780,12 @@
          "support": "Technical support"
       }
    },
+   "drawer": {
+      "labels": {
+         "unsaved-changes": "You have unsaved changes. Close without saving?",
+         "discard": "Close without saving"
+      }
+   },
    "modal": {
       "labels": {
          "yes": "Confirm",

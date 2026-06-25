@@ -15,6 +15,7 @@ export const App = observer(({ router }: AppProps) => {
     return (
       <div className="app-loader">
         <Loader caption={t('common.labels.setting-up-https')} />
+        <div className="floating"></div>
       </div>
     );
   }
@@ -25,6 +26,7 @@ export const App = observer(({ router }: AppProps) => {
       <Suspense>
         <RouterProvider router={router} />
       </Suspense>
+      <div className="floating"></div>
     </>
   );
 });
