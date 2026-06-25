@@ -23,7 +23,7 @@ const EditRulePage = observer(() => {
   const [pageLoadError, setPageLoadError] = useState(null);
   const params = useParams();
   const navigate = useNavigate();
-  const [isEditingTitle, setIsEditingTitle] = useState(!params.id);
+  const [isEditingTitle, setIsEditingTitle] = useState(!params['*']);
 
   const errors = useMemo(() => {
     if (pageLoadError) {
@@ -36,13 +36,13 @@ const EditRulePage = observer(() => {
   }, [pageLoadError, rule.error]);
 
   useEffect(() => {
-    if (!params.id) {
+    if (!params['*']) {
       rulesStore.resetRule();
       setIsLoading(false);
       return;
     }
     setIsLoading(true);
-    rulesStore.load(params.id)
+    rulesStore.load(params['*'])
       .then(() => {
         setIsLoading(false);
       })
@@ -52,7 +52,7 @@ const EditRulePage = observer(() => {
           setIsLoading(false);
         }
       });
-  }, [params.id]);
+  }, [params['*']]);
 
   const [save, isSaving] = useAsyncAction(async () => {
     const initRuleName = rule.initName;
@@ -62,11 +62,11 @@ const EditRulePage = observer(() => {
     const savedRuleName = await rulesStore.save(rule);
 
     setIsDirty(false);
-    if (!params.id) {
-      return navigate(`/rules/edit/${savedRuleName}`, { replace: true });
+    if (!params['*']) {
+      return navigate(`/rules/${savedRuleName}`, { replace: true });
     } else if (initRuleName !== rule.name) {
       const path = await rulesStore.rename(initRuleName, rule.name);
-      return navigate(`/rules/edit/${path}`, { replace: true });
+      return navigate(`/rules/${path}`, { replace: true });
     }
     setIsEditingTitle(false);
   });
@@ -97,7 +97,7 @@ const EditRulePage = observer(() => {
         <CodeEditor
           text={rule.content}
           errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
-          autoFocus={!!params.id}
+          autoFocus={!!params['*']}
           extensions={getExtensions(devicesStore)}
           onChange={(value) => {
             setIsDirty(true);
