@@ -1,13 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { uiConfigPath } from '@/common/paths';
 import i18n from '@/i18n/config';
-import { configEditorProxy } from '@/services';
-import type { DashboardBase, UIConfigResponse, WidgetBase } from '@/stores/dashboards';
+import type { DashboardBase, DashboardSaveResult, DashboardsConfig, WidgetBase } from '@/stores/dashboards';
 import { generateNextId } from '@/utils/id';
+import { dashboardsApi } from './api';
 import { Dashboard } from './dashboard';
 import { Widget } from './widget';
 
 export default class DashboardsStore {
+  // --- Observable state ---
   public dashboards: Map<string, Dashboard> = new Map();
   public widgets: Map<string, Widget> = new Map();
   public isLoading = true;
@@ -15,6 +15,7 @@ export default class DashboardsStore {
   public defaultDashboardId: string;
   public isShowWidgetsPage: boolean = false;
   public saveError: string = null;
+  public loadError: string = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -22,9 +23,10 @@ export default class DashboardsStore {
 
   loadData() {
     this.isLoading = true;
-    return configEditorProxy.Load({ path: uiConfigPath })
-      .then(({ content }: UIConfigResponse) => {
-        const { dashboards, widgets, defaultDashboardId, isShowWidgetsPage, description } = content;
+    this.loadError = null;
+    return dashboardsApi.getDashboards()
+      .then((config: DashboardsConfig) => {
+        const { dashboards, widgets, defaultDashboardId, isShowWidgetsPage, description } = config;
         return runInAction(() => {
           this.isLoading = false;
           dashboards.forEach((dashboard: DashboardBase) => {
@@ -37,26 +39,65 @@ export default class DashboardsStore {
           this.isShowWidgetsPage = !!isShowWidgetsPage;
           this.description = description || '';
 
-          return content;
+          return config;
+        });
+      })
+      .catch(() => {
+        runInAction(() => {
+          this.isLoading = false;
+          this.loadError = i18n.t('dashboards.errors.load');
         });
       });
   }
 
-  async addDashboard(data: Dashboard) {
-    this.dashboards.set(data.id, new Dashboard(data));
-
-    this._saveData();
+  async loadSvg(dashboardId: string): Promise<string> {
+    return dashboardsApi.getDashboardSvg(dashboardId);
   }
 
-  async updateDashboard(id: string, data: Dashboard) {
-    if (id === data.id) {
-      this.dashboards.set(id, new Dashboard(data));
-    } else {
-      this.dashboards.set(data.id, new Dashboard(data));
-      this.dashboards.delete(id);
+  // Atomic create/replace of an SVG dashboard (metadata + svg.current) via PUT /api/dashboards/<id>.
+  // currentId is the on-disk id being edited; dashboard carries the final id (may differ on rename).
+  async saveSvgDashboard(currentId: string, dashboard: DashboardBase): Promise<DashboardSaveResult> {
+    const result = await this._runWrite(() => dashboardsApi.putDashboard(currentId, dashboard));
+    if (result === 'ok') {
+      runInAction(() => {
+        if (dashboard.id !== currentId) {
+          this.dashboards.delete(currentId);
+        }
+        this.dashboards.set(dashboard.id, new Dashboard(dashboard));
+      });
+    }
+    return result;
+  }
+
+  // Text-only dashboard creation: svg dashboards go through saveSvgDashboard.
+  async addDashboard(data: DashboardBase): Promise<void> {
+    this.dashboards.set(data.id, new Dashboard(data));
+
+    await this._saveData();
+  }
+
+  // Text dashboard edit from the list modal. A rename goes through PATCH /api/dashboards/<oldId>
+  // and updates the local map only after it succeeds (on 409/error the old id is kept); a
+  // non-rename edit updates the map and persists via the list PUT.
+  async updateDashboard(oldId: string, data: DashboardBase): Promise<void> {
+    const existing = this.dashboards.get(oldId);
+    const merged: DashboardBase = { ...existing, ...data };
+
+    if (oldId !== data.id) {
+      const result = await this._runWrite(
+        () => dashboardsApi.patchDashboard(oldId, { id: data.id, name: data.name }),
+      );
+      if (result === 'ok') {
+        runInAction(() => {
+          this.dashboards.delete(oldId);
+          this.dashboards.set(data.id, new Dashboard(merged));
+        });
+      }
+      return;
     }
 
-    this._saveData();
+    this.dashboards.set(oldId, new Dashboard(merged));
+    await this._saveData();
   }
 
   async updateDashboards(data: Dashboard[]) {
@@ -64,9 +105,28 @@ export default class DashboardsStore {
     this._saveData();
   }
 
+  // Deletes one dashboard (svg or text) via DELETE /api/dashboards/<id>, then drops it locally.
   async deleteDashboard(id: string) {
-    this.dashboards.delete(id);
-    this._saveData();
+    const result = await this._runWrite(() => dashboardsApi.deleteDashboard(id));
+    if (result === 'ok') {
+      runInAction(() => {
+        this.dashboards.delete(id);
+      });
+    }
+  }
+
+  // Visibility toggle via PATCH /api/dashboards/<id> (no svg markup dragged). Local options are
+  // updated only after the PATCH succeeds, so a failed write can't desync the switch.
+  async setDashboardHidden(id: string, isHidden: boolean) {
+    const result = await this._runWrite(() => dashboardsApi.patchDashboard(id, { options: { isHidden } }));
+    if (result === 'ok') {
+      runInAction(() => {
+        const dashboard = this.dashboards.get(id);
+        if (dashboard) {
+          dashboard.options = { ...dashboard.options, isHidden };
+        }
+      });
+    }
   }
 
   addWidgetToDashboard(dashboardId: string, widgetId: string) {
@@ -147,29 +207,53 @@ export default class DashboardsStore {
     return Array.from(this.dashboards.values());
   }
 
+  // --- Private ---
+  // Runs a single-dashboard write (PUT/PATCH/DELETE) and maps the outcome to a DashboardSaveResult
+  // ('ok' clears saveError, 'conflict' is HTTP 409 left untouched, 'error' sets saveError).
+  private async _runWrite(fn: () => Promise<void>): Promise<DashboardSaveResult> {
+    try {
+      await fn();
+    } catch (err: any) {
+      if (err?.response?.status === 409) {
+        return 'conflict';
+      }
+      runInAction(() => this._setSaveError(err));
+      return 'error';
+    }
+    runInAction(() => {
+      this.saveError = null;
+    });
+    return 'ok';
+  }
+
   async _saveData() {
-    const content = {
+    const content: DashboardsConfig = {
       defaultDashboardId: this.defaultDashboardId,
-      dashboards: Array.from(this.dashboards.values()),
+      dashboards: Array.from(this.dashboards.values()).map((dashboard) => {
+        const copy: DashboardBase = { ...dashboard };
+        if (copy.svg) {
+          copy.svg = { ...copy.svg };
+          delete copy.svg.current;
+        }
+        return copy;
+      }),
       widgets: Array.from(this.widgets.values()),
       description: this.description,
       isShowWidgetsPage: this.isShowWidgetsPage,
     };
 
-    await configEditorProxy.Save({ path: uiConfigPath, content })
+    await dashboardsApi.saveDashboards(content)
       .then(() => {
         runInAction(() => {
           this.saveError = null;
         });
       })
       .catch((err: any) => {
-        runInAction(() => {
-          if (err.name === 'QuotaExceededError') {
-            this.saveError = i18n.t('dashboards.errors.overflow');
-          } else {
-            this.saveError = i18n.t('dashboards.errors.save', { err });
-          }
-        });
+        runInAction(() => this._setSaveError(err));
       });
+  }
+
+  _setSaveError(err: any) {
+    this.saveError = i18n.t('dashboards.errors.save', { err });
   }
 }

@@ -65,7 +65,7 @@
          "delete": "Delete",
          "delete-dashboard": "Delete \"{{name}}\" dashboard",
          "save": "Save",
-         "hide": "Hidden from menu",
+         "hidden": "Hidden from menu",
          "visible": "Shown in menu",
          "visible-flag": "Show dashboard \"{{name}}\" in navigation menu"
       },
@@ -75,8 +75,9 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed",
-         "save": "Config saving failed",
-         "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images."
+         "load": "Failed to load dashboards",
+         "svg-load": "Failed to load the dashboard image",
+         "save": "Config saving failed"
       }
    },
    "navigation": {
@@ -361,7 +362,8 @@
       "buttons": {
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
-         "edit": "Edit"
+         "edit": "Edit",
+         "retry": "Retry"
       },
       "prompt": {
          "confirm-heading": "Action confirmation",

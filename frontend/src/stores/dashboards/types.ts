@@ -20,16 +20,6 @@ export type SvgParam = Record<ParamAction, SvgEditableParam>;
 
 export type SvgDashboardConstructor = { id: string | null } & SvgParam;
 
-export interface UIConfigResponse {
-  content: {
-    dashboards: DashboardBase[];
-    defaultDashboardId: string;
-    widgets: WidgetBase[];
-    description?: string;
-    isShowWidgetsPage?: boolean;
-  };
-}
-
 export interface TextDashboard {
   id: string;
   name: string;
@@ -74,3 +64,15 @@ export interface WidgetBase {
   description: string;
   cells: WidgetCell[];
 }
+
+export interface DashboardsConfig {
+  dashboards: DashboardBase[];
+  defaultDashboardId: string;
+  widgets: WidgetBase[];
+  description?: string;
+  isShowWidgetsPage?: boolean;
+}
+
+// Outcome of a single-dashboard write to /api/dashboards/<id>: 'ok' (local state updated),
+// 'conflict' (id taken by another dashboard, HTTP 409, state untouched), 'error' (saveError set).
+export type DashboardSaveResult = 'ok' | 'conflict' | 'error';
