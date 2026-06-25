@@ -1,28 +1,180 @@
-.dali-busMonitorContent {
-    height: 500px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
-    background: var(--background-color);
-    overflow: scroll;
-    padding-left: 10px;
-    font-family: monospace;
+.daliMonitor-row {
+    display: grid;
+    grid-template-columns: 92px 76px 340px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 2px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: nowrap;
 }
 
-.dali-busMonitorContent div {
-    white-space: pre;
+/* Match the project's table header (.wb-tableRowHeading): bold dark text on the
+   gray --border-color background, normal case. */
+.daliMonitor-headerRow {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background: var(--border-color);
+    font-family: var(--font);
+    font-weight: bold;
+    color: var(--text-color);
 }
 
-.dali-busMonitorHeader {
+.daliMonitor-rowError {
+    background: var(--alert-danger-background);
+}
+
+.daliMonitor-time {
+    color: var(--text-color);
+}
+
+.daliMonitor-hex {
+    color: var(--gray-color);
+}
+
+/* In the header the Hex label should match the other header cells, not the
+   muted gray used for hex values in data rows. */
+.daliMonitor-headerRow .daliMonitor-hex {
+    color: var(--text-color);
+}
+
+.daliMonitor-command {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding-bottom: 5px;
+    gap: 6px;
+    overflow: hidden;
+    color: var(--text-color);
 }
 
-.dali-busMonitorToggle {
+.daliMonitor-cmdText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.daliMonitor-response {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.daliMonitor-value {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.daliMonitor-valueHex {
+    color: var(--gray-color);
+}
+
+.daliMonitor-valueNum {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.daliMonitor-statusError {
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+.daliMonitor-badge {
+    flex: none;
+    font-family: var(--font);
+    font-size: 10px;
+    color: var(--gray-color);
+    background: color-mix(in srgb, var(--gray-color) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--gray-color) 25%, transparent);
+    border-radius: 999px;
+    padding: 0 6px;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+/* Two-tone pill marking an unexpected ('<<') packet seen on the bus, with the
+   hardware monitor frame counter (fc) in the lighter half. */
+.daliMonitor-srcBadge {
+    flex: none;
+    display: inline-flex;
+    align-items: stretch;
+    font-family: var(--font);
+    font-size: 10px;
+    line-height: 16px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--orange-color) 35%, transparent);
+}
+
+.daliMonitor-srcBadgeLabel {
+    color: #fff;
+    background: var(--orange-color);
+    padding: 0 6px;
+    font-weight: 600;
+}
+
+.daliMonitor-srcBadgeNum {
+    color: var(--orange-color);
+    background: color-mix(in srgb, var(--orange-color) 14%, transparent);
+    padding: 0 6px;
+}
+
+/* Narrow (right-docked) panel — keep all columns including Hex, but make Command
+   and Response flexible so they fit the narrow width instead of the fixed 280px. */
+.consolePanel-right .daliMonitor-row {
+    grid-template-columns: 90px 64px minmax(0, 1.6fr) minmax(0, 1fr);
+}
+
+.daliMonitor-menuContent {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 280px;
+}
+
+.daliMonitor-logFilter {
+    width: 100%;
+}
+
+/* Small multiselect: react-select wraps the tags, but .dropdown-s pins the control
+   to height/max-height 28-30px, so the wrapped rows spill below the border. The
+   menu has a fixed width (above) so tags wrap; let the control grow to fit them
+   (capped, with scroll). max-height MUST override the .dropdown-s rule. */
+.daliMonitor-logFilter.dropdown-s .dropdown__control {
+    height: auto;
+    min-height: 28px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.daliMonitor-menuList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.daliMonitor-menuItem {
+    all: unset;
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border-radius: var(--input-border-radius);
     cursor: pointer;
+    white-space: nowrap;
+}
+
+.daliMonitor-menuItem:hover {
+    background-color: var(--light-gray-color);
+}
+
+.daliMonitor-menuItem:focus {
+    box-shadow: var(--input-active-shadow);
 }

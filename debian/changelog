@@ -1,8 +1,30 @@
-wb-mqtt-homeui (2.231.2) stable; urgency=medium
+wb-mqtt-homeui (2.234.1) stable; urgency=medium
 
   * Fix json editor responsive table width
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 24 Jun 2026 12:43:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:56:00 +0300
+
+wb-mqtt-homeui (2.234.0) stable; urgency=medium
+
+  * Add drawer component
+  * Move widget modals to drawer
+  * Add widget edit prevent close logic
+  * Pin add control button
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:08:00 +0300
+
+wb-mqtt-homeui (2.233.0) stable; urgency=medium
+
+  * Fix mosquitto ACL file permissions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 23 Jun 2026 16:20:00 +0400
+
+wb-mqtt-homeui (2.232.0) stable; urgency=medium
+
+  * DALI: render the bus monitor as a global console tab with address filter and save-to-file
+  * DALI: add a per-bus "Save to syslog" toggle
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jun 2026 15:15:52 +0500
 
 wb-mqtt-homeui (2.231.1) stable; urgency=medium
 

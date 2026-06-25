@@ -55,7 +55,7 @@ export const Popup = ({
       <div className="popup-trigger" ref={refs.setReference} {...getReferenceProps()}>
         {children}
       </div>
-      <FloatingPortal>
+      <FloatingPortal root={document.querySelector('.floating')}>
         {isOpen && (
           <div
             className={classNames('popup', className)}
