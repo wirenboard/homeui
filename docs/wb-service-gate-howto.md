@@ -87,7 +87,8 @@ server {
         proxy_pass http://127.0.0.1:9000;          # (4) внутренний адрес сервиса
         include /etc/nginx/snippets/wb-gate-proxy.inc;
     }
-    include /etc/nginx/snippets/wb-gate-auth.inc;
+    include /etc/nginx/snippets/wb-gate-authcheck.inc;
+    include /etc/nginx/snippets/wb-gate-unauth.inc;
 }
 ```
 
@@ -189,7 +190,7 @@ nginx -t && systemctl reload nginx
    ssl_protocols TLSv1.2 TLSv1.3;
    ```
 
-   `wb-gate-auth.inc` (требует, чтобы `location /` выставил `$wb_role` и `$wb_return`):
+   `wb-gate-authcheck.inc` (требует, чтобы `location /` выставил `$wb_role`):
    ```nginx
    location = /wb_auth_check {
        internal;
@@ -198,6 +199,12 @@ nginx -t && systemctl reload nginx
        proxy_set_header Required-User-Type $wb_role;
        proxy_pass http://wb-homeui-back/auth/check;
    }
+   ```
+
+   `wb-gate-unauth.inc` (требует, чтобы `location /` выставил `$wb_return`). Разнесён
+   с check, чтобы кэширующие гейты (напр. редактор Node-RED, чей всплеск бьёт даже
+   лимит 1000) несли **свой** check, но переиспользовали этот фоллоу-ап как есть:
+   ```nginx
    location @wb_unauth {
        # переход в браузере -> форма логина homeui; всё остальное -> 401
        if ($http_sec_fetch_mode = "navigate") {
