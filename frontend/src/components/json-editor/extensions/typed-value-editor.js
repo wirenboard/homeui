@@ -15,7 +15,7 @@ function inputTypeForAction(actionType) {
   return 'number';
 }
 
-export function makeActionValueEditor() {
+export function makeTypedValueEditor() {
   return class extends JSONEditor.AbstractEditor {
     register() {
       super.register();
