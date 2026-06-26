@@ -110,7 +110,7 @@ export const routes: RouteObject[] = [
             element: <RulePage />,
           },
           {
-            path: ':id',
+            path: '*',
             element: <RulePage />,
           },
         ],
@@ -178,8 +178,8 @@ export const routes: RouteObject[] = [
     loader: () => redirect(to),
   })),
   ...legacyParamRedirects.map(({ prefix, target }) => ({
-    path: `${prefix.slice(1)}:id`,
-    loader: ({ params }) => redirect(`${target}${params.id}`),
+    path: `${prefix.slice(1)}*`,
+    loader: ({ params }) => redirect(`${target}${params['*']}`),
   })),
   { path: '*', loader: () => redirect('/') },
 ];

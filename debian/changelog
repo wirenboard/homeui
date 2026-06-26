@@ -1,8 +1,41 @@
-wb-mqtt-homeui (2.234.0) stable; urgency=medium
+wb-mqtt-homeui (2.236.0) stable; urgency=medium
 
   * Add wb-action-value json-editor widget for scenario output value
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Fri, 25 Jun 2026 18:52:00 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Fri, 26 Jun 2026 10:53:00 +0300
+
+wb-mqtt-homeui (2.235.2) stable; urgency=medium
+
+  * DALI: keep renamed device names on page load instead of overwriting them with a retained scan result
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Jun 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.235.1) stable; urgency=medium
+
+  * Fix the rule's opening with slashes
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 18:12:00 +0300
+
+wb-mqtt-homeui (2.235.0) stable; urgency=medium
+
+  * Add logs filters to url
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 14:04:00 +0300
+
+wb-mqtt-homeui (2.234.1) stable; urgency=medium
+
+  * Fix json editor responsive table width
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:56:00 +0300
+
+wb-mqtt-homeui (2.234.0) stable; urgency=medium
+
+  * Add drawer component
+  * Move widget modals to drawer
+  * Add widget edit prevent close logic
+  * Pin add control button
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:08:00 +0300
 
 wb-mqtt-homeui (2.233.0) stable; urgency=medium
 

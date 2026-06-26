@@ -138,4 +138,31 @@ describe('Dropdown', () => {
     expect((hiddenEl.closest('[style]') as HTMLElement)?.style?.display
       || getComputedStyle(hiddenEl.closest('.dropdown__option')!).display).toBe('none');
   });
+
+  test('multiselect displays selected values from array', () => {
+    render(
+      <Dropdown options={options} value={['a', 'c']} multiselect onChange={vi.fn()} />,
+    );
+    expect(screen.getByText('Alpha')).toBeDefined();
+    expect(screen.getByText('Gamma')).toBeDefined();
+  });
+
+  test('multiselect shows placeholder when value is null', () => {
+    render(
+      <Dropdown options={options} value={null} placeholder="Pick..." multiselect onChange={vi.fn()} />,
+    );
+    expect(screen.getByText('Pick...')).toBeDefined();
+  });
+
+  test('multiselect displays values from grouped options', () => {
+    const grouped = [
+      { label: 'Group 1', options: [{ value: 'g1', label: 'Item 1' }] },
+      { label: 'Group 2', options: [{ value: 'g2', label: 'Item 2' }] },
+    ];
+    render(
+      <Dropdown options={grouped} value={['g1', 'g2']} multiselect onChange={vi.fn()} />,
+    );
+    expect(screen.getByText('Item 1')).toBeDefined();
+    expect(screen.getByText('Item 2')).toBeDefined();
+  });
 });
