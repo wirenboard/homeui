@@ -4,9 +4,7 @@
 # The calling `location /` must set two variables before including this:
 #   $wb_role   — minimal role: admin | operator | user ("this role and above").
 #   $wb_return — same-origin path homeui returns to after login (e.g. /open-foo).
-#
-# No verdict cache here: homeui's /auth/check limit is raised to 1000 req/min,
-# which absorbs the open-time burst of a typical interactive sub-app.
+
 location = /wb_auth_check {
     internal;
     proxy_pass_request_body off;

@@ -4,6 +4,7 @@
 # client-supplied X-WB-* (these are trusted identity headers — never accept them
 # from the client) and carries the websocket upgrade so editor/dashboard-style
 # sub-apps work through the gate.
+
 proxy_set_header X-WB-Role "";
 proxy_set_header X-WB-User "";
 proxy_set_header Host $host;
