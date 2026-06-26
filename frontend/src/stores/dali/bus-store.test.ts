@@ -351,12 +351,14 @@ describe('BusStore', () => {
       expect(store.scanStopRequested).toBe(false);
     });
 
-    test('rebuilds children on completed', async () => {
+    test('rebuilds children on completed when a scan was active', async () => {
       daliProxyMock.GetBus.mockResolvedValue({
         config: {},
         schema: {},
         name: 'Bus 1',
       });
+      // simulate an in-flight scan so completion is treated as a fresh scan result
+      store.scanStartRequested = true;
 
       await store.applyCommissioningState({
         status: 'completed',
@@ -374,6 +376,31 @@ describe('BusStore', () => {
         .filter((c) => c.type === ItemType.Device)
         .map((c) => c.id);
       expect(deviceIds).toEqual(['dev1', 'dev2']);
+    });
+
+    test('does not rebuild children from a retained completed state on load (no active scan)', async () => {
+      // children already loaded from GetList with the up-to-date (renamed) name
+      const persisted = new DeviceStore('dev1', 'Renamed', [], store);
+      store.children = [persisted];
+
+      // retained commissioning message replayed on (re)subscribe carries the stale
+      // scan-time name; no scan is running in this session
+      await store.applyCommissioningState({
+        status: 'completed',
+        progress: 100,
+        error: null,
+        device_count: 1,
+        devices: [{ id: 'dev1', name: 'Old scan name', groups: [] }],
+        finished_at: '2026-01-01',
+      });
+
+      // children are not rebuilt, so the renamed label survives...
+      const devices = store.children.filter((c) => c.type === ItemType.Device);
+      expect(devices).toHaveLength(1);
+      expect(devices[0]).toBe(persisted);
+      expect(devices[0].label).toBe('Renamed');
+      // ...but the commissioning state itself is still updated
+      expect(store.commissioningState.status).toBe('completed');
     });
   });
 
