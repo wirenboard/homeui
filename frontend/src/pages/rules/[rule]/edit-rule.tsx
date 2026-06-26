@@ -59,16 +59,23 @@ const EditRulePage = observer(() => {
     if (rule.initName !== rule.name) {
       await rulesStore.checkIsNameUnique(rule.name);
     }
-    const savedRuleName = await rulesStore.save(rule);
-
-    setIsDirty(false);
-    if (!params['*']) {
-      return navigate(`/rules/${savedRuleName}`, { replace: true });
-    } else if (initRuleName !== rule.name) {
-      const path = await rulesStore.rename(initRuleName, rule.name);
-      return navigate(`/rules/${path}`, { replace: true });
+    try {
+      const savedRuleName = await rulesStore.save(rule);
+      setIsDirty(false);
+      if (!params['*']) {
+        const encoded = savedRuleName.split('/').map(encodeURIComponent).join('/');
+        return navigate(`/rules/${encoded}`, { replace: true });
+      } else if (initRuleName !== rule.name) {
+        const path = await rulesStore.rename(initRuleName, rule.name);
+        const encoded = path.split('/').map(encodeURIComponent).join('/');
+        return navigate(`/rules/${encoded}`, { replace: true });
+      }
+      setIsEditingTitle(false);
+    } catch (err) {
+      if (err.code === 1000) {
+        rulesStore.setRuleError(t('rules.errors.dot-name'));
+      }
     }
-    setIsEditingTitle(false);
   });
 
   return (
