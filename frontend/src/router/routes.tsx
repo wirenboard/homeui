@@ -179,7 +179,10 @@ export const routes: RouteObject[] = [
   })),
   ...legacyParamRedirects.map(({ prefix, target }) => ({
     path: `${prefix.slice(1)}*`,
-    loader: ({ params }) => redirect(`${target}${params['*']}`),
+    loader: ({ params }) => {
+      const encoded = (params['*'] ?? '').split('/').map(encodeURIComponent).join('/');
+      return redirect(`${target}${encoded}`);
+    },
   })),
   { path: '*', loader: () => redirect('/') },
 ];

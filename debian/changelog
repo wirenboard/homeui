@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.235.3) stable; urgency=medium
+
+  * Encode special characters in rule editor URLs
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 26 Jun 2026 13:2100 +0300
+
 wb-mqtt-homeui (2.235.2) stable; urgency=medium
 
   * DALI: keep renamed device names on page load instead of overwriting them with a retained scan result
