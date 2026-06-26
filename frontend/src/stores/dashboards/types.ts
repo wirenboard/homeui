@@ -67,7 +67,8 @@ export interface WidgetBase {
 
 export interface DashboardsConfig {
   dashboards: DashboardBase[];
-  defaultDashboardId: string;
+  // Absent on a fresh config and null when explicitly cleared — both mean "no default dashboard".
+  defaultDashboardId?: string | null;
   widgets: WidgetBase[];
   description?: string;
   isShowWidgetsPage?: boolean;

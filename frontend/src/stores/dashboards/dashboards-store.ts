@@ -12,7 +12,7 @@ export default class DashboardsStore {
   public widgets: Map<string, Widget> = new Map();
   public isLoading = true;
   public description = '';
-  public defaultDashboardId: string;
+  public defaultDashboardId: string | null = null;
   public isShowWidgetsPage: boolean = false;
   public saveError: string = null;
   public loadError: string = null;
@@ -81,6 +81,13 @@ export default class DashboardsStore {
   // non-rename edit updates the map and persists via the list PUT.
   async updateDashboard(oldId: string, data: DashboardBase): Promise<void> {
     const existing = this.dashboards.get(oldId);
+    // Defensive no-op. `dashboards` is a local in-memory map (not a backend read) and is never
+    // reloaded mid-session, while the only caller edits an id taken from the rendered list — so a
+    // missing entry can't occur in any real flow. Bail silently (no user message) rather than
+    // resurrect a vanished dashboard on disk from partial form data.
+    if (!existing) {
+      return;
+    }
     const merged: DashboardBase = { ...existing, ...data };
 
     if (oldId !== data.id) {
@@ -182,7 +189,7 @@ export default class DashboardsStore {
     });
   }
 
-  setDefaultDashboardId(id: string) {
+  setDefaultDashboardId(id: string | null) {
     runInAction(() => {
       this.defaultDashboardId = id;
       this._saveData();
