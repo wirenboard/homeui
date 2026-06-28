@@ -70,7 +70,7 @@ export const MenuItem = ({
               href={item.url}
               className="menuItem-link"
               draggable={false}
-              {...(item.openInNewTab ? { target: item.id || '_blank' } : null)}
+              {...(item.openInNewTab ? { target: item.id || '_blank', rel: 'noopener noreferrer' } : null)}
             >
               {t(item.label)}
             </a>
@@ -110,7 +110,7 @@ export const MenuItem = ({
       >
         <Component
           {...(isExternalLink
-            ? { href: item.url, ...(item.openInNewTab ? { target: item.id || '_blank' } : null) }
+            ? { href: item.url, ...(item.openInNewTab ? { target: item.id || '_blank', rel: 'noopener noreferrer' } : null) }
             : { to: item.url })}
           aria-label={t(item.label)}
           className={classNames('menuItem-link', {

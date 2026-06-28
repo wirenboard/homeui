@@ -236,6 +236,24 @@ describe('toMenuItemInstance', () => {
     expect(result.isExternal).toBe(true);
   });
 
+  test('keeps isExternal for an absolute http(s) url', () => {
+    const result = toMenuItemInstance(
+      { id: 'grafana', url: 'https://grafana.example/', title: { en: 'Grafana' }, isExternal: true },
+      'en',
+    );
+    expect(result.url).toBe('https://grafana.example/');
+    expect(result.isExternal).toBe(true);
+  });
+
+  test('drops isExternal/openInNewTab for an unsafe external url', () => {
+    // A custom-menu item must not turn into a javascript:/open-redirect <a href>.
+    for (const url of ['javascript' + ':alert(1)', '//evil.com', '/\\evil.com']) {
+      const result = toMenuItemInstance({ id: 'x', url, isExternal: true, openInNewTab: true }, 'en');
+      expect(result.isExternal).toBeUndefined();
+      expect(result.openInNewTab).toBeUndefined();
+    }
+  });
+
   test('does not set isExternal for internal items', () => {
     const result = toMenuItemInstance({ id: 'x', url: '/x' }, 'en');
     expect(result.isExternal).toBeUndefined();
