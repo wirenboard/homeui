@@ -1,4 +1,5 @@
 import { redirect } from 'react-router';
+import { vi } from 'vitest';
 import { authStoreMock } from '@/test/mocks/auth-store';
 import { ApiError, ErrorCode } from '@/test/mocks/request';
 import { authGuard } from './auth';
