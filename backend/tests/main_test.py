@@ -19,6 +19,7 @@ from wb.homeui_backend.main import (
     auth_who_am_i_handler,
     delete_user_handler,
     device_info_handler,
+    get_required_user_type,
     get_users_handler,
     security_check_handler,
     update_user_handler,
@@ -463,3 +464,32 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                         MQTT_CHECK_TOPIC, '{"result": "not found"}', True
                     )
                     mock_client.stop.assert_called_once()
+
+
+class GetRequiredUserTypeTest(unittest.TestCase):
+    @staticmethod
+    def _request_with(headers):
+        request = MagicMock()
+        request.headers = headers
+        return request
+
+    def test_valid_role(self):
+        self.assertEqual(
+            get_required_user_type(self._request_with({"Required-User-Type": "user"})), UserType.USER
+        )
+
+    def test_missing_header_defaults_to_admin(self):
+        self.assertEqual(get_required_user_type(self._request_with({})), UserType.ADMIN)
+
+    def test_empty_value_fails_safe_to_admin(self):
+        """An empty Required-User-Type (e.g. a gate that left $wb_role unset) must
+        require admin, never raise into a 500."""
+        self.assertEqual(
+            get_required_user_type(self._request_with({"Required-User-Type": ""})), UserType.ADMIN
+        )
+
+    def test_unknown_value_fails_safe_to_admin(self):
+        """An unknown role value must require admin rather than raise."""
+        self.assertEqual(
+            get_required_user_type(self._request_with({"Required-User-Type": "bogus"})), UserType.ADMIN
+        )

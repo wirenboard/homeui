@@ -173,7 +173,14 @@ class WebRequestHandlerContext:
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
-    return UserType(request.headers.get("Required-User-Type", UserType.ADMIN.value))
+    # Fail safe to the most restrictive role: a missing, empty, or unknown
+    # Required-User-Type (e.g. a gate whose location forgot to set $wb_role) must
+    # require admin rather than raise and turn every request into a 500.
+    value = request.headers.get("Required-User-Type") or UserType.ADMIN.value
+    try:
+        return UserType(value)
+    except ValueError:
+        return UserType.ADMIN
 
 
 def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
@@ -553,7 +560,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             return response_404()
 
         if not self.rate_limiter.check_call(
-            self.path, datetime.now(timezone.utc), handler.rate_per_minute_limit
+            urlparse(self.path).path, datetime.now(timezone.utc), handler.rate_per_minute_limit
         ):
             return response_429()
 
