@@ -1,4 +1,5 @@
 import { redirect } from 'react-router';
+import { vi } from 'vitest';
 import { authStoreMock } from '@/test/mocks/auth-store';
 import { ApiError, ErrorCode } from '@/test/mocks/request';
 import { authGuard } from './auth';
@@ -44,12 +45,23 @@ describe('authGuard', () => {
     expect(result).toBe('next');
   });
 
-  test('redirects to /login on 401', async () => {
+  test('redirects to /login without returnState when there is no hash', async () => {
+    // Cold boot: hash is empty, so no returnState — it must NOT leak as the
+    // literal string "undefined" into the URL.
     authStoreMock.checkAuth.mockRejectedValue({ status: 401 });
     await expect(authGuard({} as any, next)).rejects.toEqual({
-      __redirect: '/login?returnState=undefined',
+      __redirect: '/login',
     });
-    expect(redirect).toHaveBeenCalledWith('/login?returnState=undefined');
+    expect(redirect).toHaveBeenCalledWith('/login');
+  });
+
+  test('redirects to /login carrying returnState from the hash', async () => {
+    vi.stubGlobal('location', { hash: '#/dashboards/1' });
+    authStoreMock.checkAuth.mockRejectedValue({ status: 401 });
+    await expect(authGuard({} as any, next)).rejects.toEqual({
+      __redirect: '/login?returnState=%2Fdashboards%2F1',
+    });
+    expect(redirect).toHaveBeenCalledWith('/login?returnState=%2Fdashboards%2F1');
   });
 
   test('logs error on HTML response without redirecting', async () => {
