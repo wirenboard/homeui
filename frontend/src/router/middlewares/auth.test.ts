@@ -1,5 +1,4 @@
 import { redirect } from 'react-router';
-import { vi } from 'vitest';
 import { authStoreMock } from '@/test/mocks/auth-store';
 import { ApiError, ErrorCode } from '@/test/mocks/request';
 import { authGuard } from './auth';
@@ -56,7 +55,7 @@ describe('authGuard', () => {
   });
 
   test('redirects to /login carrying returnState from the hash', async () => {
-    vi.stubGlobal('location', { hash: '#/dashboards/1' });
+    location.hash = '#/dashboards/1';
     authStoreMock.checkAuth.mockRejectedValue({ status: 401 });
     await expect(authGuard({} as any, next)).rejects.toEqual({
       __redirect: '/login?returnState=%2Fdashboards%2F1',
