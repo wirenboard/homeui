@@ -142,6 +142,52 @@ describe('LoginPage', () => {
     searchParamsMock.delete('returnState');
   });
 
+  test('does a full-page navigation for a safe external return target', async () => {
+    window.history.replaceState({}, '', '/login/?externalReturn=%2Fnode-red%2F');
+    const assignSpy = vi.spyOn(window.location, 'assign').mockImplementation(() => {});
+    render(<LoginPage />);
+    fireEvent.change(document.getElementById('username')!, { target: { value: 'u' } });
+    fireEvent.change(document.getElementById('password')!, { target: { value: 'p' } });
+    fireEvent.submit(document.querySelector('form')!);
+    await waitFor(() => {
+      expect(assignSpy).toHaveBeenCalledWith('/node-red/');
+    });
+    expect(navigateMock).not.toHaveBeenCalled();
+    assignSpy.mockRestore();
+    window.history.replaceState({}, '', '/');
+  });
+
+  test('ignores an unsafe external return target (open-redirect guard)', async () => {
+    window.history.replaceState({}, '', '/login/?externalReturn=//evil.com');
+    const assignSpy = vi.spyOn(window.location, 'assign').mockImplementation(() => {});
+    render(<LoginPage />);
+    fireEvent.change(document.getElementById('username')!, { target: { value: 'u' } });
+    fireEvent.change(document.getElementById('password')!, { target: { value: 'p' } });
+    fireEvent.submit(document.querySelector('form')!);
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith('/', { replace: true });
+    });
+    expect(assignSpy).not.toHaveBeenCalled();
+    assignSpy.mockRestore();
+    window.history.replaceState({}, '', '/');
+  });
+
+  test('ignores a control-character open-redirect bypass in the external return target', async () => {
+    // Browsers strip the tab, turning "/\t/evil.com" into a protocol-relative "//evil.com".
+    window.history.replaceState({}, '', '/login/?externalReturn=/%09/evil.com');
+    const assignSpy = vi.spyOn(window.location, 'assign').mockImplementation(() => {});
+    render(<LoginPage />);
+    fireEvent.change(document.getElementById('username')!, { target: { value: 'u' } });
+    fireEvent.change(document.getElementById('password')!, { target: { value: 'p' } });
+    fireEvent.submit(document.querySelector('form')!);
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith('/', { replace: true });
+    });
+    expect(assignSpy).not.toHaveBeenCalled();
+    assignSpy.mockRestore();
+    window.history.replaceState({}, '', '/');
+  });
+
   test('shows error on login failure', async () => {
     authMock.login.mockRejectedValue(new Error('fail'));
     render(<LoginPage />);

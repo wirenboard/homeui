@@ -3,6 +3,13 @@ wb-mqtt-homeui (2.235.4) stable; urgency=medium
   * Add reusable nginx auth-gate snippets (/etc/nginx/snippets/wb-gate-*.inc) for
     putting a loopback service behind the homeui login
   * Raise /auth/check rate limit to 1000 req/min
+  * Support external links in the navigation menu (isExternal flag on a menu
+    item): render them as a full-page anchor instead of an in-app router link,
+    so a custom-menu drop-in can point at a gated sub-app and navigate there
+  * After login, honour an `externalReturn` query param: if it is a same-origin
+    absolute path, do a full-page navigation to it (open-redirect-safe), so a
+    gated service can send a logged-out user through the homeui login and back
+    to itself (which the in-app returnState cannot do)
 
  -- Denis Smagin <denis.smagin@wirenboard.com>  Fri, 26 Jun 2026 20:03:34 +0200
 
