@@ -14,22 +14,16 @@ import { Password } from '@/components/password';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
-// A reverse-proxied service sends the user to the
-// login page with an `externalReturn` query param on the real URL (not the hash
-// router's, which the SPA clobbers on boot). Such targets live outside this SPA,
-// so they need a full-page navigation rather than an in-app route. Only
-// same-origin targets are honoured — never a full URL or a protocol-relative
-// `//host` — to avoid an open redirect.
+// `externalReturn` is a real query param (survives the hash-router boot) holding a
+// same-origin path to a reverse-proxied service outside this SPA. Returning to it
+// needs a full-page nav; same-origin only, to avoid an open redirect.
 const getSafeExternalReturn = (): string | null => {
   const raw = new URLSearchParams(window.location.search).get('externalReturn');
   if (!raw) {
     return null;
   }
-  // Resolve against our origin and require it to stay same-origin. A prefix
-  // check (reject `//`, `/\`) is not enough: browsers strip tab/newline/CR
-  // before parsing a URL, so `/\t/evil.com` collapses to a protocol-relative
-  // `//evil.com`. new URL() applies that same normalisation, so a cross-origin
-  // target is reliably caught here.
+  // new URL() applies the browser's own normalisation (strips tab/newline/CR), so a
+  // disguised cross-origin target like `/\t/evil.com` is caught by the origin check.
   try {
     const url = new URL(raw, window.location.origin);
     if (url.origin !== window.location.origin) {

@@ -1,9 +1,5 @@
-# Wiren Board service gate — proxy headers for the gated upstream.
-#
-# Included inside the per-service `location /`, after proxy_pass. Strips any
-# client-supplied X-WB-* (these are trusted identity headers — never accept them
-# from the client) and carries the websocket upgrade so editor/dashboard-style
-# sub-apps work through the gate.
+# Service gate — proxy headers. Include inside `location /` after proxy_pass.
+# Strips client-supplied X-WB-* (trusted identity headers) and carries the WS upgrade.
 
 proxy_set_header X-WB-Role "";
 proxy_set_header X-WB-User "";

@@ -45,8 +45,7 @@ describe('authGuard', () => {
   });
 
   test('redirects to /login without returnState when there is no hash', async () => {
-    // Cold boot: hash is empty, so no returnState — it must NOT leak as the
-    // literal string "undefined" into the URL.
+    // Cold boot: empty hash → no returnState (must not leak as "undefined").
     authStoreMock.checkAuth.mockRejectedValue({ status: 401 });
     await expect(authGuard({} as any, next)).rejects.toEqual({
       __redirect: '/login',

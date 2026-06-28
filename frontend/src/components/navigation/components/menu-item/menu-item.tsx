@@ -31,8 +31,7 @@ export const MenuItem = ({
   setIsMenuFocused,
 }: MenuItemProps) => {
   const { t } = useTranslation();
-  // External links (a reverse-proxied service) need a real
-  // full-page navigation, not an in-app hash route, so render a plain anchor.
+  // External links live outside the SPA — render a plain anchor (full-page nav).
   const isExternalLink = Boolean(item.isExternal && item.url);
   const Component: ElementType = item.url ? (isExternalLink ? 'a' : Link) : 'button';
 

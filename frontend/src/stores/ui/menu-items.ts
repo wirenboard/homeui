@@ -42,8 +42,7 @@ export const toMenuItemInstance = (
   const children = item.children?.map((child) => toMenuItemInstance(child, language, hasRights));
   const output: MenuItemInstance = {
     id: item.id,
-    // External links point outside the SPA; keep the URL verbatim — the in-app
-    // route normalizer would rewrite or break it.
+    // External links: keep the URL verbatim (the in-app normalizer would break it).
     url: item.isExternal ? item.url : normalizeUrl(item.url),
     label,
     ...(item.isExternal ? { isExternal: true } : null),

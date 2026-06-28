@@ -7,13 +7,10 @@ export interface MenuItemInstance {
   url?: string;
   icon?: FunctionComponent<any>;
   isShow?: boolean;
-  // When true, `url` points outside the SPA (a reverse-proxied service) and must
-  // be opened with a full-page navigation, not an in-app hash route.
+  // url points outside the SPA — open with a full-page nav, not a hash route.
   isExternal?: boolean;
-  // When true (only meaningful together with isExternal), open the link in a
-  // separate browser tab instead of navigating the current one. The tab is named
-  // after the item id (not _blank), so repeated clicks reuse/focus the same tab
-  // rather than spawning a new one each time.
+  // Open in a separate tab (only with isExternal); the tab is named after the
+  // item id, so repeated clicks reuse it instead of spawning new ones.
   openInNewTab?: boolean;
   children?: MenuItemInstance[];
 }

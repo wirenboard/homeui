@@ -1,10 +1,5 @@
-# Wiren Board service gate — auth_request backend (homeui /auth/check).
-#
-# The calling `location /` must set $wb_role — the minimal role:
-# admin | operator | user ("this role and above"). Pair with wb-gate-unauth.inc
-# for the unauthenticated fallback. A gate whose open-time burst beats even the
-# raised /auth/check limit (e.g. an editor) ships its OWN cached check instead of
-# this file, and still reuses wb-gate-unauth.inc as-is.
+# Service gate — auth_request to homeui /auth/check. Pair with wb-gate-unauth.inc.
+# The calling `location /` must set $wb_role (admin|operator|user, "this and above").
 
 location = /wb_auth_check {
     internal;

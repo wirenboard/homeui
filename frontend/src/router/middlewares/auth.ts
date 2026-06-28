@@ -14,10 +14,8 @@ export const authGuard: MiddlewareFunction = async (_, next) => {
     if (err instanceof ApiError && err.code === ErrorCode.HTMLResponse) {
       console.error('app.errors.nginx', err);
     } else if (err.status === 401) {
-      // Only carry returnState when there actually is one. On a cold boot the
-      // hash is empty, so `.at(1)` is undefined and URLSearchParams would
-      // serialise it as the literal string "undefined" — which then leaks into
-      // the URL and into navigate(returnState) on the login page.
+      // Only carry returnState when present: on a cold boot the hash is empty, so
+      // `.at(1)` is undefined and would serialise as the literal "undefined".
       const returnState = location.hash?.split('#')?.at(1);
       const query = returnState ? `?${new URLSearchParams({ returnState })}` : '';
       throw redirect(`/login${query}`);
