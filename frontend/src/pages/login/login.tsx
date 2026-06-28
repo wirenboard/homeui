@@ -14,7 +14,7 @@ import { Password } from '@/components/password';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
-// A reverse-proxied sub-app (e.g. Node-RED at /node-red/) sends the user to the
+// A reverse-proxied service sends the user to the
 // login page with an `externalReturn` query param on the real URL (not the hash
 // router's, which the SPA clobbers on boot). Such targets live outside this SPA,
 // so they need a full-page navigation rather than an in-app route. Only

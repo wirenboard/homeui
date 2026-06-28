@@ -229,10 +229,10 @@ describe('toMenuItemInstance', () => {
 
   test('keeps external url verbatim and flags it', () => {
     const result = toMenuItemInstance(
-      { id: 'node-red', url: '/node-red/', title: { en: 'Node-RED' }, isExternal: true },
+      { id: 'my-service', url: '/my-service/', title: { en: 'My Service' }, isExternal: true },
       'en',
     );
-    expect(result.url).toBe('/node-red/');
+    expect(result.url).toBe('/my-service/');
     expect(result.isExternal).toBe(true);
   });
 
@@ -243,7 +243,7 @@ describe('toMenuItemInstance', () => {
 
   test('propagates openInNewTab for external items', () => {
     const result = toMenuItemInstance(
-      { id: 'node-red', url: '/node-red/', title: { en: 'Node-RED' }, isExternal: true, openInNewTab: true },
+      { id: 'my-service', url: '/my-service/', title: { en: 'My Service' }, isExternal: true, openInNewTab: true },
       'en',
     );
     expect(result.openInNewTab).toBe(true);
@@ -252,7 +252,7 @@ describe('toMenuItemInstance', () => {
   test('hides requiredRole item when the role is insufficient', () => {
     const hasRights = vi.fn(() => false);
     const result = toMenuItemInstance(
-      { id: 'node-red', url: '/node-red/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
+      { id: 'my-service', url: '/my-service/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
       'en',
       hasRights,
     );
@@ -263,7 +263,7 @@ describe('toMenuItemInstance', () => {
   test('shows requiredRole item when the role is sufficient', () => {
     const hasRights = vi.fn(() => true);
     const result = toMenuItemInstance(
-      { id: 'node-red', url: '/node-red/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
+      { id: 'my-service', url: '/my-service/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
       'en',
       hasRights,
     );
@@ -340,12 +340,12 @@ describe('mergeMenuItems', () => {
 
   test('appends external custom item preserving the flag', () => {
     const base = [{ label: 'A', url: '/a' }];
-    const custom = [{ label: 'Node-RED', id: 'node-red', url: '/node-red/', isExternal: true }];
+    const custom = [{ label: 'My Service', id: 'my-service', url: '/my-service/', isExternal: true }];
 
     const result = mergeMenuItems(base, custom);
 
-    const ext = result.find((i) => i.id === 'node-red');
+    const ext = result.find((i) => i.id === 'my-service');
     expect(ext?.isExternal).toBe(true);
-    expect(ext?.url).toBe('/node-red/');
+    expect(ext?.url).toBe('/my-service/');
   });
 });

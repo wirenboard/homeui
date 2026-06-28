@@ -31,7 +31,7 @@ export const MenuItem = ({
   setIsMenuFocused,
 }: MenuItemProps) => {
   const { t } = useTranslation();
-  // External links (e.g. a reverse-proxied sub-app like /node-red/) need a real
+  // External links (a reverse-proxied service) need a real
   // full-page navigation, not an in-app hash route, so render a plain anchor.
   const isExternalLink = Boolean(item.isExternal && item.url);
   const Component: ElementType = item.url ? (isExternalLink ? 'a' : Link) : 'button';

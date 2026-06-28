@@ -143,14 +143,14 @@ describe('LoginPage', () => {
   });
 
   test('does a full-page navigation for a safe external return target', async () => {
-    window.history.replaceState({}, '', '/login/?externalReturn=%2Fnode-red%2F');
+    window.history.replaceState({}, '', '/login/?externalReturn=%2Fmy-service%2F');
     const assignSpy = vi.spyOn(window.location, 'assign').mockImplementation(() => {});
     render(<LoginPage />);
     fireEvent.change(document.getElementById('username')!, { target: { value: 'u' } });
     fireEvent.change(document.getElementById('password')!, { target: { value: 'p' } });
     fireEvent.submit(document.querySelector('form')!);
     await waitFor(() => {
-      expect(assignSpy).toHaveBeenCalledWith('/node-red/');
+      expect(assignSpy).toHaveBeenCalledWith('/my-service/');
     });
     expect(navigateMock).not.toHaveBeenCalled();
     assignSpy.mockRestore();
