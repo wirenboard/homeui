@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.236.0) stable; urgency=medium
+
+  * Add wb-dynamic-type json-editor widget for scenario output value
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 29 Jun 2026 12:38:00 +0300
+
 wb-mqtt-homeui (2.235.3) stable; urgency=medium
 
   * Encode special characters in rule editor URLs
