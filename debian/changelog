@@ -1,8 +1,14 @@
 wb-mqtt-homeui (2.236.0) stable; urgency=medium
 
-  * Add wb-action-value json-editor widget for scenario output value
+  * Add wb-dynamic-type json-editor widget for scenario output value
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Fri, 26 Jun 2026 10:53:00 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 29 Jun 2026 12:38:00 +0300
+
+wb-mqtt-homeui (2.235.3) stable; urgency=medium
+
+  * Encode special characters in rule editor URLs
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 26 Jun 2026 13:2100 +0300
 
 wb-mqtt-homeui (2.235.2) stable; urgency=medium
 

@@ -67,7 +67,7 @@ const RulesPage = observer(() => {
       <Table isLoading={isRulesUpdating}>
         {rules.map((rule) => (
           <TableRow
-            url={`/rules/${rule.virtualPath}`}
+            url={`/rules/${rule.virtualPath.split('/').map(encodeURIComponent).join('/')}`}
             aria-label={t('rules.labels.open-rule', { path: rule.virtualPath })}
             key={rule.virtualPath}
           >
