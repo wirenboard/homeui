@@ -104,11 +104,12 @@ export function makeDynamicTypeEditor() {
     }
 
     currentType() {
+      // Before the driver resolves (watch is deferred), keep the input as text — a
+      // number input would silently drop a color/text value assigned meanwhile.
+      if (!this.driverWatchPath) return 'text';
       // Look up the driver live by path — a cached editor ref goes stale when
       // json-editor rebuilds object-level fields.
-      const driver = this.driverWatchPath
-        ? this.jsoneditor.getEditor(this.driverWatchPath)
-        : null;
+      const driver = this.jsoneditor.getEditor(this.driverWatchPath);
       const value = driver ? driver.getValue() : undefined;
       if (this.valueToType && this.valueToType[value]) return this.valueToType[value];
       return 'number';
