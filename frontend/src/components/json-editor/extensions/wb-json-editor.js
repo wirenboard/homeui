@@ -5,6 +5,7 @@ import { makeCollapsibleArrayEditor } from './collapsible-array-editor';
 import { makeCollapsibleMultipleEditor } from './collapsible-multiple-editor';
 import { makeDisabledEditorWrapper } from './disabled-editor-wrapper';
 import { compileTemplate } from './dumbtemplate';
+import { makeDynamicTypeEditor } from './dynamic-type-editor';
 import { makeEditWithDropdownEditor } from './edit-with-dropdown';
 import { makeFirstOneOfEditor } from './first-oneof-editor';
 import { makeGroupsEditor } from './group-editor';
@@ -17,7 +18,6 @@ import { makeOptionalEditorWithDropDown } from './optional-editor-with-dropdown'
 import { makeReadonlyOneOfEditor } from './readonly-oneof-editor';
 import { makeSelectWithHiddenItems } from './select-with-hidden-items';
 import { makeTranslatedInfoEditor } from './translated-info-editor';
-import { makeTypedValueEditor } from './typed-value-editor';
 import { makeWbArrayEditor } from './wb-array-editor';
 import { makeWbBootstrap3Iconlib } from './wb-bootstrap3-iconlib';
 import { makeWbBootstrap3Theme } from './wb-bootstrap3-theme';
@@ -207,7 +207,7 @@ function overrideJSONEditor(data) {
     (schema) => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array',
   );
   JSONEditor.defaults.resolvers.unshift(
-    (schema) => schema.format === 'wb-typed-value' && 'wb-typed-value',
+    (schema) => schema.format === 'wb-dynamic-type' && 'wb-dynamic-type',
   );
 
   JSONEditor.defaults.editors['select'] = makeSelectWithHiddenItems();
@@ -234,7 +234,7 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['wb-optional'] = makeOptionalEditorWithDropDown();
   JSONEditor.defaults.editors['wb-array'] = makeWbArrayEditor();
   JSONEditor.defaults.editors['wb-first-oneof'] = makeFirstOneOfEditor();
-  JSONEditor.defaults.editors['wb-typed-value'] = makeTypedValueEditor();
+  JSONEditor.defaults.editors['wb-dynamic-type'] = makeDynamicTypeEditor();
 
   JSONEditor.defaults.languages.en.error_oneOf = 'Parameters are set incorrectly';
 
