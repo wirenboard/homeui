@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.236.2) stable; urgency=medium
+
+  * rules: update autocompletes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 30 Jun 2026 15:10:00 +0400
+
 wb-mqtt-homeui (2.236.1) stable; urgency=medium
 
   * Fix wb-dynamic-type field resetting saved color and text on scenario reopen
