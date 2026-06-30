@@ -1,11 +1,33 @@
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react-lite';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import i18n from '@/i18n/config';
 import { createJSONEditor } from './extensions/wb-json-editor';
 import { type JsonEditorProps } from './types';
 import './styles.css';
+
+// Cap each sticky vertical tab list to the distance from its current top to the bottom
+// of the viewport, so it scrolls on its own instead of running off-screen.
+const TAB_LIST_SELECTOR = 'ul.nav-stacked';
+const VIEWPORT_GAP = 12;
+const DESKTOP_QUERY = '(min-width: 992px)';
+
+const syncTabListMaxHeight = (root: HTMLElement | null) => {
+  if (!root) {
+    return;
+  }
+  const isDesktop = window.matchMedia(DESKTOP_QUERY).matches;
+  root.querySelectorAll<HTMLElement>(TAB_LIST_SELECTOR).forEach((list) => {
+    if (!isDesktop) {
+      list.style.maxHeight = '';
+      return;
+    }
+    const available = window.innerHeight - list.getBoundingClientRect().top - VIEWPORT_GAP;
+    // below the fold: drop the cap, let the CSS fallback hold until it scrolls into view
+    list.style.maxHeight = available > 0 ? `${available}px` : '';
+  });
+};
 
 export const JsonEditor = observer((props: JsonEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
@@ -56,6 +78,31 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
       }
     }
   });
+
+  useEffect(() => {
+    const root = container.current;
+    if (!root) {
+      return undefined;
+    }
+    let frame = 0;
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => syncTabListMaxHeight(root));
+    };
+    schedule();
+    // capture phase to catch the inner page container scroll, not just window
+    window.addEventListener('scroll', schedule, true);
+    window.addEventListener('resize', schedule);
+    // recompute when tabs change or content resizes the layout
+    const resizeObserver = new ResizeObserver(schedule);
+    resizeObserver.observe(root);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule, true);
+      window.removeEventListener('resize', schedule);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   return <div ref={container} className={classNames('json-editor', props.className)} />;
 });

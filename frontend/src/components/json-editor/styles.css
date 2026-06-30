@@ -184,6 +184,18 @@
   border: 1px solid var(--border-color) !important;
 }
 
+.json-editor ul.nav-tabs.nav-stacked,
+.json-editor ul.nav-pills.nav-stacked {
+  @media (min-width: 992px) {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+
 .json-editor .nav li {
   list-style: none;
   padding: 12px !important;
