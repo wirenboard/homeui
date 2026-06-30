@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.236.3) stable; urgency=medium
+
+  * Make the config editor tab list scroll on its own
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 30 Jun 2026 16:29:00 +0300
+
 wb-mqtt-homeui (2.236.2) stable; urgency=medium
 
   * rules: update autocompletes

@@ -158,10 +158,13 @@
 .json-editor div:has(> ul.nav-pills) {
   display: flex;
   gap: 12px;
+  /* don't stretch the content pane to the (taller) sticky tab list */
+  align-items: flex-start;
 
   @media (max-width: 991px) {
     flex-direction: column;
     gap: 0;
+    align-items: stretch;
   }
 }
 
@@ -182,6 +185,18 @@
   flex-direction: column;
   margin-bottom: unset;
   border: 1px solid var(--border-color) !important;
+}
+
+.json-editor ul.nav-tabs.nav-stacked,
+.json-editor ul.nav-pills.nav-stacked {
+  @media (min-width: 992px) {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
 }
 
 .json-editor .nav li {
