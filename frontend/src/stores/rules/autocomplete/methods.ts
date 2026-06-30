@@ -152,17 +152,20 @@ const notifyMethodsSource: CompletionSource = (context) => {
     to: context.pos,
     options: [
       snippetCompletion(
-        'sendEmail(${1:to}, ${2:subject}, ${3:text})',
-        { label: 'sendEmail', type: 'function', detail: '(to, subject, text)' },
-
+        'sendEmail(${1:to}, ${2:subject}, ${3:text}, ${4:callback})',
+        { label: 'sendEmail', type: 'function', detail: '(to, subject, text, callback?)' },
       ),
       snippetCompletion(
-        'sendSMS(${1:to}, ${2:text}, ${3:command})',
-        { label: 'sendSMS', type: 'function', detail: '(to, text, command?)' },
+        'sendSMS(${1:to}, ${2:text}, ${3:command}, ${4:callback})',
+        { label: 'sendSMS', type: 'function', detail: '(to, text, command?, callback?)' },
       ),
       snippetCompletion(
-        'sendTelegramMessage(${1:token}, ${2:chatId}, ${3:text})',
-        { label: 'sendTelegramMessage', type: 'function', detail: '(token, chatId, text)' },
+        'sendTelegramMessage(${1:token}, ${2:chatId}, ${3:text}, ${4:callback})',
+        { label: 'sendTelegramMessage', type: 'function', detail: '(token, chatId, text, callback?)' },
+      ),
+      snippetCompletion(
+        'sendWebhook(${1:opts}, ${2:callback})',
+        { label: 'sendWebhook', type: 'function', detail: '(opts, callback?)' },
       ),
     ],
   };
