@@ -14,6 +14,27 @@ import { Password } from '@/components/password';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
+// `externalReturn` is a real query param (survives the hash-router boot) holding a
+// same-origin path to a reverse-proxied service outside this SPA. Returning to it
+// needs a full-page nav; same-origin only, to avoid an open redirect.
+const getSafeExternalReturn = (): string | null => {
+  const raw = new URLSearchParams(window.location.search).get('externalReturn');
+  if (!raw) {
+    return null;
+  }
+  // new URL() applies the browser's own normalisation (strips tab/newline/CR), so a
+  // disguised cross-origin target like `/\t/evil.com` is caught by the origin check.
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) {
+      return null;
+    }
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return null;
+  }
+};
+
 const LoginPage = observer(() => {
   const { t, i18n } = useTranslation();
   const { isAutologin } = authStore;
@@ -31,6 +52,11 @@ const LoginPage = observer(() => {
       setIsShowError(false);
       setIsLoading(true);
       await authStore.login({ login, password });
+      const externalReturn = getSafeExternalReturn();
+      if (externalReturn) {
+        window.location.assign(externalReturn);
+        return;
+      }
       navigate(searchParams.get('returnState') ?? '/', { replace: true });
     } catch {
       setIsShowError(true);

@@ -33,19 +33,50 @@ const normalizeUrl = (url?: string) => {
   return migrateLegacyUrl(normalized);
 };
 
-export const toMenuItemInstance = (item: CustomMenuItem, language: string): MenuItemInstance => {
+// Treat a custom-menu item as external only for a safe target: a same-origin
+// absolute path (`/…`, not `//` or `/\`) or an explicit http(s) URL. Rejects
+// `javascript:`/`data:`/protocol-relative hrefs that would otherwise become a
+// clickable XSS / open-redirect via the rendered <a>.
+const isSafeExternalUrl = (url?: string): boolean => {
+  if (!url) return false;
+  if (/^\/(?![/\\])/.test(url)) return true;
+  try {
+    return ['http:', 'https:'].includes(new URL(url).protocol);
+  } catch {
+    return false;
+  }
+};
+
+export const toMenuItemInstance = (
+  item: CustomMenuItem,
+  language: string,
+  hasRights?: (role: UserRole) => boolean,
+): MenuItemInstance => {
   const label = item.title?.[language as 'ru' | 'en'] || item.title?.ru || item.title?.en || item.id;
-  const children = item.children?.map((child) => toMenuItemInstance(child, language));
+  const children = item.children?.map((child) => toMenuItemInstance(child, language, hasRights));
+  const isExternal = Boolean(item.isExternal && isSafeExternalUrl(item.url));
   const output: MenuItemInstance = {
     id: item.id,
-    url: normalizeUrl(item.url),
+    // External links: keep the safe URL verbatim (the in-app normalizer would break it).
+    url: isExternal ? item.url : normalizeUrl(item.url),
     label,
+    ...(isExternal ? { isExternal: true } : null),
+    ...(isExternal && item.openInNewTab ? { openInNewTab: true } : null),
     children: children?.length ? children : undefined,
   };
 
   if (item.id === 'alice') {
     output.isShow = language !== 'en';
   }
+
+  // Role gating combines with any visibility already decided above (e.g. the
+  // alice language rule): the item stays visible only when both allow it, so a
+  // requiredRole never silently re-shows an item another rule hid, nor vice
+  // versa. Without a hasRights checker the role gate is a no-op.
+  if (item.requiredRole !== undefined && hasRights) {
+    output.isShow = output.isShow !== false && hasRights(item.requiredRole);
+  }
+
   return output;
 };
 
@@ -71,6 +102,8 @@ export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuI
       items[idx] = {
         ...baseItem,
         ...(item.url ? { url: item.url } : null),
+        ...(item.isExternal !== undefined ? { isExternal: item.isExternal } : null),
+        ...(item.openInNewTab !== undefined ? { openInNewTab: item.openInNewTab } : null),
         ...(item.label && item.label !== item.id ? { label: item.label } : null),
         children: mergedChildren.length ? mergedChildren : undefined,
       };

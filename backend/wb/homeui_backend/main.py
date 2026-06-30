@@ -173,7 +173,12 @@ class WebRequestHandlerContext:
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
-    return UserType(request.headers.get("Required-User-Type", UserType.ADMIN.value))
+    # Fail safe to admin on a missing/empty/unknown Required-User-Type (avoids a 500).
+    value = request.headers.get("Required-User-Type") or UserType.ADMIN.value
+    try:
+        return UserType(value)
+    except ValueError:
+        return UserType.ADMIN
 
 
 def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
@@ -553,7 +558,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             return response_404()
 
         if not self.rate_limiter.check_call(
-            self.path, datetime.now(timezone.utc), handler.rate_per_minute_limit
+            urlparse(self.path).path, datetime.now(timezone.utc), handler.rate_per_minute_limit
         ):
             return response_429()
 
@@ -580,7 +585,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
-                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
+                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=1000),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
