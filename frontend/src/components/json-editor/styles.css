@@ -158,10 +158,13 @@
 .json-editor div:has(> ul.nav-pills) {
   display: flex;
   gap: 12px;
+  /* don't stretch the content pane to the (taller) sticky tab list */
+  align-items: flex-start;
 
   @media (max-width: 991px) {
     flex-direction: column;
     gap: 0;
+    align-items: stretch;
   }
 }
 

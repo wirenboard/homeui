@@ -23,7 +23,15 @@ const syncTabListMaxHeight = (root: HTMLElement | null) => {
       list.style.maxHeight = '';
       return;
     }
-    const available = window.innerHeight - list.getBoundingClientRect().top - VIEWPORT_GAP;
+    // clamp the top to the pinned position: a list scrolled above the fold has a
+    // negative rect.top, which would inflate the cap past the viewport and un-cap the list
+    const top = Math.max(list.getBoundingClientRect().top, VIEWPORT_GAP);
+    const viewportAvailable = window.innerHeight - top - VIEWPORT_GAP;
+    // keep the list roughly level with its content pane (the flex sibling) so a long list
+    // doesn't tower over a short form; still cap to the viewport for very tall forms
+    const sibling = Array.from(list.parentElement?.children ?? []).find((el) => el !== list);
+    const contentHeight = sibling ? sibling.getBoundingClientRect().height : viewportAvailable;
+    const available = Math.min(viewportAvailable, contentHeight);
     // below the fold: drop the cap, let the CSS fallback hold until it scrolls into view
     list.style.maxHeight = available > 0 ? `${available}px` : '';
   });
