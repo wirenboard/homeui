@@ -5,9 +5,25 @@ import './styles.css';
 
 const SCROLLBAR_WIDTH = 20;
 
-export function ColumnsWrapper({ children, baseColumnWidth, columnClassName }: PropsWithChildren<ColumnsWrapperProps>) {
+function mergeColumns(columnItems: ReactNode[][], maxCount: number): ReactNode[][] {
+  if (columnItems.length <= maxCount) {
+    return columnItems;
+  }
+  const merged: ReactNode[][] = Array.from({ length: maxCount }, () => []);
+  columnItems.forEach((col, i) => merged[i % maxCount].push(...col));
+  return merged;
+}
+
+export function ColumnsWrapper({
+  children,
+  baseColumnWidth,
+  columnClassName,
+  columnCount,
+  columnItems,
+}: PropsWithChildren<ColumnsWrapperProps>) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState<ReactNode[][]>([]);
+  const [actualCount, setActualCount] = useState(1);
   const prevCountRef = useRef(0);
 
   const splitIntoColumns = useCallback(
@@ -18,13 +34,24 @@ export function ColumnsWrapper({ children, baseColumnWidth, columnClassName }: P
       if (count === prevCount - 1 && Math.floor((containerWidth + SCROLLBAR_WIDTH) / baseColumnWidth) >= prevCount) {
         count = prevCount;
       }
+
+      if (columnCount !== undefined) {
+        count = columnCount;
+      }
+
       prevCountRef.current = count;
+      setActualCount(count);
+
+      if (columnItems) {
+        setColumns(mergeColumns(columnItems, count));
+        return;
+      }
 
       const result = Array.from({ length: count }, () => [] as ReactNode[]);
       list.forEach((item, i) => result[i % count].push(item));
       setColumns(result);
     },
-    [baseColumnWidth],
+    [baseColumnWidth, columnCount, columnItems],
   );
 
   const recalc = useCallback(() => {
@@ -41,8 +68,10 @@ export function ColumnsWrapper({ children, baseColumnWidth, columnClassName }: P
     return () => observer.disconnect();
   }, [recalc]);
 
+  const gridStyle = { gridTemplateColumns: `repeat(${actualCount}, 1fr)` };
+
   return (
-    <div className="columnsWrapper-container" ref={wrapperRef}>
+    <div className="columnsWrapper-container" style={gridStyle} ref={wrapperRef}>
       {columns.map((columnWithContent, i) => (
         <div className={classNames('columnsWrapper-column', columnClassName)} key={i}>
           {columnWithContent}

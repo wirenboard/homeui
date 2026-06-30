@@ -27,14 +27,14 @@ describe('Dashboard', () => {
       const d = new Dashboard(makeDashboard());
       expect(d.id).toBe('d1');
       expect(d.name).toBe('Main');
-      expect(d.widgets).toEqual(['w1', 'w2']);
+      expect(d.widgets).toEqual([['w1', 'w2']]);
       expect(d.isSvg).toBe(false);
       expect(d.options).toEqual({});
     });
 
     test('defaults widgets to empty array', () => {
       const d = new Dashboard(makeDashboard({ widgets: undefined as any }));
-      expect(d.widgets).toEqual([]);
+      expect(d.widgets).toEqual([[]]);
     });
 
     test('sets SVG properties when isSvg is true', () => {

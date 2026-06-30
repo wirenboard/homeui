@@ -2,10 +2,32 @@ import { makeAutoObservable } from 'mobx';
 import { dashboardsStore } from '@/stores/dashboards/index';
 import { type DashboardBase } from './types';
 
+function normalizeWidgets(widgets: string[] | string[][] | undefined): string[][] {
+  if (!widgets || !widgets.length) {
+    return [[]];
+  }
+  let columns: string[][];
+  if (Array.isArray(widgets[0])) {
+    columns = (widgets as (string | string[])[]).map((col) =>
+      Array.isArray(col) ? col : [col],
+    );
+  } else {
+    columns = [widgets as string[]];
+  }
+  const seen = new Set<string>();
+  return columns.map((col) =>
+    col.filter((id) => {
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    }),
+  );
+}
+
 export class Dashboard {
   declare id: string;
   declare name: string;
-  declare widgets: string[];
+  declare widgets: string[][];
   declare isSvg: boolean;
   declare svg: DashboardBase['svg'];
   declare svg_fullwidth: boolean;
@@ -16,7 +38,7 @@ export class Dashboard {
   constructor(dashboard: DashboardBase) {
     this.id = dashboard.id;
     this.name = dashboard.name;
-    this.widgets = dashboard.widgets || [];
+    this.widgets = normalizeWidgets(dashboard.widgets);
     this.isSvg = dashboard.isSvg || false;
     this.options = dashboard.options || {};
 
@@ -35,8 +57,12 @@ export class Dashboard {
     }, { autoBind: true });
   }
 
+  get flatWidgets(): string[] {
+    return this.widgets.flat();
+  }
+
   hasWidget(id: string) {
-    return this.widgets.includes(id);
+    return this.widgets.some((col) => col.includes(id));
   }
 
   addWidget(widgetId: string) {

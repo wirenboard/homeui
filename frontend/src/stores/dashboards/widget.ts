@@ -37,13 +37,13 @@ export class Widget {
 
   get associatedDashboards() {
     return Array.from(dashboardsStore.dashboards.values())
-      .filter((dashboard) => dashboard.widgets.includes(this.id));
+      .filter((dashboard) => dashboard.hasWidget(this.id));
   }
 
   get notUsedDashboards() {
     return Array.from(dashboardsStore.dashboards.values())
       .filter((dashboard) => {
-        return !dashboard.isSvg && !dashboard.widgets.includes(this.id);
+        return !dashboard.isSvg && !dashboard.hasWidget(this.id);
       });
   }
 }
