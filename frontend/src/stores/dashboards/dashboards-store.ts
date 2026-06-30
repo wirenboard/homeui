@@ -72,7 +72,11 @@ export default class DashboardsStore {
   addWidgetToDashboard(dashboardId: string, widgetId: string) {
     runInAction(() => {
       const dashboard = this.dashboards.get(dashboardId);
-      dashboard.widgets.push(widgetId);
+      const shortest = dashboard.widgets.reduce(
+        (min, col, i) => (col.length < dashboard.widgets[min].length ? i : min),
+        0,
+      );
+      dashboard.widgets[shortest].push(widgetId);
       this.dashboards.set(dashboardId, new Dashboard(dashboard));
       this._saveData();
     });
@@ -81,11 +85,49 @@ export default class DashboardsStore {
   removeWidgetFromDashboard(dashboardId: string, widgetId: string, withSave = true) {
     runInAction(() => {
       const dashboard = this.dashboards.get(dashboardId);
-      dashboard.widgets = dashboard.widgets.filter((widget) => widget !== widgetId);
+      dashboard.widgets = dashboard.widgets.map((col) => col.filter((id) => id !== widgetId));
       this.dashboards.set(dashboardId, new Dashboard(dashboard));
       if (withSave) {
         this._saveData();
       }
+    });
+  }
+
+  reorderWidgets(dashboardId: string, newColumns: string[][]) {
+    runInAction(() => {
+      const dashboard = this.dashboards.get(dashboardId);
+      dashboard.widgets = newColumns;
+      this.dashboards.set(dashboardId, new Dashboard(dashboard));
+      this._saveData();
+    });
+  }
+
+  saveDashboardLayout(dashboardId: string, widgets: string[][], columns: number | undefined) {
+    runInAction(() => {
+      const dashboard = this.dashboards.get(dashboardId);
+      dashboard.widgets = widgets;
+      dashboard.options = { ...dashboard.options, columns };
+      this.dashboards.set(dashboardId, new Dashboard(dashboard));
+      this._saveData();
+    });
+  }
+
+  setDashboardColumns(dashboardId: string, count: number | undefined) {
+    runInAction(() => {
+      const dashboard = this.dashboards.get(dashboardId);
+      dashboard.options = { ...dashboard.options, columns: count };
+
+      const flat = dashboard.flatWidgets;
+      if (count !== undefined) {
+        const newColumns: string[][] = Array.from({ length: count }, () => []);
+        flat.forEach((id, i) => newColumns[i % count].push(id));
+        dashboard.widgets = newColumns;
+      } else {
+        dashboard.widgets = [flat];
+      }
+
+      this.dashboards.set(dashboardId, new Dashboard(dashboard));
+      this._saveData();
     });
   }
 

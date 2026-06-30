@@ -13,7 +13,9 @@
          "password-strength-4": "Надежный пароль",
          "select-all": "Выбрать все",
          "unselect-all": "Снять выделение",
-         "setting-up-https": "Настройка HTTPS"
+         "setting-up-https": "Настройка HTTPS",
+         "columns": "Столбцы",
+         "columns-auto": "Авто"
       },
       "buttons": {
          "close": "Закрыть",
@@ -33,7 +35,10 @@
          "expand": "Развернуть",
          "skip-to-main-content": "Перейти к содержанию",
          "open-calendar": "Открыть календарь",
-         "back": "Назад"
+         "back": "Назад",
+         "edit-layout": "Изменить раскладку",
+         "cancel-layout": "Отмена",
+         "save-layout": "Сохранить"
       },
       "prompt": {
          "dirty": "На странице остались несохранённые изменения. Вы действительно хотите покинуть страницу?"

@@ -34,9 +34,10 @@ export interface TextDashboard {
   id: string;
   name: string;
   isSvg: boolean;
-  widgets: string[];
+  widgets: string[] | string[][];
   options?: {
     isHidden?: boolean;
+    columns?: number;
   };
 }
 

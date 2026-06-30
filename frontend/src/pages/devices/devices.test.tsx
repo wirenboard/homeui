@@ -31,6 +31,8 @@ vi.mock('@/assets/icons/trash.svg', () => ({ default: () => null }));
 vi.mock('@/components/tooltip', () => ({ Tooltip: ({ children }: any) => <div>{children}</div> }));
 vi.mock('@/components/columns-wrapper', () => ({
   ColumnsWrapper: ({ children }: any) => <div>{children}</div>,
+  useMaxColumns: () => 4,
+  MIN_COLUMN_WIDTH: 376,
 }));
 vi.mock('@/components/card', () => ({
   Card: ({ children, heading, actions, id }: any) => (
