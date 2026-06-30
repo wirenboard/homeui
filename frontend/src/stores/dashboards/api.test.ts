@@ -1,5 +1,12 @@
 import { request } from '@/utils/request';
-import { dashboardsApi } from './api';
+import {
+  deleteDashboard,
+  getDashboardSvg,
+  getDashboards,
+  patchDashboard,
+  putDashboard,
+  saveDashboards,
+} from './api';
 
 vi.mock('@/utils/request', () => ({
   request: {
@@ -24,7 +31,7 @@ describe('dashboardsApi', () => {
     const config = { dashboards: [], widgets: [], defaultDashboardId: 'd1' };
     getMock.mockResolvedValue({ data: config });
 
-    const result = await dashboardsApi.getDashboards();
+    const result = await getDashboards();
 
     expect(getMock).toHaveBeenCalledWith('/api/dashboards');
     expect(result).toBe(config);
@@ -33,7 +40,7 @@ describe('dashboardsApi', () => {
   test('getDashboardSvg requests text and encodes the id in the path', async () => {
     getMock.mockResolvedValue({ data: '<svg/>' });
 
-    const result = await dashboardsApi.getDashboardSvg('a b/c');
+    const result = await getDashboardSvg('a b/c');
 
     expect(getMock).toHaveBeenCalledWith('/api/dashboards/a%20b%2Fc/svg', { responseType: 'text' });
     expect(result).toBe('<svg/>');
@@ -43,7 +50,7 @@ describe('dashboardsApi', () => {
     putMock.mockResolvedValue({});
     const config = { dashboards: [], widgets: [], defaultDashboardId: 'd1' };
 
-    const result = await dashboardsApi.saveDashboards(config as any);
+    const result = await saveDashboards(config as any);
 
     expect(putMock).toHaveBeenCalledWith('/api/dashboards', config);
     expect(result).toBeUndefined();
@@ -53,7 +60,7 @@ describe('dashboardsApi', () => {
     putMock.mockResolvedValue({});
     const dashboard = { id: 'a b/c', name: 'My SVG', isSvg: true, svg: { current: '<svg/>' } };
 
-    const result = await dashboardsApi.putDashboard('a b/c', dashboard as any);
+    const result = await putDashboard('a b/c', dashboard as any);
 
     expect(putMock).toHaveBeenCalledWith('/api/dashboards/a%20b%2Fc', dashboard);
     expect(result).toBeUndefined();
@@ -63,7 +70,7 @@ describe('dashboardsApi', () => {
     patchMock.mockResolvedValue({});
     const patch = { options: { isHidden: true } };
 
-    const result = await dashboardsApi.patchDashboard('a b/c', patch as any);
+    const result = await patchDashboard('a b/c', patch as any);
 
     expect(patchMock).toHaveBeenCalledWith('/api/dashboards/a%20b%2Fc', patch);
     expect(result).toBeUndefined();
@@ -72,7 +79,7 @@ describe('dashboardsApi', () => {
   test('deleteDashboard DELETEs the encoded id path', async () => {
     deleteMock.mockResolvedValue({});
 
-    const result = await dashboardsApi.deleteDashboard('a b/c');
+    const result = await deleteDashboard('a b/c');
 
     expect(deleteMock).toHaveBeenCalledWith('/api/dashboards/a%20b%2Fc');
     expect(result).toBeUndefined();

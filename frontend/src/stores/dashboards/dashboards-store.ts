@@ -2,12 +2,11 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
 import type { DashboardBase, DashboardSaveResult, DashboardsConfig, WidgetBase } from '@/stores/dashboards';
 import { generateNextId } from '@/utils/id';
-import { dashboardsApi } from './api';
+import * as dashboardsApi from './api';
 import { Dashboard } from './dashboard';
 import { Widget } from './widget';
 
 export default class DashboardsStore {
-  // --- Observable state ---
   public dashboards: Map<string, Dashboard> = new Map();
   public widgets: Map<string, Widget> = new Map();
   public isLoading = true;
@@ -214,7 +213,6 @@ export default class DashboardsStore {
     return Array.from(this.dashboards.values());
   }
 
-  // --- Private ---
   // Runs a single-dashboard write (PUT/PATCH/DELETE) and maps the outcome to a DashboardSaveResult
   // ('ok' clears saveError, 'conflict' is HTTP 409 left untouched, 'error' sets saveError).
   private async _runWrite(fn: () => Promise<void>): Promise<DashboardSaveResult> {

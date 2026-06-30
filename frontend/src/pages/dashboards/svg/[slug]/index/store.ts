@@ -185,7 +185,6 @@ export class SvgDashboardPageStore {
     }
   }
 
-  // --- Private ---
   private async _loadSvg(dashboardId: string) {
     if (this.svgMarkup.has(dashboardId)) {
       return;
