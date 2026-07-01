@@ -241,10 +241,15 @@ export class BusStore extends BaseItemStore {
   }
 
   async applyCommissioningState(newState: CommissioningState) {
+    // A retained "completed" message is redelivered on every (re)subscribe at page
+    // load. Rebuilding children from it would clobber the authoritative, possibly
+    // renamed device list from GetList with the scan-time snapshot. Only rebuild
+    // when a scan was actually running in this session.
+    const wasScanning = this.isScanning;
     this.commissioningState = newState;
     this.scanStartRequested = false;
     this.scanStopRequested = false;
-    if ('completed' === newState.status) {
+    if ('completed' === newState.status && wasScanning) {
       this.children = newState.devices.map((device: { id: string; name: string; groups: number[] }) =>
         new DeviceStore(device.id, device.name, device.groups, this),
       );

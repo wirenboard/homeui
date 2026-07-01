@@ -718,6 +718,7 @@
       },
       "errors": {
          "exists": "A rule with that name already exists",
+         "dot-name": "File name should not start with a dot",
          "mqtt-connection": "MQTT client is not connected"
       }
    },

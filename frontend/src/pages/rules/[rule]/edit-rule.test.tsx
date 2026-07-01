@@ -95,7 +95,7 @@ vi.mock('@/layouts/page', () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  paramsMock.id = 'test-rule.js';
+  paramsMock['*'] = 'test-rule.js';
   rulesMock.rule.name = 'test-rule.js';
   rulesMock.rule.initName = 'test-rule.js';
   rulesMock.rule.content = 'defineRule("test", {})';
@@ -131,14 +131,14 @@ describe('EditRulePage', () => {
   });
 
   test('resets rule for new rule (no params.id)', () => {
-    paramsMock.id = undefined;
+    paramsMock['*'] = undefined;
     render(<EditRulePage />);
     expect(rulesMock.resetRule).toHaveBeenCalled();
     expect(rulesMock.load).not.toHaveBeenCalled();
   });
 
   test('shows title input for new rule', () => {
-    paramsMock.id = undefined;
+    paramsMock['*'] = undefined;
     render(<EditRulePage />);
     expect(screen.getByTestId('title-input')).toBeDefined();
   });
@@ -174,7 +174,7 @@ describe('EditRulePage', () => {
   });
 
   test('title change calls setRuleName', () => {
-    paramsMock.id = undefined;
+    paramsMock['*'] = undefined;
     render(<EditRulePage />);
     fireEvent.change(screen.getByTestId('title-input'), {
       target: { value: 'new-name' },
@@ -209,13 +209,13 @@ describe('EditRulePage', () => {
   });
 
   test('save new rule navigates to edit path', async () => {
-    paramsMock.id = undefined;
+    paramsMock['*'] = undefined;
     rulesMock.save.mockResolvedValue('new-rule.js');
     render(<EditRulePage />);
     fireEvent.click(screen.getByText('rules.buttons.save'));
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith(
-        '/rules/edit/new-rule.js', { replace: true },
+        '/rules/new-rule.js', { replace: true },
       );
     });
   });
@@ -230,7 +230,7 @@ describe('EditRulePage', () => {
       expect(rulesMock.checkIsNameUnique).toHaveBeenCalledWith('renamed.js');
       expect(rulesMock.rename).toHaveBeenCalledWith('test-rule.js', 'renamed.js');
       expect(navigateMock).toHaveBeenCalledWith(
-        '/rules/edit/renamed.js', { replace: true },
+        '/rules/renamed.js', { replace: true },
       );
     });
   });

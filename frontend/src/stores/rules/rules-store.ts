@@ -53,6 +53,12 @@ export default class RulesStore {
     this.rule.name = value;
   }
 
+  setRuleError(error: string) {
+    this.rule.error = {
+      message: error,
+    };
+  }
+
   resetRule() {
     this.rule = {
       name: '',

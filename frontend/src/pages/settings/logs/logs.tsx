@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useSearchParams } from 'react-router-dom';
 import DownloadIcon from '@/assets/icons/download.svg';
 import { RpcErrorCode } from '@/common/constants';
 import { documentation } from '@/common/links';
@@ -17,18 +18,37 @@ import { useStore } from '@/utils/use-store';
 import { LogsFilters } from './componentns/filters';
 import './styles.css';
 
+const parseFilterFromParams = (params: URLSearchParams) => {
+  const levelsParam = params.get('levels');
+  const timeParam = params.get('time');
+  return {
+    levels: levelsParam ? levelsParam.split(',').map(Number) : null,
+    boot: params.get('boot') || null,
+    service: params.get('service') || null,
+    time: timeParam ? Number(timeParam) : null,
+    regex: params.get('regex') === '1',
+    pattern: params.get('pattern') || '',
+    'case-sensitive': params.get('case') !== '0',
+  };
+};
+
+const syncFilterToParams = (filter: any, setSearchParams: (params: URLSearchParams, opts?: any) => void) => {
+  const params = new URLSearchParams();
+  if (filter.service) params.set('service', filter.service);
+  if (filter.boot) params.set('boot', filter.boot);
+  if (filter.levels?.length) params.set('levels', filter.levels.join(','));
+  if (filter.time) params.set('time', String(filter.time));
+  if (filter.pattern) params.set('pattern', filter.pattern);
+  if (filter.regex) params.set('regex', '1');
+  if (!filter['case-sensitive']) params.set('case', '0');
+  setSearchParams(params, { replace: true });
+};
+
 const LogsPage = observer(() => {
   const { t, i18n } = useTranslation();
   const store = useStore(() => new LogsStore());
-  const [filter, setFilter] = useState({
-    levels: null,
-    boot: null,
-    service: null,
-    time: null,
-    regex: false,
-    pattern: '',
-    'case-sensitive': true,
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filter, setFilter] = useState<any>(() => parseFilterFromParams(searchParams));
   const [hasMore, setHasMore] = useState(true);
   const [errors, setErrors] = useState([]);
   const [liveUpdate, setLiveUpdate] = useState(false);
@@ -43,6 +63,10 @@ const LogsPage = observer(() => {
     const timeout = setTimeout(() => setShowLoading(true), 1000);
     return () => clearTimeout(timeout);
   }, [store.isLoading]);
+
+  useEffect(() => {
+    syncFilterToParams(filter, setSearchParams);
+  }, [filter]);
 
   useEffect(() => {
     store.loadServicesAndBoots().catch(() => {
