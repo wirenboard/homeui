@@ -9,6 +9,8 @@ export class SvgDashboardPageStore {
   public dashboardIndex = 0;
   public dashboardId: string = null;
   public channelValues: ObservableMap<string, any>;
+  public svgMarkup: ObservableMap<string, string>;
+  public svgErrors: ObservableMap<string, boolean>;
   private _unsubscribeOnValue = () => {};
   private _disposeReaction = () => {};
   private _frame: number | null = null;
@@ -18,6 +20,8 @@ export class SvgDashboardPageStore {
 
   constructor() {
     this.channelValues = observable.map<string, any>();
+    this.svgMarkup = observable.map<string, string>();
+    this.svgErrors = observable.map<string, boolean>();
 
     makeAutoObservable(this, {}, { autoBind: true });
 
@@ -37,6 +41,21 @@ export class SvgDashboardPageStore {
 
   getDashboard(dashboardId: string) {
     return this.dashboardConfigs.find((d) => d.isSvg && d.id === dashboardId) || null;
+  }
+
+  getSvg(dashboardId: string): string {
+    return this.svgMarkup.get(dashboardId) ?? null;
+  }
+
+  // Loading == fetch kicked off (setDashboard) but neither markup nor an error is in yet.
+  isSvgLoading(dashboardId: string): boolean {
+    return !this.svgMarkup.has(dashboardId) && !this.svgErrors.has(dashboardId);
+  }
+
+  // Manual retry: drop the error so the pane shows the loader again, then re-fetch.
+  reloadSvg(dashboardId: string) {
+    this.svgErrors.delete(dashboardId);
+    this._loadSvg(dashboardId);
   }
 
   get dashboardConfigs(): Dashboard[] {
@@ -77,6 +96,8 @@ export class SvgDashboardPageStore {
         this.dashboards.push(rightDashboard);
       }
     }
+
+    this.dashboards.forEach((d) => this._loadSvg(d.id));
 
     if (devicesStore.cells) {
       const usedChannels = this.getUsedChannels();
@@ -161,6 +182,23 @@ export class SvgDashboardPageStore {
     if (isPageDestroy) {
       this._disposeReaction();
       this._disposeReaction = () => {};
+    }
+  }
+
+  private async _loadSvg(dashboardId: string) {
+    if (this.svgMarkup.has(dashboardId)) {
+      return;
+    }
+    try {
+      const markup = await dashboardsStore.loadSvg(dashboardId);
+      runInAction(() => {
+        this.svgMarkup.set(dashboardId, markup);
+        this.svgErrors.delete(dashboardId);
+      });
+    } catch (e) {
+      runInAction(() => {
+        this.svgErrors.set(dashboardId, true);
+      });
     }
   }
 }

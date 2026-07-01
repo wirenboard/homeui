@@ -31,7 +31,9 @@ const EditSvgDashboardPage = observer(() => {
 
   const [save, isSaving] = useAsyncAction(async () => {
     const id = await store.onSaveDashboard();
-    navigate(`/dashboards/svg/edit/${id}`);
+    if (id) {
+      navigate(`/dashboards/svg/edit/${id}`);
+    }
   });
 
   const [deleteDashboard, isDeleting] = useAsyncAction(async () => {
@@ -47,15 +49,19 @@ const EditSvgDashboardPage = observer(() => {
         infoLink={documentation[i18n.language]?.svgdashboard}
         isLoading={store.isLoading}
         hasRights={authStore.hasRights(UserRole.Operator)}
-        errors={dashboardsStore.saveError ? [{ variant: 'danger', text: dashboardsStore.saveError }] : []}
+        errors={[
+          ...(store.svgLoadError ? [{ variant: 'danger', text: t('dashboards.errors.svg-load') }] : []),
+          ...(store.idConflictError ? [{ variant: 'danger', text: t('dashboards.errors.duplicate') }] : []),
+          ...(dashboardsStore.saveError ? [{ variant: 'danger', text: dashboardsStore.saveError }] : []),
+        ]}
         actions={
           <>
             {store.isNew ? (
               <Button
                 label={t('edit-svg-dashboard.buttons.cancel')}
                 variant="secondary"
-                onClick={async () => {
-                  await store.removeDashboard();
+                onClick={() => {
+                  // A new dashboard is only persisted on Save, so cancel just leaves (no DELETE).
                   navigate('/dashboards');
                 }}
               />

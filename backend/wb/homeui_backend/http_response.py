@@ -23,6 +23,10 @@ def response_204() -> HttpResponse:
     return HttpResponse(204)
 
 
+def response_304(headers: Optional[list[list[str]]] = None) -> HttpResponse:
+    return HttpResponse(304, headers)
+
+
 def response_400(msg: str) -> HttpResponse:
     return HttpResponse(400, body=f"Bad Request: {msg}")
 
@@ -37,6 +41,10 @@ def response_403() -> HttpResponse:
 
 def response_404() -> HttpResponse:
     return HttpResponse(404)
+
+
+def response_409() -> HttpResponse:
+    return HttpResponse(409)
 
 
 def response_429() -> HttpResponse:

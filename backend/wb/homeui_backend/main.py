@@ -9,26 +9,35 @@ import subprocess
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from email.utils import formatdate, parsedate_to_datetime
 from http import cookies
 from http.server import BaseHTTPRequestHandler
 from sys import argv
 from typing import Any, Callable, Optional
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import bcrypt
 
 from .cert import CertificateCheckingThread
 from .config_file import Config
+from .dashboards import (
+    DashboardsStore,
+    DashboardWriteOutcome,
+    SeedConfigError,
+    detect_board,
+)
 from .db import open_db
 from .http_response import (
     HttpResponse,
     response_200,
     response_201,
     response_204,
+    response_304,
     response_400,
     response_401,
     response_403,
     response_404,
+    response_409,
     response_429,
     response_500,
 )
@@ -169,6 +178,7 @@ class WebRequestHandlerContext:
     sessions_storage: SessionsStorage
     certificate_thread: CertificateCheckingThread
     security_check_thread: SecurityCheckingThread
+    dashboards_store: DashboardsStore
     session: Optional[Session] = None
 
 
@@ -434,6 +444,149 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
     return response_200()
 
 
+def dashboard_id_from_path(request: BaseHTTPRequestHandler, expected_len: int) -> Optional[str]:
+    url = urlparse(request.path).path
+    query_components = url.split("/")
+    # The frontend percent-encodes the user-chosen id, so decode it back to the on-disk id.
+    return unquote(query_components[3]) if len(query_components) == expected_len else None
+
+
+def config_cache_headers(mtime: float) -> list[list[str]]:
+    # Revalidate every time, but let the client skip re-downloading the body when unchanged
+    # (Last-Modified / If-Modified-Since -> 304). Second-granular; fine for rare, user-driven writes.
+    return [["Cache-Control", "no-cache"], ["Last-Modified", formatdate(mtime, usegmt=True)]]
+
+
+def client_copy_is_current(request: BaseHTTPRequestHandler, mtime: float) -> bool:
+    """True if the request's If-Modified-Since shows the client already has this config."""
+    if_modified_since = request.headers.get("If-Modified-Since")
+    if not if_modified_since:
+        return False
+    try:
+        since = parsedate_to_datetime(if_modified_since)
+    except (TypeError, ValueError):
+        return False
+    if since is None:
+        return False
+    # HTTP dates are second-granular; compare truncated to whole seconds.
+    return int(mtime) <= int(since.timestamp())
+
+
+def not_modified_response(request: BaseHTTPRequestHandler, mtime: Optional[float]) -> Optional[HttpResponse]:
+    """304 (no body) when the client's copy is already current, else None to keep serving."""
+    if mtime is not None and client_copy_is_current(request, mtime):
+        return response_304(config_cache_headers(mtime))
+    return None
+
+
+def cached_config_response(mtime: Optional[float], content_type: str, body: str) -> HttpResponse:
+    """200 with content_type plus revalidation headers (Last-Modified when mtime is known)."""
+    headers = [["Content-type", content_type]]
+    if mtime is not None:
+        headers += config_cache_headers(mtime)
+    return response_200(headers, body)
+
+
+def get_dashboards_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    mtime = context.dashboards_store.get_config_mtime()
+    not_modified = not_modified_response(request, mtime)
+    if not_modified is not None:
+        return not_modified
+    body = json.dumps(context.dashboards_store.get_index(), ensure_ascii=False)
+    return cached_config_response(mtime, "application/json", body)
+
+
+def get_dashboard_svg_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 5)
+    if dashboard_id is None:
+        return response_404()
+    mtime = context.dashboards_store.get_config_mtime()
+    not_modified = not_modified_response(request, mtime)
+    if not_modified is not None:
+        return not_modified
+    svg = context.dashboards_store.get_svg(dashboard_id)
+    if svg is None:
+        return response_404()
+    response = cached_config_response(mtime, "image/svg+xml", svg)
+    # SVG is active content served same-origin: if this URL is opened/embedded directly (not via
+    # the app's fetch-as-text path), script in it would run in the app origin. CSP + nosniff
+    # blocks that for direct loads without affecting normal rendering.
+    if response.headers is not None:
+        response.headers += [
+            ["Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'"],
+            ["X-Content-Type-Options", "nosniff"],
+        ]
+    return response
+
+
+def read_json_object_body(request: BaseHTTPRequestHandler) -> tuple[Optional[dict], Optional[HttpResponse]]:
+    """Read+parse the request body as a JSON object: (body, None) or (None, error response)."""
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        body = json.loads(request.rfile.read(length).decode("utf-8"))
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return None, response_400(str(e))
+    if not isinstance(body, dict):
+        return None, response_400("Body must be a JSON object")
+    return body, None
+
+
+def update_dashboards_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    new_config, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    context.dashboards_store.replace_collection(new_config)
+    return response_200()
+
+
+def put_dashboard_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 4)
+    if dashboard_id is None:
+        return response_404()
+    dashboard, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    outcome = context.dashboards_store.put_dashboard(dashboard_id, dashboard)
+    if outcome is DashboardWriteOutcome.CREATED:
+        return response_201()
+    if outcome is DashboardWriteOutcome.CONFLICT:
+        return response_409()
+    return response_200()
+
+
+def patch_dashboard_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 4)
+    if dashboard_id is None:
+        return response_404()
+    patch, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    outcome = context.dashboards_store.patch_dashboard(dashboard_id, patch)
+    if outcome is DashboardWriteOutcome.NOT_FOUND:
+        return response_404()
+    if outcome is DashboardWriteOutcome.CONFLICT:
+        return response_409()
+    return response_200()
+
+
+def delete_dashboard_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 4)
+    if dashboard_id is None:
+        return response_404()
+    context.dashboards_store.delete_dashboard(dashboard_id)
+    return response_204()
+
+
 @dataclass
 class RequestHandler:
     fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
@@ -531,9 +684,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     security_check_thread: SecurityCheckingThread
     rate_limiter: RateLimiter
     config: Config
+    dashboards_store: DashboardsStore
 
     def process_response(self, response: HttpResponse) -> None:
-        if 200 <= response.status < 300:
+        if 200 <= response.status < 300 or response.status == 304:
             self.send_response(response.status)
             if response.headers is not None:
                 for header in response.headers:
@@ -566,6 +720,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 self.sessions_storage,
                 self.certificate_thread,
                 self.security_check_thread,
+                self.dashboards_store,
                 session,
             ),
         )
@@ -586,6 +741,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
                 "/api/https": RequestHandler(fn=get_https_handler),
+                "/api/dashboards": RequestHandler(fn=get_dashboards_handler),
+                "/api/dashboards/*/svg": RequestHandler(fn=get_dashboard_svg_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
             }
         )
@@ -605,11 +762,25 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             {
                 "/users/*": RequestHandler(fn=update_user_handler),
                 "/api/https": RequestHandler(fn=update_https_handler),
+                "/api/dashboards/*": RequestHandler(fn=patch_dashboard_handler),
+            }
+        )
+
+    def do_PUT(self) -> None:  # pylint: disable=invalid-name
+        self.process_request(
+            {
+                "/api/dashboards": RequestHandler(fn=update_dashboards_handler),
+                "/api/dashboards/*": RequestHandler(fn=put_dashboard_handler),
             }
         )
 
     def do_DELETE(self) -> None:  # pylint: disable=invalid-name
-        self.process_request({"/users/*": RequestHandler(fn=delete_user_handler)})
+        self.process_request(
+            {
+                "/users/*": RequestHandler(fn=delete_user_handler),
+                "/api/dashboards/*": RequestHandler(fn=delete_dashboard_handler),
+            }
+        )
 
     def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=redefined-builtin
         if self.enable_debug:
@@ -666,6 +837,19 @@ def main():
     )
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
+    WebRequestHandler.dashboards_store = DashboardsStore()
+
+    try:
+        WebRequestHandler.dashboards_store.seed_and_reconcile(detect_board())
+    except SeedConfigError:
+        # Unrecoverable (undetected board / missing config): exit with a RestartPreventExitStatus
+        # code so systemd settles into `failed` instead of restart-looping.
+        logging.exception("Dashboard seeding failed: board config unusable; refusing to start")
+        raise SystemExit(3) from None
+    except Exception:  # pylint: disable=broad-exception-caught
+        # Transient (e.g. /mnt/data not mounted yet): exit 1 so Restart=on-failure retries.
+        logging.exception("Dashboard seeding failed (transient?); letting systemd retry")
+        raise SystemExit(1) from None
 
     try:
         os.remove(args.socket_file)
