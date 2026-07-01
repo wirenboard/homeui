@@ -1,3 +1,7 @@
+.dropdown-wrapper {
+  display: contents;
+}
+
 .dropdown__control {
   border: 1px solid var(--input-border-color);
   background: var(--input-background);
