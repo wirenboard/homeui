@@ -7,6 +7,7 @@ wb-mqtt-homeui (2.235.0) stable; urgency=medium
     reconciliation into the backend service; drop generate-system-config.sh
   * Switch the dashboards UI to the HTTP backend (lazy SVG, load/SVG error states)
     and remove the now-unused wb-webui.conf confed schema
+  * Remove the default-dashboards reconciliation state on package purge
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jun 2026 17:51:20 +0500
 
