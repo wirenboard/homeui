@@ -722,9 +722,9 @@ class DetectBoardTest(unittest.TestCase):
         # check= is unused by the stub but must stay in the signature: of_machine_match calls
         # subprocess.run(..., check=False) by keyword, so the side_effect must accept it.
         def fake_run(args, check):  # pylint: disable=unused-argument
-            command = args[2]
+            probed = args[-1]
             result = MagicMock()
-            result.returncode = 0 if f'"{matched_compatible}"' in command else 1
+            result.returncode = 0 if probed == matched_compatible else 1
             return result
 
         with patch("wb.homeui_backend.board.subprocess.run", side_effect=fake_run):
@@ -749,10 +749,8 @@ class DetectBoardTest(unittest.TestCase):
         # check= is unused by the stub but must stay in the signature: of_machine_match calls
         # subprocess.run(..., check=False) by keyword, so the side_effect must accept it.
         def fake_run(args, check):  # pylint: disable=unused-argument
-            command = args[2]
-            matches_85x_or_8xx = (
-                '"wirenboard,wirenboard-85x"' in command or '"wirenboard,wirenboard-8xx"' in command
-            )
+            probed = args[-1]
+            matches_85x_or_8xx = probed in ("wirenboard,wirenboard-85x", "wirenboard,wirenboard-8xx")
             result = MagicMock()
             result.returncode = 0 if matches_85x_or_8xx else 1
             return result
