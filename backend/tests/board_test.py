@@ -15,7 +15,7 @@ class OfMachineMatchTest(unittest.TestCase):
 
         args, kwargs = run.call_args
         self.assertEqual(args[0][:2], ["/bin/bash", "-c"])
-        self.assertIn('"wirenboard,wirenboard-85x"', args[0][2])
+        self.assertEqual(args[0][-1], "wirenboard,wirenboard-85x")
         self.assertFalse(kwargs["check"])
 
     def test_returns_false_when_probe_exits_nonzero(self):
