@@ -27,6 +27,7 @@ from .dashboards import (
     detect_board,
 )
 from .db import open_db
+from .gates import apply_gates
 from .http_response import (
     HttpResponse,
     response_200,
@@ -444,8 +445,11 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
+            # Request the certificate server-side: the frontend skips it on localhost.
+            context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
+        apply_gates(https_enabled)
     return response_200()
 
 
@@ -840,6 +844,7 @@ def main():
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn, WebRequestHandler.config.is_https_enabled()
     )
+    apply_gates(WebRequestHandler.config.is_https_enabled())
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()

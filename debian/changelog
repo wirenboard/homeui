@@ -1,3 +1,17 @@
+wb-mqtt-homeui (2.237.3) stable; urgency=medium
+
+  * Render service gates from /etc/wb-homeui/gates.d/*.json: the backend owns
+    the nginx configs, the login bounce and the menu item, and re-renders them
+    on every HTTPS toggle change, so gates follow homeui's HTTP/HTTPS mode
+    automatically; auth can be disabled per gate (auth: false)
+  * Add wb-homeui-gates CLI (check/apply) to validate and apply gate configs
+    without touching the backend; on nginx failure the previous rendered state
+    is restored
+  * Request the HTTPS certificate server-side when the toggle is switched on
+    (the frontend skips the request on localhost)
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 02 Jul 2026 15:00:00 +0200
+
 wb-mqtt-homeui (2.237.2) stable; urgency=medium
 
   * Add reusable nginx auth-gate snippets (/etc/nginx/snippets/wb-gate-*.inc) for
