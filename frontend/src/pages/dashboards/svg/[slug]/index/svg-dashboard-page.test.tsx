@@ -13,12 +13,17 @@ const { storeMock, fullscreen, confirmState } = vi.hoisted(() => {
     dashboardIndex: 0,
     dashboardId: 'svg1',
     channelValues: new Map(),
+    svgMarkup: new Map<string, string>(),
+    svgErrors: new Map<string, boolean>(),
     dashboardConfigs: [] as any[],
     getDashboard: vi.fn(),
+    getSvg: vi.fn(),
+    isSvgLoading: vi.fn(),
     setDashboard: vi.fn(),
     setMoveToDashboardFn: vi.fn(),
     switchValue: vi.fn(),
     moveToDashboard: vi.fn(),
+    reloadSvg: vi.fn(),
     unsubscribeAll: vi.fn(),
   };
   return {
@@ -42,6 +47,7 @@ vi.mock('./components/dashboard-carousel', () => ({
 vi.mock('./components/svg-view', () => ({
   SvgView: ({ id, className }: any) => <div data-testid={`svg-${id}`} className={className} />,
 }));
+vi.mock('@/components/loader', () => ({ Loader: () => <div data-testid="loader" /> }));
 vi.mock('@/utils/full-screen', () => ({
   useToggleFullscreen: () => [fullscreen.value, fullscreen.toggle],
 }));
@@ -70,11 +76,14 @@ function resetStore() {
   storeMock.dashboardIndex = 0;
   storeMock.dashboardConfigs = [{ id: 'svg1', isSvg: true, name: 'SVG Dash' }];
   storeMock.dashboards = [
-    { id: 'svg1', name: 'SVG Dash', svg: { current: '<svg/>', params: [] }, svg_fullwidth: false },
+    { id: 'svg1', name: 'SVG Dash', svg: { params: [] }, svg_fullwidth: false },
   ];
+  storeMock.svgMarkup = new Map<string, string>([['svg1', '<svg/>']]);
+  storeMock.svgErrors = new Map<string, boolean>();
   storeMock.getDashboard.mockImplementation(
     (id: string) => storeMock.dashboardConfigs.find((d: any) => d.id === id) || null,
   );
+  storeMock.getSvg.mockImplementation((id: string) => storeMock.svgMarkup.get(id) ?? null);
 }
 
 beforeEach(() => {
@@ -123,6 +132,29 @@ describe('SvgDashboardPage', () => {
     test('no fitToPage class when svg_fullwidth is false', () => {
       renderPage();
       expect(document.querySelector('.svgDashboard-fitToPage')).toBeNull();
+    });
+
+    test('renders an inline error instead of the svg view when the markup failed to load', () => {
+      storeMock.svgErrors = new Map<string, boolean>([['svg1', true]]);
+      renderPage();
+      expect(screen.queryByTestId('svg-svg1')).toBeNull();
+      expect(screen.getByText('dashboards.errors.svg-load')).toBeDefined();
+    });
+
+    test('clicking the retry button in the error calls reloadSvg for that dashboard', () => {
+      storeMock.svgErrors = new Map<string, boolean>([['svg1', true]]);
+      renderPage();
+      fireEvent.click(screen.getByText('svg-dashboard.buttons.retry'));
+      expect(storeMock.reloadSvg).toHaveBeenCalledWith('svg1');
+    });
+
+    test('renders a loader instead of the svg view while the markup is still loading', () => {
+      storeMock.isSvgLoading.mockReturnValue(true);
+      storeMock.svgMarkup = new Map<string, string>();
+      storeMock.svgErrors = new Map<string, boolean>();
+      renderPage();
+      expect(screen.getByTestId('loader')).toBeDefined();
+      expect(screen.queryByTestId('svg-svg1')).toBeNull();
     });
   });
 

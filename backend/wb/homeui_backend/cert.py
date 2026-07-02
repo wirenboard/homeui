@@ -12,6 +12,8 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
 
+from .board import of_machine_match
+
 CERT_REQUEST_URL = "https://acme.wirenboard.com/api/v1/issue"
 SSL_CERT_PATH = "/etc/ssl/sslip.pem"
 SSL_CERT_KEY_PATH = "/etc/ssl/sslip.key"
@@ -35,11 +37,7 @@ def make_domain_name(sn: str) -> str:
 
 
 def get_keyspec() -> str:
-    command = (
-        '. /usr/lib/wb-utils/wb_env.sh && wb_source of && of_machine_match "contactless,imx6ul-wirenboard60"'
-    )
-    result = subprocess.run(["/bin/bash", "-c", command], check=False)
-    if result.returncode == 0:
+    if of_machine_match("contactless,imx6ul-wirenboard60"):
         return KEYSPEC_WB6
     return KEYSPEC_WB7_WB8
 

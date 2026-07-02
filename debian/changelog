@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.236.4) stable; urgency=medium
+wb-mqtt-homeui (2.237.2) stable; urgency=medium
 
   * Add reusable nginx auth-gate snippets (/etc/nginx/snippets/wb-gate-*.inc) for
     putting a loopback service behind the homeui login
@@ -16,6 +16,24 @@ wb-mqtt-homeui (2.236.4) stable; urgency=medium
     unavailable instead of valid
 
  -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 29 Jun 2026 20:00:00 +0200
+
+wb-mqtt-homeui (2.237.1) stable; urgency=medium
+
+  * Show the firmware-update banner when only a newer bootloader is available
+
+ -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Thu, 02 Jul 2026 11:25:56 +0300
+
+wb-mqtt-homeui (2.237.0) stable; urgency=medium
+
+  * Serve dashboards from the HTTP backend (wb.homeui_backend) instead of confed:
+    a lightweight index without inline SVG, lazy per-dashboard SVG GET, and atomic
+    PUT writes that preserve inline svg.current
+  * Move board detection, initial config seeding and default-dashboard
+    reconciliation into the backend service; drop generate-system-config.sh
+  * Switch the dashboards UI to the HTTP backend (lazy SVG, load/SVG error states)
+    and remove the now-unused wb-webui.conf confed schema
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Jul 2026 15:33:49 +0500
 
 wb-mqtt-homeui (2.236.3) stable; urgency=medium
 

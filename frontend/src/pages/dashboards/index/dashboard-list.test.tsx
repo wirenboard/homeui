@@ -76,6 +76,7 @@ beforeEach(() => {
   authStoreMock.hasRights.mockReturnValue(true);
   resizeWidth.value = 800;
   resetDashboards();
+  store.loadError = null;
 });
 
 describe('DashboardList', () => {
@@ -96,6 +97,13 @@ describe('DashboardList', () => {
       store.dashboards.clear();
       renderList();
       expect(screen.getByText('dashboards.labels.empty-list')).toBeDefined();
+    });
+
+    test('shows the load error alert when loadError is set', () => {
+      store.loadError = 'dashboards.errors.load';
+      renderList();
+      expect(screen.getByTestId('page-error')).toBeDefined();
+      expect(screen.getByText('dashboards.errors.load')).toBeDefined();
     });
 
     test('shows type column when svg dashboards exist', () => {

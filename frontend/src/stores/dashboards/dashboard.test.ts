@@ -5,6 +5,7 @@ const dashboardsStoreMock = vi.hoisted(() => ({
   addWidgetToDashboard: vi.fn(),
   deleteDashboard: vi.fn(),
   updateDashboard: vi.fn(),
+  setDashboardHidden: vi.fn(),
 }));
 
 vi.mock('@/stores/dashboards/index', () => ({ dashboardsStore: dashboardsStoreMock }));
@@ -85,17 +86,21 @@ describe('Dashboard', () => {
   });
 
   describe('toggleVisibility', () => {
-    test('sets isHidden to true when not present', async () => {
+    test('requests isHidden=true when not present, without an optimistic local flip', async () => {
       const d = new Dashboard(makeDashboard());
       await d.toggleVisibility();
-      expect(d.options.isHidden).toBe(true);
-      expect(dashboardsStoreMock.updateDashboard).toHaveBeenCalledWith('d1', d);
+      // Non-optimistic: the local value is left to the store, which applies it only on a successful
+      // PATCH. The mocked store is a no-op here, so options stays unchanged.
+      expect(d.options.isHidden).toBeUndefined();
+      expect(dashboardsStoreMock.setDashboardHidden).toHaveBeenCalledWith('d1', true);
     });
 
-    test('toggles isHidden when already set', async () => {
+    test('requests the toggled value when already set, without an optimistic local flip', async () => {
       const d = new Dashboard(makeDashboard({ options: { isHidden: true } }));
       await d.toggleVisibility();
-      expect(d.options.isHidden).toBe(false);
+      // The desired value (false) is sent, but the local state is not flipped optimistically.
+      expect(d.options.isHidden).toBe(true);
+      expect(dashboardsStoreMock.setDashboardHidden).toHaveBeenCalledWith('d1', false);
     });
   });
 });
