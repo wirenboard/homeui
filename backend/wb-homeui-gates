@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+# pylint: disable=invalid-name
+"""Validate and apply service-gate configs from /etc/wb-homeui/gates.d."""
+
+import argparse
+import json
+import sys
+
+from wb.homeui_backend.config_file import CONFIG_FILE, ENABLE_HTTPS_TAG
+from wb.homeui_backend.gates import GATES_CONF_DIR, apply_gates, load_gates
+
+
+def read_https_enabled() -> bool:
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            return bool(json.load(f)[ENABLE_HTTPS_TAG])
+    except Exception:  # pylint: disable=broad-exception-caught
+        return False
+
+
+def print_gates(gates, https_enabled: bool) -> None:
+    scheme = "https" if https_enabled else "http"
+    for gate in gates:
+        auth = f"role >= {gate.role.value}" if gate.auth else "NO AUTH"
+        menu = ", menu item" if gate.title else ""
+        print(f"  {gate.name}: {scheme}://<host>:{gate.external_port} -> 127.0.0.1:{gate.internal_port} ({auth}{menu})")
+
+
+def print_skipped(skipped) -> None:
+    for reason in skipped:
+        print(f"  SKIPPED {reason}")
+
+
+def check() -> int:
+    https_enabled = read_https_enabled()
+    gates, skipped = load_gates()
+    print(f"Configs: {GATES_CONF_DIR}, HTTPS: {'on' if https_enabled else 'off'}")
+    print_gates(gates, https_enabled)
+    print_skipped(skipped)
+    if not gates and not skipped:
+        print("  no gates registered")
+    return 1 if skipped else 0
+
+
+def apply_command() -> int:
+    https_enabled = read_https_enabled()
+    result = apply_gates(https_enabled)
+    print_gates(result.gates, https_enabled)
+    print_skipped(result.skipped)
+    if not result.ok:
+        print(f"FAILED, previous state kept: {result.error}")
+        return 1
+    print(f"Applied {len(result.gates)} gate(s)" + (", with skipped configs" if result.skipped else ""))
+    return 1 if result.skipped else 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers.add_parser("check", help="Validate gate configs without applying")
+    subparsers.add_parser("apply", help="Render gate configs and reload nginx")
+    args = parser.parse_args()
+    return check() if args.command == "check" else apply_command()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

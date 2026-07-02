@@ -1,3 +1,24 @@
+wb-mqtt-homeui (2.237.2) stable; urgency=medium
+
+  * Add service gates: put a loopback service behind the homeui login by
+    dropping one JSON into /etc/wb-homeui/gates.d (ports, role, optional
+    no-auth mode and menu item); the backend renders the nginx config, the
+    login bounce and the menu item, and re-renders them on every HTTPS
+    toggle change, so gates follow homeui's HTTP/HTTPS mode automatically
+  * Add wb-homeui-gates CLI (check/apply): validate and apply gate configs;
+    on nginx failure the previous rendered state is restored
+  * Cache gate /auth/check answers for 5s (shared zone keyed by session and
+    role); support a per-gate <name>.nginx.inc for custom directives
+  * Raise /auth/check rate limit to 1000 req/min and key the limiter on the
+    parsed path
+  * Write an expired self-signed placeholder to /etc/ssl/sslip.pem when no
+    certificate exists, so nginx TLS configs can never fail nginx startup;
+    report an expired certificate as unavailable instead of valid
+  * Request the HTTPS certificate server-side when the toggle is switched on
+    (the frontend skips the request on localhost)
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 02 Jul 2026 16:00:00 +0200
+
 wb-mqtt-homeui (2.237.1) stable; urgency=medium
 
   * Show the firmware-update banner when only a newer bootloader is available

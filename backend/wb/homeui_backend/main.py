@@ -27,6 +27,7 @@ from .dashboards import (
     detect_board,
 )
 from .db import open_db
+from .gates import apply_gates
 from .http_response import (
     HttpResponse,
     response_200,
@@ -183,7 +184,12 @@ class WebRequestHandlerContext:
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
-    return UserType(request.headers.get("Required-User-Type", UserType.ADMIN.value))
+    # Fail safe to admin on a missing/empty/unknown Required-User-Type (avoids a 500).
+    value = request.headers.get("Required-User-Type") or UserType.ADMIN.value
+    try:
+        return UserType(value)
+    except ValueError:
+        return UserType.ADMIN
 
 
 def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
@@ -439,8 +445,11 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
+            # Request the certificate server-side: the frontend skips it on localhost.
+            context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
+        apply_gates(https_enabled)
     return response_200()
 
 
@@ -707,7 +716,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             return response_404()
 
         if not self.rate_limiter.check_call(
-            self.path, datetime.now(timezone.utc), handler.rate_per_minute_limit
+            urlparse(self.path).path, datetime.now(timezone.utc), handler.rate_per_minute_limit
         ):
             return response_429()
 
@@ -735,7 +744,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
-                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
+                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=1000),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
@@ -835,6 +844,7 @@ def main():
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn, WebRequestHandler.config.is_https_enabled()
     )
+    apply_gates(WebRequestHandler.config.is_https_enabled())
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()

@@ -15,16 +15,19 @@ from wb.homeui_backend.http_response import (
     response_404,
 )
 from wb.homeui_backend.main import (
+    RequestHandler,
     WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
     auth_who_am_i_handler,
     delete_user_handler,
     device_info_handler,
+    get_required_user_type,
     get_users_handler,
     security_check_handler,
     update_user_handler,
 )
+from wb.homeui_backend.rate_limiter import RateLimiter
 from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
@@ -513,6 +516,78 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                         MQTT_CHECK_TOPIC, '{"result": "not found"}', True
                     )
                     mock_client.stop.assert_called_once()
+
+
+class GetRequiredUserTypeTest(unittest.TestCase):
+    @staticmethod
+    def _request_with(headers):
+        request = MagicMock()
+        request.headers = headers
+        return request
+
+    def test_valid_role(self):
+        self.assertEqual(
+            get_required_user_type(self._request_with({"Required-User-Type": "user"})), UserType.USER
+        )
+
+    def test_missing_header_defaults_to_admin(self):
+        self.assertEqual(get_required_user_type(self._request_with({})), UserType.ADMIN)
+
+    def test_empty_value_fails_safe_to_admin(self):
+        """An empty Required-User-Type (e.g. a gate that left $wb_role unset) must
+        require admin, never raise into a 500."""
+        self.assertEqual(
+            get_required_user_type(self._request_with({"Required-User-Type": ""})), UserType.ADMIN
+        )
+
+    def test_unknown_value_fails_safe_to_admin(self):
+        """An unknown role value must require admin rather than raise."""
+        self.assertEqual(
+            get_required_user_type(self._request_with({"Required-User-Type": "bogus"})), UserType.ADMIN
+        )
+
+
+class RequestHandlerRateLimitKeyTest(unittest.TestCase):
+    """The per-endpoint rate limit must key on the parsed path, not the raw request
+    target. Requests differing only by query string have to share one bucket, so a
+    client can't bypass the limit (nor grow RateLimiter.calls unbounded) by varying
+    ?params. Guards the urlparse() key normalisation in _request_handler."""
+
+    @staticmethod
+    def _handler():
+        handler = WebRequestHandler.__new__(WebRequestHandler)
+        handler.rate_limiter = RateLimiter()
+        handler.users_storage = MagicMock(spec=UsersStorage)
+        handler.sessions_storage = MagicMock(spec=SessionsStorage)
+        handler.certificate_thread = MagicMock()
+        handler.security_check_thread = MagicMock()
+        handler.dashboards_store = MagicMock()
+        handler.sn = ""
+        return handler
+
+    def test_query_string_variants_share_one_bucket(self):
+        """Three GETs to /auth/check that differ only by ?nonce hit a limit of 2:
+        with the path normalised they collapse onto a single bucket, so the third is
+        throttled (429). Without normalisation each unique target would be its own
+        bucket and all three would pass."""
+        limit = 2
+        handler = self._handler()
+        handler.process_response = MagicMock()
+        handlers = {
+            "/auth/check": RequestHandler(
+                fn=lambda request, context: response_200(), rate_per_minute_limit=limit
+            )
+        }
+
+        statuses = []
+        with patch("wb.homeui_backend.main.get_session", return_value=None):
+            for nonce in range(limit + 1):
+                handler.path = f"/auth/check?nonce={nonce}"
+                handler.process_request(handlers)
+                statuses.append(handler.process_response.call_args.args[0].status)
+
+        self.assertEqual(statuses, [200, 200, 429])
+        self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check"])
 
 
 class ProcessResponseTest(unittest.TestCase):
