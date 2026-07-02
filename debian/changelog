@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.243.9) stable; urgency=medium
+
+  * Update mosquitto config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 2 Jul 2026 17:50:00 +0400
+
 wb-mqtt-homeui (2.243.8) stable; urgency=medium
 
   * Update autocomplete snippet
