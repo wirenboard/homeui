@@ -5,6 +5,7 @@ from http.server import BaseHTTPRequestHandler
 from unittest.mock import MagicMock, mock_open, patch
 
 from wb.homeui_backend.cert import CertificateState
+from wb.homeui_backend.gates import ApplyResult
 from wb.homeui_backend.http_response import (
     response_200,
     response_204,
@@ -25,6 +26,7 @@ from wb.homeui_backend.main import (
     get_required_user_type,
     get_users_handler,
     security_check_handler,
+    update_https_handler,
     update_user_handler,
 )
 from wb.homeui_backend.rate_limiter import RateLimiter
@@ -607,3 +609,34 @@ class ProcessResponseTest(unittest.TestCase):
         handler.end_headers.assert_called_once()
         handler.wfile.write.assert_not_called()
         handler.send_error.assert_not_called()
+
+
+class UpdateHttpsHandlerGatesTest(unittest.TestCase):
+    @staticmethod
+    def _request(body: str):
+        request = MagicMock()
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+        return request
+
+    def test_gates_error_is_reported_in_response(self):
+        """A failed gates re-render after the toggle must surface in the response
+        body (the toggle itself is applied) instead of being logged only."""
+        with patch.object(WebRequestHandler, "config", MagicMock(), create=True), patch(
+            "wb.homeui_backend.main.apply_gates", return_value=ApplyResult(ok=False, error="boom")
+        ):
+            response = update_https_handler(self._request('{"enabled": false}'), MagicMock())
+        self.assertEqual(
+            response,
+            response_200(
+                [["Content-type", "application/json"]],
+                json.dumps({"enabled": False, "gatesError": "boom"}),
+            ),
+        )
+
+    def test_gates_success_keeps_plain_response(self):
+        with patch.object(WebRequestHandler, "config", MagicMock(), create=True), patch(
+            "wb.homeui_backend.main.apply_gates", return_value=ApplyResult(ok=True)
+        ):
+            response = update_https_handler(self._request('{"enabled": false}'), MagicMock())
+        self.assertEqual(response, response_200())

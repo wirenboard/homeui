@@ -23,7 +23,9 @@ def print_gates(gates, https_enabled: bool) -> None:
     for gate in gates:
         auth = f"role >= {gate.role.value}" if gate.auth else "NO AUTH"
         menu = ", menu item" if gate.title else ""
-        print(f"  {gate.name}: {scheme}://<host>:{gate.external_port} -> 127.0.0.1:{gate.internal_port} ({auth}{menu})")
+        print(
+            f"  {gate.name}: {scheme}://<host>:{gate.external_port} -> 127.0.0.1:{gate.internal_port} ({auth}{menu})"
+        )
 
 
 def print_skipped(skipped) -> None:

@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://wirenboard.com/schemas/wb-gate.schema.json",
+  "title": "Wiren Board service gate",
+  "description": "A file in /etc/wb-homeui/gates.d/<name>.json; <name> is lowercase latin/digits/hyphen. Apply with `wb-homeui-gates apply`.",
+  "type": "object",
+  "required": ["externalPort", "internalPort"],
+  "additionalProperties": false,
+  "properties": {
+    "externalPort": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 65535,
+      "not": { "enum": [80, 443] },
+      "description": "Public gate port; convention: prepend 2 to the internal port (9000 -> 29000). Must differ from internalPort."
+    },
+    "internalPort": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 65535,
+      "not": { "enum": [80, 443] },
+      "description": "Port the service listens on at 127.0.0.1."
+    },
+    "role": {
+      "type": "string",
+      "enum": ["user", "operator", "admin"],
+      "default": "admin",
+      "description": "Minimal role, hierarchical (user < operator < admin); user admits any logged-in account."
+    },
+    "auth": {
+      "type": "boolean",
+      "default": true,
+      "description": "false — no authorization: plain proxy, trusted X-WB-* headers still stripped."
+    },
+    "title": {
+      "type": "object",
+      "description": "Menu item labels; omit to keep the gate out of the menu.",
+      "additionalProperties": false,
+      "properties": {
+        "ru": { "type": "string" },
+        "en": { "type": "string" }
+      }
+    }
+  }
+}
