@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.1) stable; urgency=medium
+
+  * Show the firmware-update banner when only a newer bootloader is available
+
+ -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Thu, 02 Jul 2026 11:25:56 +0300
+
 wb-mqtt-homeui (2.237.0) stable; urgency=medium
 
   * Serve dashboards from the HTTP backend (wb.homeui_backend) instead of confed:
