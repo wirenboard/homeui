@@ -27,6 +27,8 @@ CERT_CHECK_INTERVAL_S = 60 * 60 * 24  # 24 hours
 MIN_DAYS_BEFORE_RENEW = 15
 CURL_TIMEOUT_S = 120  # 2 minutes
 
+PLACEHOLDER_CERT_CN = "placeholder.invalid"
+
 
 def make_domain_name(sn: str) -> str:
     return f"*.{sn}.ip.wirenboard.com"
@@ -78,6 +80,32 @@ def read_or_generate_private_key(file_name: str) -> rsa.RSAPrivateKey:
             )
         )
     return private_key
+
+
+def generate_placeholder_certificate() -> None:
+    """Write an already-expired self-signed certificate to SSL_CERT_PATH.
+
+    Guarantees that the nginx ssl_certificate paths always exist, so a TLS server
+    block referencing sslip.* (homeui's own 443 or a service gate) can never fail
+    `nginx -t` and block nginx startup. Expired on purpose: has_enough_lifetime()
+    stays False, so the real certificate is still requested as soon as updates
+    are allowed, and the placeholder is never reported as a valid certificate.
+    """
+    logging.debug("Generating placeholder certificate")
+    private_key = read_or_generate_private_key(SSL_CERT_KEY_PATH)
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, PLACEHOLDER_CERT_CN)])
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(name)
+        .public_key(private_key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(datetime.datetime(2000, 1, 1))
+        .not_valid_after(datetime.datetime(2000, 1, 2))
+        .sign(private_key, hashes.SHA256())
+    )
+    with open(SSL_CERT_PATH, "wb") as cert_file:
+        cert_file.write(cert.public_bytes(serialization.Encoding.PEM))
 
 
 def generate_csr(private_key: rsa.RSAPrivateKey, domain_name: str) -> x509.CertificateSigningRequest:
@@ -280,10 +308,18 @@ class CertificateCheckingThread:
                     update_nginx_config(self.sn)
                     logging.debug("Certificate is valid")
                     continue
-                state_on_update_fail = CertificateState.VALID
+                # An expired certificate (e.g. the placeholder) is not serving anyone,
+                # so it must not be reported as VALID; one inside its renewal window is.
+                if cert.not_valid_after > datetime.datetime.now():
+                    state_on_update_fail = CertificateState.VALID
                 logging.debug("Certificate needs renewal")
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logging.debug("Error checking certificate: %s", e)
+                try:
+                    generate_placeholder_certificate()
+                    logging.info("Wrote placeholder certificate to %s", SSL_CERT_PATH)
+                except Exception as gen_error:  # pylint: disable=broad-exception-caught
+                    logging.error("Failed to write placeholder certificate: %s", gen_error)
 
             with self._allow_certificate_update_lock:
                 if not self._allow_certificate_update:

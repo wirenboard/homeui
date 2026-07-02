@@ -10,6 +10,10 @@ wb-mqtt-homeui (2.236.4) stable; urgency=medium
     absolute path, do a full-page navigation to it (open-redirect-safe), so a
     gated service can send a logged-out user through the homeui login and back
     to itself (which the in-app returnState cannot do)
+  * Write an expired self-signed placeholder to /etc/ssl/sslip.pem when no
+    certificate exists, so nginx TLS configs referencing it (a service gate)
+    can never fail nginx startup; an expired certificate is now reported as
+    unavailable instead of valid
 
  -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 29 Jun 2026 20:00:00 +0200
 
