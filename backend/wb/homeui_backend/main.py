@@ -449,7 +449,13 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
             context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
-        apply_gates(https_enabled)
+        gates_result = apply_gates(https_enabled)
+        if not gates_result.ok:
+            # The toggle itself is applied; report the gate failure instead of hiding it.
+            return response_200(
+                [["Content-type", "application/json"]],
+                json.dumps({"enabled": https_enabled, "gatesError": gates_result.error}),
+            )
     return response_200()
 
 

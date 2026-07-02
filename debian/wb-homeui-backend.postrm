@@ -3,9 +3,18 @@
 CONFFILE=/etc/wb-webui.conf
 BASELINE_STATE=/var/lib/wb-homeui/default-dashboards.state
 
+# Rendered gate configs are useless without the backend that maintains them;
+# drop them so nginx never serves orphaned gates (admin's gates.d JSONs stay).
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    rm -rf /var/lib/wb-homeui/nginx-gates
+    rm -f /var/lib/wb-homeui/nginx/wb-gate-bounces.conf
+    rm -f /usr/share/wb-mqtt-homeui/custom-menu/wb-gate-*.json
+fi
+
 if [ "$1" = "purge" ]; then
     rm $CONFFILE
     rm -f $BASELINE_STATE
+    rm -rf /etc/wb-homeui/gates.d
 fi
 
 #DEBHELPER#
