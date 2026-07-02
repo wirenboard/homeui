@@ -10,7 +10,7 @@ import logging
 import os
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404 - needed to run nginx -t / reload
 import tempfile
 import time
 from dataclasses import dataclass, field
@@ -214,7 +214,9 @@ def _nginx_test() -> tuple[bool, str]:
     # Retried: unrelated configs with ATECC-engine keys make nginx -t fail
     # transiently while another process (e.g. wb-cloud-agent) holds the chip.
     for attempt in range(NGINX_TEST_ATTEMPTS):
-        result = subprocess.run(["nginx", "-t"], capture_output=True, text=True, check=False)
+        result = subprocess.run(  # nosec B603 - fixed constant argv
+            ["/usr/sbin/nginx", "-t"], capture_output=True, text=True, check=False
+        )
         if result.returncode == 0:
             return True, ""
         if attempt < NGINX_TEST_ATTEMPTS - 1:
@@ -223,7 +225,7 @@ def _nginx_test() -> tuple[bool, str]:
 
 
 def _reload_nginx() -> None:
-    subprocess.run(["systemctl", "reload", "nginx"], check=True)
+    subprocess.run(["/usr/bin/systemctl", "reload", "nginx"], check=True)  # nosec B603 - fixed constant argv
 
 
 def apply_gates(https_enabled: bool) -> ApplyResult:

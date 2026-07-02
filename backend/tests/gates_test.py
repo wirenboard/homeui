@@ -117,7 +117,7 @@ class ApplyGatesTest(unittest.TestCase):
 
     def _apply(self, https_enabled, nginx_ok=True):
         def fake_run(cmd, **_kwargs):
-            if cmd[0] == "nginx":
+            if cmd[0].endswith("nginx") and cmd[1] == "-t":
                 return MagicMock(returncode=0 if nginx_ok else 1, stderr="nginx: [emerg] boom")
             return MagicMock(returncode=0)
 
