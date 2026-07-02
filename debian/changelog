@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.243.13) stable; urgency=medium
+
+  * Update mosquitto config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 28 Jul 2026 17:50:00 +0400
+
 wb-mqtt-homeui (2.243.12) stable; urgency=medium
 
   * Fix History page not loading device topics on direct navigation
