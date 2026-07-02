@@ -1,3 +1,4 @@
+import type { UserRole } from '@/stores/auth';
 import { getMenu } from './api';
 import { normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
 import UiStore from './ui-store';
@@ -225,6 +226,102 @@ describe('toMenuItemInstance', () => {
     expect(result.children).toHaveLength(1);
     expect(result.children[0].label).toBe('Child');
   });
+
+  test('keeps external url verbatim and flags it', () => {
+    const result = toMenuItemInstance(
+      { id: 'my-service', url: '/my-service/', title: { en: 'My Service' }, isExternal: true },
+      'en',
+    );
+    expect(result.url).toBe('/my-service/');
+    expect(result.isExternal).toBe(true);
+  });
+
+  test('keeps isExternal for an absolute http(s) url', () => {
+    const result = toMenuItemInstance(
+      { id: 'grafana', url: 'https://grafana.example/', title: { en: 'Grafana' }, isExternal: true },
+      'en',
+    );
+    expect(result.url).toBe('https://grafana.example/');
+    expect(result.isExternal).toBe(true);
+  });
+
+  test('drops isExternal/openInNewTab for an unsafe external url', () => {
+    // A custom-menu item must not turn into a javascript:/open-redirect <a href>.
+    for (const url of ['javascript' + ':alert(1)', '//evil.com', '/\\evil.com']) {
+      const result = toMenuItemInstance({ id: 'x', url, isExternal: true, openInNewTab: true }, 'en');
+      expect(result.isExternal).toBeUndefined();
+      expect(result.openInNewTab).toBeUndefined();
+    }
+  });
+
+  test('does not set isExternal for internal items', () => {
+    const result = toMenuItemInstance({ id: 'x', url: '/x' }, 'en');
+    expect(result.isExternal).toBeUndefined();
+  });
+
+  test('propagates openInNewTab for external items', () => {
+    const result = toMenuItemInstance(
+      { id: 'my-service', url: '/my-service/', title: { en: 'My Service' }, isExternal: true, openInNewTab: true },
+      'en',
+    );
+    expect(result.openInNewTab).toBe(true);
+  });
+
+  test('hides requiredRole item when the role is insufficient', () => {
+    const hasRights = vi.fn(() => false);
+    const result = toMenuItemInstance(
+      { id: 'my-service', url: '/my-service/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
+      'en',
+      hasRights,
+    );
+    expect(hasRights).toHaveBeenCalledWith('operator');
+    expect(result.isShow).toBe(false);
+  });
+
+  test('shows requiredRole item when the role is sufficient', () => {
+    const hasRights = vi.fn(() => true);
+    const result = toMenuItemInstance(
+      { id: 'my-service', url: '/my-service/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
+      'en',
+      hasRights,
+    );
+    expect(hasRights).toHaveBeenCalledWith('operator');
+    expect(result.isShow).not.toBe(false);
+  });
+
+  test('keeps item visible for any role when requiredRole is absent', () => {
+    const denyAll = vi.fn(() => false);
+    const result = toMenuItemInstance(
+      { id: 'dashboard', url: '/dashboard', title: { en: 'Dashboard' } },
+      'en',
+      denyAll,
+    );
+    expect(denyAll).not.toHaveBeenCalled();
+    expect(result.isShow).not.toBe(false);
+  });
+
+  test('does not re-show an item hidden by another rule even when role allows', () => {
+    const allowAll = vi.fn(() => true);
+    const result = toMenuItemInstance(
+      { id: 'alice', title: { en: 'Alice' }, requiredRole: 'user' as UserRole },
+      'en',
+      allowAll,
+    );
+    expect(result.isShow).toBe(false);
+  });
+
+  test('propagates the role checker to children', () => {
+    const hasRights = vi.fn(() => false);
+    const result = toMenuItemInstance(
+      {
+        id: 'parent',
+        children: [{ id: 'child', title: { en: 'Child' }, requiredRole: 'operator' as UserRole }],
+      },
+      'en',
+      hasRights,
+    );
+    expect(result.children[0].isShow).toBe(false);
+  });
 });
 
 describe('mergeMenuItems', () => {
@@ -257,5 +354,16 @@ describe('mergeMenuItems', () => {
     const base = [{ label: 'Empty', id: 'empty' }];
     const result = mergeMenuItems(base, []);
     expect(result.find((i) => i.id === 'empty')).toBeUndefined();
+  });
+
+  test('appends external custom item preserving the flag', () => {
+    const base = [{ label: 'A', url: '/a' }];
+    const custom = [{ label: 'My Service', id: 'my-service', url: '/my-service/', isExternal: true }];
+
+    const result = mergeMenuItems(base, custom);
+
+    const ext = result.find((i) => i.id === 'my-service');
+    expect(ext?.isExternal).toBe(true);
+    expect(ext?.url).toBe('/my-service/');
   });
 });

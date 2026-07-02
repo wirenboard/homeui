@@ -1,3 +1,14 @@
+wb-mqtt-homeui (2.237.2) stable; urgency=medium
+
+  * Support external links in the navigation menu (isExternal, openInNewTab,
+    requiredRole on a custom-menu item): render them as full-page anchors so
+    a menu entry can point at a service outside the SPA
+  * After login, honour a same-origin `externalReturn` query param
+    (open-redirect-safe), so an external service can send a logged-out user
+    through the homeui login and back to itself
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 02 Jul 2026 16:00:00 +0200
+
 wb-mqtt-homeui (2.237.1) stable; urgency=medium
 
   * Show the firmware-update banner when only a newer bootloader is available
