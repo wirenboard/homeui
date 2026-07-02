@@ -312,7 +312,7 @@ export class EmbeddedSoftware {
   }
 
   get hasUpdate() {
-    return this.firmware.hasUpdate || this.hasComponentsUpdates;
+    return this.bootloader.hasUpdate || this.firmware.hasUpdate || this.hasComponentsUpdates;
   }
 
   get hasComponentsUpdates() {
