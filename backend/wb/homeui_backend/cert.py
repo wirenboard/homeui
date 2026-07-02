@@ -83,13 +83,10 @@ def read_or_generate_private_key(file_name: str) -> rsa.RSAPrivateKey:
 
 
 def generate_placeholder_certificate() -> None:
-    """Write an already-expired self-signed certificate to SSL_CERT_PATH.
+    """Write an expired self-signed certificate to SSL_CERT_PATH.
 
-    Guarantees that the nginx ssl_certificate paths always exist, so a TLS server
-    block referencing sslip.* (homeui's own 443 or a service gate) can never fail
-    `nginx -t` and block nginx startup. Expired on purpose: has_enough_lifetime()
-    stays False, so the real certificate is still requested as soon as updates
-    are allowed, and the placeholder is never reported as a valid certificate.
+    Keeps the nginx ssl_certificate paths always present so TLS configs never fail
+    nginx -t; expired on purpose so the real certificate is still requested.
     """
     logging.debug("Generating placeholder certificate")
     private_key = read_or_generate_private_key(SSL_CERT_KEY_PATH)
@@ -308,8 +305,7 @@ class CertificateCheckingThread:
                     update_nginx_config(self.sn)
                     logging.debug("Certificate is valid")
                     continue
-                # An expired certificate (e.g. the placeholder) is not serving anyone,
-                # so it must not be reported as VALID; one inside its renewal window is.
+                # Expired (e.g. the placeholder) must not be reported as VALID.
                 if cert.not_valid_after > datetime.datetime.now():
                     state_on_update_fail = CertificateState.VALID
                 logging.debug("Certificate needs renewal")
