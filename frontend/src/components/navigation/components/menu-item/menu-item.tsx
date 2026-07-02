@@ -110,7 +110,10 @@ export const MenuItem = ({
       >
         <Component
           {...(isExternalLink
-            ? { href: item.url, ...(item.openInNewTab ? { target: item.id || '_blank', rel: 'noopener noreferrer' } : null) }
+            ? {
+              href: item.url,
+              ...(item.openInNewTab ? { target: item.id || '_blank', rel: 'noopener noreferrer' } : null),
+            }
             : { to: item.url })}
           aria-label={t(item.label)}
           className={classNames('menuItem-link', {
