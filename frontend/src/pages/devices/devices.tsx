@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CodeIcon from '@/assets/icons/code.svg';
 import CollapseIcon from '@/assets/icons/collapse.svg';
@@ -87,17 +87,13 @@ const DevicesPage = observer(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const maxColumns = useMaxColumns(containerRef, devicesStore.filteredDevices.size > 0);
 
-  useEffect(() => {
-    if (prefs.columns !== null && prefs.columns > maxColumns) {
-      const next = { ...prefs, columns: maxColumns };
-      setPrefs(next);
-      savePrefs(next);
-    }
-  }, [maxColumns, prefs]);
+  const effectiveColumns = prefs.columns !== null && prefs.columns > maxColumns
+    ? maxColumns
+    : prefs.columns;
 
   const startEditLayout = useCallback(() => {
     const ids = Array.from(devicesStore.filteredDevices.keys());
-    const cols = prefs.columns ?? Math.max(1, maxColumns);
+    const cols = effectiveColumns ?? Math.max(1, maxColumns);
     if (prefs.order) {
       const reconciled = reconcileOrder(ids, prefs.order);
       setDraftOrder(reconciled.length === cols
@@ -106,7 +102,7 @@ const DevicesPage = observer(() => {
     } else {
       setDraftOrder(distributeToColumns(ids, cols));
     }
-    setDraftColumnCount(prefs.columns);
+    setDraftColumnCount(effectiveColumns);
     setIsEditLayout(true);
   }, [prefs, maxColumns]);
 
@@ -184,14 +180,14 @@ const DevicesPage = observer(() => {
     if (!device) return null;
     return (
       <Card
-        heading={
-          <span className="devices-deviceHeader">
-            {device.name}
+        heading={device.name}
+        indicator={
+          <>
             {device.type === DeviceType.Virtual && <CodeIcon className="devices-icon" />}
             {device.type === DeviceType.System && <SystemDeviceIcon className="devices-icon" />}
             {device.type === DeviceType.Modbus && <ModbusIcon className="devices-icon" />}
             {device.type === DeviceType.Zigbee && <ZigbeeIcon className="devices-icon" />}
-          </span>
+          </>
         }
         id={deviceId}
         actions={actions}
@@ -276,7 +272,7 @@ const DevicesPage = observer(() => {
               <ColumnsWrapper
                 columnClassName="devices-column"
                 baseColumnWidth={MIN_COLUMN_WIDTH}
-                columnCount={prefs.columns ?? undefined}
+                columnCount={effectiveColumns ?? undefined}
                 columnItems={viewColumnItems}
               >
                 {!viewColumnItems && displayedIds.map((id) => (
