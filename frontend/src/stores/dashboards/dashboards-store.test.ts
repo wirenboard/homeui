@@ -191,7 +191,7 @@ describe('DashboardsStore', () => {
 
       expect(store.dashboards.get('d1')?.name).toBe('New');
       // widgets preserved from the existing dashboard
-      expect(store.dashboards.get('d1')?.widgets).toEqual(['w1']);
+      expect(store.dashboards.get('d1')?.widgets).toEqual([['w1']]);
       expect(saveDashboardsMock).toHaveBeenCalled();
       expect(patchDashboardMock).not.toHaveBeenCalled();
     });
@@ -205,7 +205,7 @@ describe('DashboardsStore', () => {
       expect(store.dashboards.has('old')).toBe(false);
       expect(store.dashboards.has('new')).toBe(true);
       // widgets preserved from the existing dashboard
-      expect(store.dashboards.get('new')?.widgets).toEqual(['w1']);
+      expect(store.dashboards.get('new')?.widgets).toEqual([['w1']]);
       expect(saveDashboardsMock).not.toHaveBeenCalled();
     });
 
