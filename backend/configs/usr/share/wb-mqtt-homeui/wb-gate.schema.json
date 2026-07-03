@@ -4,7 +4,7 @@
   "title": "Wiren Board service gate",
   "description": "A file in /etc/wb-homeui/gates.d/<name>.json; <name> is lowercase latin/digits/hyphen. Apply with `wb-homeui-gates apply`.",
   "type": "object",
-  "required": ["externalPort", "internalPort"],
+  "required": ["internalPort"],
   "additionalProperties": false,
   "properties": {
     "externalPort": {
@@ -12,7 +12,7 @@
       "minimum": 1024,
       "maximum": 65535,
       "not": { "enum": [80, 443] },
-      "description": "Public gate port; convention: prepend 2 to the internal port (9000 -> 29000). Must differ from internalPort."
+      "description": "Public gate port. Default: 2 prepended to internalPort (9000 -> 29000); internal ports >= 10000 require an explicit value. Must differ from internalPort."
     },
     "internalPort": {
       "type": "integer",

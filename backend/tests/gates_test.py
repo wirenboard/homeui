@@ -23,13 +23,27 @@ class LoadGatesTest(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def test_loads_valid_gate_with_defaults(self):
-        _write_gate(self.conf_dir, "my-service", {"externalPort": 29000, "internalPort": 9000})
+        """externalPort defaults to 2 prepended to internalPort (9000 -> 29000)."""
+        _write_gate(self.conf_dir, "my-service", {"internalPort": 9000})
         gates, skipped = load_gates()
         self.assertEqual(skipped, [])
         self.assertEqual(len(gates), 1)
         self.assertEqual(gates[0].name, "my-service")
+        self.assertEqual(gates[0].external_port, 29000)
         self.assertEqual(gates[0].role, UserType.ADMIN)
         self.assertTrue(gates[0].auth)
+
+    def test_high_internal_port_requires_explicit_external(self):
+        """Prepending 2 to a port >= 10000 overflows 65535: the gate is skipped
+        with a clear reason unless externalPort is given explicitly."""
+        _write_gate(self.conf_dir, "high", {"internalPort": 18884})
+        gates, skipped = load_gates()
+        self.assertEqual(gates, [])
+        self.assertIn("explicit externalPort", skipped[0])
+        _write_gate(self.conf_dir, "high", {"internalPort": 18884, "externalPort": 28884})
+        gates, skipped = load_gates()
+        self.assertEqual(gates[0].external_port, 28884)
+        self.assertEqual(skipped, [])
 
     def test_skips_broken_gates_keeps_valid(self):
         """Every bad file is reported with its reason and must not block the others."""
