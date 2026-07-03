@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.3) stable; urgency=medium
+
+  * Add bash completions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 12:10:00 +0400
+
 wb-mqtt-homeui (2.237.2) stable; urgency=medium
 
   * Fix mosquitto override config
