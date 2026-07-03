@@ -32,7 +32,8 @@
          "collapse": "Collapse",
          "expand": "Expand",
          "skip-to-main-content": "Skip to main content",
-         "open-calendar": "Open calendar"
+         "open-calendar": "Open calendar",
+         "back": "Back"
       },
       "prompt": {
          "dirty": "The page has unsaved changes. Are you sure you want to leave?"
@@ -64,7 +65,7 @@
          "delete": "Delete",
          "delete-dashboard": "Delete \"{{name}}\" dashboard",
          "save": "Save",
-         "hide": "Hidden from menu",
+         "hidden": "Hidden from menu",
          "visible": "Shown in menu",
          "visible-flag": "Show dashboard \"{{name}}\" in navigation menu"
       },
@@ -74,8 +75,9 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed",
-         "save": "Config saving failed",
-         "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images."
+         "load": "Failed to load dashboards",
+         "svg-load": "Failed to load the dashboard image",
+         "save": "Config saving failed"
       }
    },
    "navigation": {
@@ -140,7 +142,7 @@
       }
    },
    "scan": {
-      "title": "New devices",
+      "title": "Search for new devices",
       "search-disconnected-title": "Search for disconnected device",
       "errors": {
          "scan": "Start scan failed",
@@ -360,7 +362,8 @@
       "buttons": {
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
-         "edit": "Edit"
+         "edit": "Edit",
+         "retry": "Retry"
       },
       "prompt": {
          "confirm-heading": "Action confirmation",
@@ -454,6 +457,7 @@
          "updating-bootloader": "Updating bootloader {{current}} to {{available}}",
          "current-firmware": "Current firmware version: {{firmware}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
+         "has-firmware-updates": "New firmware version available",
          "new-firmware": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}.",
          "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",
          "new-bootloader": "There is a new bootloader: {{available_bootloader}}, current: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Change log</0>",
@@ -485,7 +489,8 @@
          "restoring-device": "Restoring device firmware",
          "uncommitted-settings": "You have modified settings that will be lost. Continue?",
          "delete-title": "Confirmation of deletion",
-         "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed."
+         "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
+         "not-polled": "The device is not being polled"
       },
       "buttons": {
          "save": "Save config",
@@ -596,6 +601,7 @@
          "compact": "Hide labels",
          "warning": "The changes will affect all panels that use this widget:",
          "invert": "Invert",
+         "readOnly": "Read only",
          "add": "Add widget",
          "available": "Available widgets",
          "add-control": "Add control",
@@ -672,10 +678,16 @@
    "devices": {
       "title": "Devices",
       "labels": {
-         "nothing": "No devices available for this moment.",
+         "nothing": "No devices available for this moment",
          "delete": "Delete device",
          "collapse": "Collapse devices",
-         "expand": "Expand devices"
+         "expand": "Expand devices",
+         "filter-type": "Filter by type",
+         "all-devices": "All devices",
+         "type-system": "System",
+         "type-virtual": "Virtual",
+         "type-modbus": "Modbus",
+         "type-zigbee": "Zigbee"
       },
       "prompt": {
          "delete-title": "Delete device",
@@ -706,6 +718,7 @@
       },
       "errors": {
          "exists": "A rule with that name already exists",
+         "dot-name": "File name should not start with a dot",
          "mqtt-connection": "MQTT client is not connected"
       }
    },
@@ -729,7 +742,8 @@
          "dock-bottom": "Dock to bottom",
          "dock-right": "Dock to right",
          "close": "Close",
-         "close-tab": "Close tab"
+         "close-tab": "Close tab",
+         "more-tabs": "More tabs"
       }
    },
    "logs":{
@@ -769,6 +783,12 @@
          "support": "Technical support"
       }
    },
+   "drawer": {
+      "labels": {
+         "unsaved-changes": "You have unsaved changes. Close without saving?",
+         "discard": "Close without saving"
+      }
+   },
    "modal": {
       "labels": {
          "yes": "Confirm",
@@ -785,6 +805,8 @@
       "labels":{
          "login": "Login",
          "password": "Password",
+         "password-again": "Password again",
+         "password-mismatch": "Passwords don't match",
          "type": "Type",
          "admin": "Admin",
          "user": "User",
@@ -813,6 +835,7 @@
       "buttons": {
          "login": "Sign in",
          "auto-login": "Sign in without password",
+         "forgot-password": "Forgot password?",
          "choose-language": "Choose language"
       },
       "labels": {
@@ -844,6 +867,7 @@
          "color-scenes": "Color scenes",
          "property": "Property",
          "property-settings": "Property settings",
+         "property-unit": "Unit of measurement",
          "property-capability": "Capability/Property",
          "topic": "MQTT topic",
          "scenes-input": "Scenes (comma separated)",
@@ -851,7 +875,21 @@
          "switch-off": "Command off",
          "type": "Type",
          "mode": "Mode",
-         "mode-type": "Mode type",
+         "function-type": "Function type",
+         "mode-value": "Mode value",
+         "mqtt-value-match": "MQTT match",
+         "mqtt-value-match-hint": "Only a-z, 0-9, _ allowed (e.g. 0 or auto)",
+         "mqtt-value-match-duplicate": "Value already used in another mode",
+         "recommended-for": "Recommended for {{instance}}",
+         "other-modes": "Other modes",
+         "split": "Separate on/off buttons",
+         "split-hint": "split. Only changes the display in the Yandex Smart Home app. MQTT commands are published as usual.",
+         "retrievable": "Allow state queries",
+         "retrievable-hint": "retrievable. Disable for write-only devices (e.g. IR remotes) — Alice won't poll their state.",
+         "reportable": "Send state updates",
+         "reportable-hint": "reportable. Disable to stop pushing this item to Alice. Alice can still request the state if retrievable is on.",
+         "capability-options": "Capability options",
+         "property-options": "Property options",
          "min": "Min",
          "max": "Max",
          "no-units": "Unitless",
@@ -876,6 +914,7 @@
          "save": "Save",
          "add-capability": "Add capability",
          "add-property": "Add property",
+         "add-mode": "Add mode",
          "all-devices": "All devices"
       },
       "prompt": {
@@ -918,7 +957,8 @@
          "mqtt-password": "Password",
          "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
          "common-settings": "Common settings",
-         "show-system-devices": "Show system devices",
+         "show-system-devices": "Show service devices",
+         "show-page-in-title": "Show page name in browser tab title",
          "show-widgets-page": "Show Widgets page in navigation",
          "language": "UI locale",
          "theme": "Theme",
@@ -979,9 +1019,14 @@
    },
    "dali": {
       "title": "DALI devices",
+      "placeholders": {
+         "address-filter": "Filter by address"
+      },
       "labels": {
          "group": "Group #{{name}}",
+         "bus": "Bus {{num}}",
          "bus-monitor": "Bus Monitor",
+         "bus-monitor-syslog": "Save to syslog",
          "bus-settings": "Broadcast settings",
          "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",
          "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
@@ -1012,7 +1057,13 @@
          "commands-catalog-title": "Insert command",
          "commands-catalog-search": "Search commands…",
          "commands-catalog-empty": "No commands match",
-         "commands-catalog-error": "Failed to load commands list"
+         "commands-catalog-error": "Failed to load commands list",
+         "monitor-col-time": "Time",
+         "monitor-col-hex": "Hex",
+         "monitor-col-command": "Command",
+         "monitor-col-response": "Response",
+         "monitor-foreign": "foreign",
+         "monitor-broadcast": "Broadcast"
       },
       "buttons": {
          "rescan": "Rescan",
@@ -1022,6 +1073,8 @@
          "clear-log": "Clear log",
          "pause-log": "Pause log",
          "resume-log": "Resume log",
+         "save-log": "Save log to file",
+         "menu": "Menu",
          "set": "Set",
          "identify": "Identify",
          "reset": "Reset…",

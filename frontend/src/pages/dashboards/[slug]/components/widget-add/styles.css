@@ -31,10 +31,12 @@
 .widgetAdd-container {
     display: grid;
     gap: 12px;
-    grid-template-columns: 220px 1fr;
+    height: 100%;
+    grid-template-columns: minmax(200px, 240px) 1fr;
 
     @media(max-width: 640px) {
         grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
     }
 }
 
@@ -70,6 +72,7 @@
     flex-direction: column;
     position: relative;
     margin-bottom: 12px;
+    overflow: hidden;
 }
 
 .widgetAdd-previewHeader {

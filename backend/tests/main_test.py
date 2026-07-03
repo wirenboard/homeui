@@ -8,12 +8,14 @@ from wb.homeui_backend.cert import CertificateState
 from wb.homeui_backend.http_response import (
     response_200,
     response_204,
+    response_304,
     response_400,
     response_401,
     response_403,
     response_404,
 )
 from wb.homeui_backend.main import (
+    WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
     auth_who_am_i_handler,
@@ -38,6 +40,7 @@ class DeleteUserHandlerTest(unittest.TestCase):
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
             session=Session(
                 "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
             ),
@@ -93,6 +96,7 @@ class GetUsersHandlerTests(unittest.TestCase):
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
             session=session,
         )
 
@@ -119,6 +123,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
             sessions_storage=self.sessions_storage_mock,
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
         )
 
     def test_no_required_user_type_no_user_without_users(self):
@@ -178,6 +183,47 @@ class CheckAuthHandlerTests(unittest.TestCase):
         self.sessions_storage_mock.update_session_start_date.assert_called_once_with(self.context.session)
 
 
+class DashboardsAuthorizationTest(unittest.TestCase):
+    """The dashboards write endpoints require Required-User-Type=operator (set by nginx).
+
+    Authorization is centralized in auth_check_handler via User.has_access_to, so this asserts
+    that boundary directly: read (user) is open to user/operator/admin, write (operator) is
+    refused for a plain user but allowed for operator/admin.
+    """
+
+    def setUp(self):
+        self.request = MagicMock(spec=BaseHTTPRequestHandler)
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.users_storage_mock.has_users.return_value = True
+        self.sessions_storage_mock = MagicMock(spec=SessionsStorage)
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=self.users_storage_mock,
+            sessions_storage=self.sessions_storage_mock,
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+        )
+
+    def _check(self, required: str, user_type: UserType) -> int:
+        self.request.headers = {"Required-User-Type": required}
+        self.context.session = Session("1", User("1", "u", "p", user_type, False), datetime.now(timezone.utc))
+        return auth_check_handler(self.request, self.context).status
+
+    def test_read_allowed_for_user_operator_admin(self):
+        for user_type in (UserType.USER, UserType.OPERATOR, UserType.ADMIN):
+            with self.subTest(user_type=user_type):
+                self.assertEqual(self._check("user", user_type), 200)
+
+    def test_write_refused_for_user(self):
+        self.assertEqual(self._check("operator", UserType.USER), 403)
+
+    def test_write_allowed_for_operator_and_admin(self):
+        for user_type in (UserType.OPERATOR, UserType.ADMIN):
+            with self.subTest(user_type=user_type):
+                self.assertEqual(self._check("operator", user_type), 200)
+
+
 class WhoAmIHandlerTests(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock(spec=BaseHTTPRequestHandler)
@@ -189,6 +235,7 @@ class WhoAmIHandlerTests(unittest.TestCase):
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
         )
 
     def test_with_authenticated_user(self):
@@ -231,6 +278,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
         )
 
     def test_device_info_handler(self):
@@ -280,6 +328,7 @@ class UpdateUserHandlerTest(unittest.TestCase):
             sessions_storage=self.sessions_storage_mock,
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
         )
 
     def test_bad_url(self):
@@ -435,6 +484,7 @@ class SecurityCheckHandlerTest(unittest.TestCase):
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
             session=None,
         )
 
@@ -463,3 +513,22 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                         MQTT_CHECK_TOPIC, '{"result": "not found"}', True
                     )
                     mock_client.stop.assert_called_once()
+
+
+class ProcessResponseTest(unittest.TestCase):
+    def test_sends_304_via_send_response_without_body(self):
+        """A 304 is emitted through send_response with its headers and no body, not send_error."""
+        handler = WebRequestHandler.__new__(WebRequestHandler)
+        handler.send_response = MagicMock()
+        handler.send_header = MagicMock()
+        handler.end_headers = MagicMock()
+        handler.send_error = MagicMock()
+        handler.wfile = MagicMock()
+
+        handler.process_response(response_304([["Cache-Control", "no-cache"]]))
+
+        handler.send_response.assert_called_once_with(304)
+        handler.send_header.assert_called_once_with("Cache-Control", "no-cache")
+        handler.end_headers.assert_called_once()
+        handler.wfile.write.assert_not_called()
+        handler.send_error.assert_not_called()

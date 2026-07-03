@@ -2,7 +2,8 @@ import { makeObservable, observable, action } from 'mobx';
 import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import { type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
-import { CommonScanStore, SelectionPolicy } from './scan-page-store';
+import { CommonScanStore } from './scan-page-store';
+import { SelectionPolicy } from './types';
 
 export class SearchDisconnectedScanPageStore {
   public commonScanStore: CommonScanStore;
@@ -53,8 +54,12 @@ export class SearchDisconnectedScanPageStore {
     this.active = true;
     const slaveIdInt = parseInt(slaveId);
     let outOfOrderSlaveIds = [];
+    let selectableConfiguredDevice = null;
     if (!isNaN(slaveIdInt)) {
       outOfOrderSlaveIds.push(slaveIdInt);
+      // The searched device is already in the config (same port + slave_id), so the backend reports
+      // it as configured. Keep it selectable so its connection settings can be re-applied.
+      selectableConfiguredDevice = { portPath, slaveId: slaveIdInt };
     }
     this.commonScanStore.startScanning(
       SelectionPolicy.Single,
@@ -63,6 +68,7 @@ export class SearchDisconnectedScanPageStore {
       useModbusTcp,
       outOfOrderSlaveIds,
       true,
+      selectableConfiguredDevice,
     );
   }
 

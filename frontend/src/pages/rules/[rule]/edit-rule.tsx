@@ -12,16 +12,18 @@ import { devicesStore } from '@/stores/devices';
 import { rulesStore } from '@/stores/rules';
 import { getExtensions } from '@/stores/rules/autocomplete';
 import { useAsyncAction } from '@/utils/async-action';
+import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import './styles.css';
 
 const EditRulePage = observer(() => {
   const { t, i18n } = useTranslation();
   const { rule } = rulesStore;
+  const { setIsDirty } = usePreventLeavePage();
   const [isLoading, setIsLoading] = useState(true);
   const [pageLoadError, setPageLoadError] = useState(null);
   const params = useParams();
   const navigate = useNavigate();
-  const [isEditingTitle, setIsEditingTitle] = useState(!params.id);
+  const [isEditingTitle, setIsEditingTitle] = useState(!params['*']);
 
   const errors = useMemo(() => {
     if (pageLoadError) {
@@ -34,13 +36,13 @@ const EditRulePage = observer(() => {
   }, [pageLoadError, rule.error]);
 
   useEffect(() => {
-    if (!params.id) {
+    if (!params['*']) {
       rulesStore.resetRule();
       setIsLoading(false);
       return;
     }
     setIsLoading(true);
-    rulesStore.load(params.id)
+    rulesStore.load(params['*'])
       .then(() => {
         setIsLoading(false);
       })
@@ -50,22 +52,30 @@ const EditRulePage = observer(() => {
           setIsLoading(false);
         }
       });
-  }, [params.id]);
+  }, [params['*']]);
 
   const [save, isSaving] = useAsyncAction(async () => {
     const initRuleName = rule.initName;
     if (rule.initName !== rule.name) {
       await rulesStore.checkIsNameUnique(rule.name);
     }
-    const savedRuleName = await rulesStore.save(rule);
-
-    if (!params.id) {
-      return navigate(`/rules/edit/${savedRuleName}`, { replace: true });
-    } else if (initRuleName !== rule.name) {
-      const path = await rulesStore.rename(initRuleName, rule.name);
-      return navigate(`/rules/edit/${path}`, { replace: true });
+    try {
+      const savedRuleName = await rulesStore.save(rule);
+      setIsDirty(false);
+      if (!params['*']) {
+        const encoded = savedRuleName.split('/').map(encodeURIComponent).join('/');
+        return navigate(`/rules/${encoded}`, { replace: true });
+      } else if (initRuleName !== rule.name) {
+        const path = await rulesStore.rename(initRuleName, rule.name);
+        const encoded = path.split('/').map(encodeURIComponent).join('/');
+        return navigate(`/rules/${encoded}`, { replace: true });
+      }
+      setIsEditingTitle(false);
+    } catch (err) {
+      if (err.code === 1000) {
+        rulesStore.setRuleError(t('rules.errors.dot-name'));
+      }
     }
-    setIsEditingTitle(false);
   });
 
   return (
@@ -94,9 +104,12 @@ const EditRulePage = observer(() => {
         <CodeEditor
           text={rule.content}
           errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
-          autoFocus={!!params.id}
+          autoFocus={!!params['*']}
           extensions={getExtensions(devicesStore)}
-          onChange={(value) => rulesStore.setRule(value)}
+          onChange={(value) => {
+            setIsDirty(true);
+            rulesStore.setRule(value);
+          }}
           onSave={save}
         />
       </div>

@@ -28,11 +28,13 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
         infoLink={documentation[i18n.language]?.serial}
         hasRights={authStore.hasRights(UserRole.Admin)}
         errors={pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []}
-        isLoading={pageStore.loading}
+        isLoading={pageStore.loading || pageStore.saving}
+        loadingOptions={pageStore.saving ? { overlay: true, showActions: true } : undefined}
         actions={
-          (!pageStore.loading && pageStore.loaded) && (
+          (!pageStore.loading) && (
             <HeaderButtons
               allowSave={pageStore.allowSave}
+              isSaving={pageStore.saving}
               allowAddDevice={pageStore.tabs.hasPortTabs}
               mobileModeStore={pageStore.tabs.mobileModeStore}
               onSave={() => pageStore.save()}
@@ -47,7 +49,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             <PageTabs
               tabs={pageStore.tabs.items}
               selectedIndex={pageStore.tabs.selectedTabIndex}
-              showButtons={!pageStore.loading && pageStore.loaded}
+              showButtons={!pageStore.loading}
               deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
               mobileModeStore={pageStore.tabs.mobileModeStore}
               onSelect={(index) => pageStore.tabs.onSelectTab(index)}

@@ -8,6 +8,7 @@ export type NameTranslations = {
 
 export interface DeviceMeta {
   title?: NameTranslations;
+  driver: string;
 }
 
 export interface EnumTranslations {
@@ -33,3 +34,10 @@ export type ValueType = string | number | boolean | null;
 export type SendValueUpdate = (_deviceId: string, _controlId: string, _value: string) => Promise<void>;
 
 export type DeviceOption = Option<string>;
+
+export enum DeviceType {
+  System,
+  Virtual,
+  Modbus,
+  Zigbee,
+}

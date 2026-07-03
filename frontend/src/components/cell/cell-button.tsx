@@ -10,7 +10,7 @@ import './styles.css';
 const needsRebootConfirm = (deviceId: string, controlId: string) =>
   deviceId === 'system' && controlId === 'Reboot';
 
-export const CellButton = observer(({ cell, name, hideHistory }: CellButtonProps) => {
+export const CellButton = observer(({ cell, name, isReadOnly, hideHistory }: CellButtonProps) => {
   const { t } = useTranslation();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const requiresConfirm = needsRebootConfirm(cell.deviceId, cell.controlId);
@@ -29,7 +29,7 @@ export const CellButton = observer(({ cell, name, hideHistory }: CellButtonProps
         label={name || cell.name}
         size="small"
         variant={cell.error ? 'danger' : 'primary'}
-        disabled={cell.readOnly}
+        disabled={cell.readOnly || isReadOnly}
         onClick={handleClick}
       />
 

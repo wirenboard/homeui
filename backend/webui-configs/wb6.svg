@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" id="svg2" xml:space="preserve" width="auto" height="80vh" viewBox="0 0 580 550" sodipodi:docname="Demo SVG Dashboard.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" style="">
   <style id="style3612">
-#g2564 { 
+#g2564 {
     height:80vh;
     width:auto;
 }
@@ -431,6 +431,14 @@
   </defs>
   <sodipodi:namedview id="namedview4" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" showgrid="false" inkscape:zoom="1.8101934" inkscape:cx="209.3699" inkscape:cy="293.06262" inkscape:window-width="2560" inkscape:window-height="1370" inkscape:window-x="1920" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="g8" width="550px" inkscape:snap-text-baseline="false" inkscape:snap-bbox="false" inkscape:snap-global="false" showguides="true" inkscape:guide-bbox="true"/>
   <g id="g8" inkscape:groupmode="layer" inkscape:label="Wiren_Board-7.2.cdr" transform="matrix(1.3333333,0,0,-1.3333333,1.3333333,357.132)">
+        <rect
+           x="6.167"
+           y="-262.3"
+           width="421.083"
+           height="351"
+           style="fill: #fff; stroke: rgb(0, 0, 0);"
+           transform="matrix(1, 0, 0, -1, 0, 0)"
+           id="object-0" />
     <g id="g10"/>
     <g id="g12"/>
     <path d="M 27.442707,164.39525 H 405.5573 c 4.35565,0 7.91864,-3.56299 7.91864,-7.91892 V 15.921388 c 0,-4.35607 -3.56299,-7.9190604 -7.91864,-7.9190604 H 27.442707 c -4.355232,0 -7.918641,3.5629904 -7.918641,7.9190604 V 156.47633 c 0,4.35593 3.563409,7.91892 7.918641,7.91892 z" style="fill:none;stroke:#1a1a18;stroke-width:0.3015;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path1662"/>
@@ -1185,7 +1193,7 @@
     </text>
     <path d="m 31.98073,81.318142 c 0,0.884326 0.71689,1.601216 1.60121,1.601216 h 3.84292 c 0.0849,0 0.16639,-0.03377 0.22645,-0.09375 l 5.31792,-5.317912 c 0.72536,-0.725367 0.72536,-1.901405 0,-2.626772 l -2.95001,-2.950015 c -0.72536,-0.725368 -1.90141,-0.725368 -2.62677,0 l -5.31793,5.317925 c -0.06,0.05998 -0.0938,0.141511 -0.0938,0.226449 z m 5.31148,0.96073 h -3.71027 c -0.53059,0 -0.96072,-0.43014 -0.96072,-0.96073 v -3.710263 l 5.22412,-5.224131 c 0.47524,-0.475235 1.24575,-0.475235 1.72099,0 l 2.95001,2.950001 c 0.47523,0.47525 0.47523,1.245756 0,1.720992 z m -2.10905,-1.921459 c -0.35373,0 -0.64049,-0.286764 -0.64049,-0.640487 0,-0.353736 0.28676,-0.640486 0.64049,-0.640486 0.35373,0 0.64049,0.28675 0.64049,0.640486 0,0.353723 -0.28676,0.640487 -0.64049,0.640487 z m 0,0.640486 c 0.70746,0 1.28097,-0.573514 1.28097,-1.280973 0,-0.707458 -0.57351,-1.280972 -1.28097,-1.280972 -0.70746,0 -1.28097,0.573514 -1.28097,1.280972 0,0.707459 0.57351,1.280973 1.28097,1.280973 z" id="path11948" style="stroke-width:0.640486"/>
     <path d="m 38.16563,33.456586 c -2.19386,0 -3.97235,1.77849 -3.97235,3.972349 0,2.194005 1.77849,3.972495 3.97235,3.972495 2.19399,0 3.97248,-1.77849 3.97248,-3.972495 0,-2.193859 -1.77849,-3.972349 -3.97248,-3.972349 z" style="fill:none;stroke:#1a1a18;stroke-width:0.794582;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path11950" class="" data-svg-param-id="f17d2412ca4d"/>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text11954" x="47.621822" y="-34.306007" class="" data-svg-param-id="f17d24129edd">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text11954" x="47.621822" y="-34.306007" class="" data-svg-param-id="f17d24129edd">
       <tspan sodipodi:role="line" id="tspan11952" x="47.621822" y="-34.306007" style="font-size:9px;stroke-width:1.40138">000.000.000.000</tspan>
     </text>
     <g aria-label="S/N:" transform="scale(1,-1)" id="text11984" style="font-size:12px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;fill:#1a1a18;stroke-width:1.40138">
@@ -1205,7 +1213,7 @@
     <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:12px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text11996" x="326.79745" y="-42.208504" class="" data-svg-param-id="f17d24172913">
       <tspan sodipodi:role="line" id="tspan11994" x="326.79745" y="-42.208504" style="font-size:12px;stroke-width:1.40138">0.0.0</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12562" x="142.97581" y="101.85901" class="" data-svg-param-id="f17d24182641">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12562" x="142.97581" y="101.85901" class="" data-svg-param-id="f17d24182641">
       <tspan sodipodi:role="line" id="tspan12560" x="142.97581" y="101.85901" style="font-size:9.75px;text-align:start;text-anchor:start;stroke-width:1.40138">A1: 0.00 V</tspan>
     </text>
     <circle style="fill:#cccccc;fill-opacity:1;stroke:#1a1a18;stroke-width:0.794582;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="circle12564" cx="152.13957" cy="78.596436" transform="scale(1,-1)" r="3.4413331" class="" data-svg-param-id="f17d242bffd7">
@@ -1220,13 +1228,13 @@
     <circle style="fill:#cccccc;fill-opacity:1;stroke:#1a1a18;stroke-width:0.794582;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="circle12570" cx="193.84993" cy="78.596436" transform="scale(1,-1)" r="3.4413331" class="" data-svg-param-id="f17d243abb99">
       <title id="title1938">A4_OUT</title>
     </circle>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12574" x="142.97581" y="114.25182" class="" data-svg-param-id="f17d2418f7f1">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12574" x="142.97581" y="114.25182" class="" data-svg-param-id="f17d2418f7f1">
       <tspan sodipodi:role="line" id="tspan12572" x="142.97581" y="114.25182" style="font-size:9.75px;text-align:start;text-anchor:start;stroke-width:1.40138">A2: 0.00 V</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12578" x="142.97581" y="126.64456" class="" data-svg-param-id="f17d24191d89">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12578" x="142.97581" y="126.64456" class="" data-svg-param-id="f17d24191d89">
       <tspan sodipodi:role="line" id="tspan12576" x="142.97581" y="126.64456" style="font-size:9.75px;text-align:start;text-anchor:start;stroke-width:1.40138">A3: 0.00 V</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12582" x="142.97581" y="139.03737" class="" data-svg-param-id="f17d2419af98">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12582" x="142.97581" y="139.03737" class="" data-svg-param-id="f17d2419af98">
       <tspan sodipodi:role="line" id="tspan12580" x="142.97581" y="139.03737" style="font-size:9.75px;text-align:start;text-anchor:start;stroke-width:1.40138">A4: 0.00 V</tspan>
     </text>
     <circle style="fill:#cccccc;fill-opacity:1;stroke:#1a1a18;stroke-width:0.794582;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="circle12584" cx="241.91765" cy="78.596436" transform="scale(1,-1)" r="3.4413331" class="" data-svg-param-id="f17d242089a4">
@@ -1238,13 +1246,13 @@
     <circle style="fill:#cccccc;fill-opacity:1;stroke:#1a1a18;stroke-width:0.794582;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="circle12588" cx="360.69403" cy="78.596436" transform="scale(1,-1)" r="3.4413331" class="" data-svg-param-id="f17d242473db">
       <title id="title1944">V_OUT</title>
     </circle>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12596" x="239.56621" y="101.85901" class="" data-svg-param-id="f17d2419e2ef">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12596" x="239.56621" y="101.85901" class="" data-svg-param-id="f17d2419e2ef">
       <tspan sodipodi:role="line" id="tspan12594" x="239.56621" y="101.85901" style="font-size:9.75px;text-align:start;text-anchor:start;stroke-width:1.40138">5V: 0.00 V</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12650" x="130.08051" y="114.25182" class="" data-svg-param-id="f17d241ea3ee">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12650" x="130.08051" y="114.25182" class="" data-svg-param-id="f17d241ea3ee">
       <tspan sodipodi:role="line" id="tspan12648" x="130.08051" y="114.25182" style="font-size:9.75px;text-align:end;text-anchor:end;stroke-width:1.40138">000.000.000.000</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12654" x="130.08051" y="101.85901" class="" data-svg-param-id="f17d241e8c6e">
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text12654" x="130.08051" y="101.85901" class="" data-svg-param-id="f17d241e8c6e">
       <tspan sodipodi:role="line" id="tspan12652" x="130.08051" y="101.85901" style="font-size:9.75px;text-align:end;text-anchor:end;stroke-width:1.40138">000.000.000.000</tspan>
     </text>
     <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#e3000f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text17678" x="40.960705" y="-179.78551" class="" data-svg-param-id="f17d241d9e55">

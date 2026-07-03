@@ -181,7 +181,7 @@ const UsersPage = observer(() => {
           {
             t(
               'users.labels.confirm-delete',
-              { name: authStore.users.find((user) => user.id === deletedUserId).login })
+              { name: authStore.users.find((user) => user.id === deletedUserId)?.login })
           }
         </Confirm>
       )}

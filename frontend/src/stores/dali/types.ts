@@ -1,6 +1,7 @@
 import {
   type JsonSchema,
 } from '@/stores/json-schema-editor';
+import type { MonitorStore } from './monitor-store';
 
 export type CommissioningStatus =
   | 'idle'
@@ -41,6 +42,7 @@ export interface Bus {
   devices: Device[];
   groups: Group[];
   commissioning?: CommissioningState;
+  bus_monitor_enabled?: boolean;
 }
 
 export interface Group {
@@ -177,4 +179,58 @@ export interface ListCommandsEntry {
 export interface DaliBusProxy {
   SendCommand(params: SendCommandParams): Promise<SendCommandResultItem[]>;
   ListCommands(params: Record<string, never>): Promise<ListCommandsEntry[]>;
+}
+
+// --- Bus monitor: parsed line ---
+
+export type BusMonitorDirection = 'out' | 'in';
+export type BusMonitorResponseKind = 'none' | 'value' | 'error';
+
+/** Frame type taken from the raw packet length: 2-byte (FF16) vs 3-byte (FF24). */
+export type FrameType = 'FF16' | 'FF24';
+
+export interface BusMonitorResponse {
+  kind: BusMonitorResponseKind;
+  /** Full response text, verbatim. */
+  text: string;
+  /** For kind 'value': the backward-packet hex (e.g. '00fe'). */
+  hex?: string;
+  /** For kind 'value': the decoded value (e.g. '254'). */
+  value?: string;
+}
+
+export interface BusMonitorBadges {
+  /** Hardware monitor packet counter — present only on unexpected ('in') packets. */
+  fc?: number;
+  /** Command originated from the Lunatone Cockpit emulator. */
+  fromLunatone?: boolean;
+}
+
+export interface ParsedBusMonitorLine {
+  raw: string;
+  /** 'HH:MM:SS.mmm', or '' when absent (e.g. the syslog variant). */
+  time: string;
+  /** '>>' → 'out' (our request), '<<' → 'in' (unexpected packet from the bus). */
+  direction: BusMonitorDirection | null;
+  /** Raw hex of the request/packet. */
+  hex: string;
+  /** Decoded command expression (Bus/SendCommand syntax) or FF{len}/BF{len} — verbatim. */
+  command: string;
+  response: BusMonitorResponse;
+  badges: BusMonitorBadges;
+}
+
+// --- Bus monitor: store registry + console tab ---
+
+export interface MonitorRecord {
+  monitorStore: MonitorStore;
+  gatewayName: string;
+  busIndex: number;
+  shownOnce: boolean;
+}
+
+export interface EnableOptions {
+  gatewayName: string;
+  busIndex: number;
+  autoShow: boolean;
 }

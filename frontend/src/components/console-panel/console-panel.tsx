@@ -1,18 +1,32 @@
+import {
+  autoUpdate,
+  flip,
+  FloatingPortal,
+  offset,
+  shift,
+  size,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+  useRole,
+} from '@floating-ui/react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import ClearIcon from '@/assets/icons/clear.svg';
+import ChevronRightDoubleIcon from '@/assets/icons/chevron-right-double.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
 import LayoutRightIcon from '@/assets/icons/layout-right.svg';
-import { Dropdown, type Option } from '@/components/dropdown';
 import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { consolePanelStore as store } from '@/stores/console-panel';
-import { ConsolePanelContent } from './console-panel-content';
+import { getOverflowIds } from './get-overflow-ids';
 import './styles.css';
+
+const OVERFLOW_BTN_SPACE = 26;
 
 export const ConsolePanel = observer(() => {
   const { t } = useTranslation();
@@ -20,7 +34,39 @@ export const ConsolePanel = observer(() => {
   const container = useRef<HTMLDivElement>(null);
   const resizer = useRef<HTMLDivElement>(null);
   const positionRef = useRef(store.position);
-  const [filter, setFilter] = useState('all');
+
+  const measureRef = useRef<HTMLDivElement>(null);
+  const tabsAreaRef = useRef<HTMLDivElement>(null);
+  const [tabWidths, setTabWidths] = useState<Record<string, number>>({});
+  const [areaWidth, setAreaWidth] = useState(0);
+  const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
+
+  const { refs: overflowRefs, floatingStyles: overflowStyles, context: overflowContext } = useFloating({
+    open: isOverflowMenuOpen,
+    onOpenChange: setIsOverflowMenuOpen,
+    placement: 'bottom-end',
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      offset(4),
+      flip({ fallbackAxisSideDirection: 'start' }),
+      shift({ padding: 8 }),
+      size({
+        padding: 8,
+        apply({ availableWidth, elements }) {
+          elements.floating.style.maxWidth = `${Math.min(availableWidth, 300)}px`;
+        },
+      }),
+    ],
+  });
+
+  const {
+    getReferenceProps: getOverflowRefProps,
+    getFloatingProps: getOverflowFloatingProps,
+  } = useInteractions([
+    useClick(overflowContext),
+    useDismiss(overflowContext),
+    useRole(overflowContext, { role: 'menu' }),
+  ]);
 
   const activeTab = store.activeTab;
 
@@ -29,7 +75,7 @@ export const ConsolePanel = observer(() => {
     label: tab.closable
       ? (
         <span className="consolePanel-tabLabel">
-          {tab.label}
+          <span className="consolePanel-tabText">{tab.label}</span>
           <span
             role="button"
             tabIndex={0}
@@ -46,6 +92,48 @@ export const ConsolePanel = observer(() => {
       )
       : tab.label,
   }));
+
+  const tabIds = store.tabs.map((t) => t.id).join(',');
+
+  useLayoutEffect(() => {
+    const measureEl = measureRef.current;
+    if (measureEl) {
+      const lis = measureEl.querySelectorAll<HTMLLIElement>('[role="tablist"] > li');
+      const tabs = store.tabs;
+      const widths: Record<string, number> = {};
+      lis.forEach((li, i) => {
+        if (i < tabs.length) {
+          widths[tabs[i].id] = li.getBoundingClientRect().width;
+        }
+      });
+      setTabWidths(widths);
+    }
+
+    const areaEl = tabsAreaRef.current;
+    if (areaEl) {
+      setAreaWidth(areaEl.getBoundingClientRect().width);
+    }
+  }, [tabIds, store.activeTabId]);
+
+  useEffect(() => {
+    const el = tabsAreaRef.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver(() => {
+      setAreaWidth(el.getBoundingClientRect().width);
+    });
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, []);
+
+  const overflowIds = useMemo(
+    () => getOverflowIds(store.tabs, tabWidths, areaWidth, store.activeTabId, OVERFLOW_BTN_SPACE),
+    [tabWidths, areaWidth, store.activeTabId, store.tabs],
+  );
+
+  const visibleTabItems = tabItems.filter((item) => !overflowIds.has(item.id));
+  const overflowTabs = store.tabs.filter((tab) => overflowIds.has(tab.id));
 
   const dragStart = useRef<{ size: number; coord: number } | null>(null);
   const rafId = useRef(0);
@@ -118,10 +206,6 @@ export const ConsolePanel = observer(() => {
     }
   }, [isMobile]);
 
-  useEffect(() => {
-    setFilter('all');
-  }, [store.activeTabId]);
-
   return (
     <aside
       className={classNames('consolePanel', {
@@ -138,53 +222,88 @@ export const ConsolePanel = observer(() => {
     >
       <div className="consolePanel-resizer" id="consoleResizer" ref={resizer} />
 
-      <header className="consolePanel-header">
+      <div className="consolePanel-tabsMeasure" ref={measureRef} aria-hidden="true">
         <Tabs
           className="consolePanel-tabs"
           items={tabItems}
           activeTab={store.activeTabId}
           orientation="horizontal"
-          onTabChange={store.setActiveTab}
+          onTabChange={() => {}}
         />
+      </div>
 
-        <div className="consolePanel-headerActions">
-          {activeTab?.actions?.map((action) => (
-            <Tooltip key={action.id} text={action.tooltip}>
-              <button
-                className="consolePanel-button"
-                aria-label={action.tooltip}
-                onClick={action.onClick}
-              >
-                <action.icon
-                  className={classNames('consolePanel-icon', {
-                    'consolePanel-iconActive': action.isActive?.(),
-                  })}
-                />
-              </button>
-            </Tooltip>
-          ))}
+      <header className="consolePanel-header">
+        <div className="consolePanel-tabsArea" ref={tabsAreaRef}>
+          <div className="consolePanel-tabsWrapper">
+            <Tabs
+              className="consolePanel-tabs"
+              items={visibleTabItems}
+              activeTab={store.activeTabId}
+              orientation="horizontal"
+              onTabChange={store.setActiveTab}
+            />
+          </div>
 
-          <Tooltip text={t('console-panel.buttons.clear')}>
-            <button
-              className="consolePanel-button"
-              aria-label={t('console-panel.buttons.clear')}
-              onClick={() => activeTab?.clearLogs()}
-            >
-              <ClearIcon className="consolePanel-icon" />
-            </button>
-          </Tooltip>
+          {overflowTabs.length > 0 && (
+            <div className="consolePanel-overflow">
+              <Tooltip text={isOverflowMenuOpen ? '' : t('console-panel.buttons.more-tabs')}>
+                <button
+                  ref={overflowRefs.setReference}
+                  className="consolePanel-button consolePanel-overflowBtn"
+                  aria-label={t('console-panel.buttons.more-tabs')}
+                  {...getOverflowRefProps()}
+                >
+                  <ChevronRightDoubleIcon className="consolePanel-overflowIcon" />
+                </button>
+              </Tooltip>
 
-          {activeTab?.filterLevels && (
-            <div className="consolePanel-separatorLeft">
-              <Dropdown
-                className="consolePanel-filter"
-                options={activeTab.filterLevels}
-                value={filter}
-                size="small"
-                onChange={({ value }: Option<string>) => setFilter(value)}
-              />
+              {isOverflowMenuOpen && (
+                <FloatingPortal>
+                  <ul
+                    ref={overflowRefs.setFloating}
+                    className="consolePanel-overflowMenu"
+                    style={overflowStyles}
+                    role="menu"
+                    {...getOverflowFloatingProps()}
+                  >
+                    {overflowTabs.map((tab) => (
+                      <li key={tab.id} role="none">
+                        <button
+                          role="menuitem"
+                          className={classNames('consolePanel-overflowMenuItem', {
+                            'consolePanel-overflowMenuItemActive': tab.id === store.activeTabId,
+                          })}
+                          onClick={() => {
+                            store.setActiveTab(tab.id);
+                            setIsOverflowMenuOpen(false);
+                          }}
+                        >
+                          <span className="consolePanel-overflowMenuLabel">{tab.label}</span>
+                          {tab.closable && (
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              className="consolePanel-tabClose"
+                              onClick={(ev) => {
+                                ev.stopPropagation();
+                                store.unregisterTab(tab.id);
+                              }}
+                            >
+                              <CloseIcon className="consolePanel-tabCloseIcon" />
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </FloatingPortal>
+              )}
             </div>
           )}
+        </div>
+
+        <div className="consolePanel-headerActions">
+          {activeTab && activeTab.renderToolbar && <activeTab.renderToolbar />}
 
           <div className="consolePanel-separatorLeft">
             <Tooltip text={t('console-panel.buttons.dock-bottom')}>
@@ -229,7 +348,7 @@ export const ConsolePanel = observer(() => {
         </div>
       </header>
 
-      {activeTab && <ConsolePanelContent tab={activeTab} filter={filter} />}
+      {activeTab && <activeTab.renderContent />}
     </aside>
   );
 });

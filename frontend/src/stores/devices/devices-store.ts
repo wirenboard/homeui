@@ -43,7 +43,7 @@ export default class DevicesStore {
 
     return new Map(
       Array.from(this.devices.entries())
-        .filter(([_, device]) => !device.isSystemDevice)
+        .filter(([_, device]) => !device.isServiceDevice)
         .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name)),
     );
   }

@@ -12,6 +12,8 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
 
+from .board import of_machine_match
+
 CERT_REQUEST_URL = "https://acme.wirenboard.com/api/v1/issue"
 SSL_CERT_PATH = "/etc/ssl/sslip.pem"
 SSL_CERT_KEY_PATH = "/etc/ssl/sslip.key"
@@ -33,11 +35,7 @@ def make_domain_name(sn: str) -> str:
 
 
 def get_keyspec() -> str:
-    command = (
-        '. /usr/lib/wb-utils/wb_env.sh && wb_source of && of_machine_match "contactless,imx6ul-wirenboard60"'
-    )
-    result = subprocess.run(["/bin/bash", "-c", command], check=False)
-    if result.returncode == 0:
+    if of_machine_match("contactless,imx6ul-wirenboard60"):
         return KEYSPEC_WB6
     return KEYSPEC_WB7_WB8
 
@@ -191,9 +189,6 @@ def update_cert(sn: str) -> None:
         fullchain_pem = request_certificate(request_cert_file.name, get_keyspec(), csr_file.name)
         with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
             cert_file.write(fullchain_pem)
-
-        logging.debug("Generating DH parameters")
-        subprocess.run(["openssl", "dhparam", "-out", "/etc/ssl/dhparam.pem", "256"], check=True)
 
         logging.info("Certificate updated successfully")
 

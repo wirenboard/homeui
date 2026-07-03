@@ -11,6 +11,7 @@ import { uiStore } from '@/stores/ui';
 const CommonSettings = observer(() => {
   const { t, i18n } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
+  const [showPageInTitle, setShowPageInTitle] = useState(uiStore.showPageInTitle);
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
   const [theme, setTheme] = useState(uiStore.theme);
   const [defaultDashboardId, setDefaultDashboardId] = useState('');
@@ -39,10 +40,13 @@ const CommonSettings = observer(() => {
   ];
 
   const applyHandler = async () => {
+
+  const applyHandler = async () => {
     localStorage.setItem('show-system-devices', showSystemDevices ? 'yes' : 'no');
+    uiStore.setShowPageInTitle(showPageInTitle);
     localStorage.setItem('language', language);
-    uiStore.setTheme(theme);
     await i18n.changeLanguage(language);
+    uiStore.setTheme(theme);
     dashboardsStore.setDefaultDashboardId(defaultDashboardId);
     dashboardsStore.setDescription(description);
     dashboardsStore.setIsShowWidgetsPage(isShowWidgetsPage);
@@ -79,6 +83,12 @@ const CommonSettings = observer(() => {
         options={options}
         isDisabled={dashboardsStore.isLoading}
         onChange={setDefaultDashboardId}
+      />
+
+      <BooleanField
+        title={t('web-ui-settings.labels.show-page-in-title')}
+        value={showPageInTitle}
+        onChange={setShowPageInTitle}
       />
 
       <BooleanField

@@ -5,6 +5,7 @@ import { APP_NAME, APP_SHORT_NAME } from '@/common/constants';
 import { App } from '@/layouts/app';
 import { deviceManagerProxy, mqttClient } from '@/services';
 import { authStore, UserRole } from '@/stores/auth';
+import { daliGlobalStore } from '@/stores/dali';
 import { dashboardsStore } from '@/stores/dashboards';
 import { registerRulesTab, rulesStore } from '@/stores/rules';
 import { uiStore } from '@/stores/ui';
@@ -14,6 +15,13 @@ import './i18n/config';
 import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
+
+// Stale assets after a rebuild — reload to pick up the new HTML with fresh hashes
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload();
+});
+
+document.documentElement.setAttribute('data-theme', 'bootstrap');
 
 switchToHttps().finally(() => {
   runInAction(() => {
@@ -36,6 +44,9 @@ when(() => authStore.isAuthenticated).then(() => {
         rulesStore.subscribeRulesLogs();
         rulesStore.subscribeRuleDebugging();
         registerRulesTab();
+        daliGlobalStore.refresh().catch((err) => {
+          console.warn('Failed to load DALI gateways on startup', err);
+        });
         return dashboardsStore.loadData();
       })
       .catch(() => {
@@ -48,7 +59,9 @@ when(() => authStore.isAuthenticated).then(() => {
 
 autorun(() => {
   const name = dashboardsStore.description;
-  document.title = name ? `${name} | ${APP_SHORT_NAME || APP_NAME}` : APP_NAME;
+  const appTitle = name ? `${name} | ${APP_SHORT_NAME || APP_NAME}` : APP_NAME;
+  const pageTitle = uiStore.showPageInTitle ? uiStore.currentPageTitle : '';
+  document.title = pageTitle ? `${pageTitle} – ${appTitle}` : appTitle;
 });
 
 mqttClient.whenConnected().then(async () => {

@@ -16,6 +16,8 @@ import {
   getAliceIntegrationStatus,
   unlinkController,
 } from './api';
+import { Property } from './constants';
+import { getCapabilityDefaults, getPropertyDefaults } from './defaults';
 import type {
   AddDeviceParams,
   AliceFetchData,
@@ -24,8 +26,43 @@ import type {
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
+  SmartDeviceCapability,
+  SmartDeviceProperty,
   SuccessMessageFetch,
 } from './types';
+
+// Backfill defaults the UI expects in saved configs
+// Old configs may omit these fields — fill them at load so the next Save
+// persists them explicitly; defaults come from getCapabilityDefaults/getPropertyDefaults
+const normalizeCapability = (cap: SmartDeviceCapability): SmartDeviceCapability => {
+  const defaults = getCapabilityDefaults(cap.type);
+  return {
+    ...cap,
+    retrievable: cap.retrievable ?? defaults.retrievable,
+    reportable: cap.reportable ?? defaults.reportable,
+    parameters: { ...defaults.parameters, ...cap.parameters },
+  };
+};
+
+const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => {
+  const defaults = getPropertyDefaults(prop.type);
+  // Event properties: defaults are forced (locked in UI) — overwrite whatever is
+  // in config so next Save persists correct values and the client stops warning
+  if (prop.type === Property.Event) {
+    return { ...prop, retrievable: defaults.retrievable, reportable: defaults.reportable };
+  }
+  return {
+    ...prop,
+    retrievable: prop.retrievable ?? defaults.retrievable,
+    reportable: prop.reportable ?? defaults.reportable,
+  };
+};
+
+const normalizeDevice = (device: SmartDevice): SmartDevice => ({
+  ...device,
+  capabilities: (device.capabilities ?? []).map(normalizeCapability),
+  properties: (device.properties ?? []).map(normalizeProperty),
+});
 
 export default class AliceStore {
   public rooms = new Map<string, Room>();
@@ -72,7 +109,9 @@ export default class AliceStore {
 
     return runInAction(() => {
       this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
-      this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
+      this.devices = new Map(
+        Object.entries(data.devices).map(([id, device]) => [id, normalizeDevice(device)]),
+      );
       return data;
     });
   }

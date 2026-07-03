@@ -5,7 +5,7 @@ Priority: optional
 Standards-Version: 4.5.1
 X-Python3-Version: >= 3.9
 Build-Depends: debhelper-compat (= 13),
-               nodejs (>= 18),
+               nodejs (>= 22),
                j2cli,
                minify,
                rsync,
@@ -14,6 +14,7 @@ Build-Depends: debhelper-compat (= 13),
                python3-all,
                python3-bcrypt,
                python3-cryptography,
+               python3-legacy-cgi,
                python3-pytest,
                python3-requests,
                python3-requests-unixsocket,
@@ -39,7 +40,7 @@ Breaks: wb-mqtt-confed (<< 1.0.3),
         wb-configs (<< 3.14.0~~),
         wb-cloud-agent (<< 1.4.0~~)
 Description: Wiren Board Web UI web interface
-  The package contains frontend files
+ The package contains frontend files
 
 Package: wb-homeui-backend
 Architecture: all
@@ -56,6 +57,7 @@ Depends: ${shlibs:Depends},
          wb-utils (>= 4.24.0~~),
          python3-bcrypt,
          python3-cryptography,
+         python3-legacy-cgi,
          python3-requests,
          python3-requests-unixsocket,
          python3-wb-common,
@@ -65,4 +67,4 @@ Breaks: wb-configs (<< 3.38.0~~),
 Replaces: wb-mqtt-homeui (<< 2.140.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface
-  The package contains backend files
+ The package contains backend files

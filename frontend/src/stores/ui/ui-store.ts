@@ -12,6 +12,8 @@ export default class UiStore {
   public menuItems: MenuItemInstance[] = [];
   public theme: string = localStorage.getItem('theme') ?? 'light';
   public modules: string[] = [];
+  public currentPageTitle: string = '';
+  public showPageInTitle: boolean = localStorage.getItem('show-page-in-title') !== 'false';
   #additionalItems: CustomMenuItem[] = null;
   #systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -59,6 +61,15 @@ export default class UiStore {
       ? (this.#systemThemeQuery.matches ? 'dark' : 'light')
       : this.theme;
     document.documentElement.setAttribute('data-theme', theme);
+  }
+
+  setCurrentPageTitle(title: string) {
+    this.currentPageTitle = title;
+  }
+
+  setShowPageInTitle(value: boolean) {
+    localStorage.setItem('show-page-in-title', value ? 'true' : 'false');
+    this.showPageInTitle = value;
   }
 
   async #getCustomMenuItems() {

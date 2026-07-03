@@ -118,7 +118,7 @@ export const SvgView = ({
   const svgWrapperRef = useRef(null);
 
   useLayoutEffect(() => {
-    svgWrapperRef.current.innerHTML = svg;
+    svgWrapperRef.current.innerHTML = svg ?? '';
     return () => {
       if (svgWrapperRef.current) {
         svgWrapperRef.current.innerHTML = '';

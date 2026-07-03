@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { makeObservable, observable, computed, action } from 'mobx';
+import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
 import type {
   fwUpdateProxy as FwUpdateProxyInstance,
@@ -35,8 +35,8 @@ import type { ConfigJson, LoadConfigResult, PortConfig } from './types';
 export class ConfigEditorPageStore {
   public tabs: TabsStore;
   public schemaTranslator: Translator;
-  public loaded: boolean = false;
   public loading: boolean = true;
+  public saving: boolean = false;
   public error = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
@@ -68,7 +68,8 @@ export class ConfigEditorPageStore {
     makeObservable(this, {
       allowSave: computed,
       isDirty: computed,
-      loaded: observable,
+      loading: observable,
+      saving: observable,
       addDevices: action,
     });
   }
@@ -125,7 +126,6 @@ export class ConfigEditorPageStore {
 
   async load() {
     try {
-      this.loaded = false;
       this.error = '';
       const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
       this.schemaTranslator = new Translator();
@@ -149,13 +149,13 @@ export class ConfigEditorPageStore {
         this.tabs.addPortTab(portTab, true);
       });
       this.tabs.addSettingsTab(this.createSettingsTab(config, schema));
-      this.loaded = true;
     } catch (err) {
       this.tabs.clear();
       this.setError(err);
-      this.loaded = false;
     }
-    this.loading = false;
+    runInAction(() => {
+      this.loading = false;
+    });
   }
 
   setError(error) {
@@ -234,15 +234,23 @@ export class ConfigEditorPageStore {
   }
 
   async save() {
-    this.loading = true;
-    this.error = '';
+    runInAction(() => {
+      this.saving = true;
+      this.error = '';
+    });
     try {
       await this.saveConfigFn(this.makeConfigJson());
-      this.tabs.commitData();
+      runInAction(() => {
+        this.tabs.commitData();
+      });
     } catch (err) {
-      this.error = getErrorMessage(err);
+      runInAction(() => {
+        this.error = getErrorMessage(err);
+      });
     }
-    this.loading = false;
+    runInAction(() => {
+      this.saving = false;
+    });
   }
 
   async changeDeviceType(tab: DeviceTabStore, type: string) {
@@ -255,7 +263,6 @@ export class ConfigEditorPageStore {
     }
     try {
       this.loading = true;
-      this.loaded = false;
       this.error = '';
       const errors = [];
       const setupResults = await Promise.all(
@@ -295,8 +302,9 @@ export class ConfigEditorPageStore {
     } catch (err) {
       this.setError(err);
     }
-    this.loaded = true;
-    this.loading = false;
+    runInAction(() => {
+      this.loading = false;
+    });
   }
 
   async addScannedDeviceToConfig(device: ScannedDevice, topics: Set<string>, selectTab: boolean) {

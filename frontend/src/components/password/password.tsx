@@ -108,7 +108,9 @@ export const Password = ({
             className={classNames('password-score', {
               'password-scoreDanger': score < 2,
             })}
-          >{t(`common.labels.password-strength-${score}`)}
+            aria-live="assertive"
+          >
+            {t(`common.labels.password-strength-${score}`)}
           </div>
         </div>
       )}

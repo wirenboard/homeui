@@ -75,7 +75,7 @@ export const Tooltip = ({
   return (
     <>
       <div className="wb-tooltip-container" ref={refs.setReference} {...getReferenceProps()} {...rest}>{children}</div>
-      <FloatingPortal>
+      <FloatingPortal root={document.querySelector('.floating')}>
         {isOpen && !!text && (
           <div
             className={classNames('wb-tooltip', className)}

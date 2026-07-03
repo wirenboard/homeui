@@ -1,7 +1,19 @@
-import { type MonitorStore } from '@/stores/dali';
+import type { ReactNode } from 'react';
+import type { MonitorStore } from '@/stores/dali/monitor-store';
 
-export interface BusMonitorProps {
+export interface BusMonitorTabProps {
   monitorStore: MonitorStore;
-  busMonitorEnabled: boolean;
-  onToggle: (value: boolean) => Promise<void>;
+  getLabel: () => string;
+}
+
+export interface RegisterBusTabParams {
+  busId: string;
+  monitorStore: MonitorStore;
+  getLabel: () => string;
+  onClose: () => void;
+}
+
+export interface ConsoleMenuProps {
+  /** Menu body; `close` collapses the menu (call after acting on an item). */
+  renderContent: (_close: () => void) => ReactNode;
 }

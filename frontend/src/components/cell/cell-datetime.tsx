@@ -3,9 +3,9 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { DateTimePicker } from '@/components/datetime-picker';
 import { Tooltip } from '@/components/tooltip';
-import { type Cell } from '@/stores/devices';
 import { copyToClipboard } from '@/utils/clipboard';
 import { CellHistory } from './cell-history';
+import { type CellDateTimeProps } from './types';
 import './styles.css';
 
 const unixToUtcDate = (unix: number): Date => {
@@ -30,7 +30,7 @@ const utcDateToUnix = (date: Date): number =>
     date.getSeconds(),
   ) / 1000);
 
-export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
+export const CellDateTime = observer(({ cell, isReadOnly }: CellDateTimeProps) => {
   const { t, i18n } = useTranslation();
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
 
@@ -54,6 +54,7 @@ export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
           <DateTimePicker
             size="small"
             value={unixToUtcDate(cell.value as number)}
+            disabled={cell.readOnly || isReadOnly}
             isInvalid={!!cell.error}
             ariaLabel={cell.name}
             withSeconds

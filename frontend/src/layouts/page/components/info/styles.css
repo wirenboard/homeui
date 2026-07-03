@@ -7,8 +7,9 @@
 }
 
 .info-link {
-    color: #fff;
+    color: var(--link-color);
     font-size: var(--font-size-medium);
+    width: fit-content;
 }
 
 .info-icon {

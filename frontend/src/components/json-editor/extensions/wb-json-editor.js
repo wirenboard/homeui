@@ -5,6 +5,7 @@ import { makeCollapsibleArrayEditor } from './collapsible-array-editor';
 import { makeCollapsibleMultipleEditor } from './collapsible-multiple-editor';
 import { makeDisabledEditorWrapper } from './disabled-editor-wrapper';
 import { compileTemplate } from './dumbtemplate';
+import { makeDynamicTypeEditor } from './dynamic-type-editor';
 import { makeEditWithDropdownEditor } from './edit-with-dropdown';
 import { makeFirstOneOfEditor } from './first-oneof-editor';
 import { makeGroupsEditor } from './group-editor';
@@ -205,6 +206,9 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.resolvers.unshift(
     (schema) => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array',
   );
+  JSONEditor.defaults.resolvers.unshift(
+    (schema) => schema.format === 'wb-dynamic-type' && 'wb-dynamic-type',
+  );
 
   JSONEditor.defaults.editors['select'] = makeSelectWithHiddenItems();
   JSONEditor.defaults.editors['inWb'] = makeDisabledEditorWrapper(
@@ -230,6 +234,7 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['wb-optional'] = makeOptionalEditorWithDropDown();
   JSONEditor.defaults.editors['wb-array'] = makeWbArrayEditor();
   JSONEditor.defaults.editors['wb-first-oneof'] = makeFirstOneOfEditor();
+  JSONEditor.defaults.editors['wb-dynamic-type'] = makeDynamicTypeEditor();
 
   JSONEditor.defaults.languages.en.error_oneOf = 'Parameters are set incorrectly';
 

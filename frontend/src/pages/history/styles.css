@@ -8,7 +8,7 @@
 .history-channel {
   width: 100%;
   max-width: 440px;
-  flex-shrink: 0;
+  flex-shrink: 1;
 }
 
 .history-addChannel {

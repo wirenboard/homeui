@@ -20,27 +20,27 @@ import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell, name, isCompact, extra, hideHistory }: CellProps) => {
+export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra, hideHistory }: CellProps) => {
   const { t } = useTranslation();
 
   const renderCellContent = () => {
     switch (cell.displayType) {
       case CellComponent.Text:
-        return <CellText cell={cell} isCompact={isCompact} hideHistory={hideHistory} />;
+        return <CellText cell={cell} isCompact={isCompact} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.Alert:
         return <CellAlert cell={cell} name={name} hideHistory={hideHistory} />;
       case CellComponent.Switch:
-        return <CellSwitch cell={cell} inverted={extra?.invert} hideHistory={hideHistory} />;
+        return <CellSwitch cell={cell} inverted={extra?.invert} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.Button:
-        return <CellButton cell={cell} name={name} hideHistory={hideHistory} />;
+        return <CellButton cell={cell} name={name} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.Range:
-        return <CellRange cell={cell} />;
+        return <CellRange cell={cell} isReadOnly={isReadOnly} />;
       case CellComponent.Colorpicker:
-        return <CellColorpicker cell={cell} hideHistory={hideHistory} />;
+        return <CellColorpicker cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.DateTime:
-        return <CellDateTime cell={cell} />;
+        return <CellDateTime cell={cell} isReadOnly={isReadOnly} />;
       case CellComponent.Value:
-        return <CellValue cell={cell} hideHistory={hideHistory} />;
+        return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       default:
         return null;
     }

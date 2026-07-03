@@ -1,8 +1,313 @@
-wb-mqtt-homeui (2.218.0) stable; urgency=medium
+wb-mqtt-homeui (2.238.0) stable; urgency=medium
 
   * Add themes
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Jun 2026 12:15:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Jul 2026 14:20:00 +0300
+
+wb-mqtt-homeui (2.237.5) stable; urgency=medium
+
+  * Fix device icon on mobile resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Jul 2026 13:49:00 +0300
+
+wb-mqtt-homeui (2.237.4) stable; urgency=medium
+
+  * Fix install
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 13:10:00 +0400
+
+wb-mqtt-homeui (2.237.3) stable; urgency=medium
+
+  * Add bash completions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 12:10:00 +0400
+
+wb-mqtt-homeui (2.237.2) stable; urgency=medium
+
+  * Fix mosquitto override config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 10:10:00 +0400
+
+wb-mqtt-homeui (2.237.1) stable; urgency=medium
+
+  * Show the firmware-update banner when only a newer bootloader is available
+
+ -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Thu, 02 Jul 2026 11:25:56 +0300
+
+wb-mqtt-homeui (2.237.0) stable; urgency=medium
+
+  * Serve dashboards from the HTTP backend (wb.homeui_backend) instead of confed:
+    a lightweight index without inline SVG, lazy per-dashboard SVG GET, and atomic
+    PUT writes that preserve inline svg.current
+  * Move board detection, initial config seeding and default-dashboard
+    reconciliation into the backend service; drop generate-system-config.sh
+  * Switch the dashboards UI to the HTTP backend (lazy SVG, load/SVG error states)
+    and remove the now-unused wb-webui.conf confed schema
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Jul 2026 15:33:49 +0500
+
+wb-mqtt-homeui (2.236.3) stable; urgency=medium
+
+  * Make the config editor tab list scroll on its own
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 30 Jun 2026 16:29:00 +0300
+
+wb-mqtt-homeui (2.236.2) stable; urgency=medium
+
+  * rules: update autocompletes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 30 Jun 2026 15:10:00 +0400
+
+wb-mqtt-homeui (2.236.1) stable; urgency=medium
+
+  * Fix wb-dynamic-type field resetting saved color and text on scenario reopen
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 29 Jun 2026 18:55:00 +0300
+
+wb-mqtt-homeui (2.236.0) stable; urgency=medium
+
+  * Add wb-dynamic-type json-editor widget for scenario output value
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 29 Jun 2026 12:38:00 +0300
+
+wb-mqtt-homeui (2.235.3) stable; urgency=medium
+
+  * Encode special characters in rule editor URLs
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 26 Jun 2026 13:2100 +0300
+
+wb-mqtt-homeui (2.235.2) stable; urgency=medium
+
+  * DALI: keep renamed device names on page load instead of overwriting them with a retained scan result
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Jun 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.235.1) stable; urgency=medium
+
+  * Fix the rule's opening with slashes
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 18:12:00 +0300
+
+wb-mqtt-homeui (2.235.0) stable; urgency=medium
+
+  * Add logs filters to url
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 14:04:00 +0300
+
+wb-mqtt-homeui (2.234.1) stable; urgency=medium
+
+  * Fix json editor responsive table width
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:56:00 +0300
+
+wb-mqtt-homeui (2.234.0) stable; urgency=medium
+
+  * Add drawer component
+  * Move widget modals to drawer
+  * Add widget edit prevent close logic
+  * Pin add control button
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 25 Jun 2026 12:08:00 +0300
+
+wb-mqtt-homeui (2.233.0) stable; urgency=medium
+
+  * Fix mosquitto ACL file permissions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 23 Jun 2026 16:20:00 +0400
+
+wb-mqtt-homeui (2.232.0) stable; urgency=medium
+
+  * DALI: render the bus monitor as a global console tab with address filter and save-to-file
+  * DALI: add a per-bus "Save to syslog" toggle
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jun 2026 15:15:52 +0500
+
+wb-mqtt-homeui (2.231.1) stable; urgency=medium
+
+  * Add Claude Code agent guidance (CLAUDE.md) and project rules
+  * Add backend dev tooling config (pyproject, requirements, venv bootstrap)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jun 2026 10:32:53 +0500
+
+wb-mqtt-homeui (2.231.0) stable; urgency=medium
+
+  * Refactor console panel to a per-tab toolbar and content API
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jun 2026 10:17:58 +0500
+
+wb-mqtt-homeui (2.230.0) stable; urgency=medium
+
+  * Device name in tab list (device manager)
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 22 Jun 2026 13:17:00 +0300
+
+wb-mqtt-homeui (2.229.0) stable; urgency=medium
+
+  * Add console tabs overflow logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jun 2026 15:14:00 +0300
+
+wb-mqtt-homeui (2.228.1) stable; urgency=medium
+
+  * Disable button on loading
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jun 2026 13:51:00 +0300
+
+wb-mqtt-homeui (2.228.0) stable; urgency=medium
+
+  * Add split parameter for on_off capability in the Alice integration page
+  * Add retrievable option for capabilities and properties
+  * Add reportable option for capabilities and properties
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Thu, 18 Jun 2026 18:00:00 +0300
+
+wb-mqtt-homeui (2.227.2) stable; urgency=medium
+
+  * Fix CellAlert test to expect success variant for falsy value
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 19 Jun 2026 10:44:16 +0500
+
+wb-mqtt-homeui (2.227.1) stable; urgency=medium
+
+  * Fix displaying read errors for alarm controls
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Jun 2026 17:10:10 +0500
+
+wb-mqtt-homeui (2.227.0) stable; urgency=medium
+
+  * Add tests
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 17:34:00 +0300
+
+wb-mqtt-homeui (2.226.1) stable; urgency=medium
+
+  * Fix json-editor horizontal tabs
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 15:11:00 +0300
+
+wb-mqtt-homeui (2.226.0) stable; urgency=medium
+
+  * Add posibility to disable widget cell
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 14:54:00 +0300
+
+wb-mqtt-homeui (2.225.7) stable; urgency=medium
+
+  * Fix alice errors on save
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 14:46:00 +0300
+
+wb-mqtt-homeui (2.225.6) stable; urgency=medium
+
+  * Fix DALI colour temperature slider to follow the device's current Coolest/Warmest limits live.
+    The slider steps in 100 K.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Jun 2026 20:19:10 +0500
+
+wb-mqtt-homeui (2.225.5) stable; urgency=medium
+
+  * Fix rule prevent leave on save
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 18:02:00 +0300
+
+wb-mqtt-homeui (2.225.4) stable; urgency=medium
+
+  * Fix edit with dropdown
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 16:31:00 +0300
+
+wb-mqtt-homeui (2.225.3) stable; urgency=medium
+
+  * Fix json-editor's default enum translations
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 12:39:00 +0300
+
+wb-mqtt-homeui (2.225.2) stable; urgency=medium
+
+  * Update ci
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 10 Jun 2026 15:11:00 +0300
+
+wb-mqtt-homeui (2.225.1) stable; urgency=medium
+
+  * Fix searching for a disconnected device: the found device is now selectable, so its connection settings (e.g. baud rate) can be re-applied
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 09 Jun 2026 18:37:37 +0500
+
+wb-mqtt-homeui (2.225.0) stable; urgency=medium
+
+  * Add page name in title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 09 Jun 2026 09:41:00 +0300
+
+wb-mqtt-homeui (2.224.0) stable; urgency=medium
+
+  * Add a device type filter and icons to the Devices page
+  * Fix logout return state url
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 09 Jun 2026 09:04:00 +0300
+
+wb-mqtt-homeui (2.223.0) stable; urgency=medium
+
+  * Add popup component
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Jun 2026 17:15:00 +0300
+
+wb-mqtt-homeui (2.222.0) stable; urgency=medium
+
+  * Add rule edit prevent leave page hook
+  * Add return button to history page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Jun 2026 16:08:00 +0300
+
+wb-mqtt-homeui (2.221.2) stable; urgency=medium
+
+  * Fix history mobile layout
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Jun 2026 15:56:00 +0300
+
+wb-mqtt-homeui (2.221.1) stable; urgency=medium
+
+  * Fix endless loader on device scan add
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jun 2026 12:31:00 +0300
+
+wb-mqtt-homeui (2.221.0) stable; urgency=medium
+
+  * Device manager — add disabled device icon and tooltip
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jun 2026 10:54:00 +0300
+
+wb-mqtt-homeui (2.220.0) stable; urgency=medium
+
+  * Add second password field to approve current password
+  * Add restore password link to login page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jun 2026 10:11:00 +0300
+
+wb-mqtt-homeui (2.219.1) stable; urgency=medium
+
+  * Use pre-defined DH group ffdhe2048 recommended by the IETF
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 14 May 2026 19:00:00 +0400
+
+wb-mqtt-homeui (2.219.0) stable; urgency=medium
+
+  * Add mode capability to the Alice integration page
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Tue, 02 Jun 2026 12:00:00 +0300
+
+wb-mqtt-homeui (2.218.1) stable; urgency=medium
+
+  * Require nodejs>=22
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 03 Jun 2026 18:30:00 +0400
+
+wb-mqtt-homeui (2.218.0) stable; urgency=medium
+
+  * Port for Debian 13
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 03 Jun 2026 18:20:00 +0400
 
 wb-mqtt-homeui (2.217.0) stable; urgency=medium
 
@@ -13,7 +318,25 @@ wb-mqtt-homeui (2.217.0) stable; urgency=medium
   * Update json editor styles
   * Fix all typescript and eslint errors
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Jun 2026 12:12:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 03 Jun 2026 15:22:00 +0300
+
+wb-mqtt-homeui (2.216.5) stable; urgency=medium
+
+  * Fix default svg colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 02 Jun 2026 11:50:00 +0300
+
+wb-mqtt-homeui (2.216.4) stable; urgency=medium
+
+  * Hide dropdown arrow for readonly fields on DALI settings page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Jun 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.216.3) stable; urgency=medium
+
+  * Fix DALI device scenes settings editor scroll bug
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Jun 2026 11:01:44 +0500
 
 wb-mqtt-homeui (2.216.2) stable; urgency=medium
 

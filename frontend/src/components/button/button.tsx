@@ -4,7 +4,7 @@ import { type ButtonProps } from './types';
 import './styles.css';
 
 export const Button = ({
-  className, type, icon, label, isOutlined, isLoading, size = 'default', variant = 'primary', ...rest
+  className, type, icon, label, isOutlined, isLoading, disabled, size = 'default', variant = 'primary', ...rest
 }: ButtonProps) => (
   <button
     type={type || 'button'}
@@ -19,6 +19,7 @@ export const Button = ({
       'button-warn': variant === 'warn',
       'button-outlined': isOutlined,
     })}
+    disabled={disabled || isLoading}
     aria-busy={isLoading}
     {...rest}
   >

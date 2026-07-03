@@ -1,9 +1,11 @@
 #!/bin/bash
 
 CONFFILE=/etc/wb-webui.conf
+BASELINE_STATE=/var/lib/wb-homeui/default-dashboards.state
 
 if [ "$1" = "purge" ]; then
     rm $CONFFILE
+    rm -f $BASELINE_STATE
 fi
 
 #DEBHELPER#

@@ -21,7 +21,7 @@ export const CellHistory = observer(({ cell, isVisible }: CellHistoryProps) => {
   }, [cell, searchParams]);
 
   return (
-    <Link to={getChartUrl} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
+    <Link to={getChartUrl} state={{ canReturn: true }} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
       <Tooltip text={t('widget.labels.graph')} placement="top-end">
         <span>
           <StatsIcon

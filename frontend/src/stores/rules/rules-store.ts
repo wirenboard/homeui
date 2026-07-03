@@ -12,9 +12,14 @@ export default class RulesStore {
   public rules: RuleListItem[] = [];
   public isRuleDebugEnabled = false;
   public logs: RuleLog[] = [];
+  public logLevelFilter = 'all';
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  setLogLevelFilter(value: string) {
+    this.logLevelFilter = value;
   }
 
   async load(path: string): Promise<Rule> {
@@ -46,6 +51,12 @@ export default class RulesStore {
 
   setRuleName(value: string) {
     this.rule.name = value;
+  }
+
+  setRuleError(error: string) {
+    this.rule.error = {
+      message: error,
+    };
   }
 
   resetRule() {

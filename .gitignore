@@ -1,5 +1,6 @@
 node_modules
 dist
+reviews
 .eslintcache
 *.tgz
 *.tar.*

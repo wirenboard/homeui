@@ -1,3 +1,4 @@
+import vitest from '@vitest/eslint-plugin';
 import baseConfig from '@wirenboard/eslint';
 import reactConfig from '@wirenboard/eslint/react';
 
@@ -14,4 +15,8 @@ const getCustomConfig = (cfg) => {
 export default [
   ...getCustomConfig(baseConfig),
   ...getCustomConfig(reactConfig),
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', 'src/test/**/*.ts'],
+    ...vitest.configs.env,
+  },
 ];

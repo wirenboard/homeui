@@ -7,11 +7,11 @@ import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
-import type { BusStore } from '@/stores/dali';
+import { daliGlobalStore, type BusStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
 import { BusCommands } from '../bus-commands';
-import { BusMonitor } from '../bus-monitor';
+import { BusToggle } from '../bus-toggle';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
 import { PollingIntervalField } from './polling-interval-field';
@@ -147,10 +147,17 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
           <BusCommands store={store.commands} />
         </>
       )}
-      <BusMonitor
-        monitorStore={store.busMonitor}
-        busMonitorEnabled={store.busMonitorEnabled}
-        onToggle={(v) => store.setBusMonitorEnabled(v)}
+      <BusToggle
+        label={t('dali.labels.bus-monitor')}
+        value={daliGlobalStore.isMonitorEnabled(store.id)}
+        onToggle={(v) => daliGlobalStore
+          .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
+          .then(() => store.setError(null), (e) => store.setError(e))}
+      />
+      <BusToggle
+        label={t('dali.labels.bus-monitor-syslog')}
+        value={store.busMonitorSyslogEnabled}
+        onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
       />
     </>
   );

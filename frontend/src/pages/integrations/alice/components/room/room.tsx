@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type SubmitEvent, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
@@ -69,7 +69,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
     }
   }, [devices, rooms, id, sortDirection]);
 
-  const [save, isSaving] = useAsyncAction(async (ev: FormEvent) => {
+  const [save, isSaving] = useAsyncAction(async (ev: SubmitEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
     try {
@@ -80,6 +80,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
         await updateRoom(id, { name: roomName, devices: deviceList.map((device) => device.id) });
         setIsEditingTitle(false);
       }
+      setSaveError('');
     } catch (err) {
       setSaveError(err.response.data.detail);
     }
@@ -157,7 +158,16 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
           )}
         </form>
 
-        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+        {!!saveError && (
+          <Alert
+            className="alice-saveAlert"
+            variant="danger"
+            size="small"
+            onClose={() => setSaveError(null)}
+          >
+            {saveError}
+          </Alert>
+        )}
 
         <Table isWithoutGap isFullWidth>
           <TableRow isHeading>

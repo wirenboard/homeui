@@ -5,6 +5,7 @@ export class MonitorStore {
   public logs: string[] = [];
   public isEnabled: boolean = false;
   public isOnPause: boolean = false;
+  public filterValues: string[] = [];
 
   private topic: string = '';
 
@@ -13,8 +14,15 @@ export class MonitorStore {
   }
 
   enableMonitoring(busMqttId: string) {
+    const topic = `/wb-dali/${busMqttId}/bus_monitor`;
+    if (this.isEnabled && this.topic === topic) {
+      return;
+    }
+    if (this.topic && this.topic !== topic) {
+      this._unsubscribeFromTopic();
+    }
+    this.topic = topic;
     this.logs = [];
-    this.topic = `/wb-dali/${busMqttId}/bus_monitor`;
     this._subscribeToTopic();
     this.isEnabled = true;
     this.isOnPause = false;
@@ -42,6 +50,10 @@ export class MonitorStore {
 
   clearLogs() {
     this.logs = [];
+  }
+
+  setFilterValues(values: string[]) {
+    this.filterValues = values;
   }
 
   _subscribeToTopic() {

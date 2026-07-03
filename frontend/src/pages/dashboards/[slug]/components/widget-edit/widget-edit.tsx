@@ -2,6 +2,7 @@ import { json } from '@codemirror/lang-json';
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 import { ReactSortable } from 'react-sortablejs';
 import FileCodeIcon from '@/assets/icons/file-code.svg';
 import FilelistIcon from '@/assets/icons/file-list.svg';
@@ -10,8 +11,9 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
-import { Confirm } from '@/components/confirm';
+import { Drawer } from '@/components/drawer';
 import { Dropdown, type Option } from '@/components/dropdown';
+import { BooleanField } from '@/components/form';
 import { Input } from '@/components/input';
 import { Switch } from '@/components/switch';
 import { Textarea } from '@/components/textarea';
@@ -21,7 +23,9 @@ import './styles.css';
 
 export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }: WidgetEditProps) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 420 });
   const [widgetCells, setWidgetCells] = useState<(CellSimple)[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
   const [isJsonView, setIsJsonView] = useState(false);
   const [name, setName] = useState(widget?.name);
   const [isCompactView, setIsCompactView] = useState(Boolean(widget?.compact));
@@ -47,6 +51,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
     }));
     setName(widget.name);
     setIsCompactView(widget.compact);
+    setIsDirty(false);
   }, [widget.id]);
 
   useEffect(() => {
@@ -62,6 +67,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
 
   const removeCell = (id: string) => {
     setWidgetCells(widgetCells.filter((cell) => cell.id !== id));
+    setIsDirty(true);
   };
 
   const updateCell = (cellId: string, value: any) => {
@@ -71,6 +77,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
         : widgetCell,
     );
     setWidgetCells(updatedValue);
+    setIsDirty(true);
   };
 
   useEffect(() => {
@@ -106,15 +113,25 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
     ];
   }, [widgetCells, topics]);
 
+  const isSaveDisabled = !isCodeValid || !name || !widgetCells.length;
+
+  const handleSave = () => {
+    onSave({
+      name,
+      description,
+      id: widget.id,
+      cells: widgetCells,
+      compact: isCompactView,
+    });
+  };
+
   return (
-    <Confirm
+    <Drawer
       className="widgetEdit"
       isOpened={isOpened}
       heading={widget.id ? `${t('widget.labels.edit')} ${widget.name}` : t('widget.labels.create')}
-      closeCallback={onClose}
-      width={650}
-      isDisabled={!isCodeValid || !name || !widgetCells.length}
-      acceptLabel={t('widget.buttons.save')}
+      width={{ 0: 700, 1200: 800, 1600: 1000 }}
+      showCloseButton={false}
       headerActions={isJsonView
         ? (
           <Button
@@ -137,17 +154,24 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
           />
         )
       }
-      confirmCallback={() => {
-        onSave({
-          name,
-          description,
-          id: widget.id,
-          cells: widgetCells,
-          compact: isCompactView,
-        });
-      }}
-      isOverlayCloseDisabled
-      isPreventSubmit
+      footerActions={(
+        <>
+          <Button
+            className="confirm-action"
+            label={t('modal.labels.cancel')}
+            variant="secondary"
+            onClick={onClose}
+          />
+          <Button
+            className="confirm-action"
+            label={t('widget.buttons.save')}
+            disabled={isSaveDisabled}
+            onClick={handleSave}
+          />
+        </>
+      )}
+      isDirty={isDirty}
+      onClose={onClose}
     >
       <div className="widgetEdit-content">
         {isJsonView ? (
@@ -155,7 +179,10 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
             text={code}
             extensions={[json()]}
             autoFocus
-            onChange={(val) => setCode(val)}
+            onChange={(val) => {
+              setCode(val);
+              setIsDirty(true);
+            }}
           />
         ) : (
           <>
@@ -176,7 +203,10 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                 value={name}
                 isDisabled={isJsonView}
                 autoFocus
-                onChange={(value: string) => setName(value)}
+                onChange={(value: string) => {
+                  setName(value);
+                  setIsDirty(true);
+                }}
               />
 
               <Textarea
@@ -184,12 +214,22 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                 placeholder={t('widget.labels.description')}
                 ariaLabel={t('widget.labels.description')}
                 value={description}
-                onChange={(value) => setDescription(value)}
+                onChange={(value) => {
+                  setDescription(value);
+                  setIsDirty(true);
+                }}
               />
 
               <label className="widgetEdit-label">
                 <div>{t('widget.labels.compact')}</div>
-                <Switch id="compact" value={isCompactView} onChange={(value) => setIsCompactView(value)} />
+                <Switch
+                  id="compact"
+                  value={isCompactView}
+                  onChange={(value) => {
+                    setIsCompactView(value);
+                    setIsDirty(true);
+                  }}
+                />
               </label>
             </div>
 
@@ -204,7 +244,8 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                   <div className="widgetEdit-id">id</div>
                   <div>{t('widget.labels.name')}</div>
                   <div>{t('widget.labels.type')}</div>
-                  {hasInvertedColumn && <div>{t('widget.labels.invert')}</div>}
+                  {hasInvertedColumn && <div className="widgetEdit-invert">{t('widget.labels.invert')}</div>}
+                  <div className="widgetEdit-readonly">{t('widget.labels.readOnly')}</div>
                 </div>
               )}
 
@@ -217,6 +258,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                       const { chosen, ...value } = cell;
                       return value;
                     }));
+                    setIsDirty(true);
                   }
                 }}
                 handle=".widgetEdit-sortHandle"
@@ -231,11 +273,13 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                     })}
                     tabIndex={0}
                   >
-                    <div className="widgetEdit-sort">
-                      {widgetCells.length > 1 && (
-                        <MoveIcon className="widgetEdit-sortHandle widgetEdit-iconAction" />
-                      )}
-                    </div>
+                    {!isMobile && (
+                      <div className="widgetEdit-sort">
+                        {widgetCells.length > 1 && (
+                          <MoveIcon className="widgetEdit-sortHandle widgetEdit-iconAction" />
+                        )}
+                      </div>
+                    )}
                     <div className="widgetEdit-id">{cell.id}</div>
                     <Input
                       className="widgetEdit-controlName"
@@ -250,15 +294,21 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                     {hasInvertedColumn && (
                       <div className="widgetEdit-invert">
                         {cell.type === 'switch' && (
-                          <Switch
-                            id={`inverted_${cell.id}_${i}`}
+                          <BooleanField
                             value={cell.extra?.invert}
-                            ariaLabel={t('widget.labels.invert')}
+                            title={isMobile && t('widget.labels.invert')}
                             onChange={(invert) => updateCell(cell.id, { extra: { invert } })}
                           />
                         )}
                       </div>
                     )}
+                    <div className="widgetEdit-readonly">
+                      <BooleanField
+                        value={cell.readOnly}
+                        title={isMobile && t('widget.labels.readOnly')}
+                        onChange={(readOnly) => updateCell(cell.id, { readOnly })}
+                      />
+                    </div>
                     <Button
                       variant="secondary"
                       icon={<TrashIcon className="widgetEdit-iconAction widgetEdit-remove"/>}
@@ -282,6 +332,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
               isSearchable
               onChange={(option: Option<string>) => {
                 if (option) {
+                  setIsDirty(true);
                   setWidgetCells([...widgetCells, {
                     id: option.value,
                     name: option.value.startsWith('separator')
@@ -296,6 +347,6 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
           </>
         )}
       </div>
-    </Confirm>
+    </Drawer>
   );
 };

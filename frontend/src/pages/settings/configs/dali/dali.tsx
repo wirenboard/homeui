@@ -10,7 +10,14 @@ import { Button } from '@/components/button';
 import { Tree, type TreeItem } from '@/components/tree';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type ItemStore, type GroupStore, type DeviceStore, type BusStore, DaliStore } from '@/stores/dali';
+import {
+  daliGlobalStore,
+  type ItemStore,
+  type GroupStore,
+  type DeviceStore,
+  type BusStore,
+  DaliPageStore,
+} from '@/stores/dali';
 import { useStore } from '@/utils/use-store';
 import { BusTabContent } from './components/bus-tab-content';
 import { DeviceTabContent } from './components/device-tab-content';
@@ -57,6 +64,8 @@ const buildTreeItems = (
       label = t('dali.labels.group', { name: item.label });
     } else if (item.type === 'device' && item.groups.length) {
       label = <>{item.label} <strong>{item.groups.map((g) => `G${g}`).join(' ')}</strong></>;
+    } else if (item.type === 'bus') {
+      label = t('dali.labels.bus', { num: item.index });
     }
     const children = 'children' in item ? item.children : [];
     return {
@@ -67,7 +76,7 @@ const buildTreeItems = (
   });
 
 const DaliPage = observer(() => {
-  const store = useStore(() => new DaliStore());
+  const store = useStore(() => new DaliPageStore(daliGlobalStore));
   const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
   const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
@@ -87,6 +96,7 @@ const DaliPage = observer(() => {
       }
     };
     fetchData();
+    return () => store.destroy();
   }, []);
 
   const onItemClick = (treeItem: TreeItem) => {

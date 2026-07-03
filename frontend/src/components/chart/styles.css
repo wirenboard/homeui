@@ -4,6 +4,9 @@
 .js-plotly-plot .plotly [data-title]::after {
     background: var(--tooltip-background) !important;
 }
+.js-plotly-plot .plotly .modebar {
+    top: -16px !important;
+}
 
 :root[data-theme="dark"] .plot-container {
     filter: invert(85%) hue-rotate(180deg);

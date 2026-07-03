@@ -92,6 +92,24 @@
     margin-inline: -6px;
 }
 
+.page-contentWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.page-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--background-color) 70%, transparent);
+    border-radius: var(--input-border-radius);
+}
+
 .page-error {
     margin-bottom: 12px;
 }

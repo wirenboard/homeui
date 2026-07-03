@@ -14,7 +14,10 @@ export const authGuard: MiddlewareFunction = async (_, next) => {
     if (err instanceof ApiError && err.code === ErrorCode.HTMLResponse) {
       console.error('app.errors.nginx', err);
     } else if (err.status === 401) {
-      throw redirect('/login');
+      const params = new URLSearchParams({
+        returnState: location.hash?.split('#')?.at(1),
+      });
+      throw redirect(`/login?${params}`);
     }
   }
 };

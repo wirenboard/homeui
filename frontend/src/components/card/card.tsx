@@ -64,7 +64,7 @@ const CardActionButton = ({ action, id }: { action: CardAction; id?: string }) =
 };
 
 const CardHeader = ({
-  id, heading, actions = [], toggleBody, isBodyVisible, withError,
+  id, heading, actions = [], indicator, toggleBody, isBodyVisible, withError,
 }: CardProps) => {
   return (
     <>
@@ -74,7 +74,7 @@ const CardHeader = ({
       >{heading}
       </h4>
 
-      {(!!actions.length || !!toggleBody) && (
+      {(!!actions.length || !!indicator || !!toggleBody) && (
         <div className="card-actions">
           {actions.map((action, i) => (
             action.url ? (
@@ -83,6 +83,7 @@ const CardHeader = ({
               <CardActionButton action={action} id={id} key={i} />
             )
           ))}
+          {indicator}
           {!!toggleBody && (
             isBodyVisible
               ? <ChevronDownIcon className="card-toggle" aria-hidden="true" />
@@ -95,7 +96,8 @@ const CardHeader = ({
 };
 
 export const Card = ({
-  children, id, className, heading, actions, toggleBody, withError, isBodyVisible = true, variant = 'primary',
+  children, id, className, heading, actions, indicator, toggleBody,
+  withError, isBodyVisible = true, variant = 'primary',
 }: PropsWithChildren<CardProps>) => {
   const generatedId = useId();
   const normalizedId = id ?? generatedId;
@@ -142,6 +144,7 @@ export const Card = ({
               heading={heading}
               id={id}
               actions={actions}
+              indicator={indicator}
               isBodyVisible={isBodyVisible}
               toggleBody={toggleBody}
               withError={withError}
@@ -150,7 +153,7 @@ export const Card = ({
         </div>
       ) : (
         <div id={headerId} className="card-header">
-          <CardHeader heading={heading} id={id} actions={actions} withError={withError} />
+          <CardHeader heading={heading} id={id} actions={actions} indicator={indicator} withError={withError} />
         </div>
       )}
 

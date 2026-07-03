@@ -32,7 +32,8 @@
          "collapse": "Свернуть",
          "expand": "Развернуть",
          "skip-to-main-content": "Перейти к содержанию",
-         "open-calendar": "Открыть календарь"
+         "open-calendar": "Открыть календарь",
+         "back": "Назад"
       },
       "prompt": {
          "dirty": "На странице остались несохранённые изменения. Вы действительно хотите покинуть страницу?"
@@ -74,8 +75,9 @@
       },
       "errors": {
          "duplicate": "Идентификатор должен быть уникальным",
-         "save": "Не удалось сохранить настройки",
-         "overflow": "Не удалось сохранить настройки. Попробуйте очистить localStorage страницы и перезапустить браузер. Если не помогло — попробуйте уменьшить суммарный размер SVG-изображений."
+         "load": "Не удалось загрузить панели",
+         "svg-load": "Не удалось загрузить изображение панели",
+         "save": "Не удалось сохранить настройки"
       }
    },
    "navigation": {
@@ -140,7 +142,7 @@
       }
    },
    "scan": {
-      "title": "Новые устройства",
+      "title": "Поиск новых устройств",
       "search-disconnected-title": "Поиск неотвечающего устройства",
       "errors": {
          "scan": "Не удалось запустить сканирование",
@@ -358,7 +360,8 @@
       "buttons": {
          "fullscreen": "Перейти в полноэкранный режим",
          "exit-fullscreen": "Выйти из полноэкранного режима",
-         "edit": "Редактировать"
+         "edit": "Редактировать",
+         "retry": "Повторить"
       },
       "prompt": {
          "confirm-heading": "Подтверждение действия",
@@ -452,6 +455,7 @@
          "updating-bootloader": "Обновление загрузчика {{current}} на {{available}}",
          "current-firmware": "Текущая версия прошивки: {{firmware}}",
          "actual-firmware": "Текущая версия прошивки: {{firmware}} (актуальная)",
+         "has-firmware-updates": "Доступна новая версия прошивки",
          "new-firmware": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}.",
          "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",
          "new-bootloader": "Доступна новая версия загрузчика: {{available_bootloader}}, текущая: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Список изменений</0>.",
@@ -482,7 +486,8 @@
          "read-registers-manual": "Устройство доступно, можно прочитать параметры, но это удалит все сделанные вами изменения",
          "restoring-device": "Восстановление прошивки устройства",
          "uncommitted-settings": "У вас есть измененные настройки, которые будут утеряны. Продолжить?",
-         "delete-title": "Подтверждение удаления"
+         "delete-title": "Подтверждение удаления",
+         "not-polled": "Устройство не опрашивается"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -625,6 +630,7 @@
          "compact": "Скрыть подписи",
          "warning": "Изменения затронут все панели, в которых используется данный виджет:",
          "invert": "Инвертировать",
+         "readOnly": "Только чтение",
          "add": "Добавить виджет",
          "available": "Доступные виджеты",
          "add-control": "Добавить контрол",
@@ -701,10 +707,16 @@
    "devices": {
       "title": "Устройства",
       "labels": {
-         "nothing": "Нет устройств, доступных для отображения.",
+         "nothing": "Нет устройств, доступных для отображения",
          "delete": "Удалить устройство",
          "collapse": "Свернуть устройства",
-         "expand": "Развернуть устройства"
+         "expand": "Развернуть устройства",
+         "filter-type": "Фильтр по типу",
+         "all-devices": "Все устройства",
+         "type-system": "Системные",
+         "type-virtual": "Виртуальные",
+         "type-modbus": "Modbus",
+         "type-zigbee": "Zigbee"
       },
       "prompt": {
          "delete-title": "Удаление устройства",
@@ -735,6 +747,7 @@
       },
       "errors": {
          "exists": "Правило с таким именем уже существует",
+         "dot-name": "Имя файла не должно начинаться с точки",
          "mqtt-connection": "Клиент MQTT не подключен"
       }
    },
@@ -758,7 +771,8 @@
          "dock-bottom": "Закрепить снизу",
          "dock-right": "Закрепить справа",
          "close": "Закрыть",
-         "close-tab": "Закрыть вкладку"
+         "close-tab": "Закрыть вкладку",
+         "more-tabs": "Ещё вкладки"
       }
    },
    "logs":{
@@ -798,6 +812,12 @@
          "support": "Портал техподдержки"
       }
    },
+   "drawer": {
+      "labels": {
+         "unsaved-changes": "Есть несохранённые изменения. Закрыть без сохранения?",
+         "discard": "Закрыть без сохранения"
+      }
+   },
    "modal": {
       "labels": {
          "yes": "Да",
@@ -814,6 +834,8 @@
       "labels":{
          "login": "Имя",
          "password": "Пароль",
+         "password-again": "Пароль еще раз",
+         "password-mismatch": "Пароли не совпадают",
          "type": "Тип",
          "admin": "Администратор",
          "user": "Пользователь",
@@ -842,6 +864,7 @@
       "buttons": {
          "login": "Войти",
          "auto-login": "Войти без пароля",
+         "forgot-password": "Забыли пароль?",
          "choose-language": "Выбор языка"
       },
       "labels": {
@@ -873,6 +896,7 @@
          "color-scenes": "Цветовые сцены",
          "property": "Свойство",
          "property-settings": "Настройки свойства",
+         "property-unit": "Единица измерения",
          "property-capability": "Умение/свойство",
          "topic": "MQTT топик",
          "scenes-input": "Сцены (через запятую)",
@@ -880,7 +904,21 @@
          "switch-off": "Команда выкл",
          "type": "Тип",
          "mode": "Режим",
-         "mode-type": "Тип режима",
+         "function-type": "Тип функции",
+         "mode-value": "Значение режима",
+         "mqtt-value-match": "Соответствие MQTT",
+         "mqtt-value-match-hint": "Только a-z, 0-9, _ (например: 0 или auto)",
+         "mqtt-value-match-duplicate": "Значение уже используется в другом режиме",
+         "recommended-for": "Рекомендуемые для {{instance}}",
+         "other-modes": "Прочие режимы",
+         "split": "Раздельные кнопки вкл/выкл",
+         "split-hint": "split. Меняет только вид в приложении умного дома Яндекса. MQTT-команды публикуются как обычно.",
+         "retrievable": "Разрешить запрашивать состояние",
+         "retrievable-hint": "retrievable. Отключите для устройств без обратной связи (например, ИК-пультов) — Алиса не будет опрашивать их состояние.",
+         "reportable": "Отправлять обновления состояния",
+         "reportable-hint": "reportable. Отключите, чтобы не пушить обновления в Алису. Алиса всё ещё сможет запрашивать состояние, если включена опция выше.",
+         "capability-options": "Настройки умения",
+         "property-options": "Настройки свойства",
          "min": "Минимум",
          "max": "Максимум",
          "no-units": "Безразмерно",
@@ -905,6 +943,7 @@
          "save": "Сохранить",
          "add-capability": "Добавить умение",
          "add-property": "Добавить свойство",
+         "add-mode": "Добавить режим",
          "all-devices": "Все устройства"
       },
       "prompt": {
@@ -947,7 +986,8 @@
          "mqtt-password": "Пароль",
          "add-prefix-to-topic": "Добавлять префикс (/client/user_id/)",
          "common-settings": "Общие настройки",
-         "show-system-devices": "Показывать системные устройства",
+         "show-system-devices": "Показывать служебные устройства",
+         "show-page-in-title": "Показывать имя страницы в заголовке вкладки браузера",
          "show-widgets-page": "Отображать в навигации страницу Виджеты",
          "language": "Язык интерфейса",
          "theme": "Тема оформления",
@@ -1008,9 +1048,14 @@
    },
    "dali": {
       "title": "Устройства DALI",
+      "placeholders": {
+         "address-filter": "Фильтр по адресу"
+      },
       "labels": {
          "group": "Группа {{name}}",
+         "bus": "Шина {{num}}",
          "bus-monitor": "Монитор шины",
+         "bus-monitor-syslog": "Сохранять в syslog",
          "bus-settings": "Широковещательные настройки",
          "websocket-enabled": "Эмуляция шлюза Lunatone DALI-2 IoT",
          "websocket-description": "Включение этой опции запустит WebSocket-сервер, который эмулирует Lunatone DALI-2 IoT Gateway. К нему можно подключить Lunatone DALI Cockpit для управления устройствами. В DALI Cockpit надо выбрать Network в качестве интерфейса шины, указать DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, ввести адрес контроллера и порт, заданный ниже.",
@@ -1041,7 +1086,13 @@
          "commands-catalog-title": "Вставить команду",
          "commands-catalog-search": "Поиск команд…",
          "commands-catalog-empty": "Ничего не найдено",
-         "commands-catalog-error": "Не удалось загрузить список команд"
+         "commands-catalog-error": "Не удалось загрузить список команд",
+         "monitor-col-time": "Время",
+         "monitor-col-hex": "Hex",
+         "monitor-col-command": "Команда",
+         "monitor-col-response": "Ответ",
+         "monitor-foreign": "сторонний",
+         "monitor-broadcast": "Широковещательные"
       },
       "buttons": {
          "rescan": "Пересканировать",
@@ -1051,6 +1102,8 @@
          "clear-log": "Очистить журнал",
          "pause-log": "Приостановить получение сообщений",
          "resume-log": "Возобновить получение сообщений",
+         "save-log": "Сохранить журнал в файл",
+         "menu": "Меню",
          "set": "Задать",
          "identify": "Идентифицировать",
          "reset": "Сброс…",

@@ -6,6 +6,7 @@ export interface CellSimple {
   id: string;
   name: string;
   type: string;
+  readOnly?: boolean;
   extra: {
     invert?: boolean;
   };

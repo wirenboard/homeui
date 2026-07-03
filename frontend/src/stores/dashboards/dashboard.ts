@@ -48,7 +48,8 @@ export class Dashboard {
   }
 
   async toggleVisibility() {
-    this.options.isHidden = Object.hasOwn(this.options, 'isHidden') ? !this.options.isHidden : true;
-    return dashboardsStore.updateDashboard(this.id, this);
+    // Non-optimistic: the store applies the new value locally only after the PATCH succeeds.
+    const desired = Object.hasOwn(this.options, 'isHidden') ? !this.options.isHidden : true;
+    return dashboardsStore.setDashboardHidden(this.id, desired);
   }
 }

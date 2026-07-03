@@ -8,6 +8,7 @@ import {
   Capability,
   Color,
   ColorModel,
+  getCapabilityDefaults,
   type CapabilityParameters,
   type SmartDeviceCapability,
   rangeUnitByInstance,
@@ -17,20 +18,19 @@ import {
 } from '@/stores/alice';
 import { devicesStore } from '@/stores/devices';
 import {
+  CapabilityOptionsButton,
   ColorSettingCapability,
+  getAvailableModeInstances,
+  getAvailableToggleInstances,
+  getAvailableRangeInstances,
   getAvailableColorModels,
-} from './capabilities/color-setting';
-import { OnOffCapability } from './capabilities/on-off';
-import {
+  ModeCapability,
+  OnOffCapability,
   RangeCapability,
+  ToggleCapability,
   RANGE_LIMITS_DEFAULT,
   RANGE_LIMITS_LOCKED,
-  getAvailableRangeInstances,
-} from './capabilities/range';
-import {
-  ToggleCapability,
-  getAvailableToggleInstances,
-} from './capabilities/toggle';
+} from './capabilities';
 import { type CapabilitySubProps, type DeviceCapabilitiesProps } from './types';
 
 export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }: DeviceCapabilitiesProps) => {
@@ -54,6 +54,11 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
     if (capabilityType === Capability.Toggle) {
       // For toggle, disable only if all toggle instances are used
       return !getAvailableToggleInstances(capabilities).length;
+    }
+
+    if (capabilityType === Capability.Mode) {
+      // For mode, disable only if all mode instances are used
+      return !getAvailableModeInstances(capabilities).length;
     }
 
     // For other capabilities, use existing logic
@@ -85,12 +90,14 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
 
         break;
       }
-      // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
-      // case Capability.Mode: {
-      //   parameters.instance = 'wet_cleaning';
-      //   parameters.modes = 'start=1, stop=0';
-      //   break;
-      // }
+      case Capability.Mode: {
+        // Select first available instance
+        const availableInstances = getAvailableModeInstances(capabilities);
+
+        parameters.instance = availableInstances[0] || 'cleanup_mode'; // fallback to cleanup_mode;
+        parameters.modes = [];
+        break;
+      }
       case Capability.Range: {
         // Select first available instance
         const availableInstances = getAvailableRangeInstances(capabilities);
@@ -133,8 +140,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
     switch (capability.type) {
       case Capability['On/Off']: return <OnOffCapability />;
       case Capability['Color setting']: return <ColorSettingCapability {...subProps} />;
-      // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
-      // case Capability.Mode: return <ModeCapability {...subProps} />;
+      case Capability.Mode: return <ModeCapability {...subProps} />;
       case Capability.Range: return <RangeCapability {...subProps} />;
       case Capability.Toggle: return <ToggleCapability {...subProps} />;
       default: return null;
@@ -151,6 +157,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             {t('alice.labels.capability')}
           </label>
           <Dropdown
+            size="small"
             id={capabilityId}
             value={capability.type}
             options={Object.keys(Capability).map((cap) => ({
@@ -166,6 +173,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             {t('alice.labels.topic')}
           </label>
           <Dropdown
+            size="small"
             id={topicId}
             className="aliceDeviceSkills-dropdown"
             value={capability.mqtt}
@@ -183,6 +191,15 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
 
         {renderCapabilityFields(capability, key)}
 
+        <div className="aliceDeviceSkills-optionsButton">
+          <CapabilityOptionsButton
+            capability={capability}
+            index={key}
+            capabilities={capabilities}
+            onCapabilityChange={onCapabilityChange}
+          />
+        </div>
+
         <div className="aliceDeviceSkills-deleteButton">
           <Button
             size="small"
@@ -199,7 +216,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
 
   return (
     <>
-      <h6>{t('alice.labels.device-capabilities')}</h6>
+      <h6 className="aliceDeviceSkills-title">{t('alice.labels.device-capabilities')}</h6>
       <div className="aliceDeviceSkills">
         <p>{t('alice.labels.device-capabilities-description')}</p>
         <div className="aliceDeviceSkills-grid">
@@ -212,7 +229,17 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
           disabled={!getAvailableCapabilities().length}
           onClick={() => {
             const type = getAvailableCapabilities().at(0);
-            onCapabilityChange([...capabilities, { type, mqtt: '', parameters: getCapabilityParameters(type) }]);
+            const defaults = getCapabilityDefaults(type);
+            onCapabilityChange([
+              ...capabilities,
+              {
+                type,
+                mqtt: '',
+                parameters: { ...defaults.parameters, ...getCapabilityParameters(type) },
+                retrievable: defaults.retrievable,
+                reportable: defaults.reportable,
+              },
+            ]);
           }}
         />
       </div>

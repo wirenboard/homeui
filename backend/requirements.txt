@@ -1,0 +1,10 @@
+# Runtime dependencies for wb.homeui_backend (third-party only; stdlib omitted).
+bcrypt
+cryptography
+requests
+
+# Wiren Board internal library providing `wb_common.mqtt_client` (MQTTClient).
+# Not on public PyPI — installed from git (default branch is `master`).
+wb_common @ git+https://github.com/wirenboard/wb-common.git@master
+# Used by wb_common.mqtt_client; not declared in wb_common's metadata, so list it here.
+paho-mqtt==2.1.0

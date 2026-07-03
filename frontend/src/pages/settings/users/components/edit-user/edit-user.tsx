@@ -12,6 +12,7 @@ export const EditUserModal = ({ onSave, user, isLoading, onCancel }: EditUserMod
   const { t } = useTranslation();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordRepeat, setPasswordRepeat] = useState('');
   const [type, setType] = useState<UserRole>(UserRole.User);
   const [isReadOnlyAdmin, setIsReadOnlyAdmin] = useState(false);
 
@@ -40,7 +41,7 @@ export const EditUserModal = ({ onSave, user, isLoading, onCancel }: EditUserMod
       confirmCallback={() => onSave({ login, password, type })}
       closeCallback={onCancel}
       isLoading={isLoading}
-      isDisabled={!login || !password}
+      isDisabled={!login || !password || password !== passwordRepeat}
       isOpened
     >
       <label className="editUser-field">
@@ -56,6 +57,20 @@ export const EditUserModal = ({ onSave, user, isLoading, onCancel }: EditUserMod
           showIndicator
           onChange={(val: string) => setPassword(val)}
         />
+      </label>
+
+      <label className="editUser-field">
+        {t('users.labels.password-again')}
+        <Password
+          value={passwordRepeat}
+          autoComplete="off"
+          onChange={(val: string) => setPasswordRepeat(val)}
+        />
+        {password !== passwordRepeat && (
+          <span className="editUser-passwordMismatch" aria-live="assertive">
+            {t('users.labels.password-mismatch')}
+          </span>
+        )}
       </label>
 
       <label className="editUser-field">

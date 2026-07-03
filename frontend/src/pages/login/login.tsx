@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useState, type FormEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LocaleIcon from '@/assets/icons/locale.svg';
@@ -25,7 +25,7 @@ const LoginPage = observer(() => {
   const [password, setPassword] = useState('');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
 
-  const onSubmit = async (ev: FormEvent) => {
+  const onSubmit = async (ev: SubmitEvent<HTMLFormElement>) => {
     ev.preventDefault();
     try {
       setIsShowError(false);
@@ -95,6 +95,13 @@ const LoginPage = observer(() => {
             {!!isShowError && (
               <Alert variant="danger" withIcon={false}>{t('login.errors.failed')}</Alert>
             )}
+            <a
+              className="login-link login-passwordLink"
+              href={documentation[i18n.language]?.usersUtility}
+              target="_blank"
+            >
+              {t('login.buttons.forgot-password')}
+            </a>
           </div>
 
           <div className="login-actions">
@@ -119,7 +126,13 @@ const LoginPage = observer(() => {
       </fieldset>
 
       <nav className="login-links">
-        <a href={documentation[i18n.language]?.main} target="_blank">{t('login.labels.documentation')}</a>
+        <a
+          className="login-link"
+          href={documentation[i18n.language]?.main}
+          target="_blank"
+        >
+          {t('login.labels.documentation')}
+        </a>
 
         <label htmlFor="language" className="login-languageWrapper">
           <LocaleIcon className="login-languageIcon" />
