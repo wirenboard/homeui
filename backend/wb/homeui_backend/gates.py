@@ -77,11 +77,11 @@ def _parse_gate(name: str, config: dict) -> Gate:
     internal_port = config["internalPort"]
     if not isinstance(internal_port, int):
         raise ValueError(f"invalid port {internal_port!r}")
-    # Default per the convention: prepend "2" (9000 -> 29000); ports >= 10000
-    # would overflow 65535, so they need an explicit externalPort.
+    # Default per the convention: prepend "2" (9000 -> 29000). Works only for
+    # 4-digit internal ports: a 5-digit one would overflow 65535.
     external_port = config.get("externalPort", int(f"2{internal_port}"))
     if external_port > 65535 and "externalPort" not in config:
-        raise ValueError(f"internalPort {internal_port} needs an explicit externalPort")
+        raise ValueError(f"internalPort {internal_port} is not 4-digit: set an explicit externalPort")
     for port in (external_port, internal_port):
         if not isinstance(port, int) or not 1024 <= port <= 65535 or port in RESERVED_PORTS:
             raise ValueError(f"invalid port {port!r}")
