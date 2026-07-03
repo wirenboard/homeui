@@ -254,6 +254,16 @@ describe('toMenuItemInstance', () => {
     }
   });
 
+  test('drops isExternal for a control-char path the browser collapses to protocol-relative', () => {
+    // "/\t/evil.com" looks same-origin but a browser strips the tab, turning the
+    // href into "//evil.com" (off-origin). The path must be resolved, not regex-matched.
+    for (const url of ['/\t/evil.com', '/\n/evil.com', '/\r/evil.com']) {
+      const result = toMenuItemInstance({ id: 'x', url, isExternal: true, openInNewTab: true }, 'en');
+      expect(result.isExternal).toBeUndefined();
+      expect(result.openInNewTab).toBeUndefined();
+    }
+  });
+
   test('does not set isExternal for internal items', () => {
     const result = toMenuItemInstance({ id: 'x', url: '/x' }, 'en');
     expect(result.isExternal).toBeUndefined();

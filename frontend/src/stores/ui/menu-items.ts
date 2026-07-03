@@ -33,10 +33,23 @@ const normalizeUrl = (url?: string) => {
   return migrateLegacyUrl(normalized);
 };
 
+// A fixed base to resolve absolute paths against: whether a path escapes to another
+// host is independent of the real origin, and this keeps the check env-independent.
+const SAME_ORIGIN_BASE = 'http://wb-menu.local';
+
 // Same-origin absolute path or http(s) URL; rejects javascript:/data:/protocol-relative.
 const isSafeExternalUrl = (url?: string): boolean => {
   if (!url) return false;
-  if (/^\/(?![/\\])/.test(url)) return true;
+  // Absolute path: resolve it and require it stays same-origin. new URL() (not a
+  // regex) is what catches control-char/backslash tricks like "/\t/evil.com" or
+  // "/\evil.com" that browsers collapse into protocol-relative "//evil.com".
+  if (url.startsWith('/')) {
+    try {
+      return new URL(url, SAME_ORIGIN_BASE).origin === SAME_ORIGIN_BASE;
+    } catch {
+      return false;
+    }
+  }
   try {
     return ['http:', 'https:'].includes(new URL(url).protocol);
   } catch {
