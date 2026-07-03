@@ -284,6 +284,16 @@ class GateAuthCheckSnippetTest(unittest.TestCase):
             content = f.read()
         self.assertIn('proxy_set_header Allow-Unauthorized-Get "";', content)
 
+    def test_unauth_snippet_redirects_html_navigations_without_sec_fetch(self):
+        """Over plain HTTP browsers don't send Sec-Fetch-Mode, so the unauth
+        fallback must also redirect on Accept: text/html — else a logged-out
+        browser on an HTTP gate gets a bare 401 instead of the login form."""
+        snippet = os.path.join(CONFIGS_DIR, "etc", "nginx", "snippets", "wb-gate-unauth.inc")
+        with open(snippet, encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("$http_accept", content)
+        self.assertIn("text/html", content)
+
 
 class CliReadHttpsEnabledTest(unittest.TestCase):
     def setUp(self):
