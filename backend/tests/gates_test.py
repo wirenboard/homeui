@@ -1,5 +1,3 @@
-import importlib.machinery
-import importlib.util
 import json
 import os
 import shutil
@@ -8,20 +6,11 @@ import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
+from wb.homeui_backend import gates_cli
 from wb.homeui_backend.gates import Gate, apply_gates, load_gates, render_gate
 from wb.homeui_backend.users_storage import UserType
 
 CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "..", "configs")
-CLI_PATH = os.path.join(os.path.dirname(__file__), "..", "wb-homeui-gates")
-
-
-def _load_cli():
-    # The CLI ships without a .py suffix, so give importlib an explicit source loader.
-    loader = importlib.machinery.SourceFileLoader("wb_homeui_gates_cli", CLI_PATH)
-    spec = importlib.util.spec_from_loader(loader.name, loader)
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
 
 
 def _write_gate(dir_path, name, config):
@@ -264,6 +253,7 @@ class ApplyGatesTest(unittest.TestCase):
         self.assertEqual(os.listdir(self.rendered_dir), ["svc.conf"])
 
 
+@unittest.skipUnless(os.path.isdir(CONFIGS_DIR), "configs/ is not present in the pybuild sandbox")
 class GateAuthCheckSnippetTest(unittest.TestCase):
     def test_pins_allow_unauthorized_get_to_block_client_bypass(self):
         """The gate auth snippet must neutralize a client-supplied
@@ -277,11 +267,10 @@ class GateAuthCheckSnippetTest(unittest.TestCase):
 
 class CliReadHttpsEnabledTest(unittest.TestCase):
     def setUp(self):
-        self.cli = _load_cli()
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
         self.config = os.path.join(self.tmp, "conf")
-        patcher = patch.object(self.cli, "CONFIG_FILE", self.config)
+        patcher = patch.object(gates_cli, "CONFIG_FILE", self.config)
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -291,17 +280,17 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
 
     def test_true_bool_enables_https(self):
         self._write('{"enable_https": true}')
-        self.assertTrue(self.cli.read_https_enabled())
+        self.assertTrue(gates_cli.read_https_enabled())
 
     def test_false_bool_disables_https(self):
         self._write('{"enable_https": false}')
-        self.assertFalse(self.cli.read_https_enabled())
+        self.assertFalse(gates_cli.read_https_enabled())
 
     def test_string_value_is_not_coerced_to_true(self):
         """A non-bool value must not be truthy-coerced (the backend rejects a
         non-bool enable_https), so the CLI and backend agree on the scheme."""
         self._write('{"enable_https": "false"}')
-        self.assertFalse(self.cli.read_https_enabled())
+        self.assertFalse(gates_cli.read_https_enabled())
 
     def test_missing_file_defaults_to_off(self):
-        self.assertFalse(self.cli.read_https_enabled())
+        self.assertFalse(gates_cli.read_https_enabled())
