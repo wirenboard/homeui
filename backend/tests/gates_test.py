@@ -209,6 +209,26 @@ class ApplyGatesTest(unittest.TestCase):
         with open(self.bounces, encoding="utf-8") as f:
             self.assertEqual(f.read(), "location = /open-good { return 302 http://$host:29000/; }\n")
 
+    def test_menu_item_carries_required_role_for_auth_gate_only(self):
+        """An auth gate's menu drop-in carries requiredRole; a no-auth gate's omits it."""
+        _write_gate(
+            self.conf_dir,
+            "authsvc",
+            {"externalPort": 29000, "internalPort": 9000, "role": "operator", "title": {"en": "Auth"}},
+        )
+        _write_gate(
+            self.conf_dir,
+            "opensvc",
+            {"externalPort": 29001, "internalPort": 9001, "auth": False, "title": {"en": "Open"}},
+        )
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        with open(os.path.join(self.menu_dir, "wb-gate-authsvc.json"), encoding="utf-8") as f:
+            auth_item = json.load(f)["children"][0]
+        with open(os.path.join(self.menu_dir, "wb-gate-opensvc.json"), encoding="utf-8") as f:
+            open_item = json.load(f)["children"][0]
+        self.assertEqual(auth_item["requiredRole"], "operator")
+        self.assertNotIn("requiredRole", open_item)
+
     def test_reload_failure_restores_previous_state(self):
         """nginx -t passes but `systemctl reload` fails: the new render is rolled
         back on disk and the previous working gate stays, so the on-disk state can

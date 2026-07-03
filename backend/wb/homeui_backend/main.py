@@ -27,7 +27,7 @@ from .dashboards import (
     detect_board,
 )
 from .db import open_db
-from .gates import apply_gates
+from .gates import CUSTOM_MENU_DIR, apply_gates
 from .http_response import (
     HttpResponse,
     response_200,
@@ -49,7 +49,6 @@ from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
-CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -665,7 +664,7 @@ def security_check_handler(
 
 def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
-    with os.scandir(CUSTOM_MENU_FOLDER) as entries:
+    with os.scandir(CUSTOM_MENU_DIR) as entries:
         for entry in sorted(entries, key=lambda e: e.name):
             data = None
             if entry.is_file() and entry.name.endswith(".json"):
