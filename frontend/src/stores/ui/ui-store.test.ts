@@ -1,4 +1,4 @@
-import type { UserRole } from '@/stores/auth';
+import { authStore, type UserRole } from '@/stores/auth';
 import { getMenu } from './api';
 import { normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
 import UiStore from './ui-store';
@@ -153,6 +153,16 @@ describe('UiStore', () => {
       await store.buildMenu([], false, new URLSearchParams());
 
       expect(store.modules).toEqual([]);
+    });
+
+    test('applies authStore role gating to custom items end-to-end', async () => {
+      vi.mocked(authStore.hasRights).mockReturnValue(false);
+      vi.mocked(getMenu).mockResolvedValue([
+        { id: 'secret', url: '/secret', title: { en: 'Secret' }, requiredRole: 'admin' as UserRole },
+      ]);
+      await store.buildMenu([], false, new URLSearchParams());
+      expect(authStore.hasRights).toHaveBeenCalledWith('admin');
+      expect(store.menuItems.find((i) => i.url === '/secret')?.isShow).toBe(false);
     });
   });
 });
@@ -375,5 +385,15 @@ describe('mergeMenuItems', () => {
     const ext = result.find((i) => i.id === 'my-service');
     expect(ext?.isExternal).toBe(true);
     expect(ext?.url).toBe('/my-service/');
+  });
+
+  test('merges external flags onto an existing base item by id', () => {
+    const base = [{ id: 'svc', label: 'svc', url: '/svc' }];
+    const custom = [{ id: 'svc', label: 'svc', url: 'https://ext.example/', isExternal: true, openInNewTab: true }];
+    const result = mergeMenuItems(base, custom);
+    const item = result.find((i) => i.id === 'svc');
+    expect(item?.url).toBe('https://ext.example/');
+    expect(item?.isExternal).toBe(true);
+    expect(item?.openInNewTab).toBe(true);
   });
 });
