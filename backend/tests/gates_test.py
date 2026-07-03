@@ -33,17 +33,40 @@ class LoadGatesTest(unittest.TestCase):
         self.assertEqual(gates[0].role, UserType.ADMIN)
         self.assertTrue(gates[0].auth)
 
-    def test_high_internal_port_requires_explicit_external(self):
-        """Prepending 2 to a port >= 10000 overflows 65535: the gate is skipped
-        with a clear reason unless externalPort is given explicitly."""
+    def test_five_digit_internal_gets_block_port(self):
+        """Auto external = 20000 + internal % 20000, so a 5-digit internal maps
+        into the gate block instead of erroring: 18884 -> 38884."""
         _write_gate(self.conf_dir, "high", {"internalPort": 18884})
         gates, skipped = load_gates()
-        self.assertEqual(gates, [])
-        self.assertIn("explicit externalPort", skipped[0])
-        _write_gate(self.conf_dir, "high", {"internalPort": 18884, "externalPort": 28884})
-        gates, skipped = load_gates()
-        self.assertEqual(gates[0].external_port, 28884)
         self.assertEqual(skipped, [])
+        self.assertEqual(gates[0].external_port, 38884)
+
+    def test_internal_inside_block_probes_past_itself(self):
+        """internal 21880 maps onto itself (20000 + 1880); the allocator must
+        probe to the next free port instead of colliding with the service."""
+        _write_gate(self.conf_dir, "svc", {"internalPort": 21880})
+        gates, skipped = load_gates()
+        self.assertEqual(skipped, [])
+        self.assertEqual(gates[0].external_port, 21881)
+
+    def test_auto_ports_probe_deterministically_on_clash(self):
+        """Internals 1024 and 21024 both map to 21024 (also gate b's own port);
+        allocation probes in name order, so the result is stable: a=21025,
+        b=21026."""
+        _write_gate(self.conf_dir, "a", {"internalPort": 1024})
+        _write_gate(self.conf_dir, "b", {"internalPort": 21024})
+        gates, skipped = load_gates()
+        self.assertEqual(skipped, [])
+        self.assertEqual({g.name: g.external_port for g in gates}, {"a": 21025, "b": 21026})
+
+    def test_explicit_port_wins_and_auto_avoids_it(self):
+        """An explicit externalPort is claimed first and never moves; an auto
+        gate whose default lands on it probes to the next free port."""
+        _write_gate(self.conf_dir, "auto", {"internalPort": 9000})
+        _write_gate(self.conf_dir, "fixed", {"internalPort": 9100, "externalPort": 29000})
+        gates, skipped = load_gates()
+        self.assertEqual(skipped, [])
+        self.assertEqual({g.name: g.external_port for g in gates}, {"auto": 29001, "fixed": 29000})
 
     def test_skips_broken_gates_keeps_valid(self):
         """Every bad file is reported with its reason and must not block the others."""
@@ -55,12 +78,12 @@ class LoadGatesTest(unittest.TestCase):
         self.assertEqual([g.name for g in gates], ["ok"])
         self.assertEqual(len(skipped), 3)
 
-    def test_skips_duplicate_external_port(self):
+    def test_skips_duplicate_explicit_external_port(self):
         _write_gate(self.conf_dir, "a", {"externalPort": 29000, "internalPort": 9000})
         _write_gate(self.conf_dir, "b", {"externalPort": 29000, "internalPort": 9001})
         gates, skipped = load_gates()
         self.assertEqual([g.name for g in gates], ["a"])
-        self.assertEqual(len(skipped), 1)
+        self.assertIn("already used by another gate", skipped[0])
 
     def test_missing_dir_is_empty(self):
         with patch("wb.homeui_backend.gates.GATES_CONF_DIR", os.path.join(self.conf_dir, "absent")):

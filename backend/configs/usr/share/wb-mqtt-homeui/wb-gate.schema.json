@@ -12,7 +12,7 @@
       "minimum": 1024,
       "maximum": 65535,
       "not": { "enum": [80, 443] },
-      "description": "Public gate port. Default: 2 prepended to internalPort (9000 -> 29000) — only for 4-digit internal ports; a 5-digit internalPort requires an explicit value. Must differ from internalPort."
+      "description": "Public gate port. Default: 20000 + internalPort % 20000 (for a 4-digit internal port that is literally 2 prepended: 9000 -> 29000); a clash with another gate deterministically takes the next port in the 20000-39999 block. Must differ from internalPort."
     },
     "internalPort": {
       "type": "integer",
