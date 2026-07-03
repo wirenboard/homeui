@@ -33,12 +33,13 @@ vi.mock('@/components/columns-wrapper', () => ({
   ColumnsWrapper: ({ children }: any) => <div>{children}</div>,
 }));
 vi.mock('@/components/card', () => ({
-  Card: ({ children, heading, actions, id }: any) => (
+  Card: ({ children, heading, actions, indicator, id }: any) => (
     <div data-testid={`card-${id}`}>
       <h3>{heading}</h3>
       {actions?.map((a: any) => (
         <button key={a.title} onClick={() => a.action(id)}>{a.title}</button>
       ))}
+      {indicator}
       {children}
     </div>
   ),

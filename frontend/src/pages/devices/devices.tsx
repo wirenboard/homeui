@@ -105,14 +105,14 @@ const DevicesPage = observer(() => {
           >
             {Array.from(displayedDevices).map(([deviceId, device]) => (
               <Card
-                heading={
-                  <span className="devices-deviceHeader">
-                    {device.name}
+                heading={device.name}
+                indicator={
+                  <>
                     {device.type === DeviceType.Virtual && <CodeIcon className="devices-icon" />}
                     {device.type === DeviceType.System && <SystemDeviceIcon className="devices-icon" />}
                     {device.type === DeviceType.Modbus && <ModbusIcon className="devices-icon" />}
                     {device.type === DeviceType.Zigbee && <ZigbeeIcon className="devices-icon" />}
-                  </span>
+                  </>
                 }
                 id={deviceId}
                 actions={actions}

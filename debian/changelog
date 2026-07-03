@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.5) stable; urgency=medium
+
+  * Fix device icon on mobile resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Jul 2026 13:49:00 +0300
+
 wb-mqtt-homeui (2.237.4) stable; urgency=medium
 
   * Fix install
