@@ -17,5 +17,5 @@ install:
 	install -Dm0755 wb-homeui-backend -t $(DESTDIR)$(PREFIX)/bin
 	install -Dm0755 wb-homeui-users -t $(DESTDIR)$(PREFIX)/bin
 	install -Dm0644 21wb-homeui-backend -t $(DESTDIR)/etc/wb-configs.d
-	install -Dm0644 completions/*.bash $(DESTDIR)$(PREFIX)/share/bash-completion/completions
+	install -Dm0644 completions/*.bash -t $(DESTDIR)$(PREFIX)/share/bash-completion/completions
 	cp -a -R configs/* $(DESTDIR)
