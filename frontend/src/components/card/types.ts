@@ -14,6 +14,7 @@ export interface CardProps {
   className?: string;
   heading: string | ReactElement;
   actions?: CardAction[];
+  indicator?: ReactElement;
   toggleBody?: () => void;
   isBodyVisible?: boolean;
   variant?: 'primary' | 'secondary' | 'tertiary';

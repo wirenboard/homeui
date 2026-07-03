@@ -192,12 +192,12 @@ def _render_menu_item(gate: Gate) -> str:
 
 
 def _write_rendered_files(gates: list[Gate], https_enabled: bool) -> None:
-    os.makedirs(RENDERED_GATES_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(BOUNCES_CONF_PATH), exist_ok=True)
     scheme = "https" if https_enabled else "http"
 
-    for file_name in os.listdir(RENDERED_GATES_DIR):
-        os.remove(os.path.join(RENDERED_GATES_DIR, file_name))
+    # rmtree+recreate rather than unlink-each: tolerates a stray subdir in the dir.
+    shutil.rmtree(RENDERED_GATES_DIR, ignore_errors=True)
+    os.makedirs(RENDERED_GATES_DIR, exist_ok=True)
     bounces = []
     for gate in gates:
         with open(os.path.join(RENDERED_GATES_DIR, gate.name + ".conf"), "w", encoding="utf-8") as f:
@@ -260,6 +260,15 @@ def _reload_nginx() -> None:
     subprocess.run(["/usr/bin/systemctl", "reload", "nginx"], check=True)  # nosec B603 - fixed constant argv
 
 
+def _reload_nginx_best_effort() -> None:
+    # Used on the rollback path: the config is already known-good (it was running),
+    # so a failure here can only be reported, not recovered from.
+    try:
+        _reload_nginx()
+    except subprocess.CalledProcessError as e:
+        logging.error("Reload of the restored gate config also failed: %s", e)
+
+
 def apply_gates(https_enabled: bool) -> ApplyResult:
     """Render all registered gates for the given mode and reload nginx.
 
@@ -288,7 +297,18 @@ def _apply_gates_locked(https_enabled: bool) -> ApplyResult:
             _restore_rendered_state(snapshot_dir)
             logging.error("nginx -t rejected the rendered gates, previous state restored")
             return ApplyResult(ok=False, gates=gates, skipped=skipped, error=nginx_error)
+        try:
+            _reload_nginx()
+        except subprocess.CalledProcessError as e:
+            # nginx -t passed but reload failed (e.g. a port a gate binds is taken,
+            # systemd/dbus hiccup): roll back on disk and reload the old config so the
+            # rendered state can never diverge from what nginx is actually running.
+            _restore_rendered_state(snapshot_dir)
+            _reload_nginx_best_effort()
+            logging.error("nginx reload failed, previous rendered state restored: %s", e)
+            return ApplyResult(ok=False, gates=gates, skipped=skipped, error=str(e))
+    # Menu drop-ins are written only after a successful reload, so a failed apply
+    # never leaves stale menu items pointing at gates that aren't live.
     _write_menu_items(gates)
-    _reload_nginx()
     logging.info("Applied %d gate(s), https=%s", len(gates), https_enabled)
     return ApplyResult(ok=True, gates=gates, skipped=skipped)

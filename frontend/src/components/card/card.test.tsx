@@ -107,4 +107,33 @@ describe('Card', () => {
     const { container } = render(<Card heading="Err" withError>x</Card>);
     expect(container.querySelector('.card-titleWithError')).toBeTruthy();
   });
+
+  test('renders indicator between actions and toggle', () => {
+    const action = {
+      title: 'Delete',
+      action: vi.fn(),
+      icon: (props: any) => <svg {...props} />,
+    };
+    render(
+      <Card
+        heading="H"
+        actions={[action]}
+        indicator={<span data-testid="indicator">Status</span>}
+        toggleBody={vi.fn()}
+        isBodyVisible={true}
+      >
+        x
+      </Card>,
+    );
+    expect(screen.getByTestId('indicator')).toBeDefined();
+    const actionsContainer = screen.getByTestId('indicator').parentElement;
+    expect(actionsContainer?.classList.contains('card-actions')).toBe(true);
+  });
+
+  test('renders indicator without actions', () => {
+    render(
+      <Card heading="H" indicator={<span data-testid="indicator">Icon</span>}>x</Card>,
+    );
+    expect(screen.getByTestId('indicator')).toBeDefined();
+  });
 });

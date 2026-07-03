@@ -6,6 +6,11 @@ location = /wb_auth_check {
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header Required-User-Type $wb_role;
+    # Pin the auth-decision inputs to server-controlled values so a client cannot
+    # forge them: a gate must never honour a client-supplied Allow-Unauthorized-Get
+    # (that would let GET through unauthenticated), and the method is nginx's own.
+    proxy_set_header Allow-Unauthorized-Get "";
+    proxy_set_header X-Original-Method $request_method;
     # Short auth cache: collapses request storms from chatty SPAs. The answer
     # depends only on (session, required role), so entries are shared between gates.
     proxy_cache wb_gate_auth;

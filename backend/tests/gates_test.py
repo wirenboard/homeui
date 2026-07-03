@@ -1,12 +1,27 @@
+import importlib.machinery
+import importlib.util
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
 from wb.homeui_backend.gates import Gate, apply_gates, load_gates, render_gate
 from wb.homeui_backend.users_storage import UserType
+
+CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "..", "configs")
+CLI_PATH = os.path.join(os.path.dirname(__file__), "..", "wb-homeui-gates")
+
+
+def _load_cli():
+    # The CLI ships without a .py suffix, so give importlib an explicit source loader.
+    loader = importlib.machinery.SourceFileLoader("wb_homeui_gates_cli", CLI_PATH)
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
 
 
 def _write_gate(dir_path, name, config):
@@ -204,3 +219,89 @@ class ApplyGatesTest(unittest.TestCase):
         self.assertEqual(os.listdir(self.rendered_dir), ["good.conf"])
         with open(self.bounces, encoding="utf-8") as f:
             self.assertEqual(f.read(), "location = /open-good { return 302 http://$host:29000/; }\n")
+
+    def test_reload_failure_restores_previous_state(self):
+        """nginx -t passes but `systemctl reload` fails: the new render is rolled
+        back on disk and the previous working gate stays, so the on-disk state can
+        never diverge from what nginx is actually running."""
+        _write_gate(
+            self.conf_dir, "good", {"externalPort": 29000, "internalPort": 9000, "title": {"en": "Good"}}
+        )
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        _write_gate(
+            self.conf_dir, "second", {"externalPort": 29001, "internalPort": 9001, "title": {"en": "Second"}}
+        )
+
+        reload_calls = []
+
+        def fake_run(cmd, **_kwargs):
+            if cmd[0].endswith("nginx") and cmd[1] == "-t":
+                return MagicMock(returncode=0)
+            if cmd[1] == "reload":
+                reload_calls.append(cmd)
+                if len(reload_calls) == 1:  # the reload of the new (bad) render fails
+                    raise subprocess.CalledProcessError(1, cmd)
+                return MagicMock(returncode=0)  # the rollback reload succeeds
+            return MagicMock(returncode=0)
+
+        with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
+            "wb.homeui_backend.gates.time.sleep"
+        ):
+            result = apply_gates(False)
+
+        self.assertFalse(result.ok)
+        self.assertEqual(os.listdir(self.rendered_dir), ["good.conf"])
+        # Menu drop-ins are written only after a successful reload.
+        self.assertEqual(os.listdir(self.menu_dir), ["wb-gate-good.json"])
+
+    def test_stray_subdir_in_rendered_dir_is_tolerated(self):
+        """A leftover subdirectory in the rendered dir must not crash apply."""
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        os.makedirs(self.rendered_dir)
+        os.makedirs(os.path.join(self.rendered_dir, "stray-subdir"))
+        result = self._apply(https_enabled=False)
+        self.assertTrue(result.ok)
+        self.assertEqual(os.listdir(self.rendered_dir), ["svc.conf"])
+
+
+class GateAuthCheckSnippetTest(unittest.TestCase):
+    def test_pins_allow_unauthorized_get_to_block_client_bypass(self):
+        """The gate auth snippet must neutralize a client-supplied
+        Allow-Unauthorized-Get so a gate cannot be bypassed with an unauthenticated
+        GET (regression for the auth-request header-forwarding bypass)."""
+        snippet = os.path.join(CONFIGS_DIR, "etc", "nginx", "snippets", "wb-gate-authcheck.inc")
+        with open(snippet, encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn('proxy_set_header Allow-Unauthorized-Get "";', content)
+
+
+class CliReadHttpsEnabledTest(unittest.TestCase):
+    def setUp(self):
+        self.cli = _load_cli()
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp)
+        self.config = os.path.join(self.tmp, "conf")
+        patcher = patch.object(self.cli, "CONFIG_FILE", self.config)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _write(self, content):
+        with open(self.config, "w", encoding="utf-8") as f:
+            f.write(content)
+
+    def test_true_bool_enables_https(self):
+        self._write('{"enable_https": true}')
+        self.assertTrue(self.cli.read_https_enabled())
+
+    def test_false_bool_disables_https(self):
+        self._write('{"enable_https": false}')
+        self.assertFalse(self.cli.read_https_enabled())
+
+    def test_string_value_is_not_coerced_to_true(self):
+        """A non-bool value must not be truthy-coerced (the backend rejects a
+        non-bool enable_https), so the CLI and backend agree on the scheme."""
+        self._write('{"enable_https": "false"}')
+        self.assertFalse(self.cli.read_https_enabled())
+
+    def test_missing_file_defaults_to_off(self):
+        self.assertFalse(self.cli.read_https_enabled())
