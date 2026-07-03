@@ -9,8 +9,8 @@ export default class Device {
   public explicit: boolean = false;
   public isVisible: boolean = true;
   public type: DeviceType;
-  #name: string;
-  #nameTranslations: NameTranslations = {};
+  private _name: string;
+  private _nameTranslations: NameTranslations = {};
 
   constructor(id: string) {
     this.id = id;
@@ -24,17 +24,17 @@ export default class Device {
   }
 
   get name(): string {
-    return this.#nameTranslations[i18n.language] || this.#nameTranslations.en || this.#name || this.id;
+    return this._nameTranslations[i18n.language] || this._nameTranslations.en || this._name || this.id;
   }
 
   set name(value: string) {
-    this.#name = value;
+    this._name = value;
   }
 
   setMeta(meta: string): void {
     try {
       const parsedMeta: DeviceMeta = JSON.parse(meta);
-      this.#nameTranslations = parsedMeta.title || {};
+      this._nameTranslations = parsedMeta.title || {};
 
       if (Object.values(DeviceType).includes(this.type)) {
         return;

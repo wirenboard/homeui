@@ -21,7 +21,14 @@ const { dashStore, deviceStore, fullscreen } = vi.hoisted(() => ({
       }],
     ]),
     dashboards: new Map<string, any>([
-      ['test-dash', { id: 'test-dash', name: 'Test Dashboard', widgets: ['w1'] }],
+      ['test-dash', {
+        id: 'test-dash', name: 'Test Dashboard', widgets: [['w1']],
+        get flatWidgets() {
+          return this.widgets.flat();
+        },
+        options: {},
+      }],
+
     ]),
     isLoading: false,
     removeWidgetFromDashboard: vi.fn(),
@@ -41,6 +48,11 @@ vi.mock('@/components/tooltip', () => import('@/test/mocks/tooltip'));
 vi.mock('@/layouts/page', () => import('@/test/mocks/page-layout'));
 vi.mock('@/components/columns-wrapper', () => ({
   ColumnsWrapper: ({ children }: any) => <div>{children}</div>,
+  useMaxColumns: () => 4,
+  MIN_COLUMN_WIDTH: 376,
+}));
+vi.mock('./components/columns-editor', () => ({
+  ColumnsEditor: () => <div data-testid="columns-editor" />,
 }));
 vi.mock('@/components/card', () => ({
   Card: ({ children, heading, actions, id }: any) => (
@@ -88,11 +100,20 @@ function renderPage(path = '/dashboards/test-dash') {
   );
 }
 
+function makeDashMock(overrides: Record<string, any> = {}) {
+  return {
+    id: 'test-dash', name: 'Test Dashboard', widgets: [['w1']],
+    get flatWidgets() {
+      return this.widgets.flat();
+    },
+    options: {},
+    ...overrides,
+  };
+}
+
 function resetData() {
   dashStore.widgets.get('w1')!.save.mockReset();
-  dashStore.dashboards.set('test-dash', {
-    id: 'test-dash', name: 'Test Dashboard', widgets: ['w1'],
-  });
+  dashStore.dashboards.set('test-dash', makeDashMock());
 }
 
 beforeEach(() => {
@@ -115,7 +136,7 @@ describe('DashboardPage', () => {
     });
 
     test('shows no-widgets message when empty', () => {
-      dashStore.dashboards.set('test-dash', { id: 'test-dash', name: 'Empty', widgets: [] });
+      dashStore.dashboards.set('test-dash', makeDashMock({ name: 'Empty', widgets: [[]] }));
       renderPage();
       expect(screen.getByText('dashboard.labels.no-widgets')).toBeDefined();
     });
@@ -151,9 +172,7 @@ describe('DashboardPage', () => {
     });
 
     test('skips missing widgets', () => {
-      dashStore.dashboards.set('test-dash', {
-        id: 'test-dash', name: 'Test', widgets: ['w1', 'nonexistent'],
-      });
+      dashStore.dashboards.set('test-dash', makeDashMock({ name: 'Test', widgets: [['w1', 'nonexistent']] }));
       renderPage();
       expect(screen.getByText('Widget 1')).toBeDefined();
       expect(screen.queryByTestId('card-nonexistent')).toBeNull();

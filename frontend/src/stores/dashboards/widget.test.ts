@@ -7,7 +7,7 @@ const dashboardsStoreMock = vi.hoisted(() => ({
   copyWidget: vi.fn(),
   deleteWidget: vi.fn(),
   widgets: new Map<string, { id: string }>(),
-  dashboards: new Map<string, { widgets: string[]; isSvg: boolean }>(),
+  dashboards: new Map<string, { widgets: string[]; isSvg: boolean; hasWidget: (id: string) => boolean }>(),
 }));
 
 vi.mock('@/stores/dashboards/index', () => ({ dashboardsStore: dashboardsStoreMock }));
@@ -83,8 +83,10 @@ describe('Widget', () => {
 
   describe('associatedDashboards', () => {
     test('returns dashboards containing this widget', () => {
-      dashboardsStoreMock.dashboards.set('d1', { widgets: ['w1', 'w2'], isSvg: false });
-      dashboardsStoreMock.dashboards.set('d2', { widgets: ['w3'], isSvg: false });
+      dashboardsStoreMock.dashboards
+        .set('d1', { widgets: ['w1', 'w2'], isSvg: false, hasWidget: (id) => ['w1', 'w2'].includes(id) });
+      dashboardsStoreMock.dashboards
+        .set('d2', { widgets: ['w3'], isSvg: false, hasWidget: (id) => ['w3'].includes(id) });
 
       const w = new Widget(makeWidget());
 
@@ -95,9 +97,12 @@ describe('Widget', () => {
 
   describe('notUsedDashboards', () => {
     test('returns non-SVG dashboards not containing this widget', () => {
-      dashboardsStoreMock.dashboards.set('d1', { widgets: ['w1'], isSvg: false });
-      dashboardsStoreMock.dashboards.set('d2', { widgets: ['w3'], isSvg: false });
-      dashboardsStoreMock.dashboards.set('d3', { widgets: ['w3'], isSvg: true });
+      dashboardsStoreMock.dashboards
+        .set('d1', { widgets: ['w1'], isSvg: false, hasWidget: (id) => ['w1'].includes(id) });
+      dashboardsStoreMock.dashboards
+        .set('d2', { widgets: ['w3'], isSvg: false, hasWidget: (id) => ['w3'].includes(id) });
+      dashboardsStoreMock.dashboards
+        .set('d3', { widgets: ['w3'], isSvg: true, hasWidget: (id) => ['w3'].includes(id) });
 
       const w = new Widget(makeWidget());
       const result = w.notUsedDashboards;

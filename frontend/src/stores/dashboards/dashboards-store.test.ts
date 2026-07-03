@@ -191,7 +191,7 @@ describe('DashboardsStore', () => {
 
       expect(store.dashboards.get('d1')?.name).toBe('New');
       // widgets preserved from the existing dashboard
-      expect(store.dashboards.get('d1')?.widgets).toEqual(['w1']);
+      expect(store.dashboards.get('d1')?.widgets).toEqual([['w1']]);
       expect(saveDashboardsMock).toHaveBeenCalled();
       expect(patchDashboardMock).not.toHaveBeenCalled();
     });
@@ -205,7 +205,7 @@ describe('DashboardsStore', () => {
       expect(store.dashboards.has('old')).toBe(false);
       expect(store.dashboards.has('new')).toBe(true);
       // widgets preserved from the existing dashboard
-      expect(store.dashboards.get('new')?.widgets).toEqual(['w1']);
+      expect(store.dashboards.get('new')?.widgets).toEqual([['w1']]);
       expect(saveDashboardsMock).not.toHaveBeenCalled();
     });
 
@@ -298,25 +298,25 @@ describe('DashboardsStore', () => {
 
   describe('addWidgetToDashboard', () => {
     test('adds widget id to dashboard widgets list', () => {
-      store.dashboards.set('d1', makeDashboard('d1') as any);
+      store.dashboards.set('d1', new Dashboard(makeDashboard('d1')));
 
       store.addWidgetToDashboard('d1', 'w1');
 
-      expect(store.dashboards.get('d1')?.widgets).toContain('w1');
+      expect(store.dashboards.get('d1')?.flatWidgets).toContain('w1');
     });
   });
 
   describe('removeWidgetFromDashboard', () => {
     test('removes widget id from dashboard', () => {
-      store.dashboards.set('d1', makeDashboard('d1', { widgets: ['w1', 'w2'] }) as any);
+      store.dashboards.set('d1', new Dashboard(makeDashboard('d1', { widgets: ['w1', 'w2'] })));
 
       store.removeWidgetFromDashboard('d1', 'w1');
 
-      expect(store.dashboards.get('d1')?.widgets).toEqual(['w2']);
+      expect(store.dashboards.get('d1')?.widgets).toEqual([['w2']]);
     });
 
     test('skips save when withSave is false', () => {
-      store.dashboards.set('d1', makeDashboard('d1', { widgets: ['w1'] }) as any);
+      store.dashboards.set('d1', new Dashboard(makeDashboard('d1', { widgets: ['w1'] })));
 
       store.removeWidgetFromDashboard('d1', 'w1', false);
 
@@ -356,7 +356,7 @@ describe('DashboardsStore', () => {
       store.deleteWidget('w1');
 
       expect(store.widgets.has('w1')).toBe(false);
-      expect(store.dashboards.get('d1')?.widgets).toEqual(['w2']);
+      expect(store.dashboards.get('d1')?.widgets).toEqual([['w2']]);
     });
   });
 
