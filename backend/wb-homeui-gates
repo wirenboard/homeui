@@ -11,9 +11,13 @@ from wb.homeui_backend.gates import GATES_CONF_DIR, apply_gates, load_gates
 
 
 def read_https_enabled() -> bool:
+    # Mirror the backend's type check (config_file.Config._read_config): only a real
+    # bool counts. Plain bool() would coerce a stray string "false" to True and render
+    # gates for the wrong scheme vs the backend, which rejects a non-bool value.
     try:
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            return bool(json.load(f)[ENABLE_HTTPS_TAG])
+            value = json.load(f)[ENABLE_HTTPS_TAG]
+            return value if isinstance(value, bool) else False
     except Exception:  # pylint: disable=broad-exception-caught
         return False
 
