@@ -70,7 +70,7 @@ def modify_user(
     print("User modified successfully")
 
 
-def main():
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--socket", help="Path to the socket file", default="/tmp/wb-homeui.socket")
 
@@ -91,6 +91,12 @@ def main():
     modify_parser.add_argument("--type", help="New type for the user", choices=["admin", "user", "operator"])
 
     subparsers.add_parser("list", help="List users")
+
+    return parser
+
+
+def main():
+    parser = get_parser()
     args = parser.parse_args()
 
     url = make_socket_request_url(args.socket)
