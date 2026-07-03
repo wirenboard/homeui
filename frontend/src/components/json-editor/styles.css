@@ -205,15 +205,11 @@
   padding: 12px !important;
 }
 
-.json-editor .nav li:has(a[aria-selected="true"]) {
-    box-shadow: var(--active-item-right-shadow);
-}
-
 .json-editor .nav li:hover,
 .json-editor .nav li:has(a:focus) {
   cursor: pointer;
   background: var(--border-color);
-  transition: background 200ms linear, var(--input-active-shadow-transition);
+  transition: background 200ms linear, var(--form-element-focus-transition);
 }
 
 .json-editor .nav li:not(:last-child) {
@@ -251,7 +247,7 @@
 
 .json-editor .nav:not(.nav-stacked) li:has(a[aria-selected="true"]) {
   position: relative;
-  background: var(--button-color);
+  background: var(--text-color);
   font-weight: bold;
 }
 

@@ -26,6 +26,7 @@
     padding: 4px;
     height: auto;
     z-index: 10;
+    color: var(--text-color);
 }
 
 .rdp-month_caption {

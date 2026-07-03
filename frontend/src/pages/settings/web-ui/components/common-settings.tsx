@@ -40,8 +40,6 @@ const CommonSettings = observer(() => {
   ];
 
   const applyHandler = async () => {
-
-  const applyHandler = async () => {
     localStorage.setItem('show-system-devices', showSystemDevices ? 'yes' : 'no');
     uiStore.setShowPageInTitle(showPageInTitle);
     localStorage.setItem('language', language);
