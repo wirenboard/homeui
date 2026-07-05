@@ -27,7 +27,7 @@ def print_gates(gates, https_enabled: bool) -> None:
     scheme = "https" if https_enabled else "http"
     for gate in gates:
         auth = f"role >= {gate.role.value}" if gate.auth else "NO AUTH"
-        menu = ", menu item" if gate.title else ""
+        menu = ", menu item" if gate.menu else ""
         target = f"{scheme}://<host>:{gate.external_port} -> 127.0.0.1:{gate.internal_port}"
         print(f"  {gate.name}: {target} ({auth}{menu})")
 

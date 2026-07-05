@@ -4,7 +4,7 @@
   "title": "Wiren Board service gate",
   "description": "A file in /etc/wb-homeui/gates.d/<name>.json; <name> is lowercase latin/digits/hyphen. Apply with `wb-homeui-gates apply`.",
   "type": "object",
-  "required": ["internalPort"],
+  "required": ["internalPort", "externalPort"],
   "additionalProperties": false,
   "properties": {
     "externalPort": {
@@ -12,7 +12,7 @@
       "minimum": 1024,
       "maximum": 65535,
       "not": { "enum": [80, 443] },
-      "description": "Public gate port. Default: 20000 + internalPort % 20000 (for a 4-digit internal port that is literally 2 prepended: 9000 -> 29000); a clash with another gate deterministically takes the next port in the 20000-39999 block. Must differ from internalPort."
+      "description": "Public gate port. Must differ from internalPort and from the ports of every other gate."
     },
     "internalPort": {
       "type": "integer",
@@ -32,13 +32,21 @@
       "default": true,
       "description": "false — no authorization: plain proxy, trusted X-WB-* headers still stripped."
     },
-    "title": {
+    "menu": {
       "type": "object",
-      "description": "Menu item labels; omit to keep the gate out of the menu.",
+      "description": "Menu entry in homeui; omit to keep the gate out of the menu.",
+      "required": ["title"],
       "additionalProperties": false,
       "properties": {
-        "ru": { "type": "string" },
-        "en": { "type": "string" }
+        "title": {
+          "type": "object",
+          "description": "Menu item labels; a single language is enough — it is shown for both.",
+          "additionalProperties": false,
+          "properties": {
+            "ru": { "type": "string" },
+            "en": { "type": "string" }
+          }
+        }
       }
     }
   }

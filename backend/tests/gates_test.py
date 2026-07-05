@@ -27,8 +27,7 @@ class LoadGatesTest(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def test_loads_valid_gate_with_defaults(self):
-        """externalPort defaults to 2 prepended to internalPort (9000 -> 29000)."""
-        _write_gate(self.conf_dir, "my-service", {"internalPort": 9000})
+        _write_gate(self.conf_dir, "my-service", {"internalPort": 9000, "externalPort": 29000})
         gates, skipped = load_gates()
         self.assertEqual(skipped, [])
         self.assertEqual(len(gates), 1)
@@ -36,41 +35,30 @@ class LoadGatesTest(unittest.TestCase):
         self.assertEqual(gates[0].external_port, 29000)
         self.assertEqual(gates[0].role, UserType.ADMIN)
         self.assertTrue(gates[0].auth)
+        self.assertIsNone(gates[0].menu)
 
-    def test_five_digit_internal_gets_block_port(self):
-        """Auto external = 20000 + internal % 20000, so a 5-digit internal maps
-        into the gate block instead of erroring: 18884 -> 38884."""
-        _write_gate(self.conf_dir, "high", {"internalPort": 18884})
+    def test_missing_external_port_is_skipped(self):
+        """externalPort is mandatory: the user must know (and choose) the public
+        port of the gate — no silent auto-assignment."""
+        _write_gate(self.conf_dir, "svc", {"internalPort": 9000})
         gates, skipped = load_gates()
-        self.assertEqual(skipped, [])
-        self.assertEqual(gates[0].external_port, 38884)
+        self.assertEqual(gates, [])
+        self.assertIn("externalPort is required", skipped[0])
 
-    def test_internal_inside_block_probes_past_itself(self):
-        """internal 21880 maps onto itself (20000 + 1880); the allocator must
-        probe to the next free port instead of colliding with the service."""
-        _write_gate(self.conf_dir, "svc", {"internalPort": 21880})
+    def test_external_port_equal_to_another_gates_internal_is_skipped(self):
+        """nginx listens on *:externalPort, so an external equal to any gate's
+        internal would clash with the service itself."""
+        _write_gate(self.conf_dir, "a", {"internalPort": 9000, "externalPort": 29000})
+        _write_gate(self.conf_dir, "b", {"internalPort": 9100, "externalPort": 9000})
         gates, skipped = load_gates()
-        self.assertEqual(skipped, [])
-        self.assertEqual(gates[0].external_port, 21881)
+        self.assertEqual([g.name for g in gates], ["a"])
+        self.assertIn("already used by another gate", skipped[0])
 
-    def test_auto_ports_probe_deterministically_on_clash(self):
-        """Internals 1024 and 21024 both map to 21024 (also gate b's own port);
-        allocation probes in name order, so the result is stable: a=21025,
-        b=21026."""
-        _write_gate(self.conf_dir, "a", {"internalPort": 1024})
-        _write_gate(self.conf_dir, "b", {"internalPort": 21024})
+    def test_menu_without_title_is_skipped(self):
+        _write_gate(self.conf_dir, "svc", {"internalPort": 9000, "externalPort": 29000, "menu": {}})
         gates, skipped = load_gates()
-        self.assertEqual(skipped, [])
-        self.assertEqual({g.name: g.external_port for g in gates}, {"a": 21025, "b": 21026})
-
-    def test_explicit_port_wins_and_auto_avoids_it(self):
-        """An explicit externalPort is claimed first and never moves; an auto
-        gate whose default lands on it probes to the next free port."""
-        _write_gate(self.conf_dir, "auto", {"internalPort": 9000})
-        _write_gate(self.conf_dir, "fixed", {"internalPort": 9100, "externalPort": 29000})
-        gates, skipped = load_gates()
-        self.assertEqual(skipped, [])
-        self.assertEqual({g.name: g.external_port for g in gates}, {"auto": 29001, "fixed": 29000})
+        self.assertEqual(gates, [])
+        self.assertIn("invalid menu field", skipped[0])
 
     def test_skips_broken_gates_keeps_valid(self):
         """Every bad file is reported with its reason and must not block the others."""
@@ -168,12 +156,12 @@ class ApplyGatesTest(unittest.TestCase):
             return apply_gates(https_enabled)
 
     def test_renders_configs_bounce_and_menu(self):
-        """A gate with a title produces a server conf in the current mode, a bounce
-        line with the matching scheme and a menu drop-in."""
+        """A gate with a menu entry produces a server conf in the current mode, a
+        bounce line with the matching scheme and a menu drop-in."""
         _write_gate(
             self.conf_dir,
             "svc",
-            {"externalPort": 29000, "internalPort": 9000, "title": {"ru": "Сервис", "en": "Svc"}},
+            {"externalPort": 29000, "internalPort": 9000, "menu": {"title": {"ru": "Сервис", "en": "Svc"}}},
         )
         result = self._apply(https_enabled=False)
         self.assertTrue(result.ok)
@@ -214,12 +202,17 @@ class ApplyGatesTest(unittest.TestCase):
         _write_gate(
             self.conf_dir,
             "authsvc",
-            {"externalPort": 29000, "internalPort": 9000, "role": "operator", "title": {"en": "Auth"}},
+            {
+                "externalPort": 29000,
+                "internalPort": 9000,
+                "role": "operator",
+                "menu": {"title": {"en": "Auth"}},
+            },
         )
         _write_gate(
             self.conf_dir,
             "opensvc",
-            {"externalPort": 29001, "internalPort": 9001, "auth": False, "title": {"en": "Open"}},
+            {"externalPort": 29001, "internalPort": 9001, "auth": False, "menu": {"title": {"en": "Open"}}},
         )
         self.assertTrue(self._apply(https_enabled=False).ok)
         with open(os.path.join(self.menu_dir, "wb-gate-authsvc.json"), encoding="utf-8") as f:
@@ -234,11 +227,15 @@ class ApplyGatesTest(unittest.TestCase):
         back on disk and the previous working gate stays, so the on-disk state can
         never diverge from what nginx is actually running."""
         _write_gate(
-            self.conf_dir, "good", {"externalPort": 29000, "internalPort": 9000, "title": {"en": "Good"}}
+            self.conf_dir,
+            "good",
+            {"externalPort": 29000, "internalPort": 9000, "menu": {"title": {"en": "Good"}}},
         )
         self.assertTrue(self._apply(https_enabled=False).ok)
         _write_gate(
-            self.conf_dir, "second", {"externalPort": 29001, "internalPort": 9001, "title": {"en": "Second"}}
+            self.conf_dir,
+            "second",
+            {"externalPort": 29001, "internalPort": 9001, "menu": {"title": {"en": "Second"}}},
         )
 
         reload_calls = []
