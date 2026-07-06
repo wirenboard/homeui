@@ -302,7 +302,7 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
         self.config = os.path.join(self.tmp, "conf")
-        patcher = patch.object(gates_cli, "CONFIG_FILE", self.config)
+        patcher = patch("wb.homeui_backend.config_file.CONFIG_FILE", self.config)
         patcher.start()
         self.addCleanup(patcher.stop)
 
