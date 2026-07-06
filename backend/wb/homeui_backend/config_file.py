@@ -11,7 +11,7 @@ ENABLE_HTTPS_TAG = "enable_https"
 
 
 def load_https_flag() -> bool:
-    # Only a real bool counts: a stray string "false" must not coerce to True.
+    """Read the HTTPS flag; only a real bool counts (no truthy coercion)."""
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         value = json.load(f)[ENABLE_HTTPS_TAG]
     if not isinstance(value, bool):

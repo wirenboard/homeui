@@ -9,8 +9,7 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     rm -rf /var/lib/wb-homeui/nginx-gates
     rm -f /var/lib/wb-homeui/nginx/wb-gate-bounces.conf
     rm -f /usr/share/wb-mqtt-homeui/custom-menu/wb-gate-*.json
-    # Reload so a running nginx forgets the gates now, instead of proxying
-    # to the removed backend until some unrelated restart.
+    # Reload so nginx forgets the gates now, not at some later restart.
     /usr/bin/systemctl try-reload-or-restart nginx || true
 fi
 

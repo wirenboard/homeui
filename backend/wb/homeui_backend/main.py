@@ -605,9 +605,7 @@ def delete_dashboard_handler(
 class RequestHandler:
     fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
     rate_per_minute_limit: Optional[int] = None
-    # Per-client buckets (keyed by nginx-set X-Real-IP) so one noisy client cannot
-    # exhaust a shared bucket for everyone. Keep False where a single global bucket
-    # is the point (e.g. login brute-force protection).
+    # Per-IP buckets via X-Real-IP; keep False where one global bucket is the point (login).
     rate_limit_per_client: bool = False
 
 
@@ -726,8 +724,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
         rate_limit_key = urlparse(self.path).path
         if handler.rate_limit_per_client:
-            # X-Real-IP is trustworthy: the backend is only reachable through nginx,
-            # which sets it from $remote_addr. Missing header degrades to the shared bucket.
+            # X-Real-IP is nginx-set (sole route in); missing header → shared bucket.
             rate_limit_key += "|" + self.headers.get("X-Real-IP", "")
         if not self.rate_limiter.check_call(
             rate_limit_key, datetime.now(timezone.utc), handler.rate_per_minute_limit
