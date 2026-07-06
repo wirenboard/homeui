@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify';
 import { autorun, runInAction, when } from 'mobx';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter } from 'react-router-dom';
@@ -16,10 +15,6 @@ import './i18n/config';
 import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
-
-// json-editor renders HTML in descriptions via window.DOMPurify.
-// Provide it so <br>/<b> render instead of being stripped.
-window.DOMPurify = DOMPurify;
 
 // Stale assets after a rebuild — reload to pick up the new HTML with fresh hashes
 window.addEventListener('vite:preloadError', () => {
