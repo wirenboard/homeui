@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.236.4) stable; urgency=medium
+
+  * Fix HTML in json-editor schema descriptions rendering as plain one-line text
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 13:00:00 +0300
+
 wb-mqtt-homeui (2.236.3) stable; urgency=medium
 
   * Make the config editor tab list scroll on its own

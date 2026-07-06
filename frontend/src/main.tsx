@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { autorun, runInAction, when } from 'mobx';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter } from 'react-router-dom';
@@ -15,6 +16,11 @@ import './i18n/config';
 import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
+
+// @wirenboard/json-editor sanitizes HTML in schema descriptions/headers via the
+// window.DOMPurify global; provide it (the webpack ProvidePlugin that did this before
+// the Vite migration is gone) so <br>/<b> in descriptions render instead of being stripped.
+window.DOMPurify = DOMPurify;
 
 // Stale assets after a rebuild — reload to pick up the new HTML with fresh hashes
 window.addEventListener('vite:preloadError', () => {
