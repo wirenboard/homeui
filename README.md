@@ -46,6 +46,15 @@ The structure of the JSON-file
       "en": "string",
       "ru": "string"
     },
+    // Render as a plain full-page link instead of an SPA route. url must be an
+    // absolute path or an http(s) URL, otherwise the flag is ignored
+    "isExternal": true,
+    // With isExternal: open in a new tab (rel="noopener noreferrer" is applied)
+    "openInNewTab": true,
+    // Minimal role to SEE the item: "user" < "operator" < "admin"; absent = visible
+    // to all. Hides the menu item only — it does NOT protect the target URL; access
+    // control must be enforced by the server behind it (e.g. a service gate)
+    "requiredRole": "admin",
     "children": [
       {
         "id": "string",
