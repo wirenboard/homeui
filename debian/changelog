@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.7) stable; urgency=medium
+
+  * Fix HTML in json-editor schema descriptions
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 17:22:00 +0300
+
 wb-mqtt-homeui (2.237.6) stable; urgency=medium
 
   * Remove typo
