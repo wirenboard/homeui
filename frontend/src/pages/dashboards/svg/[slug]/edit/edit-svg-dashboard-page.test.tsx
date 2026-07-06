@@ -46,6 +46,8 @@ const { mockStore, dashMock } = vi.hoisted(() => ({
     swipeParameters: { enable: false, left: null, right: null },
     bindingsStore: { jsonEditMode: false },
     svgStore: { svg: null, hasSvg: false },
+    svgLoadError: false,
+    idConflictError: false,
     setDashboard: vi.fn(),
     onSaveDashboard: vi.fn(async () => 'new-id'),
     removeDashboard: vi.fn(),
@@ -86,6 +88,8 @@ describe('EditSvgDashboardPage', () => {
     vi.clearAllMocks();
     mockStore.isNew = true;
     mockStore.isValid = true;
+    mockStore.svgLoadError = false;
+    mockStore.idConflictError = false;
     mockStore.bindingsStore.jsonEditMode = false;
     dashMock.saveError = null;
   });
@@ -143,6 +147,18 @@ describe('EditSvgDashboardPage', () => {
     expect(screen.getByText('Failed to save')).toBeDefined();
   });
 
+  test('shows the svg load error when the markup failed to load', () => {
+    mockStore.svgLoadError = true;
+    renderPage();
+    expect(screen.getByText('dashboards.errors.svg-load')).toBeDefined();
+  });
+
+  test('shows the id-taken error when a save hit a 409 conflict', () => {
+    mockStore.idConflictError = true;
+    renderPage();
+    expect(screen.getByText('dashboards.errors.duplicate')).toBeDefined();
+  });
+
   test('save button disabled when form is invalid', () => {
     mockStore.isValid = false;
     renderPage();
@@ -159,13 +175,21 @@ describe('EditSvgDashboardPage', () => {
     });
   });
 
-  test('cancel removes dashboard and navigates to list', async () => {
+  test('does not navigate when the save fails (onSaveDashboard returns null)', async () => {
+    mockStore.onSaveDashboard.mockResolvedValueOnce(null);
+    renderPage();
+    fireEvent.click(screen.getByText('edit-svg-dashboard.buttons.save'));
+    await waitFor(() => expect(mockStore.onSaveDashboard).toHaveBeenCalled());
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  test('cancel navigates to the list without deleting (a new dashboard is not yet persisted)', async () => {
     renderPage();
     fireEvent.click(screen.getByText('edit-svg-dashboard.buttons.cancel'));
     await waitFor(() => {
-      expect(mockStore.removeDashboard).toHaveBeenCalled();
       expect(navigateMock).toHaveBeenCalledWith('/dashboards');
     });
+    expect(mockStore.removeDashboard).not.toHaveBeenCalled();
   });
 
   test('remove button opens confirm dialog', () => {

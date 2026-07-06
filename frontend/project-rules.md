@@ -28,10 +28,9 @@ Code-style rules for `frontend/`. The repo-wide **agent workflow rules** live in
   the scenario (what's set up, what's exercised, what's expected). Trivial one-liners
   (single assertion against a pure function) don't need it; anything with multi-step setup
   or non-obvious expectations does. Co-locate tests as `*.test.ts(x)`.
-- **Class member ordering in MobX stores** — within a store class, group members in this
-  order with `// --- ... ---` dividers (omit empty groups):
+- **Class member ordering** — within a class, order members as:
   1. `constructor` and other dunder-like setup (`makeAutoObservable`, etc.).
   2. Public observables, `@computed` getters, and actions — the store's external API.
-  3. `// --- Private ---` — internal helpers (typically `_`-prefixed).
+  3. Private internal helpers (typically `_`-prefixed).
 
-  Within each group, order by relevance / call sequence, not alphabetically.
+  Order by relevance / call sequence within each group, not alphabetically.

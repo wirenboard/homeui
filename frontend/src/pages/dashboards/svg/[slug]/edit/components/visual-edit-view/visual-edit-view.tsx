@@ -100,6 +100,7 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
             title={t('edit-svg-dashboard.labels.common-parameters-id')}
             value={store.commonParameters['id']}
             required={true}
+            error={!store.isIdUnique || store.idConflictError ? t('dashboards.errors.duplicate') : undefined}
             autoFocus
             onChange={(val: string) => store.setCommonParam('id', val)}
           />
