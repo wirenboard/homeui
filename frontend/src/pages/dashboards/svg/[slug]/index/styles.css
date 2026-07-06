@@ -19,6 +19,14 @@
     user-select: none;
 }
 
+.svgDashboard-error {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: normal;
+}
+
 .svgDashboard-fitToPage {
     flex-grow: 1;
     height: 1px;

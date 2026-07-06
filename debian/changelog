@@ -1,8 +1,50 @@
+wb-mqtt-homeui (2.237.6) stable; urgency=medium
+
+  * wb-dynamic-type: rename options keys and add defaultType
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 14:07:00 +0300
+
+wb-mqtt-homeui (2.237.5) stable; urgency=medium
+
+  * Fix device icon on mobile resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Jul 2026 13:49:00 +0300
+
+wb-mqtt-homeui (2.237.4) stable; urgency=medium
+
+  * Fix install
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 13:10:00 +0400
+
+wb-mqtt-homeui (2.237.3) stable; urgency=medium
+
+  * Add bash completions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 12:10:00 +0400
+
+wb-mqtt-homeui (2.237.2) stable; urgency=medium
+
+  * Fix mosquitto override config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 Jul 2026 10:10:00 +0400
+
+wb-mqtt-homeui (2.237.1) stable; urgency=medium
+
+  * Show the firmware-update banner when only a newer bootloader is available
+
+ -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Thu, 02 Jul 2026 11:25:56 +0300
+
 wb-mqtt-homeui (2.237.0) stable; urgency=medium
 
-  * wb-dynamic-type: rename options keys map->typeMap, source->sourceField and add defaultType
+  * Serve dashboards from the HTTP backend (wb.homeui_backend) instead of confed:
+    a lightweight index without inline SVG, lazy per-dashboard SVG GET, and atomic
+    PUT writes that preserve inline svg.current
+  * Move board detection, initial config seeding and default-dashboard
+    reconciliation into the backend service; drop generate-system-config.sh
+  * Switch the dashboards UI to the HTTP backend (lazy SVG, load/SVG error states)
+    and remove the now-unused wb-webui.conf confed schema
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 12:00:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Jul 2026 15:33:49 +0500
 
 wb-mqtt-homeui (2.236.3) stable; urgency=medium
 

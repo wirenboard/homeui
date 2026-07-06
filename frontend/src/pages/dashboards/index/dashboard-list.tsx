@@ -30,6 +30,7 @@ const DashboardList = observer(() => {
   const {
     dashboards,
     isLoading,
+    loadError,
     addDashboard,
     updateDashboards,
     updateDashboard,
@@ -45,6 +46,7 @@ const DashboardList = observer(() => {
         title={t('dashboards.title')}
         infoLink={documentation[i18n.language]?.dashboards}
         isLoading={isLoading}
+        errors={loadError ? [{ variant: 'danger', text: loadError }] : []}
         actions={
           hasEditRights && (
             <Dropdown

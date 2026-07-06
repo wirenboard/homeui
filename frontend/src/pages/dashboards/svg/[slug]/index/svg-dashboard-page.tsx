@@ -7,8 +7,10 @@ import useResizeObserver from 'use-resize-observer';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
 import FullScreenIcon from '@/assets/icons/full-screen.svg';
 import { documentation } from '@/common/links';
+import { Alert } from '@/components/alert';
 import { Button, ButtonLink } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
+import { Loader } from '@/components/loader';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
@@ -120,23 +122,47 @@ export const SvgDashboardPage = observer(() => {
         hasRights
       >
         <DashboardCarousel store={store} width={width}>
-          {store.dashboards.map((dashboard) => (
-            <div className="svgDashboard" key={dashboard.id}>
-              <SvgView
-                id={dashboard.id}
-                svg={dashboard?.svg?.current}
-                className={classNames({
-                  'svgDashboard-fitToPage': !!dashboard?.svg_fullwidth,
-                })}
-                params={dashboard?.svg?.params}
-                values={store.channelValues}
-                currentDashboard={store.dashboardId}
-                confirmHandler={confirm}
-                onSwitchValue={(channel, value) => store.switchValue(channel, value)}
-                onMoveToDashboard={(dashboard) => store.moveToDashboard(dashboard)}
-              />
-            </div>
-          ))}
+          {store.dashboards.map((dashboard) => {
+            let content;
+            if (store.svgErrors.has(dashboard.id)) {
+              content = (
+                <Alert variant="danger">
+                  <div className="svgDashboard-error">
+                    <span>{t('dashboards.errors.svg-load')}</span>
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      label={t('svg-dashboard.buttons.retry')}
+                      onClick={() => store.reloadSvg(dashboard.id)}
+                    />
+                  </div>
+                </Alert>
+              );
+            } else if (store.isSvgLoading(dashboard.id)) {
+              content = <Loader />;
+            } else {
+              content = (
+                <SvgView
+                  id={dashboard.id}
+                  svg={store.getSvg(dashboard.id)}
+                  className={classNames({
+                    'svgDashboard-fitToPage': !!dashboard?.svg_fullwidth,
+                  })}
+                  params={dashboard?.svg?.params}
+                  values={store.channelValues}
+                  currentDashboard={store.dashboardId}
+                  confirmHandler={confirm}
+                  onSwitchValue={(channel, value) => store.switchValue(channel, value)}
+                  onMoveToDashboard={(dashboard) => store.moveToDashboard(dashboard)}
+                />
+              );
+            }
+            return (
+              <div className="svgDashboard" key={dashboard.id}>
+                {content}
+              </div>
+            );
+          })}
         </DashboardCarousel>
       </PageLayout>
       <div ref={ref}></div>

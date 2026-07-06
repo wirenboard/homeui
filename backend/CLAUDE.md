@@ -1,7 +1,7 @@
 # Backend — Claude Code guidance
 
-Python HTTP service (`wb.homeui_backend`) handling **authentication, sessions, users, and TLS cert
-checks** over a Unix socket — it is **not** the MQTT data path.
+Python HTTP service (`wb.homeui_backend`) handling **authentication, sessions, users, TLS cert
+checks, and dashboards** over a Unix socket — it is **not** the MQTT data path.
 
 Repo-wide context (task workflow, deployment, the two codebases) is in the root `../CLAUDE.md`.
 
@@ -18,6 +18,11 @@ Entry point `wb/homeui_backend/main.py` (`BaseHTTPRequestHandler`); synchronous,
 - `users_storage`, `sessions_storage`, `keys_storage` — user/session/key persistence.
 - `rate_limiter` — login throttling.
 - `security`, `cert` — security check + TLS certificate state.
+- `dashboards` — owns `/etc/wb-webui.conf`: the lightweight index + lazy per-dashboard SVG
+  endpoints (`GET/PUT /api/dashboards` for the collection, `GET /api/dashboards/<id>/svg` for the
+  lazy markup, and `PUT`/`PATCH`/`DELETE /api/dashboards/<id>` for one dashboard's lifecycle),
+  atomic writes, and board-config seeding + default reconciliation at startup.
+- `board` — device-tree `of_machine_match` wrapper (board detection), shared with `cert`.
 - `db` — SQLite at `/var/lib/wb-homeui/users.db`.
 - `http_response`, `config_file` — response helpers and config parsing.
 
