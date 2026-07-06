@@ -1,9 +1,10 @@
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // Value editor whose input type morphs by another field's value (the "driver").
-// Config in `options.dynamicType`: { source, map: { <inputType>: [driverValue...] } }.
-// Unmapped values default to `number`. Visibility is left to json-editor `dependencies`.
-// The value is always stored as a string; the consumer coerces it by action.
+// Config in `options.dynamicType`: { sourceField, typeMap: { <inputType>: [driverValue...] }, defaultType }.
+// Unmapped values fall back to `defaultType` (`number` if omitted). Visibility is left
+// to json-editor `dependencies`. The value is always stored as a string; the consumer
+// coerces it by action.
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
 export function makeDynamicTypeEditor() {
@@ -59,11 +60,12 @@ export function makeDynamicTypeEditor() {
     // options.dynamicType -> value->type lookup.
     parseDynamicType() {
       const dt = this.options.dynamicType;
-      if (!dt || !dt.map) return;
-      this.driverName = dt.source;
+      this.defaultType = (dt && dt.defaultType) || 'number';
+      if (!dt || !dt.typeMap) return;
+      this.driverName = dt.sourceField;
       this.valueToType = {};
-      Object.keys(dt.map).forEach((type) => {
-        const list = Array.isArray(dt.map[type]) ? dt.map[type] : [dt.map[type]];
+      Object.keys(dt.typeMap).forEach((type) => {
+        const list = Array.isArray(dt.typeMap[type]) ? dt.typeMap[type] : [dt.typeMap[type]];
         list.forEach((value) => {
           if (this.valueToType[value] !== undefined && this.valueToType[value] !== type) {
             console.warn(
@@ -112,7 +114,7 @@ export function makeDynamicTypeEditor() {
       const driver = this.jsoneditor.getEditor(this.driverWatchPath);
       const value = driver ? driver.getValue() : undefined;
       if (this.valueToType && this.valueToType[value]) return this.valueToType[value];
-      return 'number';
+      return this.defaultType;
     }
 
     // Switch the input to match the driver and keep the value sane. Visibility is left

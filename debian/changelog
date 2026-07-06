@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.0) stable; urgency=medium
+
+  * wb-dynamic-type: rename options keys map->typeMap, source->sourceField and add defaultType
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 12:00:00 +0300
+
 wb-mqtt-homeui (2.236.3) stable; urgency=medium
 
   * Make the config editor tab list scroll on its own
