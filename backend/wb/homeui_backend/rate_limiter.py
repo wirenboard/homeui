@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-# Housekeeping trigger for per-client keys: past this many tracked keys, stale
-# buckets are dropped before inserting a new one (guards against unbounded growth).
+# Past this many tracked keys, stale buckets are pruned before inserting a new one.
 MAX_TRACKED_KEYS = 10000
 
 

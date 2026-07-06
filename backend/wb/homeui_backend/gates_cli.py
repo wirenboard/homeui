@@ -11,8 +11,7 @@ from .gates import GATES_CONF_DIR, apply_gates, load_gates
 
 
 def read_https_enabled() -> bool:
-    # CLI fallback on a missing/broken config is plain HTTP; the backend applies its
-    # own user-based fallback (Config._read_config) and may disagree — by design.
+    """HTTPS flag for rendering; a missing/broken config falls back to plain HTTP."""
     try:
         return load_https_flag()
     except Exception:  # pylint: disable=broad-exception-caught
