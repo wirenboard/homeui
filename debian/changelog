@@ -1,8 +1,14 @@
+wb-mqtt-homeui (2.237.7) stable; urgency=medium
+
+  * Fix HTML in json-editor schema descriptions
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 17:22:00 +0300
+
 wb-mqtt-homeui (2.237.6) stable; urgency=medium
 
-  * Fix HTML in json-editor schema descriptions rendering as plain one-line text
+  * Remove typo
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 11:12:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 06 Jul 2026 15:05:00 +0300
 
 wb-mqtt-homeui (2.237.5) stable; urgency=medium
 
