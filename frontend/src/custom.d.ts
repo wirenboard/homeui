@@ -13,8 +13,7 @@ declare module '*.svg' {
 
 declare module '*.css' {}
 
-// @wirenboard/json-editor renders HTML in schema descriptions/headers only when
-// window.DOMPurify is present; main.tsx provides it (see the DOMPurify import there).
+// json-editor reads window.DOMPurify to render HTML in descriptions.
 interface Window {
   DOMPurify: typeof import('dompurify').default;
 }

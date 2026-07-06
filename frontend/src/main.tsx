@@ -17,9 +17,8 @@ import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
 
-// @wirenboard/json-editor sanitizes HTML in schema descriptions/headers via the
-// window.DOMPurify global; provide it (the webpack ProvidePlugin that did this before
-// the Vite migration is gone) so <br>/<b> in descriptions render instead of being stripped.
+// json-editor renders HTML in descriptions via window.DOMPurify.
+// Provide it so <br>/<b> render instead of being stripped.
 window.DOMPurify = DOMPurify;
 
 // Stale assets after a rebuild — reload to pick up the new HTML with fresh hashes
