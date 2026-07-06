@@ -605,6 +605,10 @@ def delete_dashboard_handler(
 class RequestHandler:
     fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
     rate_per_minute_limit: Optional[int] = None
+    # Per-client buckets (keyed by nginx-set X-Real-IP) so one noisy client cannot
+    # exhaust a shared bucket for everyone. Keep False where a single global bucket
+    # is the point (e.g. login brute-force protection).
+    rate_limit_per_client: bool = False
 
 
 def load_json_file(json_file: str) -> Optional[Any]:
@@ -720,8 +724,13 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         if handler is None:
             return response_404()
 
+        rate_limit_key = urlparse(self.path).path
+        if handler.rate_limit_per_client:
+            # X-Real-IP is trustworthy: the backend is only reachable through nginx,
+            # which sets it from $remote_addr. Missing header degrades to the shared bucket.
+            rate_limit_key += "|" + self.headers.get("X-Real-IP", "")
         if not self.rate_limiter.check_call(
-            urlparse(self.path).path, datetime.now(timezone.utc), handler.rate_per_minute_limit
+            rate_limit_key, datetime.now(timezone.utc), handler.rate_per_minute_limit
         ):
             return response_429()
 
@@ -749,7 +758,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
-                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=1000),
+                "/auth/check": RequestHandler(
+                    fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
+                ),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),

@@ -11,6 +11,9 @@ location = /wb_auth_check {
     # (that would let GET through unauthenticated), and the method is nginx's own.
     proxy_set_header Allow-Unauthorized-Get "";
     proxy_set_header X-Original-Method $request_method;
+    # Backend keys the /auth/check rate-limit bucket per client IP, so one noisy
+    # client cannot exhaust the shared bucket for every gate and the main UI.
+    proxy_set_header X-Real-IP $remote_addr;
     # Short auth cache: collapses request storms from chatty SPAs. The answer
     # depends only on (session, required role), so entries are shared between gates.
     proxy_cache wb_gate_auth;
