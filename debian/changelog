@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.237.7) stable; urgency=medium
+wb-mqtt-homeui (2.238.1) stable; urgency=medium
 
   * Support external links in the navigation menu (isExternal, openInNewTab,
     requiredRole on a custom-menu item): render them as full-page anchors so
@@ -7,9 +7,9 @@ wb-mqtt-homeui (2.237.7) stable; urgency=medium
     (open-redirect-safe), so an external service can send a logged-out user
     through the homeui login and back to itself
 
- -- Denis Smagin <denis.smagin@wirenboard.com>  Fri, 03 Jul 2026 18:30:00 +0200
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 06 Jul 2026 15:30:00 +0200
 
-wb-mqtt-homeui (2.237.6) stable; urgency=medium
+wb-mqtt-homeui (2.238.0) stable; urgency=medium
 
   * Add service gates: one JSON in /etc/wb-homeui/gates.d puts a loopback
     service behind the homeui login; configs are rendered by the backend and
@@ -19,7 +19,13 @@ wb-mqtt-homeui (2.237.6) stable; urgency=medium
   * Always keep a certificate file at /etc/ssl/sslip.pem (expired placeholder
     until a real one is obtained), so TLS configs cannot break nginx startup
 
- -- Denis Smagin <denis.smagin@wirenboard.com>  Fri, 03 Jul 2026 18:00:00 +0200
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 06 Jul 2026 15:10:00 +0200
+
+wb-mqtt-homeui (2.237.6) stable; urgency=medium
+
+  * Remove typo
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 06 Jul 2026 15:05:00 +0300
 
 wb-mqtt-homeui (2.237.5) stable; urgency=medium
 
