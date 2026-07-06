@@ -24,8 +24,7 @@ export interface CustomMenuItem {
   isExternal?: boolean;
   // When true (with isExternal), the menu link opens in a new browser tab.
   openInNewTab?: boolean;
-  // Minimal role to see the item (admin >= operator >= user); absent = visible to all.
-  // Visibility only, not access control — the target URL must be protected server-side.
+  // Minimal role to see the item (admin >= operator >= user); visibility only, not access control.
   requiredRole?: UserRole;
   children?: CustomMenuItem[];
 }
