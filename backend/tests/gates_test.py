@@ -98,6 +98,11 @@ class RenderGateTest(unittest.TestCase):
         self.assertIn("listen 29000;", conf)
         self.assertNotIn("wb-gate-tls.inc", conf)
 
+    def test_gate_renders_per_ip_request_limit(self):
+        conf = render_gate(self.gate, https_enabled=False)
+        self.assertIn("limit_req zone=wb_gate_perip burst=200 nodelay;", conf)
+        self.assertIn("limit_req_status 429;", conf)
+
     def test_extra_nginx_inc_is_included_when_present(self):
         """<name>.nginx.inc next to the JSON must be included at server level;
         without the file no include line appears."""
@@ -297,7 +302,7 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
         self.config = os.path.join(self.tmp, "conf")
-        patcher = patch.object(gates_cli, "CONFIG_FILE", self.config)
+        patcher = patch("wb.homeui_backend.config_file.CONFIG_FILE", self.config)
         patcher.start()
         self.addCleanup(patcher.stop)
 

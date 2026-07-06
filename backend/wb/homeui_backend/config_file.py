@@ -10,6 +10,15 @@ CONFIG_FILE = "/etc/wb-homeui-backend.conf"
 ENABLE_HTTPS_TAG = "enable_https"
 
 
+def load_https_flag() -> bool:
+    # Only a real bool counts: a stray string "false" must not coerce to True.
+    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        value = json.load(f)[ENABLE_HTTPS_TAG]
+    if not isinstance(value, bool):
+        raise TypeError(f"Invalid {ENABLE_HTTPS_TAG} field type")
+    return value
+
+
 class Config:
 
     def __init__(self, users_storage: UsersStorage):
@@ -31,13 +40,8 @@ class Config:
 
     def _read_config(self, users_storage: UsersStorage) -> None:
         try:
-            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                config_content = json.load(f)
-                enable_https = config_content[ENABLE_HTTPS_TAG]
-                if isinstance(enable_https, bool):
-                    self.enable_https = enable_https
-                    return
-                raise TypeError(f"Invalid {ENABLE_HTTPS_TAG} field type")
+            self.enable_https = load_https_flag()
+            return
         except Exception as e:  # pylint: disable=broad-exception-caught
             # Config file doesn't exist or is broken,
             # disable certificate update only if no users are configured

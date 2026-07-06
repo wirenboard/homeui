@@ -5,20 +5,16 @@ testable in the pybuild sandbox, which only ships the wb/ package and tests/.
 """
 
 import argparse
-import json
 
-from .config_file import CONFIG_FILE, ENABLE_HTTPS_TAG
+from .config_file import load_https_flag
 from .gates import GATES_CONF_DIR, apply_gates, load_gates
 
 
 def read_https_enabled() -> bool:
-    # Mirror the backend's type check (config_file.Config._read_config): only a real
-    # bool counts. Plain bool() would coerce a stray string "false" to True and render
-    # gates for the wrong scheme vs the backend, which rejects a non-bool value.
+    # CLI fallback on a missing/broken config is plain HTTP; the backend applies its
+    # own user-based fallback (Config._read_config) and may disagree — by design.
     try:
-        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            value = json.load(f)[ENABLE_HTTPS_TAG]
-            return value if isinstance(value, bool) else False
+        return load_https_flag()
     except Exception:  # pylint: disable=broad-exception-caught
         return False
 
