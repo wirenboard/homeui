@@ -635,6 +635,7 @@ class CustomMenuHandlerTest(unittest.TestCase):
         self.assertEqual(body, [[{"id": "pkg"}], [{"id": "gen"}], [{"id": "user"}]])
 
     def test_missing_dirs_are_skipped(self):
+        """Absent dirs in the read list are skipped, not fatal."""
         user = self._make_dir("user", {"item.json": [{"id": "user"}]})
         body = self._call([os.path.join(self.root, "absent1"), user, os.path.join(self.root, "absent2")])
         self.assertEqual(body, [[{"id": "user"}]])

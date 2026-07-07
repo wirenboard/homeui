@@ -50,6 +50,13 @@ from .users_storage import User, UsersStorage, UserType
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 
+# Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
+CUSTOM_MENU_DIRS = (
+    "/usr/share/wb-mqtt-homeui/custom-menu",
+    CUSTOM_MENU_DIR,
+    "/etc/wb-homeui/custom-menu",
+)
+
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
 # A very long lifetime as we don't want cookies to expire by browser policy
@@ -662,14 +669,6 @@ def security_check_handler(
     context.security_check_thread.request_check(url)
 
     return response_200([["Content-type", "text/plain"]], "OK")
-
-
-# Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
-CUSTOM_MENU_DIRS = (
-    "/usr/share/wb-mqtt-homeui/custom-menu",
-    CUSTOM_MENU_DIR,
-    "/etc/wb-homeui/custom-menu",
-)
 
 
 def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
