@@ -1,10 +1,10 @@
 import { JSONEditor } from '@wirenboard/json-editor';
 
-// Value editor whose input type morphs by another field's value (the "driver").
-// Config in `options.dynamicType`: { sourceField, typeMap: { <inputType>: [driverValue...] }, defaultType }.
-// Unmapped values fall back to `defaultType` (`number` if omitted). Visibility is left
-// to json-editor `dependencies`. The value is always stored as a string; the consumer
-// coerces it by action.
+// Value editor whose input type morphs by another field's value (the "source").
+// Config in `options.dynamicType`: { sourceField, typeByValue: { <sourceValue>: <inputType> },
+// defaultType, defaultValueByType: { <inputType>: <default value> } }. Unmapped source values
+// fall back to `defaultType`. Visibility is left to json-editor `dependencies`. The value is
+// always stored as a string and the consumer coerces it by action.
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
 export function makeDynamicTypeEditor() {
@@ -50,10 +50,10 @@ export function makeDynamicTypeEditor() {
       this.parseDynamicType();
       this.applyInputType();
 
-      // Deferred so the whole form (incl. the driver field) exists when we resolve it.
+      // Deferred so the whole form (incl. the source field) exists when we resolve it.
       requestAnimationFrame(() => {
         this.theme.afterInputReady(this.input);
-        this.setupDriverWatch();
+        this.setupSourceWatch();
       });
     }
 
@@ -61,26 +61,16 @@ export function makeDynamicTypeEditor() {
     parseDynamicType() {
       const dt = this.options.dynamicType;
       this.defaultType = (dt && dt.defaultType) || 'number';
-      if (!dt || !dt.typeMap) return;
-      this.driverName = dt.sourceField;
-      this.valueToType = {};
-      Object.keys(dt.typeMap).forEach((type) => {
-        const list = Array.isArray(dt.typeMap[type]) ? dt.typeMap[type] : [dt.typeMap[type]];
-        list.forEach((value) => {
-          if (this.valueToType[value] !== undefined && this.valueToType[value] !== type) {
-            console.warn(
-              `wb-dynamic-type: driver value "${value}" is mapped to both `
-                + `"${this.valueToType[value]}" and "${type}"; using "${type}"`,
-            );
-          }
-          this.valueToType[value] = type;
-        });
-      });
+      // Built-in defaults, author's override them. Unlisted types fall back to '' (see applyInputType).
+      this.defaultValueByType = { color: '#ffffff', number: 0, ...(dt && dt.defaultValueByType) };
+      if (!dt || !dt.typeByValue) return;
+      this.sourceName = dt.sourceField;
+      this.valueToType = { ...dt.typeByValue };
     }
 
     // Nearest ancestor's child editor named `name`. Array/table editors have no
-    // `editors`, so they're skipped — that lets a table cell reach an outside driver.
-    resolveDriverEditor(name) {
+    // `editors`, so they're skipped — that lets a table cell reach an outside source.
+    resolveSourceEditor(name) {
       let node = this.parent;
       while (node) {
         if (node.editors && node.editors[name]) return node.editors[name];
@@ -89,36 +79,43 @@ export function makeDynamicTypeEditor() {
       return null;
     }
 
-    // Watch the driver and re-apply the input type on its change. Guarded because
+    // Watch the source and re-apply the input type on its change. Guarded because
     // the deferred frame may fire after this editor was destroyed.
-    setupDriverWatch() {
+    setupSourceWatch() {
       if (!this.jsoneditor || !this.input) return;
-      if (!this.valueToType || !this.driverName) return;
-      const driver = this.resolveDriverEditor(this.driverName);
-      if (!driver) {
-        console.warn(`wb-dynamic-type: driver field "${this.driverName}" not found`);
+      if (!this.valueToType || !this.sourceName) return;
+      const source = this.resolveSourceEditor(this.sourceName);
+      if (!source) {
+        console.warn(`wb-dynamic-type: source field "${this.sourceName}" not found`);
         return;
       }
-      this.driverWatchPath = driver.path;
-      this.driverListener = () => this.applyInputType();
-      this.jsoneditor.watch(this.driverWatchPath, this.driverListener);
+      this.sourceWatchPath = source.path;
+      this.sourceListener = () => this.applyInputType();
+      this.jsoneditor.watch(this.sourceWatchPath, this.sourceListener);
       this.applyInputType();
     }
 
     currentType() {
-      // Before the driver resolves (watch is deferred), keep the input as text — a
+      // Before the source resolves (watch is deferred), keep the input as text — a
       // number input would silently drop a color/text value assigned meanwhile.
-      if (!this.driverWatchPath) return 'text';
-      // Look up the driver live by path — a cached editor ref goes stale when
+      if (!this.sourceWatchPath) return 'text';
+      // Look up the source live by path — a cached editor ref goes stale when
       // json-editor rebuilds object-level fields.
-      const driver = this.jsoneditor.getEditor(this.driverWatchPath);
-      const value = driver ? driver.getValue() : undefined;
+      const source = this.jsoneditor.getEditor(this.sourceWatchPath);
+      const value = source ? source.getValue() : undefined;
       if (this.valueToType && this.valueToType[value]) return this.valueToType[value];
       return this.defaultType;
     }
 
-    // Switch the input to match the driver and keep the value sane. Visibility is left
-    // to json-editor's `dependencies`; this widget never touches `display`.
+    // Whether a stored string fits an input type. Any non-empty string fits text.
+    isValidForType(value, type) {
+      if (type === 'color') return HEX_RE.test(value);
+      if (type === 'number') return value !== '' && !Number.isNaN(Number(value));
+      return value !== '';
+    }
+
+    // Switch the input to match the source and keep the value sane.
+    // Visibility is left to json-editor's `dependencies`.
     applyInputType() {
       if (!this.input) return;
       const type = this.currentType();
@@ -128,11 +125,10 @@ export function makeDynamicTypeEditor() {
       const prevValue = this.input.value;
       this.input.type = type;
 
-      if (type === 'color' && !HEX_RE.test(prevValue)) {
-        this.input.value = '#ffffff';
-        this.refreshValue();
-      } else if (type !== 'color' && HEX_RE.test(prevValue)) {
-        this.input.value = '';
+      // Substitute the type's default only when the current value no longer fits, so a value
+      // that already fits (a saved hex morphing into a color input) survives reopening.
+      if (!this.isValidForType(prevValue, type)) {
+        this.input.value = this.defaultValueByType[type] ?? '';
         this.refreshValue();
       }
     }
@@ -194,8 +190,8 @@ export function makeDynamicTypeEditor() {
     }
 
     destroy() {
-      if (this.driverWatchPath && this.driverListener) {
-        this.jsoneditor.unwatch(this.driverWatchPath, this.driverListener);
+      if (this.sourceWatchPath && this.sourceListener) {
+        this.jsoneditor.unwatch(this.sourceWatchPath, this.sourceListener);
       }
       if (this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
       if (this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
