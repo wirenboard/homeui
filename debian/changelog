@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.8) stable; urgency=medium
+
+  * Keep device name and MQTT id when switching device template
+
+ -- KraPete <86825564+KraPete@users.noreply.github.com>  Tue, 07 Jul 2026 12:55:41 +0000
+
 wb-mqtt-homeui (2.237.7) stable; urgency=medium
 
   * Fix HTML in json-editor schema descriptions
