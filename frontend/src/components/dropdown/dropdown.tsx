@@ -220,7 +220,19 @@ export const Dropdown = ({
     tabSelectsValue: false,
     noOptionsMessage: () => t('common.labels.empty-search'),
     unstyled: true,
-    onMenuOpen: () => setIsMenuOpen(true),
+    onMenuOpen: () => {
+      setIsMenuOpen(true);
+      requestAnimationFrame(() => {
+        const menuList = (select.current as SelectInstance)?.menuListRef;
+        if (!menuList) return;
+        const selected = menuList.querySelector('[aria-selected="true"]');
+        if (!selected) return;
+        const listRect = menuList.getBoundingClientRect();
+        const itemRect = selected.getBoundingClientRect();
+        const offsetTop = itemRect.top - listRect.top + menuList.scrollTop;
+        menuList.scrollTop = Math.max(0, offsetTop - (listRect.height - itemRect.height) / 2);
+      });
+    },
     onMenuClose: () => setIsMenuOpen(false),
     onKeyDown: handleKeyDown,
     onChange: handleChange,
