@@ -21,7 +21,7 @@ from .users_storage import UserType
 GATES_CONF_DIR = "/etc/wb-homeui/gates.d"
 RENDERED_GATES_DIR = "/var/lib/wb-homeui/nginx-gates"
 BOUNCES_CONF_PATH = "/var/lib/wb-homeui/nginx/wb-gate-bounces.conf"
-CUSTOM_MENU_DIR = "/usr/share/wb-mqtt-homeui/custom-menu"
+CUSTOM_MENU_DIR = "/var/lib/wb-homeui/custom-menu"
 LOCK_PATH = "/run/wb-homeui-gates.lock"
 # Parent of the auth-cache path from wb-homeui-gates.conf; nginx creates the leaf.
 NGINX_CACHE_ROOT = "/var/cache/nginx"

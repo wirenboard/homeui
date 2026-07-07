@@ -16,5 +16,8 @@ deb-systemd-invoke try-restart nginx || true
 
 # Re-render service gates with the freshly installed snippets/templates
 if [ "$1" = "configure" ] && [ -x /usr/bin/wb-homeui-gates ]; then
+    # Gate menu items used to be generated here; stale copies would duplicate
+    # the ones now rendered into /var/lib/wb-homeui/custom-menu.
+    rm -f /usr/share/wb-mqtt-homeui/custom-menu/wb-gate-*.json
     wb-homeui-gates apply >/dev/null 2>&1 || true
 fi
