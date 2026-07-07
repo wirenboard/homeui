@@ -767,6 +767,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
+                # Gates auth_request every request, hence 1000/min per client; nginx caps
+                # each IP at 900/min (wb-homeui-gates.conf) — change only as a pair.
                 "/auth/check": RequestHandler(
                     fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
                 ),
