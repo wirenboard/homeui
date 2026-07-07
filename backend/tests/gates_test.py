@@ -7,7 +7,13 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from wb.homeui_backend import gates_cli
-from wb.homeui_backend.gates import Gate, apply_gates, load_gates, render_gate
+from wb.homeui_backend.gates import (
+    CUSTOM_MENU_DIR,
+    Gate,
+    apply_gates,
+    load_gates,
+    render_gate,
+)
 from wb.homeui_backend.users_storage import UserType
 
 CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "..", "configs")
@@ -126,6 +132,12 @@ class RenderGateTest(unittest.TestCase):
         self.assertNotIn("wb-gate-unauth.inc", conf)
         self.assertIn("proxy_pass http://127.0.0.1:9000;", conf)
         self.assertIn("wb-gate-proxy.inc", conf)
+
+
+class CustomMenuDirDefaultTest(unittest.TestCase):
+    def test_generated_menu_files_go_to_var_lib(self):
+        """Pin the real default (ApplyGatesTest patches it): generated state belongs under /var/lib."""
+        self.assertEqual(CUSTOM_MENU_DIR, "/var/lib/wb-homeui/custom-menu")
 
 
 class ApplyGatesTest(unittest.TestCase):

@@ -8,7 +8,7 @@ BASELINE_STATE=/var/lib/wb-homeui/default-dashboards.state
 if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     rm -rf /var/lib/wb-homeui/nginx-gates
     rm -f /var/lib/wb-homeui/nginx/wb-gate-bounces.conf
-    rm -f /usr/share/wb-mqtt-homeui/custom-menu/wb-gate-*.json
+    rm -rf /var/lib/wb-homeui/custom-menu
     # Reload so nginx forgets the gates now, not at some later restart.
     /usr/bin/systemctl try-reload-or-restart nginx || true
 fi
@@ -17,6 +17,10 @@ if [ "$1" = "purge" ]; then
     rm $CONFFILE
     rm -f $BASELINE_STATE
     rm -rf /etc/wb-homeui/gates.d
+    rm -rf /etc/wb-homeui/custom-menu
+    # After wb_move /etc/wb-homeui is a symlink into /mnt/data: the lines above
+    # clean the data through it, this one drops the symlink (or plain dir) itself.
+    rm -rf /etc/wb-homeui
 fi
 
 #DEBHELPER#
