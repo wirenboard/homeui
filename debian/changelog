@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.9) stable; urgency=medium
+
+  * wb-dynamic-type: update options keys
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 09 Jul 2026 16:12:00 +0300
+
 wb-mqtt-homeui (2.237.8) stable; urgency=medium
 
   * Scroll to active dropdown option on open
