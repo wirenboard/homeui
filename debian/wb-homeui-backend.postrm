@@ -10,7 +10,8 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     rm -f /var/lib/wb-homeui/nginx/wb-gate-bounces.conf
     rm -rf /var/lib/wb-homeui/custom-menu
     # Reload so nginx forgets the gates now, not at some later restart.
-    /usr/bin/systemctl try-reload-or-restart nginx || true
+    # Plain reload: try-reload-or-restart would START a stopped nginx here.
+    /usr/bin/systemctl reload nginx || true
 fi
 
 if [ "$1" = "purge" ]; then

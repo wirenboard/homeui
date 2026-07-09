@@ -440,7 +440,8 @@ def make_certificate_usable_change_handler(sn: str, config: Config) -> Callable[
         if usable:
             update_nginx_config(sn)
         else:
-            remove_nginx_https_config()
+            # apply_gates below reloads once; gates may still reference the cert here.
+            remove_nginx_https_config(reload_nginx=False)
         # `usable` (not the thread getter): the thread attribute may not be assigned yet at startup.
         result = apply_gates(config.is_https_enabled() and usable)
         if not result.ok:

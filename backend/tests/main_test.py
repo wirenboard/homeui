@@ -733,7 +733,7 @@ class CertificateUsableChangeHandlerTest(unittest.TestCase):
         """The certificate disappeared: the main-UI https.conf is dropped before the
         gates re-render, so nginx -t never sees a dangling ssl_certificate."""
         remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=False)
-        remove_mock.assert_called_once_with()
+        remove_mock.assert_called_once_with(reload_nginx=False)
         update_mock.assert_not_called()
         apply_mock.assert_called_once_with(False)
 

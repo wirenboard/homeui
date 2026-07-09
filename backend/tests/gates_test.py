@@ -227,6 +227,13 @@ class ApplyGatesTest(GatesDirsTestBase):
         self.assertEqual(auth_item["requiredRole"], "operator")
         self.assertNotIn("requiredRole", open_item)
 
+    def test_failed_first_apply_leaves_no_bounces_behind(self):
+        """A first-ever apply that fails nginx -t must not leave its fresh bounces file."""
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        result = self._apply(https_enabled=False, nginx_ok=False)
+        self.assertFalse(result.ok)
+        self.assertFalse(os.path.exists(self.bounces))
+
     def test_reload_failure_restores_previous_state(self):
         """nginx -t passes but the reload of the new render fails (port taken, systemd
         hiccup): it is rolled back on disk and the rollback reload succeeds, so the
@@ -347,7 +354,7 @@ class CliApplyEffectiveHttpsTest(GatesDirsTestBase):
 
     def test_apply_with_unusable_cert_drops_stale_https_conf(self):
         """A stale main-UI https.conf would fail the shared nginx -t; apply removes it first."""
-        self._cli_apply(cert_usable=False).assert_called_once_with()
+        self._cli_apply(cert_usable=False).assert_called_once_with(reload_nginx=False)
 
     def test_apply_with_usable_cert_keeps_https_conf(self):
         self._cli_apply(cert_usable=True).assert_not_called()

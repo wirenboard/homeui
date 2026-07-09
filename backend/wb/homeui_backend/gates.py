@@ -219,6 +219,9 @@ def _restore_rendered_state(snapshot_dir: str) -> None:
     snapshot_bounces = os.path.join(snapshot_dir, "bounces.conf")
     if os.path.exists(snapshot_bounces):
         shutil.copy(snapshot_bounces, BOUNCES_CONF_PATH)
+    elif os.path.exists(BOUNCES_CONF_PATH):
+        # A first-ever apply that failed must not leave its fresh bounces behind.
+        os.remove(BOUNCES_CONF_PATH)
 
 
 NGINX_TEST_ATTEMPTS = 5
