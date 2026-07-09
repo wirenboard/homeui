@@ -668,6 +668,9 @@ def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHa
                         menu_items.append(data)
         except FileNotFoundError:
             continue
+        except OSError as e:
+            # A file instead of a dir, permissions, etc. must not 500 the menu.
+            logging.warning("Skipping custom menu dir %s: %s", menu_dir, e)
     return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
 
 
