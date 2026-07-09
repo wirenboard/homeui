@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.238.1) stable; urgency=medium
+
+  * Support external menu links: custom-menu items can carry isExternal,
+    openInNewTab and requiredRole; a safe post-login external return
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 09 Jul 2026 19:30:00 +0200
+
 wb-mqtt-homeui (2.237.9) stable; urgency=medium
 
   * wb-dynamic-type: update options keys

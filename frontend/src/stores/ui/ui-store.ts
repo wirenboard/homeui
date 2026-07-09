@@ -59,7 +59,7 @@ export default class UiStore {
     runInAction(() => {
       this.modules = this.#collectModuleIds(this.#additionalItems);
     });
-    return this.#additionalItems.map((item) => toMenuItemInstance(item, i18n.language));
+    return this.#additionalItems.map((item) => toMenuItemInstance(item, i18n.language, authStore.hasRights));
   }
 
   #collectModuleIds(items: CustomMenuItem[]): string[] {

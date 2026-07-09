@@ -33,19 +33,57 @@ const normalizeUrl = (url?: string) => {
   return migrateLegacyUrl(normalized);
 };
 
-export const toMenuItemInstance = (item: CustomMenuItem, language: string): MenuItemInstance => {
+// A fixed base to resolve absolute paths against: whether a path escapes to another
+// host is independent of the real origin, and this keeps the check env-independent.
+const SAME_ORIGIN_BASE = 'http://wb-menu.local';
+
+// Same-origin absolute path or http(s) URL; rejects javascript:/data:/protocol-relative.
+const isSafeExternalUrl = (url?: string): boolean => {
+  if (!url) return false;
+  // Absolute path: resolve it and require it stays same-origin. new URL() (not a
+  // regex) is what catches control-char/backslash tricks like "/\t/evil.com" or
+  // "/\evil.com" that browsers collapse into protocol-relative "//evil.com".
+  if (url.startsWith('/')) {
+    try {
+      return new URL(url, SAME_ORIGIN_BASE).origin === SAME_ORIGIN_BASE;
+    } catch {
+      return false;
+    }
+  }
+  try {
+    return ['http:', 'https:'].includes(new URL(url).protocol);
+  } catch {
+    return false;
+  }
+};
+
+export const toMenuItemInstance = (
+  item: CustomMenuItem,
+  language: string,
+  hasRights?: (role: UserRole) => boolean,
+): MenuItemInstance => {
   const label = item.title?.[language as 'ru' | 'en'] || item.title?.ru || item.title?.en || item.id;
-  const children = item.children?.map((child) => toMenuItemInstance(child, language));
+  const children = item.children?.map((child) => toMenuItemInstance(child, language, hasRights));
+  const isExternal = Boolean(item.isExternal && isSafeExternalUrl(item.url));
   const output: MenuItemInstance = {
     id: item.id,
-    url: normalizeUrl(item.url),
+    // External links: keep the safe URL verbatim (the in-app normalizer would break it).
+    url: isExternal ? item.url : normalizeUrl(item.url),
     label,
+    ...(isExternal ? { isExternal: true } : null),
+    ...(isExternal && item.openInNewTab ? { openInNewTab: true } : null),
     children: children?.length ? children : undefined,
   };
 
   if (item.id === 'alice') {
     output.isShow = language !== 'en';
   }
+
+  // Combines with visibility decided above: requiredRole may hide, never re-show.
+  if (item.requiredRole !== undefined && hasRights) {
+    output.isShow = output.isShow !== false && hasRights(item.requiredRole);
+  }
+
   return output;
 };
 
@@ -71,6 +109,8 @@ export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuI
       items[idx] = {
         ...baseItem,
         ...(item.url ? { url: item.url } : null),
+        ...(item.isExternal !== undefined ? { isExternal: item.isExternal } : null),
+        ...(item.openInNewTab !== undefined ? { openInNewTab: item.openInNewTab } : null),
         ...(item.label && item.label !== item.id ? { label: item.label } : null),
         children: mergedChildren.length ? mergedChildren : undefined,
       };

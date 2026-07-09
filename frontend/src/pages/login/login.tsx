@@ -14,6 +14,24 @@ import { Password } from '@/components/password';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
+// externalReturn: same-origin path to a service outside the SPA; needs a
+// full-page nav, origin-checked to prevent an open redirect.
+const getSafeExternalReturn = (): string | null => {
+  const raw = new URLSearchParams(window.location.search).get('externalReturn');
+  if (!raw) {
+    return null;
+  }
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) {
+      return null;
+    }
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return null;
+  }
+};
+
 const LoginPage = observer(() => {
   const { t, i18n } = useTranslation();
   const { isAutologin } = authStore;
@@ -31,6 +49,11 @@ const LoginPage = observer(() => {
       setIsShowError(false);
       setIsLoading(true);
       await authStore.login({ login, password });
+      const externalReturn = getSafeExternalReturn();
+      if (externalReturn) {
+        window.location.assign(externalReturn);
+        return;
+      }
       navigate(searchParams.get('returnState') ?? '/', { replace: true });
     } catch {
       setIsShowError(true);
