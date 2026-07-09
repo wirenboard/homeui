@@ -235,13 +235,8 @@ def remove_nginx_https_config() -> None:
 
     os.remove(https_conf_path)
     logging.info("Nginx HTTPS config removed")
-
-    try:
-        subprocess.run(["systemctl", "reload", "nginx"], check=True)
-    except subprocess.CalledProcessError as e:
-        # Gates may still reference the missing certificate; the follow-up gates
-        # re-render reloads nginx again, so the removal must not die here.
-        logging.error("Nginx reload after removing HTTPS config failed: %s", e)
+    # No reload here: gates may still reference the missing certificate, so it
+    # would fail; both callers follow up with apply_gates, which reloads once.
 
 
 class CertificateState(Enum):
