@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.238.1) stable; urgency=medium
+
+  * Serve the main UI over TLS only while a usable certificate exists:
+    on certificate loss the backend drops https.conf and falls back to
+    HTTP, HTTPS returns automatically once a certificate is obtained;
+    the HTTPS toggle stores the desired mode
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 09 Jul 2026 19:10:00 +0200
+
 wb-mqtt-homeui (2.238.0) stable; urgency=medium
 
   * Custom menu: read drop-ins from three per-origin dirs (package
