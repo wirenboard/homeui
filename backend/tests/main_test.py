@@ -565,6 +565,14 @@ class CustomMenuHandlerTest(unittest.TestCase):
         self.assertEqual(body, [[{"id": "user"}]])
         self.assertEqual(self._call([os.path.join(self.root, "absent1")]), [])
 
+    def test_path_that_is_a_file_is_skipped(self):
+        """A file accidentally created at a menu-dir path must not 500 the endpoint."""
+        user = self._make_dir("user", {"item.json": [{"id": "user"}]})
+        file_path = os.path.join(self.root, "not-a-dir")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("oops")
+        self.assertEqual(self._call([file_path, user]), [[{"id": "user"}]])
+
 
 class CertificateUsableChangeHandlerTest(unittest.TestCase):
     def _run_handler(self, usable):
