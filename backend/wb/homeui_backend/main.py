@@ -678,7 +678,13 @@ def add_menu_items(src: list, dst: dict) -> None:
 
 def load_subfolder_items(folder_path: str) -> Optional[list]:
     menu_items: dict[str, dict] = {}
-    for file in sorted(os.listdir(folder_path)):
+    try:
+        entries = sorted(os.listdir(folder_path))
+    except OSError as e:
+        # One unreadable subfolder must not break the rest of /ui/menu.
+        logging.warning("Skipping custom menu subfolder %s: %s", folder_path, e)
+        return None
+    for file in entries:
         if file.endswith(".json"):
             file_path = os.path.join(folder_path, file)
             items_data = load_json_file(file_path)
@@ -911,7 +917,7 @@ def main():
         # dropped here or the shared nginx -t keeps failing.
         usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
     except Exception as e:  # pylint: disable=broad-exception-caught
-        logging.error("Startup TLS reconcile failed: %s", e)
+        logging.exception("Startup TLS reconcile failed: %s", e)
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()
