@@ -373,6 +373,33 @@ class CliApplyEffectiveHttpsTest(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
+    def test_apply_with_unusable_cert_drops_stale_https_conf(self):
+        """A stale main-UI https.conf would fail the shared nginx -t; apply removes it first."""
+        with open(self.config, "w", encoding="utf-8") as f:
+            f.write('{"enable_https": true}')
+        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=False), patch(
+            "wb.homeui_backend.gates_cli.remove_nginx_https_config"
+        ) as remove_mock, patch(
+            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
+        ), patch(
+            "wb.homeui_backend.gates.time.sleep"
+        ):
+            self.assertEqual(gates_cli.apply_command(), 0)
+        remove_mock.assert_called_once_with()
+
+    def test_apply_with_usable_cert_keeps_https_conf(self):
+        with open(self.config, "w", encoding="utf-8") as f:
+            f.write('{"enable_https": true}')
+        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=True), patch(
+            "wb.homeui_backend.gates_cli.remove_nginx_https_config"
+        ) as remove_mock, patch(
+            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
+        ), patch(
+            "wb.homeui_backend.gates.time.sleep"
+        ):
+            self.assertEqual(gates_cli.apply_command(), 0)
+        remove_mock.assert_not_called()
+
     def test_apply_with_flag_on_and_unusable_cert_renders_http(self):
         """`wb-homeui-gates apply` on a system with HTTPS enabled but no usable
         certificate (e.g. postinst on a fresh install) must render plain HTTP gates."""
