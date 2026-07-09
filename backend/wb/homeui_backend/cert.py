@@ -53,7 +53,9 @@ def has_enough_lifetime(cert: x509.Certificate) -> bool:
 def is_certificate_usable() -> bool:
     """Certificate on disk loads and is not expired; near-expiry still counts (renewal handles it)."""
     try:
-        return load_certificate(SSL_CERT_PATH).not_valid_after > datetime.datetime.now()
+        return load_certificate(SSL_CERT_PATH).not_valid_after_utc > datetime.datetime.now(
+            datetime.timezone.utc
+        )
     except Exception:  # pylint: disable=broad-exception-caught
         return False
 
@@ -233,7 +235,13 @@ def remove_nginx_https_config(reload_nginx: bool = True) -> None:
     if not os.path.exists(https_conf_path):
         return
 
-    os.remove(https_conf_path)
+    try:
+        os.remove(https_conf_path)
+    except FileNotFoundError:
+        pass
+    except OSError as e:
+        logging.error("Failed to remove nginx HTTPS config: %s", e)
+        return
     logging.info("Nginx HTTPS config removed")
     if not reload_nginx:
         return
@@ -327,7 +335,7 @@ class CertificateCheckingThread:  # pylint: disable=too-many-instance-attributes
                 logging.debug("Certificate is valid")
                 return
             # An expired certificate must not be reported as VALID.
-            if cert.not_valid_after > datetime.datetime.now():
+            if cert.not_valid_after_utc > datetime.datetime.now(datetime.timezone.utc):
                 state_on_update_fail = CertificateState.VALID
             logging.debug("Certificate needs renewal")
         except Exception as e:  # pylint: disable=broad-exception-caught

@@ -879,7 +879,7 @@ def main():
         # fires, so the stale https.conf must be dropped here.
         usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
     except Exception as e:  # pylint: disable=broad-exception-caught
-        logging.error("Startup TLS reconcile failed: %s", e)
+        logging.exception("Startup TLS reconcile failed: %s", e)
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()
