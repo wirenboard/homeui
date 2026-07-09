@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.237.10) stable; urgency=medium
+
+  * Fix datetimepicker select logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Jul 2026 17:24:00 +0300
+
 wb-mqtt-homeui (2.237.9) stable; urgency=medium
 
   * wb-dynamic-type: update options keys
