@@ -572,6 +572,14 @@ class CustomMenuHandlerTest(unittest.TestCase):
             f.write("oops")
         self.assertEqual(self._call([file_path, user]), [[{"id": "user"}]])
 
+    def test_unreadable_subfolder_is_skipped(self):
+        """A broken subfolder inside a menu dir must not break the endpoint."""
+        top = self._make_dir("top", {"item.json": [{"id": "ok"}]})
+        os.mkdir(os.path.join(top, "sub"))
+        with patch("wb.homeui_backend.main.os.listdir", side_effect=PermissionError("denied")):
+            body = self._call([top])
+        self.assertEqual(body, [[{"id": "ok"}]])
+
 
 class ProcessResponseTest(unittest.TestCase):
     def test_sends_304_via_send_response_without_body(self):
