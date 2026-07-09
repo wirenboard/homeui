@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+# Past this many tracked keys, stale buckets are pruned before inserting a new one.
+MAX_TRACKED_KEYS = 10000
+
 
 @dataclass
 class CallStatistics:
@@ -19,6 +22,8 @@ class RateLimiter:  # pylint: disable=too-few-public-methods
             return True
 
         if endpoint not in self.calls:
+            if len(self.calls) >= MAX_TRACKED_KEYS:
+                self._drop_stale(current_time)
             self.calls[endpoint] = CallStatistics(endpoint=endpoint, interval_start_time=current_time)
             return True
 
@@ -34,3 +39,10 @@ class RateLimiter:  # pylint: disable=too-few-public-methods
             return True
 
         return False
+
+    def _drop_stale(self, current_time: datetime) -> None:
+        self.calls = {
+            key: stats
+            for key, stats in self.calls.items()
+            if (current_time - stats.interval_start_time).total_seconds() <= 60
+        }

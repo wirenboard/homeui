@@ -1,3 +1,14 @@
+wb-mqtt-homeui (2.238.2) stable; urgency=medium
+
+  * Add service gates: one JSON in /etc/wb-homeui/gates.d puts a loopback
+    service behind the homeui login; nginx configs and menu items are
+    rendered by the backend and follow the effective HTTPS mode, with
+    nginx -t validation and rollback (wb-homeui-gates CLI to check/apply)
+  * Raise the /auth/check rate limit to 1000 req/min per client and cache
+    gate auth answers in nginx; per-IP limit_req (900/min) on gate ports
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 09 Jul 2026 19:20:00 +0200
+
 wb-mqtt-homeui (2.238.1) stable; urgency=medium
 
   * Serve the main UI over TLS only while a usable certificate exists:
