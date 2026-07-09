@@ -1,6 +1,7 @@
 import datetime
 import os
 import shutil
+import subprocess
 import tempfile
 import time
 import unittest
@@ -87,13 +88,29 @@ class RemoveNginxHttpsConfigTest(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_removes_config_without_reloading_nginx(self):
-        """Removal must not reload: gates may still reference the missing cert, the
-        follow-up apply_gates does the single authoritative reload."""
+    def test_removes_config_and_reloads_nginx(self):
+        """Default removal reloads nginx so the 443 listener drops immediately."""
         with open(self.https_conf, "w", encoding="utf-8") as f:
             f.write("server {}\n")
         with patch("wb.homeui_backend.cert.subprocess.run") as run_mock:
             remove_nginx_https_config()
+        self.assertFalse(os.path.exists(self.https_conf))
+        run_mock.assert_called_once_with(["systemctl", "reload", "nginx"], check=True)
+
+    def test_reload_failure_does_not_raise_and_opt_out_skips_reload(self):
+        """A failed reload is logged, not raised; reload_nginx=False skips it."""
+        with open(self.https_conf, "w", encoding="utf-8") as f:
+            f.write("server {}\n")
+        with patch(
+            "wb.homeui_backend.cert.subprocess.run",
+            side_effect=subprocess.CalledProcessError(1, ["systemctl"]),
+        ):
+            remove_nginx_https_config()
+        self.assertFalse(os.path.exists(self.https_conf))
+        with open(self.https_conf, "w", encoding="utf-8") as f:
+            f.write("server {}\n")
+        with patch("wb.homeui_backend.cert.subprocess.run") as run_mock:
+            remove_nginx_https_config(reload_nginx=False)
         self.assertFalse(os.path.exists(self.https_conf))
         run_mock.assert_not_called()
 

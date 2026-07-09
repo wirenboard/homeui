@@ -226,7 +226,7 @@ def update_nginx_config(sn: str) -> None:
     subprocess.run(["systemctl", "reload", "nginx"], check=True)
 
 
-def remove_nginx_https_config() -> None:
+def remove_nginx_https_config(reload_nginx: bool = True) -> None:
     """Drop the main-UI TLS config when no usable certificate exists, so nginx -t keeps passing."""
     https_conf_path = os.path.join(WB_DYNAMIC_NGINX_CONF_DIR, "https.conf")
 
@@ -235,8 +235,14 @@ def remove_nginx_https_config() -> None:
 
     os.remove(https_conf_path)
     logging.info("Nginx HTTPS config removed")
-    # No reload here: gates may still reference the missing certificate, so it
-    # would fail; both callers follow up with apply_gates, which reloads once.
+    if not reload_nginx:
+        return
+    try:
+        subprocess.run(["systemctl", "reload", "nginx"], check=True)
+    except subprocess.CalledProcessError as e:
+        # Other configs may still reference the missing certificate; the caller's
+        # follow-up reload fixes nginx, so the removal must not die here.
+        logging.error("Nginx reload after removing HTTPS config failed: %s", e)
 
 
 class CertificateState(Enum):
@@ -260,7 +266,7 @@ class CertificateCheckingThread:  # pylint: disable=too-many-instance-attributes
         self._request_condition = threading.Condition(self._state_lock)
         self._on_usable_change = on_usable_change
         self._usable_lock = threading.Lock()
-        # Synchronous initial value: the caller's startup apply_gates must not flap HTTP->HTTPS.
+        # Synchronous initial value: the caller's startup reconcile must not flap HTTP->HTTPS.
         self._usable = is_certificate_usable()
         self._notified_usable = self._usable
         self._thread = threading.Thread(target=self.run, daemon=True)
