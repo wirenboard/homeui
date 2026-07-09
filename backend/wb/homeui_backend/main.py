@@ -895,12 +895,19 @@ def main():
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    usable_change_handler = make_certificate_usable_change_handler(sn, WebRequestHandler.config)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn,
         WebRequestHandler.config.is_https_enabled(),
-        make_certificate_usable_change_handler(sn, WebRequestHandler.config),
+        usable_change_handler,
     )
-    apply_gates(effective_https_enabled(WebRequestHandler.config, WebRequestHandler.certificate_thread))
+    try:
+        # Full reconcile, not just apply_gates: with the certificate already gone at
+        # startup no usable transition ever fires, so the stale https.conf must be
+        # dropped here or the shared nginx -t keeps failing.
+        usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.error("Startup TLS reconcile failed: %s", e)
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()
