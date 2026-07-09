@@ -111,6 +111,7 @@ export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuI
         ...(item.url ? { url: item.url } : null),
         ...(item.isExternal !== undefined ? { isExternal: item.isExternal } : null),
         ...(item.openInNewTab !== undefined ? { openInNewTab: item.openInNewTab } : null),
+        ...(item.isShow !== undefined ? { isShow: item.isShow } : null),
         ...(item.label && item.label !== item.id ? { label: item.label } : null),
         children: mergedChildren.length ? mergedChildren : undefined,
       };
