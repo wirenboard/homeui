@@ -28,8 +28,10 @@ from wb.homeui_backend.main import (
     custom_menu_handler,
     delete_user_handler,
     device_info_handler,
+    effective_https_enabled,
     get_required_user_type,
     get_users_handler,
+    make_certificate_usable_change_handler,
     security_check_handler,
     update_https_handler,
     update_user_handler,
@@ -692,3 +694,93 @@ class UpdateHttpsHandlerGatesTest(unittest.TestCase):
         ):
             response = update_https_handler(self._request('{"enabled": false}'), MagicMock())
         self.assertEqual(response, response_200())
+
+
+class UpdateHttpsHandlerEffectiveModeTest(unittest.TestCase):
+    """Gates follow the effective HTTPS: the flag alone is not enough, the
+    certificate must be usable too, so TLS configs never point at a missing file."""
+
+    @staticmethod
+    def _request(body: str):
+        request = MagicMock()
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+        return request
+
+    def _toggle_on(self, usable: bool):
+        config = MagicMock()
+        config.is_https_enabled.return_value = True
+        context = MagicMock()
+        context.certificate_thread.is_certificate_usable.return_value = usable
+        with patch.object(WebRequestHandler, "config", config, create=True), patch(
+            "wb.homeui_backend.main.apply_gates", return_value=ApplyResult(ok=True)
+        ) as apply_mock:
+            response = update_https_handler(self._request('{"enabled": true}'), context)
+        return response, apply_mock
+
+    def test_flag_on_with_unusable_cert_applies_http_gates(self):
+        response, apply_mock = self._toggle_on(usable=False)
+        apply_mock.assert_called_once_with(False)
+        self.assertEqual(response, response_200())
+
+    def test_flag_on_with_usable_cert_applies_https_gates(self):
+        response, apply_mock = self._toggle_on(usable=True)
+        apply_mock.assert_called_once_with(True)
+        self.assertEqual(response, response_200())
+
+
+class EffectiveHttpsEnabledTest(unittest.TestCase):
+    def _effective(self, flag: bool, usable: bool) -> bool:
+        config = MagicMock()
+        config.is_https_enabled.return_value = flag
+        thread = MagicMock()
+        thread.is_certificate_usable.return_value = usable
+        return effective_https_enabled(config, thread)
+
+    def test_requires_both_flag_and_usable_cert(self):
+        self.assertTrue(self._effective(flag=True, usable=True))
+        self.assertFalse(self._effective(flag=True, usable=False))
+        self.assertFalse(self._effective(flag=False, usable=True))
+        self.assertFalse(self._effective(flag=False, usable=False))
+
+
+class CertificateUsableChangeHandlerTest(unittest.TestCase):
+    def _run_handler(self, flag: bool, usable: bool):
+        config = MagicMock()
+        config.is_https_enabled.return_value = flag
+        with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
+            "wb.homeui_backend.main.update_nginx_config"
+        ) as update_mock, patch("wb.homeui_backend.main.apply_gates") as apply_mock:
+            make_certificate_usable_change_handler("TESTSN", config)(usable)
+        return remove_mock, update_mock, apply_mock
+
+    def test_degradation_removes_tls_config_and_renders_http_gates(self):
+        """The certificate disappeared: the main-UI https.conf is dropped before the
+        gates re-render, so nginx -t never sees a dangling ssl_certificate."""
+        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=False)
+        remove_mock.assert_called_once_with()
+        update_mock.assert_not_called()
+        apply_mock.assert_called_once_with(False)
+
+    def test_recovery_recreates_tls_config_and_renders_https_gates(self):
+        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        remove_mock.assert_not_called()
+        apply_mock.assert_called_once_with(True)
+
+    def test_failed_gates_apply_raises_to_keep_transition_pending(self):
+        """A failed gates re-render propagates, so the cert thread retries the transition."""
+        config = MagicMock()
+        config.is_https_enabled.return_value = True
+        with patch("wb.homeui_backend.main.update_nginx_config"), patch(
+            "wb.homeui_backend.main.apply_gates"
+        ) as apply_mock:
+            apply_mock.return_value.ok = False
+            apply_mock.return_value.error = "nginx -t failed"
+            with self.assertRaises(RuntimeError):
+                make_certificate_usable_change_handler("TESTSN", config)(True)
+
+    def test_recovery_with_flag_off_keeps_http_gates(self):
+        _, update_mock, apply_mock = self._run_handler(flag=False, usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        apply_mock.assert_called_once_with(False)

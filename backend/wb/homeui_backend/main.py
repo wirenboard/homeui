@@ -18,7 +18,11 @@ from urllib.parse import unquote, urlparse
 
 import bcrypt
 
-from .cert import CertificateCheckingThread
+from .cert import (
+    CertificateCheckingThread,
+    remove_nginx_https_config,
+    update_nginx_config,
+)
 from .config_file import Config
 from .dashboards import (
     DashboardsStore,
@@ -424,6 +428,28 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     )
 
 
+def effective_https_enabled(config: Config, certificate_thread: CertificateCheckingThread) -> bool:
+    """Gates and the main UI serve TLS only when the flag is on AND a usable certificate exists."""
+    return config.is_https_enabled() and certificate_thread.is_certificate_usable()
+
+
+def make_certificate_usable_change_handler(sn: str, config: Config) -> Callable[[bool], None]:
+    """On usability transitions keep the invariant: TLS configs on disk <=> usable certificate."""
+
+    def handle(usable: bool) -> None:
+        if usable:
+            update_nginx_config(sn)
+        else:
+            remove_nginx_https_config()
+        # `usable` (not the thread getter): the thread attribute may not be assigned yet at startup.
+        result = apply_gates(config.is_https_enabled() and usable)
+        if not result.ok:
+            # Raising keeps the transition pending in the thread, so the next cycle retries.
+            raise RuntimeError(result.error)
+
+    return handle
+
+
 def https_request_cert_handler(
     _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
@@ -455,7 +481,9 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
             context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
-        gates_result = apply_gates(https_enabled)
+        gates_result = apply_gates(
+            effective_https_enabled(WebRequestHandler.config, context.certificate_thread)
+        )
         if not gates_result.ok:
             # The toggle itself is applied; report the gate failure instead of hiding it.
             return response_200(
@@ -868,9 +896,11 @@ def main():
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
-        sn, WebRequestHandler.config.is_https_enabled()
+        sn,
+        WebRequestHandler.config.is_https_enabled(),
+        make_certificate_usable_change_handler(sn, WebRequestHandler.config),
     )
-    apply_gates(WebRequestHandler.config.is_https_enabled())
+    apply_gates(effective_https_enabled(WebRequestHandler.config, WebRequestHandler.certificate_thread))
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()

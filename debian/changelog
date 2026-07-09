@@ -16,8 +16,10 @@ wb-mqtt-homeui (2.238.0) stable; urgency=medium
     follow the HTTPS toggle automatically (wb-homeui-gates CLI to
     check/apply, rollback on nginx errors)
   * Raise /auth/check rate limit to 1000 req/min and cache gate auth answers
-  * Always keep a certificate file at /etc/ssl/sslip.pem (expired placeholder
-    until a real one is obtained), so TLS configs cannot break nginx startup
+  * Serve TLS only while a usable certificate exists: if it goes missing or
+    breaks, the backend removes the TLS configs and falls back to HTTP
+    (HTTPS returns automatically once a certificate is obtained), so TLS
+    configs cannot break nginx startup
 
  -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 06 Jul 2026 20:10:00 +0200
 
