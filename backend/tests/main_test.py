@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler
 from unittest.mock import MagicMock, mock_open, patch
 
 from wb.homeui_backend.cert import CertificateState
+from wb.homeui_backend.gates import CUSTOM_MENU_DIR as GATES_CUSTOM_MENU_DIR
 from wb.homeui_backend.gates import ApplyResult
 from wb.homeui_backend.http_response import (
     response_200,
@@ -528,32 +529,19 @@ class SecurityCheckHandlerTest(unittest.TestCase):
 
 
 class GetRequiredUserTypeTest(unittest.TestCase):
-    @staticmethod
-    def _request_with(headers):
-        request = MagicMock()
-        request.headers = headers
-        return request
-
-    def test_valid_role(self):
-        self.assertEqual(
-            get_required_user_type(self._request_with({"Required-User-Type": "user"})), UserType.USER
-        )
-
-    def test_missing_header_defaults_to_admin(self):
-        self.assertEqual(get_required_user_type(self._request_with({})), UserType.ADMIN)
-
-    def test_empty_value_fails_safe_to_admin(self):
-        """An empty Required-User-Type (e.g. a gate that left $wb_role unset) must
-        require admin, never raise into a 500."""
-        self.assertEqual(
-            get_required_user_type(self._request_with({"Required-User-Type": ""})), UserType.ADMIN
-        )
-
-    def test_unknown_value_fails_safe_to_admin(self):
-        """An unknown role value must require admin rather than raise."""
-        self.assertEqual(
-            get_required_user_type(self._request_with({"Required-User-Type": "bogus"})), UserType.ADMIN
-        )
+    def test_role_header_parsing(self):
+        """A missing, empty (a gate left $wb_role unset) or unknown Required-User-Type
+        must fail safe to admin, never raise into a 500."""
+        for headers, expected in (
+            ({"Required-User-Type": "user"}, UserType.USER),
+            ({}, UserType.ADMIN),
+            ({"Required-User-Type": ""}, UserType.ADMIN),
+            ({"Required-User-Type": "bogus"}, UserType.ADMIN),
+        ):
+            with self.subTest(headers=headers):
+                request = MagicMock()
+                request.headers = headers
+                self.assertEqual(get_required_user_type(request), expected)
 
 
 class RequestHandlerRateLimitKeyTest(unittest.TestCase):
@@ -575,10 +563,8 @@ class RequestHandlerRateLimitKeyTest(unittest.TestCase):
         return handler
 
     def test_query_string_variants_share_one_bucket(self):
-        """Three GETs to /auth/check that differ only by ?nonce hit a limit of 2:
-        with the path normalised they collapse onto a single bucket, so the third is
-        throttled (429). Without normalisation each unique target would be its own
-        bucket and all three would pass."""
+        """Three GETs to /auth/check differing only by ?nonce against a limit of 2:
+        they collapse onto a single bucket, so the third is throttled (429)."""
         limit = 2
         handler = self._handler()
         handler.process_response = MagicMock()
@@ -627,6 +613,8 @@ class CustomMenuHandlerTest(unittest.TestCase):
                 "/etc/wb-homeui/custom-menu",
             ),
         )
+        # apply_gates writes its menu drop-ins into the served "generated" slot.
+        self.assertEqual(CUSTOM_MENU_DIRS[1], GATES_CUSTOM_MENU_DIR)
 
     def test_collects_items_from_all_dirs_in_read_order(self):
         """All three dirs are served, ordered by dir declaration order (beats file names)."""
@@ -637,13 +625,11 @@ class CustomMenuHandlerTest(unittest.TestCase):
         self.assertEqual(body, [[{"id": "pkg"}], [{"id": "gen"}], [{"id": "user"}]])
 
     def test_missing_dirs_are_skipped(self):
-        """Absent dirs in the read list are skipped, not fatal."""
+        """Absent dirs in the read list are skipped, not fatal; all absent serves []."""
         user = self._make_dir("user", {"item.json": [{"id": "user"}]})
         body = self._call([os.path.join(self.root, "absent1"), user, os.path.join(self.root, "absent2")])
         self.assertEqual(body, [[{"id": "user"}]])
-
-    def test_all_dirs_missing_serves_empty_menu(self):
-        self.assertEqual(self._call([os.path.join(self.root, "absent")]), [])
+        self.assertEqual(self._call([os.path.join(self.root, "absent1")]), [])
 
 
 class ProcessResponseTest(unittest.TestCase):
@@ -665,21 +651,26 @@ class ProcessResponseTest(unittest.TestCase):
         handler.send_error.assert_not_called()
 
 
-class UpdateHttpsHandlerGatesTest(unittest.TestCase):
-    @staticmethod
-    def _request(body: str):
+class UpdateHttpsHandlerTest(unittest.TestCase):
+    def _toggle(self, enabled: bool, apply_result: ApplyResult, cert_usable: bool = True):
+        config = MagicMock()
+        config.is_https_enabled.return_value = enabled
+        context = MagicMock()
+        context.certificate_thread.is_certificate_usable.return_value = cert_usable
         request = MagicMock()
+        body = json.dumps({"enabled": enabled})
         request.headers = {"Content-Length": str(len(body))}
         request.rfile.read.return_value = body.encode()
-        return request
+        with patch.object(WebRequestHandler, "config", config, create=True), patch(
+            "wb.homeui_backend.main.apply_gates", return_value=apply_result
+        ) as apply_mock:
+            response = update_https_handler(request, context)
+        return response, apply_mock
 
     def test_gates_error_is_reported_in_response(self):
         """A failed gates re-render after the toggle must surface in the response
         body (the toggle itself is applied) instead of being logged only."""
-        with patch.object(WebRequestHandler, "config", MagicMock(), create=True), patch(
-            "wb.homeui_backend.main.apply_gates", return_value=ApplyResult(ok=False, error="boom")
-        ):
-            response = update_https_handler(self._request('{"enabled": false}'), MagicMock())
+        response, _ = self._toggle(False, ApplyResult(ok=False, error="boom"))
         self.assertEqual(
             response,
             response_200(
@@ -689,44 +680,17 @@ class UpdateHttpsHandlerGatesTest(unittest.TestCase):
         )
 
     def test_gates_success_keeps_plain_response(self):
-        with patch.object(WebRequestHandler, "config", MagicMock(), create=True), patch(
-            "wb.homeui_backend.main.apply_gates", return_value=ApplyResult(ok=True)
-        ):
-            response = update_https_handler(self._request('{"enabled": false}'), MagicMock())
+        response, _ = self._toggle(False, ApplyResult(ok=True))
         self.assertEqual(response, response_200())
 
-
-class UpdateHttpsHandlerEffectiveModeTest(unittest.TestCase):
-    """Gates follow the effective HTTPS: the flag alone is not enough, the
-    certificate must be usable too, so TLS configs never point at a missing file."""
-
-    @staticmethod
-    def _request(body: str):
-        request = MagicMock()
-        request.headers = {"Content-Length": str(len(body))}
-        request.rfile.read.return_value = body.encode()
-        return request
-
-    def _toggle_on(self, usable: bool):
-        config = MagicMock()
-        config.is_https_enabled.return_value = True
-        context = MagicMock()
-        context.certificate_thread.is_certificate_usable.return_value = usable
-        with patch.object(WebRequestHandler, "config", config, create=True), patch(
-            "wb.homeui_backend.main.apply_gates", return_value=ApplyResult(ok=True)
-        ) as apply_mock:
-            response = update_https_handler(self._request('{"enabled": true}'), context)
-        return response, apply_mock
-
-    def test_flag_on_with_unusable_cert_applies_http_gates(self):
-        response, apply_mock = self._toggle_on(usable=False)
-        apply_mock.assert_called_once_with(False)
-        self.assertEqual(response, response_200())
-
-    def test_flag_on_with_usable_cert_applies_https_gates(self):
-        response, apply_mock = self._toggle_on(usable=True)
-        apply_mock.assert_called_once_with(True)
-        self.assertEqual(response, response_200())
+    def test_gates_follow_effective_https(self):
+        """Toggling HTTPS on applies https gates only if the certificate is usable
+        too, so TLS configs never point at a missing file."""
+        for usable in (False, True):
+            with self.subTest(usable=usable):
+                response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
+                apply_mock.assert_called_once_with(usable)
+                self.assertEqual(response, response_200())
 
 
 class EffectiveHttpsEnabledTest(unittest.TestCase):
@@ -745,12 +709,15 @@ class EffectiveHttpsEnabledTest(unittest.TestCase):
 
 
 class CertificateUsableChangeHandlerTest(unittest.TestCase):
-    def _run_handler(self, flag: bool, usable: bool):
+    def _run_handler(self, flag: bool, usable: bool, apply_ok: bool = True):
         config = MagicMock()
         config.is_https_enabled.return_value = flag
         with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
             "wb.homeui_backend.main.update_nginx_config"
-        ) as update_mock, patch("wb.homeui_backend.main.apply_gates") as apply_mock:
+        ) as update_mock, patch(
+            "wb.homeui_backend.main.apply_gates",
+            return_value=ApplyResult(ok=apply_ok, error=None if apply_ok else "nginx -t failed"),
+        ) as apply_mock:
             make_certificate_usable_change_handler("TESTSN", config)(usable)
         return remove_mock, update_mock, apply_mock
 
@@ -770,15 +737,8 @@ class CertificateUsableChangeHandlerTest(unittest.TestCase):
 
     def test_failed_gates_apply_raises_to_keep_transition_pending(self):
         """A failed gates re-render propagates, so the cert thread retries the transition."""
-        config = MagicMock()
-        config.is_https_enabled.return_value = True
-        with patch("wb.homeui_backend.main.update_nginx_config"), patch(
-            "wb.homeui_backend.main.apply_gates"
-        ) as apply_mock:
-            apply_mock.return_value.ok = False
-            apply_mock.return_value.error = "nginx -t failed"
-            with self.assertRaises(RuntimeError):
-                make_certificate_usable_change_handler("TESTSN", config)(True)
+        with self.assertRaises(RuntimeError):
+            self._run_handler(flag=True, usable=True, apply_ok=False)
 
     def test_recovery_with_flag_off_keeps_http_gates(self):
         _, update_mock, apply_mock = self._run_handler(flag=False, usable=True)

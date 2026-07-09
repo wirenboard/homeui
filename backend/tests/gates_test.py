@@ -7,13 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from wb.homeui_backend import gates_cli
-from wb.homeui_backend.gates import (
-    CUSTOM_MENU_DIR,
-    Gate,
-    apply_gates,
-    load_gates,
-    render_gate,
-)
+from wb.homeui_backend.gates import Gate, apply_gates, load_gates, render_gate
 from wb.homeui_backend.users_storage import UserType
 
 CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "..", "configs")
@@ -24,14 +18,31 @@ def _write_gate(dir_path, name, config):
         json.dump(config, f)
 
 
-class LoadGatesTest(unittest.TestCase):
-    def setUp(self):
-        self.conf_dir = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, self.conf_dir)
-        patcher = patch("wb.homeui_backend.gates.GATES_CONF_DIR", self.conf_dir)
-        patcher.start()
-        self.addCleanup(patcher.stop)
+class GatesDirsTestBase(unittest.TestCase):
+    """Shared fixture: every gates.* path constant is pointed into a per-test tmp root."""
 
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+        self.conf_dir = os.path.join(self.root, "gates.d")
+        self.rendered_dir = os.path.join(self.root, "rendered")
+        self.bounces = os.path.join(self.root, "nginx", "wb-gate-bounces.conf")
+        self.menu_dir = os.path.join(self.root, "custom-menu")
+        os.makedirs(self.conf_dir)
+        for name, value in {
+            "GATES_CONF_DIR": self.conf_dir,
+            "RENDERED_GATES_DIR": self.rendered_dir,
+            "BOUNCES_CONF_PATH": self.bounces,
+            "CUSTOM_MENU_DIR": self.menu_dir,
+            "LOCK_PATH": os.path.join(self.root, "lock"),
+            "NGINX_CACHE_ROOT": os.path.join(self.root, "cache"),
+        }.items():
+            patcher = patch(f"wb.homeui_backend.gates.{name}", value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+
+class LoadGatesTest(GatesDirsTestBase):
     def test_loads_valid_gate_with_defaults(self):
         _write_gate(self.conf_dir, "my-service", {"internalPort": 9000, "externalPort": 29000})
         gates, skipped = load_gates()
@@ -43,28 +54,32 @@ class LoadGatesTest(unittest.TestCase):
         self.assertTrue(gates[0].auth)
         self.assertIsNone(gates[0].menu)
 
-    def test_missing_external_port_is_skipped(self):
-        """externalPort is mandatory: the user must know (and choose) the public
-        port of the gate — no silent auto-assignment."""
-        _write_gate(self.conf_dir, "svc", {"internalPort": 9000})
-        gates, skipped = load_gates()
-        self.assertEqual(gates, [])
-        self.assertIn("externalPort is required", skipped[0])
+    def test_invalid_gate_is_skipped_with_reason(self):
+        """externalPort is mandatory (the user must choose the public port, no silent
+        auto-assignment) and a menu entry requires a title."""
+        for config, reason in (
+            ({"internalPort": 9000}, "externalPort is required"),
+            ({"internalPort": 9000, "externalPort": 29000, "menu": {}}, "invalid menu field"),
+        ):
+            with self.subTest(reason):
+                _write_gate(self.conf_dir, "svc", config)
+                gates, skipped = load_gates()
+                self.assertEqual(gates, [])
+                self.assertIn(reason, skipped[0])
 
-    def test_external_port_equal_to_another_gates_internal_is_skipped(self):
-        """nginx listens on *:externalPort, so an external equal to any gate's
-        internal would clash with the service itself."""
+    def test_port_clash_with_another_gate_is_skipped(self):
+        """externalPort must collide with neither another gate's external (duplicate)
+        nor internal port (nginx would listen on the service's own port)."""
         _write_gate(self.conf_dir, "a", {"internalPort": 9000, "externalPort": 29000})
-        _write_gate(self.conf_dir, "b", {"internalPort": 9100, "externalPort": 9000})
-        gates, skipped = load_gates()
-        self.assertEqual([g.name for g in gates], ["a"])
-        self.assertIn("already used by another gate", skipped[0])
-
-    def test_menu_without_title_is_skipped(self):
-        _write_gate(self.conf_dir, "svc", {"internalPort": 9000, "externalPort": 29000, "menu": {}})
-        gates, skipped = load_gates()
-        self.assertEqual(gates, [])
-        self.assertIn("invalid menu field", skipped[0])
+        for label, config in (
+            ("duplicate external", {"internalPort": 9001, "externalPort": 29000}),
+            ("another gate's internal", {"internalPort": 9100, "externalPort": 9000}),
+        ):
+            with self.subTest(label):
+                _write_gate(self.conf_dir, "b", config)
+                gates, skipped = load_gates()
+                self.assertEqual([g.name for g in gates], ["a"])
+                self.assertIn("already used by another gate", skipped[0])
 
     def test_skips_broken_gates_keeps_valid(self):
         """Every bad file is reported with its reason and must not block the others."""
@@ -75,13 +90,6 @@ class LoadGatesTest(unittest.TestCase):
         gates, skipped = load_gates()
         self.assertEqual([g.name for g in gates], ["ok"])
         self.assertEqual(len(skipped), 3)
-
-    def test_skips_duplicate_explicit_external_port(self):
-        _write_gate(self.conf_dir, "a", {"externalPort": 29000, "internalPort": 9000})
-        _write_gate(self.conf_dir, "b", {"externalPort": 29000, "internalPort": 9001})
-        gates, skipped = load_gates()
-        self.assertEqual([g.name for g in gates], ["a"])
-        self.assertIn("already used by another gate", skipped[0])
 
     def test_missing_dir_is_empty(self):
         with patch("wb.homeui_backend.gates.GATES_CONF_DIR", os.path.join(self.conf_dir, "absent")):
@@ -134,37 +142,17 @@ class RenderGateTest(unittest.TestCase):
         self.assertIn("wb-gate-proxy.inc", conf)
 
 
-class CustomMenuDirDefaultTest(unittest.TestCase):
-    def test_generated_menu_files_go_to_var_lib(self):
-        """Pin the real default (ApplyGatesTest patches it): generated state belongs under /var/lib."""
-        self.assertEqual(CUSTOM_MENU_DIR, "/var/lib/wb-homeui/custom-menu")
+class ApplyGatesTest(GatesDirsTestBase):
+    def _apply(self, https_enabled, nginx_ok=True, first_reload_ok=True):
+        reloads = []
 
-
-class ApplyGatesTest(unittest.TestCase):
-    def setUp(self):
-        self.root = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, self.root)
-        self.conf_dir = os.path.join(self.root, "gates.d")
-        self.rendered_dir = os.path.join(self.root, "rendered")
-        self.bounces = os.path.join(self.root, "nginx", "wb-gate-bounces.conf")
-        self.menu_dir = os.path.join(self.root, "custom-menu")
-        os.makedirs(self.conf_dir)
-        for name, value in {
-            "GATES_CONF_DIR": self.conf_dir,
-            "RENDERED_GATES_DIR": self.rendered_dir,
-            "BOUNCES_CONF_PATH": self.bounces,
-            "CUSTOM_MENU_DIR": self.menu_dir,
-            "LOCK_PATH": os.path.join(self.root, "lock"),
-            "NGINX_CACHE_ROOT": os.path.join(self.root, "cache"),
-        }.items():
-            patcher = patch(f"wb.homeui_backend.gates.{name}", value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
-
-    def _apply(self, https_enabled, nginx_ok=True):
         def fake_run(cmd, **_kwargs):
             if cmd[0].endswith("nginx") and cmd[1] == "-t":
                 return MagicMock(returncode=0 if nginx_ok else 1, stderr="nginx: [emerg] boom")
+            if cmd[1] == "reload":
+                reloads.append(cmd)
+                if not first_reload_ok and len(reloads) == 1:
+                    raise subprocess.CalledProcessError(1, cmd)
             return MagicMock(returncode=0)
 
         with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
@@ -240,9 +228,9 @@ class ApplyGatesTest(unittest.TestCase):
         self.assertNotIn("requiredRole", open_item)
 
     def test_reload_failure_restores_previous_state(self):
-        """nginx -t passes but `systemctl reload` fails: the new render is rolled
-        back on disk and the previous working gate stays, so the on-disk state can
-        never diverge from what nginx is actually running."""
+        """nginx -t passes but the reload of the new render fails (port taken, systemd
+        hiccup): it is rolled back on disk and the rollback reload succeeds, so the
+        on-disk state never diverges from what nginx is actually running."""
         _write_gate(
             self.conf_dir,
             "good",
@@ -254,24 +242,7 @@ class ApplyGatesTest(unittest.TestCase):
             "second",
             {"externalPort": 29001, "internalPort": 9001, "menu": {"title": {"en": "Second"}}},
         )
-
-        reload_calls = []
-
-        def fake_run(cmd, **_kwargs):
-            if cmd[0].endswith("nginx") and cmd[1] == "-t":
-                return MagicMock(returncode=0)
-            if cmd[1] == "reload":
-                reload_calls.append(cmd)
-                if len(reload_calls) == 1:  # the reload of the new (bad) render fails
-                    raise subprocess.CalledProcessError(1, cmd)
-                return MagicMock(returncode=0)  # the rollback reload succeeds
-            return MagicMock(returncode=0)
-
-        with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
-            "wb.homeui_backend.gates.time.sleep"
-        ):
-            result = apply_gates(False)
-
+        result = self._apply(https_enabled=False, first_reload_ok=False)
         self.assertFalse(result.ok)
         self.assertEqual(os.listdir(self.rendered_dir), ["good.conf"])
         # Menu drop-ins are written only after a successful reload.
@@ -289,22 +260,24 @@ class ApplyGatesTest(unittest.TestCase):
 
 @unittest.skipUnless(os.path.isdir(CONFIGS_DIR), "configs/ is not present in the pybuild sandbox")
 class GateAuthCheckSnippetTest(unittest.TestCase):
+    @staticmethod
+    def _read_snippet(name):
+        with open(os.path.join(CONFIGS_DIR, "etc", "nginx", "snippets", name), encoding="utf-8") as f:
+            return f.read()
+
     def test_pins_allow_unauthorized_get_to_block_client_bypass(self):
         """The gate auth snippet must neutralize a client-supplied
         Allow-Unauthorized-Get so a gate cannot be bypassed with an unauthenticated
         GET (regression for the auth-request header-forwarding bypass)."""
-        snippet = os.path.join(CONFIGS_DIR, "etc", "nginx", "snippets", "wb-gate-authcheck.inc")
-        with open(snippet, encoding="utf-8") as f:
-            content = f.read()
-        self.assertIn('proxy_set_header Allow-Unauthorized-Get "";', content)
+        self.assertIn(
+            'proxy_set_header Allow-Unauthorized-Get "";', self._read_snippet("wb-gate-authcheck.inc")
+        )
 
     def test_unauth_snippet_redirects_html_navigations_without_sec_fetch(self):
         """Over plain HTTP browsers don't send Sec-Fetch-Mode, so the unauth
         fallback must also redirect on Accept: text/html — else a logged-out
         browser on an HTTP gate gets a bare 401 instead of the login form."""
-        snippet = os.path.join(CONFIGS_DIR, "etc", "nginx", "snippets", "wb-gate-unauth.inc")
-        with open(snippet, encoding="utf-8") as f:
-            content = f.read()
+        content = self._read_snippet("wb-gate-unauth.inc")
         self.assertIn("$http_accept", content)
         self.assertIn("text/html", content)
 
@@ -327,22 +300,20 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
         with open(self.config, "w", encoding="utf-8") as f:
             f.write(content)
 
-    def test_true_bool_enables_https(self):
-        self._write('{"enable_https": true}')
-        self.assertTrue(gates_cli.read_https_enabled())
-
-    def test_false_bool_disables_https(self):
-        self._write('{"enable_https": false}')
-        self.assertFalse(gates_cli.read_https_enabled())
-
-    def test_string_value_is_not_coerced_to_true(self):
-        """A non-bool value must not be truthy-coerced (the backend rejects a
-        non-bool enable_https), so the CLI and backend agree on the scheme."""
-        self._write('{"enable_https": "false"}')
-        self.assertFalse(gates_cli.read_https_enabled())
-
     def test_missing_file_defaults_to_off(self):
         self.assertFalse(gates_cli.read_https_enabled())
+
+    def test_flag_parsing(self):
+        """Only a literal true enables HTTPS; a non-bool value must not be
+        truthy-coerced, matching the backend's enable_https validation."""
+        for content, expected in (
+            ('{"enable_https": true}', True),
+            ('{"enable_https": false}', False),
+            ('{"enable_https": "false"}', False),
+        ):
+            with self.subTest(content):
+                self._write(content)
+                self.assertEqual(gates_cli.read_https_enabled(), expected)
 
     def test_flag_on_with_unusable_cert_is_off(self):
         """Effective HTTPS in the CLI: with the flag on but no usable certificate the
@@ -352,64 +323,40 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
             self.assertFalse(gates_cli.read_https_enabled())
 
 
-class CliApplyEffectiveHttpsTest(unittest.TestCase):
+class CliApplyEffectiveHttpsTest(GatesDirsTestBase):
     def setUp(self):
-        self.root = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, self.root)
-        self.conf_dir = os.path.join(self.root, "gates.d")
-        self.rendered_dir = os.path.join(self.root, "rendered")
-        self.config = os.path.join(self.root, "conf")
-        os.makedirs(self.conf_dir)
-        for target, value in {
-            "wb.homeui_backend.gates.GATES_CONF_DIR": self.conf_dir,
-            "wb.homeui_backend.gates.RENDERED_GATES_DIR": self.rendered_dir,
-            "wb.homeui_backend.gates.BOUNCES_CONF_PATH": os.path.join(self.root, "nginx", "bounces.conf"),
-            "wb.homeui_backend.gates.CUSTOM_MENU_DIR": os.path.join(self.root, "custom-menu"),
-            "wb.homeui_backend.gates.LOCK_PATH": os.path.join(self.root, "lock"),
-            "wb.homeui_backend.gates.NGINX_CACHE_ROOT": os.path.join(self.root, "cache"),
-            "wb.homeui_backend.config_file.CONFIG_FILE": self.config,
-        }.items():
-            patcher = patch(target, value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
+        super().setUp()
+        config = os.path.join(self.root, "conf")
+        patcher = patch("wb.homeui_backend.config_file.CONFIG_FILE", config)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        with open(config, "w", encoding="utf-8") as f:
+            f.write('{"enable_https": true}')
+
+    def _cli_apply(self, cert_usable):
+        """Run `apply` with the given cert usability; returns the remove-https mock."""
+        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=cert_usable), patch(
+            "wb.homeui_backend.gates_cli.remove_nginx_https_config"
+        ) as remove_mock, patch(
+            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
+        ), patch(
+            "wb.homeui_backend.gates.time.sleep"
+        ):
+            self.assertEqual(gates_cli.apply_command(), 0)
+        return remove_mock
 
     def test_apply_with_unusable_cert_drops_stale_https_conf(self):
         """A stale main-UI https.conf would fail the shared nginx -t; apply removes it first."""
-        with open(self.config, "w", encoding="utf-8") as f:
-            f.write('{"enable_https": true}')
-        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=False), patch(
-            "wb.homeui_backend.gates_cli.remove_nginx_https_config"
-        ) as remove_mock, patch(
-            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
-        ), patch(
-            "wb.homeui_backend.gates.time.sleep"
-        ):
-            self.assertEqual(gates_cli.apply_command(), 0)
-        remove_mock.assert_called_once_with()
+        self._cli_apply(cert_usable=False).assert_called_once_with()
 
     def test_apply_with_usable_cert_keeps_https_conf(self):
-        with open(self.config, "w", encoding="utf-8") as f:
-            f.write('{"enable_https": true}')
-        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=True), patch(
-            "wb.homeui_backend.gates_cli.remove_nginx_https_config"
-        ) as remove_mock, patch(
-            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
-        ), patch(
-            "wb.homeui_backend.gates.time.sleep"
-        ):
-            self.assertEqual(gates_cli.apply_command(), 0)
-        remove_mock.assert_not_called()
+        self._cli_apply(cert_usable=True).assert_not_called()
 
     def test_apply_with_flag_on_and_unusable_cert_renders_http(self):
-        """`wb-homeui-gates apply` on a system with HTTPS enabled but no usable
-        certificate (e.g. postinst on a fresh install) must render plain HTTP gates."""
-        with open(self.config, "w", encoding="utf-8") as f:
-            f.write('{"enable_https": true}')
+        """`wb-homeui-gates apply` with HTTPS enabled but no usable certificate
+        (e.g. postinst on a fresh install) must render plain HTTP gates."""
         _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
-        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=False), patch(
-            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
-        ), patch("wb.homeui_backend.gates.time.sleep"):
-            self.assertEqual(gates_cli.apply_command(), 0)
+        self._cli_apply(cert_usable=False)
         with open(os.path.join(self.rendered_dir, "svc.conf"), encoding="utf-8") as f:
             conf = f.read()
         self.assertIn("listen 29000;", conf)
