@@ -314,9 +314,14 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
         self.config = os.path.join(self.tmp, "conf")
-        patcher = patch("wb.homeui_backend.config_file.CONFIG_FILE", self.config)
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        for target, value in {
+            "wb.homeui_backend.config_file.CONFIG_FILE": self.config,
+            # Pin a usable certificate so the flag-parsing tests keep their meaning.
+            "wb.homeui_backend.gates_cli.is_certificate_usable": lambda: True,
+        }.items():
+            patcher = patch(target, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def _write(self, content):
         with open(self.config, "w", encoding="utf-8") as f:
@@ -338,3 +343,48 @@ class CliReadHttpsEnabledTest(unittest.TestCase):
 
     def test_missing_file_defaults_to_off(self):
         self.assertFalse(gates_cli.read_https_enabled())
+
+    def test_flag_on_with_unusable_cert_is_off(self):
+        """Effective HTTPS in the CLI: with the flag on but no usable certificate the
+        CLI must render plain HTTP — an ssl gate would reference a missing file."""
+        self._write('{"enable_https": true}')
+        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=False):
+            self.assertFalse(gates_cli.read_https_enabled())
+
+
+class CliApplyEffectiveHttpsTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+        self.conf_dir = os.path.join(self.root, "gates.d")
+        self.rendered_dir = os.path.join(self.root, "rendered")
+        self.config = os.path.join(self.root, "conf")
+        os.makedirs(self.conf_dir)
+        for target, value in {
+            "wb.homeui_backend.gates.GATES_CONF_DIR": self.conf_dir,
+            "wb.homeui_backend.gates.RENDERED_GATES_DIR": self.rendered_dir,
+            "wb.homeui_backend.gates.BOUNCES_CONF_PATH": os.path.join(self.root, "nginx", "bounces.conf"),
+            "wb.homeui_backend.gates.CUSTOM_MENU_DIR": os.path.join(self.root, "custom-menu"),
+            "wb.homeui_backend.gates.LOCK_PATH": os.path.join(self.root, "lock"),
+            "wb.homeui_backend.gates.NGINX_CACHE_ROOT": os.path.join(self.root, "cache"),
+            "wb.homeui_backend.config_file.CONFIG_FILE": self.config,
+        }.items():
+            patcher = patch(target, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_apply_with_flag_on_and_unusable_cert_renders_http(self):
+        """`wb-homeui-gates apply` on a system with HTTPS enabled but no usable
+        certificate (e.g. postinst on a fresh install) must render plain HTTP gates."""
+        with open(self.config, "w", encoding="utf-8") as f:
+            f.write('{"enable_https": true}')
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        with patch("wb.homeui_backend.gates_cli.is_certificate_usable", return_value=False), patch(
+            "wb.homeui_backend.gates.subprocess.run", return_value=MagicMock(returncode=0)
+        ), patch("wb.homeui_backend.gates.time.sleep"):
+            self.assertEqual(gates_cli.apply_command(), 0)
+        with open(os.path.join(self.rendered_dir, "svc.conf"), encoding="utf-8") as f:
+            conf = f.read()
+        self.assertIn("listen 29000;", conf)
+        self.assertNotIn("ssl", conf)
+        self.assertNotIn("wb-gate-tls.inc", conf)

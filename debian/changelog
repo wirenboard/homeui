@@ -1,3 +1,13 @@
+wb-mqtt-homeui (2.238.2) stable; urgency=medium
+
+  * Serve TLS (gates and the main UI) only while a usable certificate exists:
+    replace the expired-placeholder certificate with degradation — if the
+    certificate goes missing or breaks, the backend removes the TLS configs
+    and falls back to plain HTTP; HTTPS returns automatically once a
+    certificate is obtained. The HTTPS toggle stores the desired mode.
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 09 Jul 2026 12:00:00 +0200
+
 wb-mqtt-homeui (2.238.0) stable; urgency=medium
 
   * Add service gates: one JSON in /etc/wb-homeui/gates.d puts a loopback
