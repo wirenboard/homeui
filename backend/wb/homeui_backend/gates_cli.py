@@ -6,14 +6,15 @@ testable in the pybuild sandbox, which only ships the wb/ package and tests/.
 
 import argparse
 
+from .cert import is_certificate_usable
 from .config_file import load_https_flag
 from .gates import GATES_CONF_DIR, apply_gates, load_gates
 
 
 def read_https_enabled() -> bool:
-    """HTTPS flag for rendering; a missing/broken config falls back to plain HTTP."""
+    """Effective HTTPS for rendering: flag on AND a usable certificate on disk (else plain HTTP)."""
     try:
-        return load_https_flag()
+        return load_https_flag() and is_certificate_usable()
     except Exception:  # pylint: disable=broad-exception-caught
         return False
 
