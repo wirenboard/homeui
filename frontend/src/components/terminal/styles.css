@@ -1,0 +1,67 @@
+.terminal-container {
+  flex: 1;
+  overflow: hidden;
+  padding: 4px;
+  background: #1e1e1e;
+}
+
+.terminal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #999;
+}
+
+.terminal-statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.terminal-statusDot--connected {
+  background-color: #6a9955;
+}
+
+.terminal-statusDot--connecting {
+  background-color: #d7ba7d;
+}
+
+.terminal-statusDot--disconnected {
+  background-color: #808080;
+}
+
+.terminal-statusDot--error {
+  background-color: #f44747;
+}
+
+
+.terminal-container .xterm-viewport::-webkit-scrollbar {
+  -webkit-appearance: none;
+  background-color: var(--scrollbar-background);
+  width: 12px;
+  display: none;
+}
+
+.terminal-container .xterm-viewport:hover::-webkit-scrollbar,
+.terminal-container .xterm-viewport:focus::-webkit-scrollbar {
+  display: block;
+}
+
+.terminal-container .xterm-viewport::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: var(--scrollbar-color);
+  border: 3px solid var(--scrollbar-background);
+  border-radius: 8px;
+}
+
+.terminal-container .xterm-viewport::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+}

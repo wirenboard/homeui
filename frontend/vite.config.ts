@@ -84,6 +84,11 @@ export default defineConfig(({ mode }: ConfigEnv) => {
           changeOrigin: true,
           ws: true,
         },
+        '/api/terminal': {
+          target: env.MQTT_BROKER_URI,
+          changeOrigin: true,
+          ws: true,
+        },
       },
     },
   };

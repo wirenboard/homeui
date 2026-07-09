@@ -2,6 +2,7 @@ import { autorun, runInAction, when } from 'mobx';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter } from 'react-router-dom';
 import { APP_NAME, APP_SHORT_NAME } from '@/common/constants';
+import { registerTerminalTab } from '@/components/terminal';
 import { App } from '@/layouts/app';
 import { deviceManagerProxy, mqttClient } from '@/services';
 import { authStore, UserRole } from '@/stores/auth';
@@ -38,6 +39,8 @@ when(() => authStore.isAuthenticated).then(() => {
     const password = localStorage['password'];
 
     mqttClient.reconnect(loginUrl.href, user, password);
+
+    registerTerminalTab();
 
     mqttClient.whenConnected()
       .then(() => {
