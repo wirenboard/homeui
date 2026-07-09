@@ -31,7 +31,7 @@ npm run lint  # ESLint static analysis
 ```
 
 ## Custom menu
-One can put a JSON-file with custom menu description in `/etc/wb-homeui/custom-menu`
+One can put JSON-files with custom menu descriptions into the `/etc/wb-homeui/custom-menu` directory
 (persisted across firmware updates via wb-configs; the symlink into `/mnt/data` appears after
 the next reboot). Items, defined in the file, will be added to left navigation panel.
 `/usr/share/wb-mqtt-homeui/custom-menu` is still read too (package drop-ins / legacy files);
