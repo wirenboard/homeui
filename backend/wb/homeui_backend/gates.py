@@ -294,7 +294,11 @@ def _apply_gates_locked(https_enabled: bool) -> ApplyResult:
             logging.error("nginx reload failed, previous rendered state restored: %s", e)
             return ApplyResult(ok=False, gates=gates, skipped=skipped, error=str(e))
     # Menu drop-ins are written only after a successful reload, so a failed apply
-    # never leaves stale menu items pointing at gates that aren't live.
-    _write_menu_items(gates)
+    # never leaves stale menu items pointing at gates that aren't live. Best-effort:
+    # the gates ARE live past this point, a menu hiccup must not report a failure.
+    try:
+        _write_menu_items(gates)
+    except OSError as e:
+        logging.error("Failed to write gate menu items: %s", e)
     logging.info("Applied %d gate(s), https=%s", len(gates), https_enabled)
     return ApplyResult(ok=True, gates=gates, skipped=skipped)

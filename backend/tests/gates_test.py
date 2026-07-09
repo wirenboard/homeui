@@ -227,6 +227,16 @@ class ApplyGatesTest(GatesDirsTestBase):
         self.assertEqual(auth_item["requiredRole"], "operator")
         self.assertNotIn("requiredRole", open_item)
 
+    def test_menu_write_failure_keeps_apply_ok(self):
+        """Past a successful reload the gates are live: a menu hiccup is logged, not failed."""
+        blocker = os.path.join(self.root, "blocker")
+        with open(blocker, "w", encoding="utf-8") as f:
+            f.write("not a dir")
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        with patch("wb.homeui_backend.gates.CUSTOM_MENU_DIR", os.path.join(blocker, "custom-menu")):
+            result = self._apply(https_enabled=False)
+        self.assertTrue(result.ok)
+
     def test_failed_first_apply_leaves_no_bounces_behind(self):
         """A first-ever apply that fails nginx -t must not leave its fresh bounces file."""
         _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})

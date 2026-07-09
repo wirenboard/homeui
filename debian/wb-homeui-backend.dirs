@@ -2,3 +2,4 @@
 /etc/wb-homeui/gates.d
 /etc/wb-homeui/custom-menu
 /var/lib/wb-homeui/custom-menu
+/var/lib/wb-homeui/nginx-gates
