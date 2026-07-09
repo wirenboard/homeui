@@ -96,31 +96,20 @@ class RemoveNginxHttpsConfigTest(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_removes_config_and_reloads_nginx(self):
-        """Happy path: the existing https.conf is deleted and nginx reloaded once."""
+    def test_removes_config_without_reloading_nginx(self):
+        """Removal must not reload: gates may still reference the missing cert, the
+        follow-up apply_gates does the single authoritative reload."""
         with open(self.https_conf, "w", encoding="utf-8") as f:
             f.write("server {}\n")
         with patch("wb.homeui_backend.cert.subprocess.run") as run_mock:
             remove_nginx_https_config()
         self.assertFalse(os.path.exists(self.https_conf))
-        run_mock.assert_called_once_with(["systemctl", "reload", "nginx"], check=True)
+        run_mock.assert_not_called()
 
     def test_missing_config_is_noop(self):
         with patch("wb.homeui_backend.cert.subprocess.run") as run_mock:
             remove_nginx_https_config()
         run_mock.assert_not_called()
-
-    def test_reload_failure_does_not_raise(self):
-        """While gates still reference the missing certificate the reload fails; the
-        removal must survive so the follow-up gates re-render can fix nginx."""
-        with open(self.https_conf, "w", encoding="utf-8") as f:
-            f.write("server {}\n")
-        with patch(
-            "wb.homeui_backend.cert.subprocess.run",
-            side_effect=subprocess.CalledProcessError(1, ["systemctl"]),
-        ):
-            remove_nginx_https_config()
-        self.assertFalse(os.path.exists(self.https_conf))
 
 
 class CertificateCheckingThreadUsableTransitionsTest(unittest.TestCase):
