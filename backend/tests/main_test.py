@@ -1,4 +1,7 @@
 import json
+import os
+import shutil
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
@@ -15,10 +18,12 @@ from wb.homeui_backend.http_response import (
     response_404,
 )
 from wb.homeui_backend.main import (
+    CUSTOM_MENU_DIRS,
     WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
     auth_who_am_i_handler,
+    custom_menu_handler,
     delete_user_handler,
     device_info_handler,
     get_users_handler,
@@ -513,6 +518,51 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                         MQTT_CHECK_TOPIC, '{"result": "not found"}', True
                     )
                     mock_client.stop.assert_called_once()
+
+
+class CustomMenuHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+
+    def _make_dir(self, name, files):
+        dir_path = os.path.join(self.root, name)
+        os.makedirs(dir_path)
+        for file_name, items in files.items():
+            with open(os.path.join(dir_path, file_name), "w", encoding="utf-8") as f:
+                json.dump(items, f)
+        return dir_path
+
+    def _call(self, dirs):
+        with patch("wb.homeui_backend.main.CUSTOM_MENU_DIRS", tuple(dirs)):
+            response = custom_menu_handler(MagicMock(), MagicMock())
+        self.assertEqual(response.status, 200)
+        return json.loads(response.body)
+
+    def test_default_read_order_is_package_generated_user(self):
+        self.assertEqual(
+            CUSTOM_MENU_DIRS,
+            (
+                "/usr/share/wb-mqtt-homeui/custom-menu",
+                "/var/lib/wb-homeui/custom-menu",
+                "/etc/wb-homeui/custom-menu",
+            ),
+        )
+
+    def test_collects_items_from_all_dirs_in_read_order(self):
+        """All three dirs are served, ordered by dir declaration order (beats file names)."""
+        pkg = self._make_dir("pkg", {"z-pkg.json": [{"id": "pkg"}]})
+        gen = self._make_dir("gen", {"a-gen.json": [{"id": "gen"}]})
+        user = self._make_dir("user", {"m-user.json": [{"id": "user"}]})
+        body = self._call([pkg, gen, user])
+        self.assertEqual(body, [[{"id": "pkg"}], [{"id": "gen"}], [{"id": "user"}]])
+
+    def test_missing_dirs_are_skipped(self):
+        """Absent dirs in the read list are skipped, not fatal; all absent serves []."""
+        user = self._make_dir("user", {"item.json": [{"id": "user"}]})
+        body = self._call([os.path.join(self.root, "absent1"), user, os.path.join(self.root, "absent2")])
+        self.assertEqual(body, [[{"id": "user"}]])
+        self.assertEqual(self._call([os.path.join(self.root, "absent1")]), [])
 
 
 class ProcessResponseTest(unittest.TestCase):

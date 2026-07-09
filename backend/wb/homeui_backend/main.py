@@ -48,7 +48,12 @@ from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
-CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
+# Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
+CUSTOM_MENU_DIRS = (
+    "/usr/share/wb-mqtt-homeui/custom-menu",
+    "/var/lib/wb-homeui/custom-menu",
+    "/etc/wb-homeui/custom-menu",
+)
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -650,15 +655,19 @@ def security_check_handler(
 
 def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
-    with os.scandir(CUSTOM_MENU_FOLDER) as entries:
-        for entry in sorted(entries, key=lambda e: e.name):
-            data = None
-            if entry.is_file() and entry.name.endswith(".json"):
-                data = load_json_file(entry.path)
-            elif entry.is_dir():
-                data = load_subfolder_items(entry.path)
-            if data is not None:
-                menu_items.append(data)
+    for menu_dir in CUSTOM_MENU_DIRS:
+        try:
+            with os.scandir(menu_dir) as entries:
+                for entry in sorted(entries, key=lambda e: e.name):
+                    data = None
+                    if entry.is_file() and entry.name.endswith(".json"):
+                        data = load_json_file(entry.path)
+                    elif entry.is_dir():
+                        data = load_subfolder_items(entry.path)
+                    if data is not None:
+                        menu_items.append(data)
+        except FileNotFoundError:
+            continue
     return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
 
 
