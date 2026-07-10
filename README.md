@@ -59,3 +59,8 @@ The structure of the JSON-file
   }
 ]
 ```
+
+## Developer documentation
+
+- [JSON Schema editor](frontend/src/components/json-schema-editor/README.md) — homeui's own
+  schema-driven form editor (React + MobX), successor to the legacy forked `@wirenboard/json-editor`.
