@@ -197,10 +197,23 @@ def update_cert(sn: str) -> None:
         swap_certs(DEVICE_ORIGINAL_CERT, request_cert_file.name)
 
         fullchain_pem = request_certificate(request_cert_file.name, get_keyspec(), csr_file.name)
-        with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
-            cert_file.write(fullchain_pem)
+        save_certificate(fullchain_pem)
 
         logging.info("Certificate updated successfully")
+
+
+def save_certificate(fullchain_pem: str) -> None:
+    """Write the cert atomically so no reader ever sees a half-written file mid-update."""
+    cert_dir = os.path.dirname(SSL_CERT_PATH)
+    fd, tmp_path = tempfile.mkstemp(dir=cert_dir, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
+            tmp_file.write(fullchain_pem)
+        os.chmod(tmp_path, 0o644)
+        os.replace(tmp_path, SSL_CERT_PATH)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
 
 
 def update_nginx_config(sn: str) -> None:
