@@ -13,7 +13,19 @@ wb-mqtt-homeui (2.238.0) stable; urgency=medium
     /usr/share, generated /var/lib, user /etc/wb-homeui/custom-menu)
     and persist /etc/wb-homeui across firmware updates via wb-configs
 
- -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 09 Jul 2026 19:00:00 +0200
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 13 Jul 2026 12:40:00 +0200
+
+wb-mqtt-homeui (2.237.11) stable; urgency=medium
+
+  * Fix datetimepicker select logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Jul 2026 10:54:00 +0300
+
+wb-mqtt-homeui (2.237.10) stable; urgency=medium
+
+  * Keep device name and MQTT id when switching device template
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Jul 2026 15:11:34 +0500
 
 wb-mqtt-homeui (2.237.9) stable; urgency=medium
 
