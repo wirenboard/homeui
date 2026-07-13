@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.238.0) stable; urgency=medium
+
+  * Custom menu: read drop-ins from three per-origin dirs (package
+    /usr/share, generated /var/lib, user /etc/wb-homeui/custom-menu)
+    and persist /etc/wb-homeui across firmware updates via wb-configs
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 13 Jul 2026 12:40:00 +0200
+
 wb-mqtt-homeui (2.237.11) stable; urgency=medium
 
   * Fix datetimepicker select logic

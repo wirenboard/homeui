@@ -1,1 +1,3 @@
 /usr/share/wb-mqtt-homeui/custom-menu
+/etc/wb-homeui/custom-menu
+/var/lib/wb-homeui/custom-menu

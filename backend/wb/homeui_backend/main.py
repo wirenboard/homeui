@@ -48,7 +48,12 @@ from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
-CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
+# Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
+CUSTOM_MENU_DIRS = (
+    "/usr/share/wb-mqtt-homeui/custom-menu",
+    "/var/lib/wb-homeui/custom-menu",
+    "/etc/wb-homeui/custom-menu",
+)
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -626,7 +631,13 @@ def add_menu_items(src: list, dst: dict) -> None:
 
 def load_subfolder_items(folder_path: str) -> Optional[list]:
     menu_items: dict[str, dict] = {}
-    for file in sorted(os.listdir(folder_path)):
+    try:
+        entries = sorted(os.listdir(folder_path))
+    except OSError as e:
+        # One unreadable subfolder must not break the rest of /ui/menu.
+        logging.warning("Skipping custom menu subfolder %s: %s", folder_path, e)
+        return None
+    for file in entries:
         if file.endswith(".json"):
             file_path = os.path.join(folder_path, file)
             items_data = load_json_file(file_path)
@@ -650,15 +661,22 @@ def security_check_handler(
 
 def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
-    with os.scandir(CUSTOM_MENU_FOLDER) as entries:
-        for entry in sorted(entries, key=lambda e: e.name):
-            data = None
-            if entry.is_file() and entry.name.endswith(".json"):
-                data = load_json_file(entry.path)
-            elif entry.is_dir():
-                data = load_subfolder_items(entry.path)
-            if data is not None:
-                menu_items.append(data)
+    for menu_dir in CUSTOM_MENU_DIRS:
+        try:
+            with os.scandir(menu_dir) as entries:
+                for entry in sorted(entries, key=lambda e: e.name):
+                    data = None
+                    if entry.is_file() and entry.name.endswith(".json"):
+                        data = load_json_file(entry.path)
+                    elif entry.is_dir():
+                        data = load_subfolder_items(entry.path)
+                    if data is not None:
+                        menu_items.append(data)
+        except FileNotFoundError:
+            continue
+        except OSError as e:
+            # A file instead of a dir, permissions, etc. must not 500 the menu.
+            logging.warning("Skipping custom menu dir %s: %s", menu_dir, e)
     return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
 
 
