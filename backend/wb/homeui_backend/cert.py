@@ -51,11 +51,10 @@ def has_enough_lifetime(cert: x509.Certificate) -> bool:
 
 
 def is_certificate_usable() -> bool:
-    """Certificate on disk loads and is not expired; near-expiry still counts (renewal handles it)."""
+    """Certificate on disk loads; even expired it keeps TLS up (browser warns, channel stays encrypted)."""
     try:
-        return load_certificate(SSL_CERT_PATH).not_valid_after_utc > datetime.datetime.now(
-            datetime.timezone.utc
-        )
+        load_certificate(SSL_CERT_PATH)
+        return True
     except Exception:  # pylint: disable=broad-exception-caught
         return False
 

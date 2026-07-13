@@ -71,12 +71,12 @@ class IsCertificateUsableTest(CertFileTestBase):
         self.assertFalse(is_certificate_usable())
 
     def test_validity_window(self):
-        """Expired is unusable; valid and renewal-window (< MIN_DAYS_BEFORE_RENEW left)
-        certs stay usable — a failed renewal must not degrade HTTPS."""
-        for days_left, usable in ((-1, False), (30, True), (5, True)):
+        """Any loadable certificate is usable — even expired (browser warns, channel
+        stays encrypted); HTTP degradation is only for a missing/unreadable file."""
+        for days_left in (-1, 30, 5):
             with self.subTest(days_left=days_left):
                 self._write_cert(days_left, days_ago=10)
-                self.assertEqual(is_certificate_usable(), usable)
+                self.assertTrue(is_certificate_usable())
 
 
 class RemoveNginxHttpsConfigTest(unittest.TestCase):
