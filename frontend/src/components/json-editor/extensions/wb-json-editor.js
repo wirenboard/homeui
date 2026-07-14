@@ -1,4 +1,5 @@
 import { JSONEditor } from '@wirenboard/json-editor';
+import DOMPurify from 'dompurify';
 import merge from 'lodash/merge';
 import { makeAutocompleteEditor } from './autocomplete';
 import { makeCollapsibleArrayEditor } from './collapsible-array-editor';
@@ -116,6 +117,10 @@ function conditionalOneOfValidator(schema, value, path) {
 }
 
 function overrideJSONEditor(data) {
+  // json-editor reads window.DOMPurify to render HTML in descriptions. Set it here
+  // so it applies only when a json-editor is actually created.
+  window.DOMPurify = DOMPurify;
+
   JSONEditor.defaults.options.show_errors = 'always';
   JSONEditor.defaults.options.iconlib = 'wb-bootstrap3';
   JSONEditor.defaults.options.theme = 'wb-bootstrap3';

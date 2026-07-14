@@ -6,6 +6,10 @@ BASELINE_STATE=/var/lib/wb-homeui/default-dashboards.state
 if [ "$1" = "purge" ]; then
     rm $CONFFILE
     rm -f $BASELINE_STATE
+    rm -rf /etc/wb-homeui/custom-menu
+    # After wb_move /etc/wb-homeui is a symlink into /mnt/data: the lines above
+    # clean the data through it, this one drops the symlink (or plain dir) itself.
+    rm -rf /etc/wb-homeui
 fi
 
 #DEBHELPER#

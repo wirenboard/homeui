@@ -636,8 +636,9 @@ class MigrationReconcileTest(DashboardsStoreFixture):
     """No-baseline-yet path: a controller upgrading from a pre-baseline version.
 
     The live /etc/wb-webui.conf already exists but no baseline-state file does, so
-    state.hashes is empty. Reconcile must adopt the default hash as the baseline without
-    duplicating or clobbering already-present dashboards.
+    state.hashes is empty. Reconcile tells an untouched (but possibly stale) default from a
+    user edit by name: same id and name -> synced silently to the current default; a
+    different name -> treated as user-modified and left alone.
     """
 
     def test_present_default_is_not_duplicated_and_unchanged(self):
@@ -654,6 +655,30 @@ class MigrationReconcileTest(DashboardsStoreFixture):
         self.assertEqual(sorted(ids), ["dashboard1", "dashboard2"])
         self.assertEqual(self.read_config(), make_config())
         self.assertEqual(set(self.read_state()["hashes"].keys()), {"dashboard1", "dashboard2"})
+
+    def test_present_default_same_name_stale_content_is_synced(self):
+        """Same id and name but stale content (default evolved before baseline existed) is synced.
+
+        This is the actual bug fix: previously the no-baseline path adopted the new default's
+        hash without ever writing it, so a pre-baseline default that fell behind a later
+        release stayed stale forever (permanently misread as user-modified on every future
+        reconcile). Matching id+name now proves it was never renamed, so it's safe to sync.
+        """
+        stale = make_config()
+        self.write_config(stale)
+        upgraded = make_config()
+        upgraded["dashboards"][0]["widgets"] = ["widget1", "widget2"]
+        upgraded["widgets"].append({"id": "widget2", "name": "W2", "cells": []})
+        self.write_board_config("wb6", upgraded)
+
+        self.store.seed_and_reconcile("wb6")
+
+        on_disk = {d["id"]: d for d in self.read_config()["dashboards"]}
+        self.assertEqual(on_disk["dashboard1"]["widgets"], ["widget1", "widget2"])
+        self.assertEqual(
+            self.read_state()["hashes"]["dashboard1"],
+            dashboard_content_hash(upgraded["dashboards"][0]),
+        )
 
     def test_user_modified_present_default_survives_two_runs(self):
         """A user edit predating the baseline is preserved across two consecutive reconciles.

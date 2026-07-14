@@ -114,3 +114,8 @@
     align-items: center;
     gap: 6px;
 }
+
+.datetimePicker-applyButton {
+    flex-shrink: 0;
+    flex-grow: 1;
+}

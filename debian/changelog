@@ -1,8 +1,60 @@
-wb-mqtt-homeui (2.238.0) stable; urgency=medium
+wb-mqtt-homeui (2.239.0) stable; urgency=medium
 
   * Add themes
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Jul 2026 14:20:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 14 Jul 2026 12:51:00 +0300
+
+wb-mqtt-homeui (2.238.1) stable; urgency=medium
+
+  * Reconcile default dashboards seeded before baseline hashing existed:
+    sync unrenamed ones to the current default instead of permanently
+    treating them as user-edited
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Jul 2026 11:10:00 +0500
+
+wb-mqtt-homeui (2.238.0) stable; urgency=medium
+
+  * Custom menu: read drop-ins from three per-origin dirs (package
+    /usr/share, generated /var/lib, user /etc/wb-homeui/custom-menu)
+    and persist /etc/wb-homeui across firmware updates via wb-configs
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Mon, 13 Jul 2026 12:40:00 +0200
+
+wb-mqtt-homeui (2.237.11) stable; urgency=medium
+
+  * Fix datetimepicker select logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Jul 2026 10:54:00 +0300
+
+wb-mqtt-homeui (2.237.10) stable; urgency=medium
+
+  * Keep device name and MQTT id when switching device template
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Jul 2026 15:11:34 +0500
+
+wb-mqtt-homeui (2.237.9) stable; urgency=medium
+
+  * wb-dynamic-type: update options keys
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 09 Jul 2026 16:12:00 +0300
+
+wb-mqtt-homeui (2.237.8) stable; urgency=medium
+
+  * Scroll to active dropdown option on open
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 07 Jul 2026 13:14:00 +0300
+
+wb-mqtt-homeui (2.237.7) stable; urgency=medium
+
+  * Fix HTML in json-editor schema descriptions
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 06 Jul 2026 17:22:00 +0300
+
+wb-mqtt-homeui (2.237.6) stable; urgency=medium
+
+  * Remove typo
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 06 Jul 2026 15:05:00 +0300
 
 wb-mqtt-homeui (2.237.5) stable; urgency=medium
 
