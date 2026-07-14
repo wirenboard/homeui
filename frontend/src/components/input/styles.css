@@ -3,12 +3,14 @@
     background: var(--input-background);
     color: var(--input-color);
     border-radius: var(--input-border-radius);
-    transition: background ease 300ms;
+    transition: background ease 300ms, outline-offset 200ms linear;
+    outline-offset: 0;
 }
 
 .input:focus {
-    transition: border-color 200ms linear, var(--input-active-shadow-transition);
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: border-color 200ms linear, var(--form-element-focus-transition);
     z-index: 10;
 }
 
@@ -18,7 +20,7 @@
 }
 
 .input-m {
-    height: 34px;
+    height: var(--form-element-medium-height);
     padding: 6px 12px;
 }
 
@@ -42,5 +44,5 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .input:disabled {
-    background: var(--border-color);
+    background: var(--input-background-disabled);
 }

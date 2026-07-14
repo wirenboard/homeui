@@ -1,5 +1,6 @@
 .dashboardList-sortHandle {
     color: var(--text-color);
+    opacity: 0.7;
     width: 18px;
     min-width: 18px;
     cursor: grab;

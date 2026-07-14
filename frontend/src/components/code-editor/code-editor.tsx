@@ -1,12 +1,14 @@
 import { type EditorState } from '@codemirror/state';
 import { type EditorView, keymap, lineNumbers } from '@codemirror/view';
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
+import { uiStore } from '@/stores/ui';
 import { breakpointState, customGutter, getGutterEffects } from './helpers';
 import { type CodeEditorProps } from './types';
 import './styles.css';
 
-export const CodeEditor = ({
+export const CodeEditor = observer(({
   text,
   errorLines,
   autoFocus,
@@ -86,6 +88,7 @@ export const CodeEditor = ({
   return (
     <CodeMirror
       ref={editor}
+      theme={uiStore.resolvedTheme}
       style={{ height: '100%' }}
       value={text}
       height="100%"
@@ -96,4 +99,4 @@ export const CodeEditor = ({
       onChange={onChange}
     />
   );
-};
+});

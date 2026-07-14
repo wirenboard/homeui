@@ -10,7 +10,7 @@
 
 .deviceSettingsEditor .card {
     max-width: initial;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .deviceSettingsEditor-tabs {
@@ -55,7 +55,7 @@
 .deviceSettingsEditor-subGroupContentWithBorder {
     padding: 9px;
     border: 1px solid var(--input-border-color);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
 }
 
 .deviceSettingsEditor-subGroup {
@@ -104,7 +104,7 @@
 .deviceSettingsEditor-customChannelsNoTabs .wb-jsonEditor{
     padding: 9px;
     border: 1px solid var(--input-border-color);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
 }
 
 .deviceSettingsEditor-parameterWithBadValueFromRegisters-warning {
