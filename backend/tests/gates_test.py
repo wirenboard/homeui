@@ -296,6 +296,20 @@ class ApplyGatesTest(GatesDirsTestBase):
         with open(os.path.join(self.rendered_dir, "svc.conf"), encoding="utf-8") as f:
             self.assertIn(f"include {os.path.join(self.rendered_dir, 'svc.nginx.inc')};", f.read())
 
+    @staticmethod
+    def _make_nginx_test_fake(fail_first):
+        """fake subprocess.run whose nginx -t fails the first fail_first calls."""
+        attempts = []
+
+        def fake_run(cmd, **_kwargs):
+            if cmd[0].endswith("nginx") and cmd[1] == "-t":
+                attempts.append(cmd)
+                ok = len(attempts) > fail_first
+                return MagicMock(returncode=0 if ok else 1, stderr="nginx: [emerg] busy")
+            return MagicMock(returncode=0)
+
+        return fake_run, attempts
+
     def test_nginx_test_transient_failure_is_retried(self):
         """One transient nginx -t failure (ATECC contention) recovers on the retry;
         an unbroken failure exhausts exactly NGINX_TEST_ATTEMPTS attempts."""
@@ -305,15 +319,7 @@ class ApplyGatesTest(GatesDirsTestBase):
             (NGINX_TEST_ATTEMPTS + 1, False, NGINX_TEST_ATTEMPTS),
         ):
             with self.subTest(fail_first=fail_first):
-                attempts = []
-
-                def fake_run(cmd, attempts=attempts, fail_first=fail_first, **_kwargs):
-                    if cmd[0].endswith("nginx") and cmd[1] == "-t":
-                        attempts.append(cmd)
-                        ok = len(attempts) > fail_first
-                        return MagicMock(returncode=0 if ok else 1, stderr="nginx: [emerg] busy")
-                    return MagicMock(returncode=0)
-
+                fake_run, attempts = self._make_nginx_test_fake(fail_first)
                 shutil.rmtree(self.rendered_dir, ignore_errors=True)
                 with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
                     "wb.homeui_backend.gates.time.sleep"
