@@ -444,6 +444,7 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
+            context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
     return response_200()
