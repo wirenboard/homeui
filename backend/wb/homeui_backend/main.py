@@ -460,7 +460,6 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
-            # Request the certificate server-side: the frontend skips it on localhost.
             context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
