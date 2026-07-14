@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-# Past this many tracked keys, stale buckets are pruned before inserting a new one.
 MAX_TRACKED_KEYS = 10000
 
 
@@ -25,7 +24,6 @@ class RateLimiter:  # pylint: disable=too-few-public-methods
             if len(self.calls) >= MAX_TRACKED_KEYS:
                 self._drop_stale(current_time)
             if len(self.calls) >= MAX_TRACKED_KEYS:
-                # Nothing stale (fresh-key flood): evict the oldest bucket to stay hard-bounded.
                 self.calls.pop(min(self.calls, key=lambda k: self.calls[k].interval_start_time))
             self.calls[endpoint] = CallStatistics(endpoint=endpoint, interval_start_time=current_time)
             return True
