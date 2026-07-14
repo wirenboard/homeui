@@ -65,7 +65,7 @@
 }
 
 .dropdown-button .dropdown__placeholder {
-  color: var(--text-color);
+  color: var(--button-text-color);
 }
 
 .dropdown__single-value {

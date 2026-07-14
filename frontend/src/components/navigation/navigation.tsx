@@ -157,24 +157,26 @@ export const Navigation = observer(() => {
             'navigation-containerMobile': isMobileMenuOpened,
           })}
         >
-          <ul className="navigation-list">
-            {menuItems.map((item, i) => (
-              <MenuItem
-                item={item}
-                isMenuCompact={isMenuCompact}
-                openedSubmenus={openedSubmenus}
-                setOpenedSubmenus={setOpenedSubmenus}
-                id={params.id}
-                page={location.pathname}
-                setActivePopup={setActivePopup}
-                activePopup={activePopup}
-                closeMobileMenu={() => setIsMobileMenuOpened(false)}
-                key={i}
-                isMenuFocused={isMenuFocused}
-                setIsMenuFocused={setIsMenuFocused}
-              />
-            ))}
-          </ul>
+          <div className="navigation-scrollArea">
+            <ul className="navigation-list">
+              {menuItems.map((item, i) => (
+                <MenuItem
+                  item={item}
+                  isMenuCompact={isMenuCompact}
+                  openedSubmenus={openedSubmenus}
+                  setOpenedSubmenus={setOpenedSubmenus}
+                  id={params.id}
+                  page={location.pathname}
+                  setActivePopup={setActivePopup}
+                  activePopup={activePopup}
+                  closeMobileMenu={() => setIsMobileMenuOpened(false)}
+                  key={i}
+                  isMenuFocused={isMenuFocused}
+                  setIsMenuFocused={setIsMenuFocused}
+                />
+              ))}
+            </ul>
+          </div>
 
           {!searchParams.has('fullscreen') && (
             <div
