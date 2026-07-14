@@ -66,7 +66,7 @@ if (canSave) {
 The store API you read (`PropertyStore` in `@/stores/json-schema-editor/types.ts`):
 
 | member | meaning |
-|---|---|
+| --- | --- |
 | `value` | current edited value (property omitted from an object's `value` when `undefined`) |
 | `isDirty` | changed since the last `commit()` |
 | `hasErrors` | fails schema validation |
@@ -79,57 +79,51 @@ The store API you read (`PropertyStore` in `@/stores/json-schema-editor/types.ts
 The schema subset the editor currently renders. Verified against `store-builder.ts`,
 `json-schema-loader.ts` and `json-schema-editor.tsx`.
 
-**Value types**
+### Value types
+
 - `string` — text input, or a dropdown when `enum` is present (`options.enum_titles` and
-  translations supply the labels). Honours `minLength`, `maxLength`, `pattern` plus
+  translations supply the labels). Supports `minLength`, `maxLength`, `pattern` plus
   `options.patternmessage`.
-- `number` / `integer` — honours `minimum`, `maximum`, `enum`, `default`.
+- `number` / `integer` — supports `minimum`, `maximum`, `enum`, `default`.
 - `boolean` — checkbox.
 
-**Objects**
-- `properties`, `required`, arbitrary nesting.
-- Column layout via `options.grid_columns`.
-- `options.hidden`, opt-in optional properties (`options.show_opt_in` or
-  `options.wb.show_editor`), read-only (`options.wb.read_only`), `options.wb.omit_default`,
-  `options.wb.disable_title`, `options.wb.new_row`.
+### Objects
 
-**Arrays**
+- `properties`, `required`, arbitrary nesting.
+- `options.grid_columns` — how many grid columns the field spans
+- `options.hidden` — the property is not rendered.
+- `options.show_opt_in` / `options.wb.show_editor` — show an optional property with its editor
+  up front instead of behind an opt-in toggle. `show_editor` keeps the editor permanent.
+- `options.wb.read_only` — the control is disabled, and for arrays it also hides the add /
+  remove buttons.
+- `options.wb.omit_default` — drop the property from the saved value when it equals the schema
+  default.
+- `options.wb.new_row` — force the field onto a new row in the grid layout.
+
+### Arrays
+
 - Plain arrays, plus `minItems` / `maxItems`.
 - Boolean-item arrays render as a checkbox list.
 - Object-item arrays with `format: "table"` render as a table.
 
-**Reuse and composition**
+### Reuse and composition
+
 - `$ref` to `#/definitions/...`.
 - `allOf` merged into one object.
 - `translations` for localized labels (via `Translator`).
 
-**Special formats** (handled by the default builder)
-- DALI — `dali-rgb`, `dali-level`, `dali-white`, DALI colour temperature (custom sliders and
-  a colour picker).
-- `wb-byte-array`.
-- `wb-serial-int`, `wb-serial-number`, `wb-int-address` — kept as strings to simplify input.
+### Special formats (handled by the default builder)
 
-## Extending with custom editors
-
-Pass a `customEditorBuilder`. It is tried first for every store; return a React element to
-take over, or `null` to fall back to the built-in editor.
-
-```tsx
-import type { EditorBuilderFunction } from '@/components/json-schema-editor/types';
-
-const customEditorBuilder: EditorBuilderFunction = (props) => {
-  if (props.store.schema.format === 'wb-autocomplete') {
-    return <AutocompleteEditor store={props.store} translator={props.translator} />;
-  }
-  return null; // fall back to the default builder
-};
-
-<JsonSchemaEditor store={store} translator={translator} customEditorBuilder={customEditorBuilder} />;
-```
-
-Resolve custom editors by `schema.format`. A custom editor reaches sibling fields through
-`props.rootStore` (e.g. `ObjectStore.getParamByKey`) and stays reactive through MobX — there
-is no `watch` mechanism like the fork.
+- DALI colour and level editors:
+  - `dali-rgb` — an RGB(W) colour picker with per-channel sliders.
+  - `dali-level` — a brightness / level slider (with a mask switch).
+  - `dali-white` — a tunable-white slider.
+  - `dali-tc` — a colour-temperature slider. The user edits Kelvin, the value is stored as
+    mirek.
+- `wb-byte-array` — an editor for a byte-array value (`ByteArrayStore`).
+- `wb-serial-int`, `wb-int-address` — an integer / address kept as a string to simplify input.
+  The builder converts a numeric value to a string and uses the `oneOf[0]` subschema.
+- `wb-serial-number` — a number kept as a string, likewise.
 
 ## Not supported yet
 
@@ -140,14 +134,3 @@ is no `watch` mechanism like the fork.
 - `wb-autocomplete` and `wb-dynamic-type`. No built-in editors — the field degrades to plain
   text or number.
 - Tabs / categories layout.
-
-> The loader copies only known `options` keys and silently drops the rest. An unknown option
-> will not break the form, but it will not take effect either.
-
-## Key limitation — not schema-dropped
-
-Unlike the legacy confed configurator, you cannot drop a schema file on the controller and
-get a form. There is no generic "schema path → form" route, and `configFile.path` is
-ignored. Adding a configurator on this editor means writing a page and a store in homeui and
-shipping a release. Today's live consumers — DALI settings and the device-manager config
-editor — are both hand-written pages with their own stores.
