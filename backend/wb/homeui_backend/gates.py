@@ -124,8 +124,7 @@ def load_gates() -> tuple[list[Gate], list[str]]:
 
 def _check_port_conflicts(gates: list[Gate], skipped: list[str]) -> tuple[list[Gate], list[str]]:
     ready: list[Gate] = []
-    # Internal ports count as taken too: nginx listens on *:external, so an
-    # external equal to any gate's internal would clash with the service itself.
+    # nginx listens on *:external, so an external equal to any internal clashes with the service.
     taken = {gate.internal_port for gate in gates}
     for gate in gates:
         if gate.external_port in taken:
@@ -137,8 +136,8 @@ def _check_port_conflicts(gates: list[Gate], skipped: list[str]) -> tuple[list[G
 
 
 def render_gate(gate: Gate, https_enabled: bool) -> str:
-    # Escape hatch: <name>.nginx.inc next to the JSON is included at server level
-    # (custom locations, timeouts). A broken one is caught by nginx -t + rollback.
+    """Render one gate server block; <name>.nginx.inc next to the JSON is included
+    at server level as an escape hatch (broken ones are caught by nginx -t + rollback)."""
     extra_path = os.path.join(GATES_CONF_DIR, gate.name + ".nginx.inc")
     return GATE_TEMPLATE.format(
         source=os.path.join(GATES_CONF_DIR, gate.name + ".json"),
@@ -229,8 +228,8 @@ NGINX_TEST_RETRY_DELAY_S = 2
 
 
 def _nginx_test() -> tuple[bool, str]:
-    # Retried: unrelated configs with ATECC-engine keys make nginx -t fail
-    # transiently while another process (e.g. wb-cloud-agent) holds the chip.
+    """nginx -t with retries: ATECC-backed keys in unrelated configs fail it
+    transiently while another process (e.g. wb-cloud-agent) holds the chip."""
     for attempt in range(NGINX_TEST_ATTEMPTS):
         result = subprocess.run(  # nosec B603 - fixed constant argv
             ["/usr/sbin/nginx", "-t"], capture_output=True, text=True, check=False
@@ -247,8 +246,7 @@ def _reload_nginx() -> None:
 
 
 def _reload_nginx_best_effort() -> None:
-    # Used on the rollback path: the config is already known-good (it was running),
-    # so a failure here can only be reported, not recovered from.
+    """Rollback-path reload: the config was just running, a failure can only be logged."""
     try:
         _reload_nginx()
     except subprocess.CalledProcessError as e:
@@ -286,14 +284,12 @@ def _apply_gates_locked(https_enabled: bool) -> ApplyResult:
         try:
             _reload_nginx()
         except subprocess.CalledProcessError as e:
-            # nginx -t passed but reload failed (taken port, dbus hiccup): roll back
-            # so the rendered state never diverges from what nginx is running.
+            # Reload failed after -t passed (taken port, dbus hiccup): roll back so disk matches nginx.
             _restore_rendered_state(snapshot_dir)
             _reload_nginx_best_effort()
             logging.error("nginx reload failed, previous rendered state restored: %s", e)
             return ApplyResult(ok=False, gates=gates, skipped=skipped, error=str(e))
-    # Menu is written only after a successful reload (no items for dead gates), and
-    # best-effort: the gates ARE live past this point, a menu hiccup is not a failure.
+    # Menu only after a successful reload, best-effort: gates are live, a menu hiccup is no failure.
     try:
         _write_menu_items(gates)
     except OSError as e:

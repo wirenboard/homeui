@@ -6,14 +6,11 @@ location = /wb_auth_check {
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header Required-User-Type $wb_role;
-    # Pin auth-decision inputs to server-controlled values: a client-supplied
-    # Allow-Unauthorized-Get would let GET through unauthenticated.
+    # Pin to server-controlled values: a client-supplied Allow-Unauthorized-Get would open GET.
     proxy_set_header Allow-Unauthorized-Get "";
     proxy_set_header X-Original-Method $request_method;
-    # Lets the backend key its /auth/check rate-limit bucket per client IP.
     proxy_set_header X-Real-IP $remote_addr;
-    # Short auth cache; the answer depends only on (session, role), so entries
-    # are shared between gates.
+    # 5s auth cache; the answer depends only on (session, role), so entries are shared between gates.
     proxy_cache wb_gate_auth;
     proxy_cache_key "$cookie_id|$wb_role";
     proxy_cache_valid 200 5s;

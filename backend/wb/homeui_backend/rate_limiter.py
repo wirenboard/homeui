@@ -25,8 +25,7 @@ class RateLimiter:  # pylint: disable=too-few-public-methods
             if len(self.calls) >= MAX_TRACKED_KEYS:
                 self._drop_stale(current_time)
             if len(self.calls) >= MAX_TRACKED_KEYS:
-                # Nothing stale to prune (a >10k-key flood within a minute): evict the
-                # oldest bucket so the map stays hard-bounded.
+                # Nothing stale (fresh-key flood): evict the oldest bucket to stay hard-bounded.
                 self.calls.pop(min(self.calls, key=lambda k: self.calls[k].interval_start_time))
             self.calls[endpoint] = CallStatistics(endpoint=endpoint, interval_start_time=current_time)
             return True

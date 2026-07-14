@@ -194,7 +194,7 @@ class WebRequestHandlerContext:
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
-    # Fail safe to admin on a missing/empty/unknown Required-User-Type (avoids a 500).
+    """Fail safe to admin on a missing/empty/unknown Required-User-Type."""
     value = request.headers.get("Required-User-Type") or UserType.ADMIN.value
     try:
         return UserType(value)

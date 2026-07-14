@@ -3,13 +3,11 @@
 CONFFILE=/etc/wb-webui.conf
 BASELINE_STATE=/var/lib/wb-homeui/default-dashboards.state
 
-# Rendered gate configs are useless without the backend that maintains them;
-# drop them so nginx never serves orphaned gates (admin's gates.d JSONs stay).
+# Drop rendered gates so nginx never serves them orphaned (admin's gates.d JSONs stay).
 if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     rm -rf /var/lib/wb-homeui/nginx-gates
     rm -f /var/lib/wb-homeui/nginx/wb-gate-bounces.conf
     rm -rf /var/lib/wb-homeui/custom-menu
-    # Reload so nginx forgets the gates now, not at some later restart.
     # Plain reload: try-reload-or-restart would START a stopped nginx here.
     /usr/bin/systemctl reload nginx || true
 fi

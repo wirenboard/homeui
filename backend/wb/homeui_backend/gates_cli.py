@@ -46,8 +46,7 @@ def check() -> int:
 
 def apply_command() -> int:
     https_enabled = read_https_enabled()
-    # A stale main-UI https.conf referencing a missing certificate would fail the
-    # shared nginx -t below and roll the gates back to their old TLS render.
+    # A stale https.conf with the cert gone would fail the shared nginx -t and roll gates back.
     if not is_certificate_usable():
         remove_nginx_https_config(reload_nginx=False)
     result = apply_gates(https_enabled)
