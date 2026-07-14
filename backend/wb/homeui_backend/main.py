@@ -53,7 +53,6 @@ from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
-
 # Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
 CUSTOM_MENU_DIRS = (
     "/usr/share/wb-mqtt-homeui/custom-menu",
@@ -440,12 +439,10 @@ def make_certificate_usable_change_handler(sn: str, config: Config) -> Callable[
         if usable:
             update_nginx_config(sn)
         else:
-            # apply_gates below reloads once; gates may still reference the cert here.
             remove_nginx_https_config(reload_nginx=False)
-        # `usable` (not the thread getter): the thread attribute may not be assigned yet at startup.
+
         result = apply_gates(config.is_https_enabled() and usable)
         if not result.ok:
-            # Raising keeps the transition pending in the thread, so the next cycle retries.
             raise RuntimeError(result.error)
 
     return handle
@@ -485,7 +482,6 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
             effective_https_enabled(WebRequestHandler.config, context.certificate_thread)
         )
         if not gates_result.ok:
-            # The toggle itself is applied; report the gate failure instead of hiding it.
             return response_200(
                 [["Content-type", "application/json"]],
                 json.dumps({"enabled": https_enabled, "gatesError": gates_result.error}),
@@ -640,7 +636,6 @@ def delete_dashboard_handler(
 class RequestHandler:
     fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
     rate_per_minute_limit: Optional[int] = None
-    # Per-IP buckets via X-Real-IP; keep False where one global bucket is the point (login).
     rate_limit_per_client: bool = False
 
 
@@ -911,8 +906,8 @@ def main():
         usable_change_handler,
     )
     try:
-        # With the cert already gone at startup no usable transition ever fires:
-        # the stale https.conf must be dropped here or the shared nginx -t keeps failing.
+        # With the certificate already gone at startup no usable transition ever
+        # fires, so the stale https.conf must be dropped here or the shared nginx -t keeps failing.
         usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
     except Exception as e:  # pylint: disable=broad-exception-caught
         logging.exception("Startup TLS reconcile failed: %s", e)
