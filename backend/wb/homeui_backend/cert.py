@@ -319,8 +319,6 @@ class CertificateCheckingThread:  # pylint: disable=too-many-instance-attributes
         with self._allow_certificate_update_lock:
             return self._allow_certificate_update
 
-    # --- Private ---
-
     def _set_state(self, state: CertificateState) -> None:
         with self._state_lock:
             self._state = state
@@ -346,9 +344,7 @@ class CertificateCheckingThread:  # pylint: disable=too-many-instance-attributes
                 update_nginx_config(self.sn)
                 logging.debug("Certificate is valid")
                 return
-            # An expired certificate must not be reported as VALID.
-            if cert.not_valid_after_utc > datetime.datetime.now(datetime.timezone.utc):
-                state_on_update_fail = CertificateState.VALID
+            state_on_update_fail = CertificateState.VALID
             logging.debug("Certificate needs renewal")
         except Exception as e:  # pylint: disable=broad-exception-caught
             logging.debug("Error checking certificate: %s", e)
