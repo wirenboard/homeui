@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.238.1) stable; urgency=medium
+
+  * Reconcile default dashboards seeded before baseline hashing existed:
+    sync unrenamed ones to the current default instead of permanently
+    treating them as user-edited
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Jul 2026 11:10:00 +0500
+
 wb-mqtt-homeui (2.238.0) stable; urgency=medium
 
   * Custom menu: read drop-ins from three per-origin dirs (package
