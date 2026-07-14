@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.239.1) stable; urgency=medium
+
+  * Request an HTTPS certificate immediately when enabling HTTPS in
+    settings, and fix the certificate status banner getting stuck on a
+    stale status
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Jul 2026 13:05:00 +0000
+
 wb-mqtt-homeui (2.239.0) stable; urgency=medium
 
   * Add themes
