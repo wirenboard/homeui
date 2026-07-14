@@ -4,7 +4,6 @@ import {
   closestCorners,
   useDroppable,
   type CollisionDetection,
-  type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
   PointerSensor,
@@ -170,6 +169,7 @@ export function ColumnsEditor({
 
     const activeIdStr = String(active.id);
     const overIdStr = String(over.id);
+    if (activeIdStr === overIdStr) return;
 
     setLocalColumns((prev) => {
       if (!prev) return prev;
@@ -183,9 +183,18 @@ export function ColumnsEditor({
       } else {
         toColIdx = prev.findIndex((col) => col.includes(overIdStr));
       }
-      if (toColIdx === -1 || fromColIdx === toColIdx) return prev;
+      if (toColIdx === -1) return prev;
 
       const cols = prev.map((c) => [...c]);
+
+      if (fromColIdx === toColIdx) {
+        const oldIndex = cols[fromColIdx].indexOf(activeIdStr);
+        const newIndex = cols[fromColIdx].indexOf(overIdStr);
+        if (oldIndex === newIndex) return prev;
+        cols[fromColIdx] = arrayMove(cols[fromColIdx], oldIndex, newIndex);
+        return cols;
+      }
+
       const itemIdx = cols[fromColIdx].indexOf(activeIdStr);
       cols[fromColIdx].splice(itemIdx, 1);
 
@@ -200,34 +209,13 @@ export function ColumnsEditor({
     });
   }, []);
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over) {
-      const activeIdStr = String(active.id);
-      const overIdStr = String(over.id);
-
-      setLocalColumns((prev) => {
-        if (!prev) return prev;
-        if (activeIdStr === overIdStr) return prev;
-
-        const colIdx = prev.findIndex((col) => col.includes(activeIdStr));
-        if (colIdx === -1) return prev;
-
-        const overColIdx = prev.findIndex((col) => col.includes(overIdStr));
-        if (overColIdx !== colIdx || overColIdx === -1) return prev;
-
-        const oldIndex = prev[colIdx].indexOf(activeIdStr);
-        const newIndex = prev[colIdx].indexOf(overIdStr);
-        const cols = prev.map((c) => [...c]);
-        cols[colIdx] = arrayMove(cols[colIdx], oldIndex, newIndex);
-        return cols;
-      });
-    }
-
-    const final = displayedRef.current;
+  const handleDragEnd = useCallback(() => {
+    let final: string[][] = displayedRef.current;
+    setLocalColumns((prev) => {
+      if (prev) final = prev;
+      return null;
+    });
     setActiveId(null);
-    setLocalColumns(null);
     onChange(final, columnCountRef.current);
   }, [onChange]);
 
