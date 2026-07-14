@@ -9,7 +9,7 @@
 /* to avoid jumping on scroll appear */
 .navigation-container:not(:hover) .menuItem-subList .menuItem-link,
 .navigation-container:not(:focus) .menuItem-subList .menuItem-link {
-    padding-right: 32px;
+    padding-right: 18px;
     padding-left: 48px;
 }
 
