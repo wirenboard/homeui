@@ -26,14 +26,8 @@ class RateLimiter:  # pylint: disable=too-few-public-methods
                 self._drop_stale(current_time)
             if len(self.calls) >= MAX_TRACKED_KEYS:
                 # Nothing stale to prune (a >10k-key flood within a minute): evict the
-                # oldest per-client bucket ("|" keys), so the flood cannot reset a
-                # shared endpoint bucket such as the /auth/login throttle.
-                self.calls.pop(
-                    min(
-                        [key for key in self.calls if "|" in key] or self.calls,
-                        key=lambda k: self.calls[k].interval_start_time,
-                    )
-                )
+                # oldest bucket so the map stays hard-bounded.
+                self.calls.pop(min(self.calls, key=lambda k: self.calls[k].interval_start_time))
             self.calls[endpoint] = CallStatistics(endpoint=endpoint, interval_start_time=current_time)
             return True
 
@@ -49,8 +43,6 @@ class RateLimiter:  # pylint: disable=too-few-public-methods
             return True
 
         return False
-
-    # --- Private ---
 
     def _drop_stale(self, current_time: datetime) -> None:
         self.calls = {

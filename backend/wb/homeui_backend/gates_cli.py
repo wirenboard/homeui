@@ -15,8 +15,7 @@ def read_https_enabled() -> bool:
     """Effective HTTPS for rendering: flag on AND a usable certificate on disk (else plain HTTP)."""
     try:
         return load_https_flag() and is_certificate_usable()
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        print(f"WARNING: cannot read the HTTPS flag ({e}), rendering gates for plain HTTP")
+    except Exception:  # pylint: disable=broad-exception-caught
         return False
 
 

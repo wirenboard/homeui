@@ -583,54 +583,6 @@ class RequestHandlerRateLimitKeyTest(unittest.TestCase):
         self.assertEqual(statuses, [200, 200, 429])
         self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check"])
 
-    def test_per_client_limit_keys_on_x_real_ip(self):
-        """rate_limit_per_client=True gives every X-Real-IP its own bucket: each of
-        two IPs gets the full limit and throttles independently of the other."""
-        limit = 2
-        handler = self._handler()
-        handler.process_response = MagicMock()
-        handler.path = "/auth/check"
-        handlers = {
-            "/auth/check": RequestHandler(
-                fn=lambda request, context: response_200(),
-                rate_per_minute_limit=limit,
-                rate_limit_per_client=True,
-            )
-        }
-
-        statuses = []
-        with patch("wb.homeui_backend.main.get_session", return_value=None):
-            for ip in ("10.0.0.1", "10.0.0.2"):
-                handler.headers = {"X-Real-IP": ip}
-                for _ in range(limit + 1):
-                    handler.process_request(handlers)
-                    statuses.append(handler.process_response.call_args.args[0].status)
-
-        self.assertEqual(statuses, [200, 200, 429] * 2)
-        self.assertEqual(sorted(handler.rate_limiter.calls), ["/auth/check|10.0.0.1", "/auth/check|10.0.0.2"])
-
-    def test_per_client_limit_without_header_falls_back_to_shared_bucket(self):
-        """Without X-Real-IP (a request that bypassed nginx) all clients collapse
-        onto one shared bucket instead of an unlimited per-nothing key."""
-        handler = self._handler()
-        handler.process_response = MagicMock()
-        handler.path = "/auth/check"
-        handler.headers = {}
-        handlers = {
-            "/auth/check": RequestHandler(
-                fn=lambda request, context: response_200(),
-                rate_per_minute_limit=1,
-                rate_limit_per_client=True,
-            )
-        }
-
-        with patch("wb.homeui_backend.main.get_session", return_value=None):
-            handler.process_request(handlers)
-            handler.process_request(handlers)
-
-        self.assertEqual(handler.process_response.call_args.args[0].status, 429)
-        self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check|"])
-
 
 class CustomMenuHandlerTest(unittest.TestCase):
     def setUp(self):

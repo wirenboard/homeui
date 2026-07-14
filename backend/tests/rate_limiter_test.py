@@ -98,15 +98,3 @@ def test_flood_of_fresh_keys_stays_hard_bounded():
         rl.check_call(f"auth/check|10.1.{i // 256}.{i % 256}", now + timedelta(seconds=1), 5)
     assert len(rl.calls) == MAX_TRACKED_KEYS
     assert "auth/check|oldest" not in rl.calls
-
-
-def test_eviction_spares_shared_buckets():
-    """A fresh-key flood evicts per-client ("|") buckets, never a shared endpoint
-    bucket like the /auth/login throttle, even when it is the oldest."""
-    rl = RateLimiter()
-    now = datetime.now()
-    rl.check_call("auth/login", now, 5)
-    for i in range(MAX_TRACKED_KEYS + 5):
-        rl.check_call(f"auth/check|10.1.{i // 256}.{i % 256}", now + timedelta(seconds=1), 5)
-    assert len(rl.calls) == MAX_TRACKED_KEYS
-    assert "auth/login" in rl.calls
