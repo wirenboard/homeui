@@ -1,3 +1,13 @@
+wb-mqtt-homeui (2.240.0) stable; urgency=medium
+
+  * Serve the main UI over TLS whenever the certificate file loads, even
+    when expired (browser warns, channel stays encrypted). Fall back to
+    HTTP only when the file is missing or unreadable and reissue fails;
+    HTTPS returns automatically once a usable certificate is written.
+    Certificate writes are atomic.
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Tue, 14 Jul 2026 16:00:00 +0200
+
 wb-mqtt-homeui (2.239.2) stable; urgency=medium
 
   * Pin logout/console buttons in menu

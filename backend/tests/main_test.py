@@ -27,6 +27,7 @@ from wb.homeui_backend.main import (
     delete_user_handler,
     device_info_handler,
     get_users_handler,
+    make_certificate_usable_change_handler,
     security_check_handler,
     update_user_handler,
 )
@@ -579,6 +580,26 @@ class CustomMenuHandlerTest(unittest.TestCase):
         with patch("wb.homeui_backend.main.os.listdir", side_effect=PermissionError("denied")):
             body = self._call([top])
         self.assertEqual(body, [[{"id": "ok"}]])
+
+
+class CertificateUsableChangeHandlerTest(unittest.TestCase):
+    def _run_handler(self, usable):
+        with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
+            "wb.homeui_backend.main.update_nginx_config"
+        ) as update_mock:
+            make_certificate_usable_change_handler("TESTSN")(usable)
+        return remove_mock, update_mock
+
+    def test_degradation_removes_tls_config(self):
+        """The certificate disappeared: the main-UI https.conf is dropped."""
+        remove_mock, update_mock = self._run_handler(usable=False)
+        remove_mock.assert_called_once_with()
+        update_mock.assert_not_called()
+
+    def test_recovery_recreates_tls_config(self):
+        remove_mock, update_mock = self._run_handler(usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        remove_mock.assert_not_called()
 
 
 class ProcessResponseTest(unittest.TestCase):

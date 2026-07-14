@@ -18,7 +18,11 @@ from urllib.parse import unquote, urlparse
 
 import bcrypt
 
-from .cert import CertificateCheckingThread
+from .cert import (
+    CertificateCheckingThread,
+    remove_nginx_https_config,
+    update_nginx_config,
+)
 from .config_file import Config
 from .dashboards import (
     DashboardsStore,
@@ -415,6 +419,18 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
         ],
         json.dumps(res),
     )
+
+
+def make_certificate_usable_change_handler(sn: str) -> Callable[[bool], None]:
+    """On usability transitions keep the invariant: TLS configs on disk <=> usable certificate."""
+
+    def handle(usable: bool) -> None:
+        if usable:
+            update_nginx_config(sn)
+        else:
+            remove_nginx_https_config()
+
+    return handle
 
 
 def https_request_cert_handler(
@@ -851,9 +867,18 @@ def main():
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    usable_change_handler = make_certificate_usable_change_handler(sn)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
-        sn, WebRequestHandler.config.is_https_enabled()
+        sn,
+        WebRequestHandler.config.is_https_enabled(),
+        usable_change_handler,
     )
+    try:
+        # With the certificate already gone at startup no usable transition ever
+        # fires, so the stale https.conf must be dropped here.
+        usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.exception("Startup TLS reconcile failed: %s", e)
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()
