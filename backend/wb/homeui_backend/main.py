@@ -478,7 +478,6 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
-            # Request the certificate server-side: the frontend skips it on localhost.
             context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
@@ -805,7 +804,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.process_request(
             {
                 # Gates auth_request every request, hence 1000/min per client; nginx caps
-                # each IP at 900/min (wb-homeui-gates.conf) — change only as a pair.
+                # each IP at 900/min + burst 200 (wb-homeui-gates.conf) — change only as a pair.
                 "/auth/check": RequestHandler(
                     fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
                 ),
@@ -912,9 +911,8 @@ def main():
         usable_change_handler,
     )
     try:
-        # Full reconcile, not just apply_gates: with the certificate already gone at
-        # startup no usable transition ever fires, so the stale https.conf must be
-        # dropped here or the shared nginx -t keeps failing.
+        # With the cert already gone at startup no usable transition ever fires:
+        # the stale https.conf must be dropped here or the shared nginx -t keeps failing.
         usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
     except Exception as e:  # pylint: disable=broad-exception-caught
         logging.exception("Startup TLS reconcile failed: %s", e)

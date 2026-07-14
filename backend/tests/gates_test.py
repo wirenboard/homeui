@@ -7,7 +7,13 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from wb.homeui_backend import gates_cli
-from wb.homeui_backend.gates import Gate, apply_gates, load_gates, render_gate
+from wb.homeui_backend.gates import (
+    NGINX_TEST_ATTEMPTS,
+    Gate,
+    apply_gates,
+    load_gates,
+    render_gate,
+)
 from wb.homeui_backend.users_storage import UserType
 
 CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "..", "configs")
@@ -55,15 +61,19 @@ class LoadGatesTest(GatesDirsTestBase):
         self.assertIsNone(gates[0].menu)
 
     def test_invalid_gate_is_skipped_with_reason(self):
-        """externalPort is mandatory (the user must choose the public port, no silent
-        auto-assignment) and a menu entry requires a title."""
-        for config, reason in (
-            ({"internalPort": 9000}, "externalPort is required"),
-            ({"internalPort": 9000, "externalPort": 29000, "menu": {}}, "invalid menu field"),
+        """Every validation branch reports its reason: missing/invalid ports, a name
+        outside [a-z0-9-], equal ports, a menu entry without a title."""
+        for name, config, reason in (
+            ("svc", {"internalPort": 9000}, "externalPort is required"),
+            ("svc", {"internalPort": 9000, "externalPort": 29000, "menu": {}}, "invalid menu field"),
+            ("Bad_Name", {"internalPort": 9000, "externalPort": 29000}, "invalid gate name"),
+            ("svc", {"internalPort": 9000, "externalPort": 9000}, "must differ from internalPort"),
+            ("svc", {"internalPort": "9000", "externalPort": 29000}, "invalid port"),
         ):
             with self.subTest(reason):
-                _write_gate(self.conf_dir, "svc", config)
+                _write_gate(self.conf_dir, name, config)
                 gates, skipped = load_gates()
+                os.remove(os.path.join(self.conf_dir, name + ".json"))
                 self.assertEqual(gates, [])
                 self.assertIn(reason, skipped[0])
 
@@ -118,16 +128,17 @@ class RenderGateTest(unittest.TestCase):
         self.assertIn("limit_req_status 429;", conf)
 
     def test_extra_nginx_inc_is_included_when_present(self):
-        """<name>.nginx.inc next to the JSON must be included at server level;
-        without the file no include line appears."""
+        """<name>.nginx.inc next to the JSON must be included at server level — from
+        its copy in the rendered dir; without the file no include line appears."""
         conf_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, conf_dir)
-        with patch("wb.homeui_backend.gates.GATES_CONF_DIR", conf_dir):
+        with patch("wb.homeui_backend.gates.GATES_CONF_DIR", conf_dir), patch(
+            "wb.homeui_backend.gates.RENDERED_GATES_DIR", "/rendered"
+        ):
             self.assertNotIn(".nginx.inc", render_gate(self.gate, https_enabled=False))
-            inc_path = os.path.join(conf_dir, "svc.nginx.inc")
-            with open(inc_path, "w", encoding="utf-8") as f:
+            with open(os.path.join(conf_dir, "svc.nginx.inc"), "w", encoding="utf-8") as f:
                 f.write("# extra\n")
-            self.assertIn(f"include {inc_path};", render_gate(self.gate, https_enabled=False))
+            self.assertIn("include /rendered/svc.nginx.inc;", render_gate(self.gate, https_enabled=False))
 
     def test_no_auth_gate_renders_plain_proxy(self):
         """auth:false must drop auth_request, the 401 fallback and both auth
@@ -274,6 +285,110 @@ class ApplyGatesTest(GatesDirsTestBase):
         self.assertTrue(result.ok)
         self.assertEqual(os.listdir(self.rendered_dir), ["svc.conf"])
 
+    def test_extra_inc_is_copied_into_rendered_dir(self):
+        """The .inc is served from a copy in the rendered dir, so deleting the source
+        after apply cannot break a later nginx restart."""
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        with open(os.path.join(self.conf_dir, "svc.nginx.inc"), "w", encoding="utf-8") as f:
+            f.write("# extra\n")
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        self.assertEqual(sorted(os.listdir(self.rendered_dir)), ["svc.conf", "svc.nginx.inc"])
+        with open(os.path.join(self.rendered_dir, "svc.conf"), encoding="utf-8") as f:
+            self.assertIn(f"include {os.path.join(self.rendered_dir, 'svc.nginx.inc')};", f.read())
+
+    def test_nginx_test_transient_failure_is_retried(self):
+        """One transient nginx -t failure (ATECC contention) recovers on the retry;
+        an unbroken failure exhausts exactly NGINX_TEST_ATTEMPTS attempts."""
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        for fail_first, expected_ok, expected_attempts in (
+            (1, True, 2),
+            (NGINX_TEST_ATTEMPTS + 1, False, NGINX_TEST_ATTEMPTS),
+        ):
+            with self.subTest(fail_first=fail_first):
+                attempts = []
+
+                def fake_run(cmd, attempts=attempts, fail_first=fail_first, **_kwargs):
+                    if cmd[0].endswith("nginx") and cmd[1] == "-t":
+                        attempts.append(cmd)
+                        ok = len(attempts) > fail_first
+                        return MagicMock(returncode=0 if ok else 1, stderr="nginx: [emerg] busy")
+                    return MagicMock(returncode=0)
+
+                shutil.rmtree(self.rendered_dir, ignore_errors=True)
+                with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
+                    "wb.homeui_backend.gates.time.sleep"
+                ):
+                    result = apply_gates(https_enabled=False)
+                self.assertEqual(result.ok, expected_ok)
+                self.assertEqual(len(attempts), expected_attempts)
+
+    def test_unchanged_render_skips_nginx_reload(self):
+        """Re-applying an identical state (the startup reconcile) must not touch nginx."""
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        with patch("wb.homeui_backend.gates.subprocess.run") as run_mock:
+            result = apply_gates(https_enabled=False)
+        self.assertTrue(result.ok)
+        run_mock.assert_not_called()
+
+    def test_inactive_nginx_skips_reload_and_keeps_render(self):
+        """With nginx inactive (boot-order race) the render is kept and the reload is
+        skipped — nginx reads the rendered files when it starts."""
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+
+        def fake_run(cmd, **_kwargs):
+            if cmd[1] == "is-active":
+                return MagicMock(returncode=3)
+            if cmd[1] == "reload":
+                raise AssertionError("reload must not be called while nginx is inactive")
+            return MagicMock(returncode=0)
+
+        with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
+            "wb.homeui_backend.gates.time.sleep"
+        ):
+            result = apply_gates(https_enabled=False)
+        self.assertTrue(result.ok)
+        self.assertEqual(os.listdir(self.rendered_dir), ["svc.conf"])
+
+    def test_write_failure_rolls_back_and_reports_error(self):
+        """A failure in the middle of writing the render (e.g. an unwritable path)
+        must restore the previous rendered state, not leave a partial tree."""
+        _write_gate(self.conf_dir, "good", {"externalPort": 29000, "internalPort": 9000})
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        _write_gate(self.conf_dir, "second", {"externalPort": 29001, "internalPort": 9001})
+        ro_dir = os.path.join(self.root, "ro")
+        os.makedirs(ro_dir)
+        os.chmod(ro_dir, 0o555)
+        self.addCleanup(os.chmod, ro_dir, 0o755)
+        with patch("wb.homeui_backend.gates.BOUNCES_CONF_PATH", os.path.join(ro_dir, "bounces.conf")):
+            result = self._apply(https_enabled=False)
+        self.assertFalse(result.ok)
+        self.assertIn("Permission denied", result.error)
+        self.assertEqual(os.listdir(self.rendered_dir), ["good.conf"])
+
+    def test_removed_gate_menu_dropin_is_cleaned_up(self):
+        """Deregistering a gate removes its stale menu drop-in; files without the
+        wb-gate- prefix in the same dir survive."""
+        _write_gate(
+            self.conf_dir,
+            "svc",
+            {"externalPort": 29000, "internalPort": 9000, "menu": {"title": {"en": "S"}}},
+        )
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        with open(os.path.join(self.menu_dir, "10-user.json"), "w", encoding="utf-8") as f:
+            f.write("[]")
+        os.remove(os.path.join(self.conf_dir, "svc.json"))
+        self.assertTrue(self._apply(https_enabled=False).ok)
+        self.assertEqual(os.listdir(self.menu_dir), ["10-user.json"])
+
+    def test_lock_failure_returns_error_result(self):
+        """Any exception outside the transaction (e.g. an unwritable lock path) must
+        become ok=False with the message, never propagate to the caller."""
+        with patch("wb.homeui_backend.gates.LOCK_PATH", os.path.join(self.root, "absent", "lock")):
+            result = apply_gates(https_enabled=False)
+        self.assertFalse(result.ok)
+        self.assertIn("absent", result.error)
+
 
 @unittest.skipUnless(os.path.isdir(CONFIGS_DIR), "configs/ is not present in the pybuild sandbox")
 class GateAuthCheckSnippetTest(unittest.TestCase):
@@ -362,20 +477,62 @@ class CliApplyEffectiveHttpsTest(GatesDirsTestBase):
             self.assertEqual(gates_cli.apply_command(), 0)
         return remove_mock
 
-    def test_apply_with_unusable_cert_drops_stale_https_conf(self):
-        """A stale main-UI https.conf would fail the shared nginx -t; apply removes it first."""
-        self._cli_apply(cert_usable=False).assert_called_once_with(reload_nginx=False)
-
-    def test_apply_with_usable_cert_keeps_https_conf(self):
-        self._cli_apply(cert_usable=True).assert_not_called()
-
-    def test_apply_with_flag_on_and_unusable_cert_renders_http(self):
-        """`wb-homeui-gates apply` with HTTPS enabled but no usable certificate
-        (e.g. postinst on a fresh install) must render plain HTTP gates."""
+    def test_apply_with_unusable_cert_drops_stale_https_conf_and_renders_http(self):
+        """With the flag on but no usable certificate (e.g. postinst on a fresh
+        install), apply removes a stale main-UI https.conf first (it would fail the
+        shared nginx -t) and renders plain-HTTP gates."""
         _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
-        self._cli_apply(cert_usable=False)
+        self._cli_apply(cert_usable=False).assert_called_once_with(reload_nginx=False)
         with open(os.path.join(self.rendered_dir, "svc.conf"), encoding="utf-8") as f:
             conf = f.read()
         self.assertIn("listen 29000;", conf)
         self.assertNotIn("ssl", conf)
         self.assertNotIn("wb-gate-tls.inc", conf)
+
+    def test_apply_with_usable_cert_keeps_https_conf(self):
+        self._cli_apply(cert_usable=True).assert_not_called()
+
+
+class CliExitCodesTest(GatesDirsTestBase):
+    """Exit codes are the CLI's machine contract (packaging scripts call apply):
+    0 = everything valid/applied, 1 = a config skipped or the apply rolled back."""
+
+    def setUp(self):
+        super().setUp()
+        config = os.path.join(self.root, "conf")
+        with open(config, "w", encoding="utf-8") as f:
+            f.write('{"enable_https": false}')
+        for target, value in {
+            "wb.homeui_backend.config_file.CONFIG_FILE": config,
+            "wb.homeui_backend.gates_cli.is_certificate_usable": lambda: True,
+        }.items():
+            patcher = patch(target, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def _apply_cli(self, nginx_ok=True):
+        def fake_run(cmd, **_kwargs):
+            if cmd[0].endswith("nginx") and cmd[1] == "-t":
+                return MagicMock(returncode=0 if nginx_ok else 1, stderr="nginx: [emerg] boom")
+            return MagicMock(returncode=0)
+
+        with patch("wb.homeui_backend.gates.subprocess.run", side_effect=fake_run), patch(
+            "wb.homeui_backend.gates.time.sleep"
+        ):
+            return gates_cli.apply_command()
+
+    def test_check_returns_0_for_valid_and_1_for_skipped(self):
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        self.assertEqual(gates_cli.check(), 0)
+        _write_gate(self.conf_dir, "bad", {"internalPort": 9000})
+        self.assertEqual(gates_cli.check(), 1)
+
+    def test_apply_returns_1_on_rollback(self):
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        self.assertEqual(self._apply_cli(nginx_ok=False), 1)
+
+    def test_apply_returns_1_with_skipped_but_applies_the_valid_gates(self):
+        _write_gate(self.conf_dir, "svc", {"externalPort": 29000, "internalPort": 9000})
+        _write_gate(self.conf_dir, "bad", {"internalPort": 9000})
+        self.assertEqual(self._apply_cli(), 1)
+        self.assertEqual(os.listdir(self.rendered_dir), ["svc.conf"])

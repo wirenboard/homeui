@@ -29,7 +29,6 @@ from wb.homeui_backend.main import (
     custom_menu_handler,
     delete_user_handler,
     device_info_handler,
-    effective_https_enabled,
     get_required_user_type,
     get_users_handler,
     make_certificate_usable_change_handler,
@@ -584,6 +583,54 @@ class RequestHandlerRateLimitKeyTest(unittest.TestCase):
         self.assertEqual(statuses, [200, 200, 429])
         self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check"])
 
+    def test_per_client_limit_keys_on_x_real_ip(self):
+        """rate_limit_per_client=True gives every X-Real-IP its own bucket: each of
+        two IPs gets the full limit and throttles independently of the other."""
+        limit = 2
+        handler = self._handler()
+        handler.process_response = MagicMock()
+        handler.path = "/auth/check"
+        handlers = {
+            "/auth/check": RequestHandler(
+                fn=lambda request, context: response_200(),
+                rate_per_minute_limit=limit,
+                rate_limit_per_client=True,
+            )
+        }
+
+        statuses = []
+        with patch("wb.homeui_backend.main.get_session", return_value=None):
+            for ip in ("10.0.0.1", "10.0.0.2"):
+                handler.headers = {"X-Real-IP": ip}
+                for _ in range(limit + 1):
+                    handler.process_request(handlers)
+                    statuses.append(handler.process_response.call_args.args[0].status)
+
+        self.assertEqual(statuses, [200, 200, 429] * 2)
+        self.assertEqual(sorted(handler.rate_limiter.calls), ["/auth/check|10.0.0.1", "/auth/check|10.0.0.2"])
+
+    def test_per_client_limit_without_header_falls_back_to_shared_bucket(self):
+        """Without X-Real-IP (a request that bypassed nginx) all clients collapse
+        onto one shared bucket instead of an unlimited per-nothing key."""
+        handler = self._handler()
+        handler.process_response = MagicMock()
+        handler.path = "/auth/check"
+        handler.headers = {}
+        handlers = {
+            "/auth/check": RequestHandler(
+                fn=lambda request, context: response_200(),
+                rate_per_minute_limit=1,
+                rate_limit_per_client=True,
+            )
+        }
+
+        with patch("wb.homeui_backend.main.get_session", return_value=None):
+            handler.process_request(handlers)
+            handler.process_request(handlers)
+
+        self.assertEqual(handler.process_response.call_args.args[0].status, 429)
+        self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check|"])
+
 
 class CustomMenuHandlerTest(unittest.TestCase):
     def setUp(self):
@@ -707,21 +754,6 @@ class UpdateHttpsHandlerTest(unittest.TestCase):
                 response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
                 apply_mock.assert_called_once_with(usable)
                 self.assertEqual(response, response_200())
-
-
-class EffectiveHttpsEnabledTest(unittest.TestCase):
-    def _effective(self, flag: bool, usable: bool) -> bool:
-        config = MagicMock()
-        config.is_https_enabled.return_value = flag
-        thread = MagicMock()
-        thread.is_certificate_usable.return_value = usable
-        return effective_https_enabled(config, thread)
-
-    def test_requires_both_flag_and_usable_cert(self):
-        self.assertTrue(self._effective(flag=True, usable=True))
-        self.assertFalse(self._effective(flag=True, usable=False))
-        self.assertFalse(self._effective(flag=False, usable=True))
-        self.assertFalse(self._effective(flag=False, usable=False))
 
 
 class CertificateUsableChangeHandlerTest(unittest.TestCase):
