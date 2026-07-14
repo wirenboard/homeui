@@ -1,6 +1,7 @@
 import datetime
 import os
 import shutil
+import stat
 import subprocess
 import tempfile
 import time
@@ -16,6 +17,7 @@ from wb.homeui_backend.cert import (
     CertificateState,
     is_certificate_usable,
     remove_nginx_https_config,
+    save_certificate,
 )
 
 WAIT_DEADLINE_S = 10
@@ -71,12 +73,22 @@ class IsCertificateUsableTest(CertFileTestBase):
         self.assertFalse(is_certificate_usable())
 
     def test_validity_window(self):
-        """Expired is unusable; valid and renewal-window (< MIN_DAYS_BEFORE_RENEW left)
-        certs stay usable — a failed renewal must not degrade HTTPS."""
-        for days_left, usable in ((-1, False), (30, True), (5, True)):
+        """Any loadable certificate is usable — even expired (browser warns, channel
+        stays encrypted); HTTP degradation is only for a missing/unreadable file."""
+        for days_left in (-1, 30, 5):
             with self.subTest(days_left=days_left):
                 self._write_cert(days_left, days_ago=10)
-                self.assertEqual(is_certificate_usable(), usable)
+                self.assertTrue(is_certificate_usable())
+
+
+class SaveCertificateTest(CertFileTestBase):
+    def test_atomic_write_stores_content_mode_and_leaves_no_temp(self):
+        """The cert lands with its content and 0644 mode, and no .tmp file is left behind."""
+        save_certificate("cert-body")
+        with open(self.cert_path, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "cert-body")
+        self.assertEqual(stat.S_IMODE(os.stat(self.cert_path).st_mode), 0o644)
+        self.assertEqual(os.listdir(os.path.dirname(self.cert_path)), ["sslip.pem"])
 
 
 class RemoveNginxHttpsConfigTest(unittest.TestCase):

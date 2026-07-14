@@ -8,7 +8,7 @@
 
 .dali .card {
     max-width: initial;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .dali-list {
@@ -24,7 +24,7 @@
     border: 1px solid var(--border-color);
     padding: 12px;
     width: 100%;
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
     background: var(--background-accent-color-hover);
     display: flex;
     flex-direction: column;

@@ -399,10 +399,17 @@ class DashboardsStore:
             live_dashboard = self._find_dashboard(live_config, dashboard_id)
 
             if dashboard_id not in state.hashes:
-                # No baseline memory: add it if absent from live; if already present (pre-baseline
-                # migration), just adopt the hash so we neither duplicate nor clobber a user edit.
+                # No baseline memory: add it if absent from live. If already present (e.g. a
+                # pre-baseline install), the id alone doesn't tell us whether it was ever edited,
+                # so also check the name: unchanged name -> still the shipped default, safe to
+                # sync silently; a renamed dashboard is treated as user-modified and left alone.
                 if live_dashboard is None:
                     live_dashboards.append(copy.deepcopy(default_dashboard))
+                    self._add_missing_widgets(board_config, live_config, default_dashboard)
+                    config_changed = True
+                elif live_dashboard.get("name") == default_dashboard.get("name"):
+                    live_dashboard.clear()
+                    live_dashboard.update(copy.deepcopy(default_dashboard))
                     self._add_missing_widgets(board_config, live_config, default_dashboard)
                     config_changed = True
                 state.hashes[dashboard_id] = default_hash
