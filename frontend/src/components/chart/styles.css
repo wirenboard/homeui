@@ -7,3 +7,11 @@
 .js-plotly-plot .plotly .modebar {
     top: -16px !important;
 }
+
+:root[data-theme="dark"] .plot-container {
+    filter: invert(85%) hue-rotate(180deg);
+}
+
+:root[data-theme="dark"] .main-svg {
+    background: transparent !important;
+}

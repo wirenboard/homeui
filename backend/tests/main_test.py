@@ -1,4 +1,7 @@
 import json
+import os
+import shutil
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
@@ -15,13 +18,16 @@ from wb.homeui_backend.http_response import (
     response_404,
 )
 from wb.homeui_backend.main import (
+    CUSTOM_MENU_DIRS,
     WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
     auth_who_am_i_handler,
+    custom_menu_handler,
     delete_user_handler,
     device_info_handler,
     get_users_handler,
+    make_certificate_usable_change_handler,
     security_check_handler,
     update_user_handler,
 )
@@ -513,6 +519,87 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                         MQTT_CHECK_TOPIC, '{"result": "not found"}', True
                     )
                     mock_client.stop.assert_called_once()
+
+
+class CustomMenuHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+
+    def _make_dir(self, name, files):
+        dir_path = os.path.join(self.root, name)
+        os.makedirs(dir_path)
+        for file_name, items in files.items():
+            with open(os.path.join(dir_path, file_name), "w", encoding="utf-8") as f:
+                json.dump(items, f)
+        return dir_path
+
+    def _call(self, dirs):
+        with patch("wb.homeui_backend.main.CUSTOM_MENU_DIRS", tuple(dirs)):
+            response = custom_menu_handler(MagicMock(), MagicMock())
+        self.assertEqual(response.status, 200)
+        return json.loads(response.body)
+
+    def test_default_read_order_is_package_generated_user(self):
+        self.assertEqual(
+            CUSTOM_MENU_DIRS,
+            (
+                "/usr/share/wb-mqtt-homeui/custom-menu",
+                "/var/lib/wb-homeui/custom-menu",
+                "/etc/wb-homeui/custom-menu",
+            ),
+        )
+
+    def test_collects_items_from_all_dirs_in_read_order(self):
+        """All three dirs are served, ordered by dir declaration order (beats file names)."""
+        pkg = self._make_dir("pkg", {"z-pkg.json": [{"id": "pkg"}]})
+        gen = self._make_dir("gen", {"a-gen.json": [{"id": "gen"}]})
+        user = self._make_dir("user", {"m-user.json": [{"id": "user"}]})
+        body = self._call([pkg, gen, user])
+        self.assertEqual(body, [[{"id": "pkg"}], [{"id": "gen"}], [{"id": "user"}]])
+
+    def test_missing_dirs_are_skipped(self):
+        """Absent dirs in the read list are skipped, not fatal; all absent serves []."""
+        user = self._make_dir("user", {"item.json": [{"id": "user"}]})
+        body = self._call([os.path.join(self.root, "absent1"), user, os.path.join(self.root, "absent2")])
+        self.assertEqual(body, [[{"id": "user"}]])
+        self.assertEqual(self._call([os.path.join(self.root, "absent1")]), [])
+
+    def test_path_that_is_a_file_is_skipped(self):
+        """A file accidentally created at a menu-dir path must not 500 the endpoint."""
+        user = self._make_dir("user", {"item.json": [{"id": "user"}]})
+        file_path = os.path.join(self.root, "not-a-dir")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("oops")
+        self.assertEqual(self._call([file_path, user]), [[{"id": "user"}]])
+
+    def test_unreadable_subfolder_is_skipped(self):
+        """A broken subfolder inside a menu dir must not break the endpoint."""
+        top = self._make_dir("top", {"item.json": [{"id": "ok"}]})
+        os.mkdir(os.path.join(top, "sub"))
+        with patch("wb.homeui_backend.main.os.listdir", side_effect=PermissionError("denied")):
+            body = self._call([top])
+        self.assertEqual(body, [[{"id": "ok"}]])
+
+
+class CertificateUsableChangeHandlerTest(unittest.TestCase):
+    def _run_handler(self, usable):
+        with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
+            "wb.homeui_backend.main.update_nginx_config"
+        ) as update_mock:
+            make_certificate_usable_change_handler("TESTSN")(usable)
+        return remove_mock, update_mock
+
+    def test_degradation_removes_tls_config(self):
+        """The certificate disappeared: the main-UI https.conf is dropped."""
+        remove_mock, update_mock = self._run_handler(usable=False)
+        remove_mock.assert_called_once_with()
+        update_mock.assert_not_called()
+
+    def test_recovery_recreates_tls_config(self):
+        remove_mock, update_mock = self._run_handler(usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        remove_mock.assert_not_called()
 
 
 class ProcessResponseTest(unittest.TestCase):

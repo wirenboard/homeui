@@ -13,6 +13,7 @@ const CommonSettings = observer(() => {
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
   const [showPageInTitle, setShowPageInTitle] = useState(uiStore.showPageInTitle);
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
+  const [theme, setTheme] = useState(uiStore.theme);
   const [defaultDashboardId, setDefaultDashboardId] = useState('');
   const [description, setDescription] = useState('');
   const [isShowWidgetsPage, setIsShowWidgetsPage] = useState(false);
@@ -31,11 +32,19 @@ const CommonSettings = observer(() => {
     { label: 'Русский', value: 'ru' },
   ];
 
+  const themeOptions: Option<string>[] = [
+    { label: t('web-ui-settings.labels.theme-light'), value: 'light' },
+    { label: t('web-ui-settings.labels.theme-dark'), value: 'dark' },
+    { label: t('web-ui-settings.labels.theme-system'), value: 'system' },
+    { label: 'Bootstrap', value: 'bootstrap' },
+  ];
+
   const applyHandler = async () => {
     localStorage.setItem('show-system-devices', showSystemDevices ? 'yes' : 'no');
     uiStore.setShowPageInTitle(showPageInTitle);
     localStorage.setItem('language', language);
     await i18n.changeLanguage(language);
+    uiStore.setTheme(theme);
     dashboardsStore.setDefaultDashboardId(defaultDashboardId);
     dashboardsStore.setDescription(description);
     dashboardsStore.setIsShowWidgetsPage(isShowWidgetsPage);
@@ -48,6 +57,13 @@ const CommonSettings = observer(() => {
         value={language}
         options={languageOptions}
         onChange={setLanguage}
+      />
+
+      <OptionsField
+        title={t('web-ui-settings.labels.theme')}
+        value={theme}
+        options={themeOptions}
+        onChange={setTheme}
       />
 
       {authStore.hasRights(UserRole.Operator) && (

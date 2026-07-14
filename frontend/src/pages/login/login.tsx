@@ -14,8 +14,7 @@ import { Password } from '@/components/password';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
-// externalReturn: same-origin path to a service outside the SPA; needs a
-// full-page nav, origin-checked to prevent an open redirect.
+// Origin-checked full-page return target — prevents an open redirect.
 const getSafeExternalReturn = (): string | null => {
   const raw = new URLSearchParams(window.location.search).get('externalReturn');
   if (!raw) {

@@ -1,9 +1,9 @@
 import { describe, expect, test, vi } from 'vitest';
 
+import { mergeMenuItems } from './menu-items';
+
 vi.mock('@/i18n/config', () => ({ default: { language: 'en' } }));
 vi.mock('@/stores/auth', () => ({ authStore: {} }));
-
-import { mergeMenuItems } from './menu-items';
 
 describe('mergeMenuItems', () => {
   test('override by id carries isShow so requiredRole can hide a base item', () => {

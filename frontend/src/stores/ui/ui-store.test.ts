@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { authStore, type UserRole } from '@/stores/auth';
 import { getMenu } from './api';
 import { normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
@@ -59,8 +60,8 @@ describe('UiStore', () => {
       expect(s.theme).toBe('dark');
     });
 
-    test('defaults to bootstrap', () => {
-      expect(store.theme).toBe('bootstrap');
+    test('defaults to light', () => {
+      expect(store.theme).toBe('light');
     });
   });
 
