@@ -18,7 +18,7 @@
 }
 
 .drawer {
-    background: var(--content-background);
+    background: var(--container-background);
     color: var(--text-color);
     height: 100dvh;
     display: flex;

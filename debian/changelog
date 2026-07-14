@@ -8,6 +8,13 @@ wb-mqtt-homeui (2.240.0) stable; urgency=medium
 
  -- Denis Smagin <denis.smagin@wirenboard.com>  Tue, 14 Jul 2026 16:00:00 +0200
 
+wb-mqtt-homeui (2.239.2) stable; urgency=medium
+
+  * Pin logout/console buttons in menu
+  * Fix colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 14 Jul 2026 16:55:00 +0300
+
 wb-mqtt-homeui (2.239.1) stable; urgency=medium
 
   * Request an HTTPS certificate immediately when enabling HTTPS in
