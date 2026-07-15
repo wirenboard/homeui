@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.240.1) stable; urgency=medium
+
+  * Fix Zigbee devices being grouped under Modbus in the devices filter
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 15 Jul 2026 11:56:45 +0300
+
 wb-mqtt-homeui (2.240.0) stable; urgency=medium
 
   * Serve the main UI over TLS whenever the certificate file loads, even
