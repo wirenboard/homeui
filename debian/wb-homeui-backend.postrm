@@ -3,9 +3,19 @@
 CONFFILE=/etc/wb-webui.conf
 BASELINE_STATE=/var/lib/wb-homeui/default-dashboards.state
 
+# Drop rendered gates so nginx never serves them orphaned (admin's gates.d JSONs stay).
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    rm -rf /var/lib/wb-homeui/nginx-gates
+    rm -f /var/lib/wb-homeui/nginx/wb-gate-bounces.conf
+    rm -rf /var/lib/wb-homeui/custom-menu
+    # Plain reload: try-reload-or-restart would START a stopped nginx here.
+    /usr/bin/systemctl reload nginx || true
+fi
+
 if [ "$1" = "purge" ]; then
     rm $CONFFILE
     rm -f $BASELINE_STATE
+    rm -rf /etc/wb-homeui/gates.d
     rm -rf /etc/wb-homeui/custom-menu
     # After wb_move /etc/wb-homeui is a symlink into /mnt/data: the lines above
     # clean the data through it, this one drops the symlink (or plain dir) itself.
