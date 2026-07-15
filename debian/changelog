@@ -1,9 +1,21 @@
-wb-mqtt-homeui (2.241.0) stable; urgency=medium
+wb-mqtt-homeui (2.242.0) stable; urgency=medium
 
   * Support external menu links: custom-menu items can carry isExternal,
     openInNewTab and requiredRole; a safe post-login external return
 
- -- Denis Smagin <denis.smagin@wirenboard.com>  Tue, 14 Jul 2026 21:30:00 +0200
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 15 Jul 2026 16:30:00 +0200
+
+wb-mqtt-homeui (2.241.0) stable; urgency=medium
+
+  * Add service gates: one JSON in gates.d (package-installed in /usr/share,
+    admin-owned in /etc/wb-homeui, /etc wins on a name clash) puts a loopback
+    service behind the homeui login; nginx configs and menu items are
+    rendered by the backend and follow the effective HTTPS mode, with
+    nginx -t validation and rollback (wb-homeui-gates CLI to check/apply)
+  * Raise the /auth/check rate limit to 1000 req/min per client and cache
+    gate auth answers in nginx; per-IP limit_req (900/min) on gate ports
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 15 Jul 2026 15:30:00 +0200
 
 wb-mqtt-homeui (2.240.1) stable; urgency=medium
 
