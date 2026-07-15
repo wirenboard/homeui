@@ -4,7 +4,7 @@
 }
 
 .system-testingOffer {
-    margin-bottom: 16px;
+    margin-bottom: var(--content-gap);
 }
 
 .system-card {

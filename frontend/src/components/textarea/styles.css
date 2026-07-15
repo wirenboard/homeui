@@ -7,8 +7,9 @@
 }
 
 .textarea:focus {
-    transition: border-color 200ms linear, var(--input-active-shadow-transition);
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: border-color 200ms linear, var(--form-element-focus-transition);
 }
 
 .textarea-m {
