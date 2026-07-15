@@ -14,10 +14,10 @@ export const authGuard: MiddlewareFunction = async (_, next) => {
     if (err instanceof ApiError && err.code === ErrorCode.HTMLResponse) {
       console.error('app.errors.nginx', err);
     } else if (err.status === 401) {
-      const params = new URLSearchParams({
-        returnState: location.hash?.split('#')?.at(1),
-      });
-      throw redirect(`/login?${params}`);
+      // No hash on cold boot: undefined would serialise as the literal "undefined".
+      const returnState = location.hash?.split('#')?.at(1);
+      const query = returnState ? `?${new URLSearchParams({ returnState })}` : '';
+      throw redirect(`/login${query}`);
     }
   }
 };

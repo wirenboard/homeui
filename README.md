@@ -50,6 +50,17 @@ The structure of the JSON-file
       "en": "string",
       "ru": "string"
     },
+    // Optional. Without it (the default) url is an internal homeui route — relative
+    // urls to pages inside homeui keep working as before. Set to true for a link
+    // that leaves homeui: it renders as a plain full-page link; url must then be an
+    // absolute path or an http(s) URL, otherwise the flag is ignored
+    "isExternal": true,
+    // With isExternal: open in a new tab (rel="noopener noreferrer" is applied)
+    "openInNewTab": true,
+    // Optional. Minimal role to SEE the item: "user" < "operator" < "admin";
+    // absent = visible to all. Affects visibility only — the page or service the
+    // url points at must check access rights itself
+    "requiredRole": "admin",
     "children": [
       {
         "id": "string",
