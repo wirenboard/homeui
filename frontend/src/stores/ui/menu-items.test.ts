@@ -1,5 +1,4 @@
 import { describe, expect, test, vi } from 'vitest';
-
 import { mergeMenuItems } from './menu-items';
 
 vi.mock('@/i18n/config', () => ({ default: { language: 'en' } }));
