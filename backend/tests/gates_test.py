@@ -279,7 +279,10 @@ class ApplyGatesTest(GatesDirsTestBase):
 class GateAuthCheckSnippetTest(unittest.TestCase):
     @staticmethod
     def _read_snippet(name):
-        with open(os.path.join(CONFIGS_DIR, "etc", "nginx", "snippets", name), encoding="utf-8") as f:
+        with open(
+            os.path.join(CONFIGS_DIR, "usr", "share", "wb-mqtt-homeui", "nginx", "snippets", name),
+            encoding="utf-8",
+        ) as f:
             return f.read()
 
     def test_pins_allow_unauthorized_get_to_block_client_bypass(self):

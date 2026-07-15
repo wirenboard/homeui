@@ -647,6 +647,44 @@ class CustomMenuHandlerTest(unittest.TestCase):
         self.assertEqual(body, [[{"id": "ok"}]])
 
 
+class CertificateUsableChangeHandlerTest(unittest.TestCase):
+    def _run_handler(self, flag: bool, usable: bool, apply_ok: bool = True):
+        config = MagicMock()
+        config.is_https_enabled.return_value = flag
+        with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
+            "wb.homeui_backend.main.update_nginx_config"
+        ) as update_mock, patch(
+            "wb.homeui_backend.main.apply_gates",
+            return_value=ApplyResult(ok=apply_ok, error=None if apply_ok else "nginx -t failed"),
+        ) as apply_mock:
+            make_certificate_usable_change_handler("TESTSN", config)(usable)
+        return remove_mock, update_mock, apply_mock
+
+    def test_degradation_removes_tls_config_and_renders_http_gates(self):
+        """The certificate disappeared: the main-UI https.conf is dropped before the
+        gates re-render, so nginx -t never sees a dangling ssl_certificate."""
+        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=False)
+        remove_mock.assert_called_once_with(reload_nginx=False)
+        update_mock.assert_not_called()
+        apply_mock.assert_called_once_with(False)
+
+    def test_recovery_recreates_tls_config_and_renders_https_gates(self):
+        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        remove_mock.assert_not_called()
+        apply_mock.assert_called_once_with(True)
+
+    def test_failed_gates_apply_raises_to_keep_transition_pending(self):
+        """A failed gates re-render propagates, so the cert thread retries the transition."""
+        with self.assertRaises(RuntimeError):
+            self._run_handler(flag=True, usable=True, apply_ok=False)
+
+    def test_recovery_with_flag_off_keeps_http_gates(self):
+        _, update_mock, apply_mock = self._run_handler(flag=False, usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        apply_mock.assert_called_once_with(False)
+
+
 class ProcessResponseTest(unittest.TestCase):
     def test_sends_304_via_send_response_without_body(self):
         """A 304 is emitted through send_response with its headers and no body, not send_error."""
@@ -706,41 +744,3 @@ class UpdateHttpsHandlerTest(unittest.TestCase):
                 response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
                 apply_mock.assert_called_once_with(usable)
                 self.assertEqual(response, response_200())
-
-
-class CertificateUsableChangeHandlerTest(unittest.TestCase):
-    def _run_handler(self, flag: bool, usable: bool, apply_ok: bool = True):
-        config = MagicMock()
-        config.is_https_enabled.return_value = flag
-        with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
-            "wb.homeui_backend.main.update_nginx_config"
-        ) as update_mock, patch(
-            "wb.homeui_backend.main.apply_gates",
-            return_value=ApplyResult(ok=apply_ok, error=None if apply_ok else "nginx -t failed"),
-        ) as apply_mock:
-            make_certificate_usable_change_handler("TESTSN", config)(usable)
-        return remove_mock, update_mock, apply_mock
-
-    def test_degradation_removes_tls_config_and_renders_http_gates(self):
-        """The certificate disappeared: the main-UI https.conf is dropped before the
-        gates re-render, so nginx -t never sees a dangling ssl_certificate."""
-        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=False)
-        remove_mock.assert_called_once_with(reload_nginx=False)
-        update_mock.assert_not_called()
-        apply_mock.assert_called_once_with(False)
-
-    def test_recovery_recreates_tls_config_and_renders_https_gates(self):
-        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=True)
-        update_mock.assert_called_once_with("TESTSN")
-        remove_mock.assert_not_called()
-        apply_mock.assert_called_once_with(True)
-
-    def test_failed_gates_apply_raises_to_keep_transition_pending(self):
-        """A failed gates re-render propagates, so the cert thread retries the transition."""
-        with self.assertRaises(RuntimeError):
-            self._run_handler(flag=True, usable=True, apply_ok=False)
-
-    def test_recovery_with_flag_off_keeps_http_gates(self):
-        _, update_mock, apply_mock = self._run_handler(flag=False, usable=True)
-        update_mock.assert_called_once_with("TESTSN")
-        apply_mock.assert_called_once_with(False)

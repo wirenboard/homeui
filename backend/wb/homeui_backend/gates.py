@@ -37,7 +37,7 @@ server {{
     limit_req_status 429;
 {tls_include}    location / {{
 {auth_location}        proxy_pass http://127.0.0.1:{internal_port};
-        include /etc/nginx/snippets/wb-gate-proxy.inc;
+        include /usr/share/wb-mqtt-homeui/nginx/snippets/wb-gate-proxy.inc;
     }}
 {auth_server}{extra_include}}}
 """
@@ -48,8 +48,8 @@ AUTH_LOCATION_TEMPLATE = """        set $wb_role   {role};
         error_page 401 = @wb_unauth;
 """
 
-AUTH_SERVER_INCLUDES = """    include /etc/nginx/snippets/wb-gate-authcheck.inc;
-    include /etc/nginx/snippets/wb-gate-unauth.inc;
+AUTH_SERVER_INCLUDES = """    include /usr/share/wb-mqtt-homeui/nginx/snippets/wb-gate-authcheck.inc;
+    include /usr/share/wb-mqtt-homeui/nginx/snippets/wb-gate-unauth.inc;
 """
 
 BOUNCE_TEMPLATE = "location = /open-{name} {{ return 302 {scheme}://$host:{external_port}/; }}\n"
@@ -143,7 +143,9 @@ def render_gate(gate: Gate, https_enabled: bool) -> str:
         external_port=gate.external_port,
         internal_port=gate.internal_port,
         ssl_suffix=" ssl" if https_enabled else "",
-        tls_include="    include /etc/nginx/snippets/wb-gate-tls.inc;\n" if https_enabled else "",
+        tls_include=(
+            "    include /usr/share/wb-mqtt-homeui/nginx/snippets/wb-gate-tls.inc;\n" if https_enabled else ""
+        ),
         auth_location=(
             AUTH_LOCATION_TEMPLATE.format(role=gate.role.value, name=gate.name) if gate.auth else ""
         ),
