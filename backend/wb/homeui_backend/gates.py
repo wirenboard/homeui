@@ -1,7 +1,10 @@
-"""Service gates: nginx port-gates rendered from /etc/wb-homeui/gates.d/*.json.
+"""Service gates: nginx port-gates rendered from gates.d/*.json declarations.
 
-Rendered by the backend on startup and on every HTTPS toggle change, and by the
-wb-homeui-gates CLI on demand, so gates always follow homeui's HTTP/HTTPS mode.
+Declarations come from two dirs: package-installed ones in /usr/share and
+admin-owned ones in /etc (an /etc gate overrides a package gate with the same
+name). Rendered by the backend on startup and on every HTTPS toggle change, and
+by the wb-homeui-gates CLI on demand, so gates always follow homeui's HTTP/HTTPS
+mode.
 """
 
 import fcntl
@@ -19,6 +22,8 @@ from typing import Optional
 from .users_storage import UserType
 
 GATES_CONF_DIR = "/etc/wb-homeui/gates.d"
+PACKAGE_GATES_CONF_DIR = "/usr/share/wb-mqtt-homeui/gates.d"
+GATES_CONF_DIRS = (PACKAGE_GATES_CONF_DIR, GATES_CONF_DIR)
 RENDERED_GATES_DIR = "/var/lib/wb-homeui/nginx-gates"
 BOUNCES_CONF_PATH = "/var/lib/wb-homeui/nginx/wb-gate-bounces.conf"
 CUSTOM_MENU_DIR = "/var/lib/wb-homeui/custom-menu"
@@ -63,6 +68,7 @@ class Gate:
     role: UserType
     auth: bool = True
     menu: Optional[dict] = None
+    conf_dir: str = GATES_CONF_DIR
 
 
 @dataclass
@@ -73,7 +79,7 @@ class ApplyResult:
     error: Optional[str] = None
 
 
-def _parse_gate(name: str, config: dict) -> Gate:
+def _parse_gate(name: str, config: dict, conf_dir: str = GATES_CONF_DIR) -> Gate:
     if not GATE_NAME_RE.match(name):
         raise ValueError(f"invalid gate name {name!r}")
     for key in ("internalPort", "externalPort"):
@@ -99,26 +105,29 @@ def _parse_gate(name: str, config: dict) -> Gate:
         role=UserType(config.get("role", UserType.ADMIN.value)),
         auth=auth,
         menu=menu,
+        conf_dir=conf_dir,
     )
 
 
 def load_gates() -> tuple[list[Gate], list[str]]:
-    gates: list[Gate] = []
+    gates_by_name: dict[str, Gate] = {}
     skipped: list[str] = []
-    try:
-        file_names = sorted(os.listdir(GATES_CONF_DIR))
-    except FileNotFoundError:
-        return gates, skipped
-    for file_name in file_names:
-        if not file_name.endswith(".json"):
-            continue
-        path = os.path.join(GATES_CONF_DIR, file_name)
+    for conf_dir in GATES_CONF_DIRS:
         try:
-            with open(path, "r", encoding="utf-8") as f:
-                gates.append(_parse_gate(file_name[: -len(".json")], json.load(f)))
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            skipped.append(f"{path}: {e}")
-    return _check_port_conflicts(gates, skipped)
+            file_names = sorted(os.listdir(conf_dir))
+        except FileNotFoundError:
+            continue
+        for file_name in file_names:
+            if not file_name.endswith(".json"):
+                continue
+            path = os.path.join(conf_dir, file_name)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    gate = _parse_gate(file_name[: -len(".json")], json.load(f), conf_dir)
+                gates_by_name[gate.name] = gate
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                skipped.append(f"{path}: {e}")
+    return _check_port_conflicts(list(gates_by_name.values()), skipped)
 
 
 def _check_port_conflicts(gates: list[Gate], skipped: list[str]) -> tuple[list[Gate], list[str]]:
@@ -137,9 +146,9 @@ def _check_port_conflicts(gates: list[Gate], skipped: list[str]) -> tuple[list[G
 def render_gate(gate: Gate, https_enabled: bool) -> str:
     """Render one gate server block; <name>.nginx.inc next to the JSON is included
     at server level as an escape hatch (broken ones are caught by nginx -t + rollback)."""
-    extra_path = os.path.join(GATES_CONF_DIR, gate.name + ".nginx.inc")
+    extra_path = os.path.join(gate.conf_dir, gate.name + ".nginx.inc")
     return GATE_TEMPLATE.format(
-        source=os.path.join(GATES_CONF_DIR, gate.name + ".json"),
+        source=os.path.join(gate.conf_dir, gate.name + ".json"),
         external_port=gate.external_port,
         internal_port=gate.internal_port,
         ssl_suffix=" ssl" if https_enabled else "",

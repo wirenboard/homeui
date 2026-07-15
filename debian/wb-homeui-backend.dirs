@@ -1,5 +1,6 @@
 /usr/share/wb-mqtt-homeui/custom-menu
 /etc/wb-homeui/gates.d
+/usr/share/wb-mqtt-homeui/gates.d
 /etc/wb-homeui/custom-menu
 /var/lib/wb-homeui/custom-menu
 /var/lib/wb-homeui/nginx-gates

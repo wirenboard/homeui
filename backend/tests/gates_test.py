@@ -25,12 +25,16 @@ class GatesDirsTestBase(unittest.TestCase):
         self.root = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.root)
         self.conf_dir = os.path.join(self.root, "gates.d")
+        self.pkg_conf_dir = os.path.join(self.root, "pkg-gates.d")
         self.rendered_dir = os.path.join(self.root, "rendered")
         self.bounces = os.path.join(self.root, "nginx", "wb-gate-bounces.conf")
         self.menu_dir = os.path.join(self.root, "custom-menu")
         os.makedirs(self.conf_dir)
+        os.makedirs(self.pkg_conf_dir)
         for name, value in {
             "GATES_CONF_DIR": self.conf_dir,
+            "PACKAGE_GATES_CONF_DIR": self.pkg_conf_dir,
+            "GATES_CONF_DIRS": (self.pkg_conf_dir, self.conf_dir),
             "RENDERED_GATES_DIR": self.rendered_dir,
             "BOUNCES_CONF_PATH": self.bounces,
             "CUSTOM_MENU_DIR": self.menu_dir,
@@ -91,9 +95,29 @@ class LoadGatesTest(GatesDirsTestBase):
         self.assertEqual([g.name for g in gates], ["ok"])
         self.assertEqual(len(skipped), 3)
 
-    def test_missing_dir_is_empty(self):
-        with patch("wb.homeui_backend.gates.GATES_CONF_DIR", os.path.join(self.conf_dir, "absent")):
+    def test_missing_dirs_are_empty(self):
+        absent = (os.path.join(self.conf_dir, "absent1"), os.path.join(self.conf_dir, "absent2"))
+        with patch("wb.homeui_backend.gates.GATES_CONF_DIRS", absent):
             self.assertEqual(load_gates(), ([], []))
+
+    def test_package_gate_is_loaded_from_package_dir(self):
+        _write_gate(self.pkg_conf_dir, "pkg-svc", {"internalPort": 9000, "externalPort": 29000})
+        gates, skipped = load_gates()
+        self.assertEqual(skipped, [])
+        self.assertEqual([g.name for g in gates], ["pkg-svc"])
+        self.assertEqual(gates[0].conf_dir, self.pkg_conf_dir)
+
+    def test_etc_gate_overrides_package_gate_with_same_name(self):
+        """An admin copy in /etc replaces the package-shipped gate entirely, so its
+        .nginx.inc is also looked up next to the admin JSON."""
+        _write_gate(self.pkg_conf_dir, "svc", {"internalPort": 9000, "externalPort": 29000})
+        _write_gate(self.conf_dir, "svc", {"internalPort": 9000, "externalPort": 28000, "role": "user"})
+        gates, skipped = load_gates()
+        self.assertEqual(skipped, [])
+        self.assertEqual(len(gates), 1)
+        self.assertEqual(gates[0].external_port, 28000)
+        self.assertEqual(gates[0].role, UserType.USER)
+        self.assertEqual(gates[0].conf_dir, self.conf_dir)
 
 
 class RenderGateTest(unittest.TestCase):
@@ -118,16 +142,16 @@ class RenderGateTest(unittest.TestCase):
         self.assertIn("limit_req_status 429;", conf)
 
     def test_extra_nginx_inc_is_included_when_present(self):
-        """<name>.nginx.inc next to the JSON must be included at server level;
-        without the file no include line appears."""
+        """<name>.nginx.inc next to the gate's own JSON must be included at server
+        level; without the file no include line appears."""
         conf_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, conf_dir)
-        with patch("wb.homeui_backend.gates.GATES_CONF_DIR", conf_dir):
-            self.assertNotIn(".nginx.inc", render_gate(self.gate, https_enabled=False))
-            inc_path = os.path.join(conf_dir, "svc.nginx.inc")
-            with open(inc_path, "w", encoding="utf-8") as f:
-                f.write("# extra\n")
-            self.assertIn(f"include {inc_path};", render_gate(self.gate, https_enabled=False))
+        self.gate.conf_dir = conf_dir
+        self.assertNotIn(".nginx.inc", render_gate(self.gate, https_enabled=False))
+        inc_path = os.path.join(conf_dir, "svc.nginx.inc")
+        with open(inc_path, "w", encoding="utf-8") as f:
+            f.write("# extra\n")
+        self.assertIn(f"include {inc_path};", render_gate(self.gate, https_enabled=False))
 
     def test_no_auth_gate_renders_plain_proxy(self):
         """auth:false must drop auth_request, the 401 fallback and both auth

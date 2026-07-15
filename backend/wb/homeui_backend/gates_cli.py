@@ -8,7 +8,7 @@ import argparse
 
 from .cert import is_certificate_usable, remove_nginx_https_config
 from .config_file import load_https_flag
-from .gates import GATES_CONF_DIR, apply_gates, load_gates
+from .gates import GATES_CONF_DIRS, apply_gates, load_gates
 
 
 def read_https_enabled() -> bool:
@@ -36,7 +36,7 @@ def print_skipped(skipped) -> None:
 def check() -> int:
     https_enabled = read_https_enabled()
     gates, skipped = load_gates()
-    print(f"Configs: {GATES_CONF_DIR}, HTTPS: {'on' if https_enabled else 'off'}")
+    print(f"Configs: {' + '.join(GATES_CONF_DIRS)}, HTTPS: {'on' if https_enabled else 'off'}")
     print_gates(gates, https_enabled)
     print_skipped(skipped)
     if not gates and not skipped:

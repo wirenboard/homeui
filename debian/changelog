@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.241.0) stable; urgency=medium
 
-  * Add service gates: one JSON in /etc/wb-homeui/gates.d puts a loopback
+  * Add service gates: one JSON in gates.d (package-installed in /usr/share,
+    admin-owned in /etc/wb-homeui, /etc wins on a name clash) puts a loopback
     service behind the homeui login; nginx configs and menu items are
     rendered by the backend and follow the effective HTTPS mode, with
     nginx -t validation and rollback (wb-homeui-gates CLI to check/apply)
