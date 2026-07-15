@@ -28,7 +28,7 @@ RENDERED_GATES_DIR = "/var/lib/wb-homeui/nginx-gates"
 BOUNCES_CONF_PATH = "/var/lib/wb-homeui/nginx/wb-gate-bounces.conf"
 CUSTOM_MENU_DIR = "/var/lib/wb-homeui/custom-menu"
 LOCK_PATH = "/run/wb-homeui-gates.lock"
-# Parent of the auth-cache path from wb-homeui-gates.conf; nginx creates the leaf.
+# Parent of the auth-cache path from default.conf; nginx creates the leaf.
 NGINX_CACHE_ROOT = "/var/cache/nginx"
 
 GATE_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")

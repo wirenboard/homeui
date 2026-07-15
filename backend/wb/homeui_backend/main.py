@@ -799,7 +799,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.process_request(
             {
                 # Gates auth_request every request, hence 1000/min per client; nginx caps
-                # each IP at 900/min + burst 200 (wb-homeui-gates.conf) — change only as a pair.
+                # each IP at 900/min + burst 200 (nginx default.conf) — change only as a pair.
                 "/auth/check": RequestHandler(
                     fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
                 ),
