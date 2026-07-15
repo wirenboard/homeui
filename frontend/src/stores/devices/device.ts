@@ -45,7 +45,7 @@ export default class Device {
       } else if (parsedMeta.driver === 'wb-modbus') {
         this.type = DeviceType.Modbus;
       } else if (parsedMeta.driver === 'wb-mqtt-zigbee') {
-        this.type = DeviceType.Modbus;
+        this.type = DeviceType.Zigbee;
       }
     } catch (error) {
       console.error('Invalid meta format:', error);
