@@ -92,6 +92,11 @@ class DashboardsStoreFixture(unittest.TestCase):
         with open(self.state_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
+    def write_state(self, hashes: dict) -> None:
+        os.makedirs(os.path.dirname(self.state_path), exist_ok=True)
+        with open(self.state_path, "w", encoding="utf-8") as f:
+            json.dump({"hashes": hashes}, f)
+
 
 class GetIndexTest(DashboardsStoreFixture):
     def test_index_strips_svg_current_keeps_rest(self):
@@ -591,6 +596,111 @@ class ReconciliationTest(DashboardsStoreFixture):
 
         on_disk = {d["id"]: d for d in self.read_config()["dashboards"]}
         self.assertEqual(on_disk["dashboard1"]["name"], "User edited")
+
+    def test_poisoned_baseline_is_synced_regardless_of_live_content(self):
+        """A baseline pinned to a known-poisoned hash is synced even though live content differs.
+
+        Reproduces the migration-window bug: a stale live default's hash got recorded as the
+        baseline without the content ever being synced, so reconcile read it as "user-modified"
+        forever after. The widened condition must sync it forward regardless of live content.
+        """
+        self._seed_baseline(make_config())
+        poisoned_hash = "a" * 64
+
+        state = self.read_state()
+        state["hashes"]["dashboard1"] = poisoned_hash
+        self.write_state(state["hashes"])
+
+        live = self.read_config()
+        live["dashboards"][0]["name"] = "Some arbitrary stale content"
+        self.write_config(live)
+
+        upgraded = make_config()
+        upgraded["dashboards"][0]["name"] = "New default name"
+        self.write_board_config("wb6", upgraded)
+
+        with patch.dict(
+            "wb.homeui_backend.dashboards.KNOWN_POISONED_BASELINE_HASHES",
+            {("wb6", "dashboard1"): poisoned_hash},
+            clear=True,
+        ):
+            self.store.seed_and_reconcile("wb6")
+
+        on_disk = {d["id"]: d for d in self.read_config()["dashboards"]}
+        self.assertEqual(on_disk["dashboard1"]["name"], "New default name")
+        # Baseline advanced to the new content, same as the normal sync path.
+        self.assertEqual(
+            self.read_state()["hashes"]["dashboard1"],
+            dashboard_content_hash(upgraded["dashboards"][0]),
+        )
+
+    def test_normal_baseline_with_genuine_edit_stays_protected(self):
+        """A genuine edit stays protected when the stored baseline isn't the poisoned value.
+
+        Proves the widened OR condition didn't loosen protection for the normal case.
+        """
+        self._seed_baseline(make_config())
+
+        live = self.read_config()
+        live["dashboards"][0]["name"] = "User edited"
+        self.write_config(live)
+
+        upgraded = make_config()
+        upgraded["dashboards"][0]["name"] = "New default name"
+        self.write_board_config("wb6", upgraded)
+
+        with patch.dict(
+            "wb.homeui_backend.dashboards.KNOWN_POISONED_BASELINE_HASHES",
+            {("wb6", "dashboard1"): "b" * 64},
+            clear=True,
+        ):
+            self.store.seed_and_reconcile("wb6")
+
+        on_disk = {d["id"]: d for d in self.read_config()["dashboards"]}
+        self.assertEqual(on_disk["dashboard1"]["name"], "User edited")
+
+    def test_no_known_poisoned_entry_behaves_as_before(self):
+        """No entry in the poisoned map: behaves as before, no KeyError from the lookup."""
+        self._seed_baseline(make_config())
+
+        upgraded = make_config()
+        upgraded["dashboards"][0]["name"] = "New default name"
+        self.write_board_config("wb6", upgraded)
+
+        with patch.dict("wb.homeui_backend.dashboards.KNOWN_POISONED_BASELINE_HASHES", {}, clear=True):
+            self.store.seed_and_reconcile("wb6")
+
+        on_disk = {d["id"]: d for d in self.read_config()["dashboards"]}
+        self.assertEqual(on_disk["dashboard1"]["name"], "New default name")
+        self.assertEqual(
+            self.read_state()["hashes"]["dashboard1"],
+            dashboard_content_hash(upgraded["dashboards"][0]),
+        )
+
+    def test_poisoned_baseline_already_current_leaves_files_untouched(self):
+        """A poisoned baseline that's already current triggers no writes at all.
+
+        The baseline matches both the poisoned-hash check and the live-content check, but it
+        already equals today's default hash, so the "already current" skip should still block
+        the write. Checked via inode, not content: _atomic_write_json replaces the file on
+        every write, so even a same-content rewrite bumps the inode, while content equality
+        wouldn't catch that.
+        """
+        self._seed_baseline(make_config())
+        current_hash = self.read_state()["hashes"]["dashboard1"]
+
+        with patch.dict(
+            "wb.homeui_backend.dashboards.KNOWN_POISONED_BASELINE_HASHES",
+            {("wb6", "dashboard1"): current_hash},
+            clear=True,
+        ):
+            config_ino_before = os.stat(self.config_path).st_ino
+            state_ino_before = os.stat(self.state_path).st_ino
+
+            self.store.seed_and_reconcile("wb6")
+
+            self.assertEqual(os.stat(self.config_path).st_ino, config_ino_before)
+            self.assertEqual(os.stat(self.state_path).st_ino, state_ino_before)
 
     def test_does_not_readd_user_deleted_default(self):
         """A default the user deleted (id in baseline, absent from config) is not re-added."""

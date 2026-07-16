@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.242.3) stable; urgency=medium
+
+  * Repair default dashboards poisoned by the 2.237.0-2.238.0 baseline
+    migration bug: force-sync a known-poisoned baseline hash to the
+    current default regardless of live content
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 16 Jul 2026 19:20:00 +0500
+
 wb-mqtt-homeui (2.242.2) stable; urgency=medium
 
   * fix device name translations
