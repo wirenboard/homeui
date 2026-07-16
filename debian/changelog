@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.242.2) stable; urgency=medium
+
+  * fix device name translations
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 16 Jul 2026 13:10:00 +0300
+
 wb-mqtt-homeui (2.242.1) stable; urgency=medium
 
   * json-schema-editor: add readme
