@@ -7,11 +7,12 @@ import { createJSONEditor } from './extensions/wb-json-editor';
 import { type JsonEditorProps } from './types';
 import './styles.css';
 
-// Cap each sticky vertical tab list to the distance from its current top to the bottom
-// of the viewport, so it scrolls on its own instead of running off-screen.
+// Cap the sticky vertical tab list so it scrolls on its own instead of running off-screen.
 const TAB_LIST_SELECTOR = 'ul.nav-stacked';
 const VIEWPORT_GAP = 12;
 const DESKTOP_QUERY = '(min-width: 992px)';
+// floor so a short form can't crush the list to a couple of rows
+const MIN_TAB_LIST_HEIGHT = 360;
 
 const syncTabListMaxHeight = (root: HTMLElement | null) => {
   if (!root) {
@@ -23,16 +24,13 @@ const syncTabListMaxHeight = (root: HTMLElement | null) => {
       list.style.maxHeight = '';
       return;
     }
-    // clamp the top to the pinned position: a list scrolled above the fold has a
-    // negative rect.top, which would inflate the cap past the viewport and un-cap the list
+    // clamp the top to the pinned position, else a list scrolled above the fold un-caps
     const top = Math.max(list.getBoundingClientRect().top, VIEWPORT_GAP);
     const viewportAvailable = window.innerHeight - top - VIEWPORT_GAP;
-    // keep the list roughly level with its content pane (the flex sibling) so a long list
-    // doesn't tower over a short form; still cap to the viewport for very tall forms
+    // follow the content pane (no towering over a short form), floored by MIN and capped by the viewport
     const sibling = Array.from(list.parentElement?.children ?? []).find((el) => el !== list);
     const contentHeight = sibling ? sibling.getBoundingClientRect().height : viewportAvailable;
-    const available = Math.min(viewportAvailable, contentHeight);
-    // below the fold: drop the cap, let the CSS fallback hold until it scrolls into view
+    const available = Math.min(viewportAvailable, Math.max(contentHeight, MIN_TAB_LIST_HEIGHT));
     list.style.maxHeight = available > 0 ? `${available}px` : '';
   });
 };

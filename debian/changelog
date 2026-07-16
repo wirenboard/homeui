@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.242.3) stable; urgency=medium
+
+  * config editor: keep the vertical tab list readable when the form is short
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 16 Jul 2026 13:53:00 +0300
+
 wb-mqtt-homeui (2.242.2) stable; urgency=medium
 
   * fix device name translations
