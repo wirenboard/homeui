@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.243.0) stable; urgency=medium
 
-  * Add custom config tag
+  * Add custom template tag
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Jul 2026 13:51:00 +0300
 
