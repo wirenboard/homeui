@@ -4051,7 +4051,7 @@
        data-svg-param-id="f17d2412ca4d" />
     <text
        transform="scale(1,-1)"
-       style="font-variant:normal;font-weight:normal;font-size:9px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138"
+       style="font-variant:normal;font-weight:normal;font-size:9px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138;fill:#000000"
        id="text11954"
        x="47.621822"
        y="-34.306007"
@@ -4062,7 +4062,7 @@
          id="tspan11952"
          x="47.621822"
          y="-34.306007"
-         style="font-size:9px;stroke-width:1.40138">000.000.000.000</tspan>
+         style="font-size:9px;stroke-width:1.40138;fill:#000000">000.000.000.000</tspan>
     </text>
     <g
        aria-label="S/N:"
