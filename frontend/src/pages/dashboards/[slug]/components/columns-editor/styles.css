@@ -53,6 +53,20 @@
     cursor: grabbing;
 }
 
+.columnsEditor.is-auto .columnsEditor-column {
+    border-color: transparent;
+}
+
+.columnsEditor.is-auto .columnsEditor-item {
+    cursor: not-allowed;
+    touch-action: auto;
+    opacity: 0.6;
+}
+
+.columnsEditor.is-auto .columnsEditor-item:active {
+    cursor: not-allowed;
+}
+
 .columnsEditor-item.is-dragging {
     opacity: 0.4;
 }

@@ -2,7 +2,6 @@
     border-radius: var(--card-border-radius);
     box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
     margin-bottom: 18px;
-    max-width: 450px;
     width: 100%;
     transition: background ease 300ms, border ease 300ms;
     display: inline-block;

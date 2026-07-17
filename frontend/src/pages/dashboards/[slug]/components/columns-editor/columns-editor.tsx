@@ -101,10 +101,11 @@ export function ColumnsEditor({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [localColumns, setLocalColumns] = useState<string[][] | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-  );
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
+  const sensors = useSensors(pointerSensor);
+  const emptySensors = useSensors();
 
+  const isAutoMode = columnCount === null;
   const effectiveColumnCount = columnCount ?? maxColumns;
 
   const baseColumns = useMemo(() => {
@@ -233,13 +234,13 @@ export function ColumnsEditor({
       </div>
 
       <DndContext
-        sensors={sensors}
+        sensors={isAutoMode ? emptySensors : sensors}
         collisionDetection={headerCollision}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="columnsEditor">
+        <div className={`columnsEditor${isAutoMode ? ' is-auto' : ''}`}>
           {displayed.map((col, i) => (
             <DroppableColumn
               key={columnIds[i]}
