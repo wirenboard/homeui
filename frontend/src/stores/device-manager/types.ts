@@ -120,6 +120,7 @@ export interface DeviceTypeDescription {
   protocol: string;
   'mqtt-id': string;
   'with-subdevices'?: boolean;
+  'user-defined'?: boolean;
   hw?: DeviceTypeHardware[];
   schema?: JsonSchema;
 }
@@ -133,6 +134,7 @@ export interface DeviceTypeDropdownOption {
   label: string;
   value: string;
   hidden?: boolean;
+  tag?: string;
 }
 
 export interface DeviceTypeDropdownOptionGroup {

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.243.0) stable; urgency=medium
+
+  * Add custom template tag
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Jul 2026 13:51:00 +0300
+
 wb-mqtt-homeui (2.242.4) stable; urgency=medium
 
   * Repair default dashboards poisoned by the 2.237.0-2.238.0 baseline
