@@ -687,7 +687,8 @@
          "type-system": "System",
          "type-virtual": "Virtual",
          "type-modbus": "Modbus",
-         "type-zigbee": "Zigbee"
+         "type-zigbee": "Zigbee",
+         "type-dali": "DALI"
       },
       "prompt": {
          "delete-title": "Delete device",

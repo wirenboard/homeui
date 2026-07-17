@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.242.5) stable; urgency=medium
+
+  * Add DALI group to devices filter
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Jul 2026 17:23:54 +0500
+
 wb-mqtt-homeui (2.242.4) stable; urgency=medium
 
   * Repair default dashboards poisoned by the 2.237.0-2.238.0 baseline
