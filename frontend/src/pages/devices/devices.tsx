@@ -83,6 +83,7 @@ const DevicesPage = observer(() => {
               value={typeFilter}
               options={typeOptions}
               ariaLabel={t('devices.labels.filter-type')}
+              className="devices-filter"
               onChange={(option: Option<string>) => setTypeFilter(option?.value ?? null)}
             />
           )}
