@@ -717,7 +717,8 @@
          "type-system": "Системные",
          "type-virtual": "Виртуальные",
          "type-modbus": "Modbus",
-         "type-zigbee": "Zigbee"
+         "type-zigbee": "Zigbee",
+         "type-dali": "DALI"
       },
       "prompt": {
          "delete-title": "Удаление устройства",

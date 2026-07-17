@@ -61,7 +61,7 @@ vi.mock('@/components/dropdown', () => import('@/test/mocks/dropdown'));
 vi.mock('@/layouts/page', () => import('@/test/mocks/page-layout'));
 vi.mock('@/stores/devices', () => ({
   devicesStore: deviceStoreMock,
-  DeviceType: { System: 'system', Virtual: 'virtual', Modbus: 'modbus', Zigbee: 'zigbee' },
+  DeviceType: { System: 'system', Virtual: 'virtual', Modbus: 'modbus', Zigbee: 'zigbee', DALI: 'dali' },
 }));
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
 
@@ -187,6 +187,7 @@ describe('DevicesPage', () => {
         ['s1', makeDevice('s1', 'System Dev', 'system')],
         ['m1', makeDevice('m1', 'Modbus Dev', 'modbus')],
         ['z1', makeDevice('z1', 'Zigbee Dev', 'zigbee')],
+        ['d1', makeDevice('d1', 'DALI Dev', 'dali')],
       ]);
       deviceStoreMock.filteredDevices = devs;
       deviceStoreMock.devices = devs;
