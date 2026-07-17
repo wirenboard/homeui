@@ -490,7 +490,8 @@
          "uncommitted-settings": "You have modified settings that will be lost. Continue?",
          "delete-title": "Confirmation of deletion",
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
-         "not-polled": "The device is not being polled"
+         "not-polled": "The device is not being polled",
+         "user-defined": "Custom"
       },
       "buttons": {
          "save": "Save config",

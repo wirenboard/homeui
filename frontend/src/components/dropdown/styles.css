@@ -71,6 +71,8 @@
 .dropdown__single-value {
   user-select: text;
   cursor: text;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .dropdown__group {
@@ -195,4 +197,40 @@
 
 .dropdown__multi-value__remove {
   cursor: pointer;
+}
+
+.dropdown-option-with-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.dropdown-option-with-tag > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.dropdown-option-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--light-gray-color);
+  color: var(--text-color);
+  padding: 0 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dropdown__option--is-focused .dropdown-option-tag,
+.dropdown__option--is-selected .dropdown-option-tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
 }

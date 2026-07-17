@@ -217,6 +217,17 @@ export const Dropdown = ({
         display: data?.hidden ? 'none' : baseStyles.display,
       }),
     },
+    formatOptionLabel: (data: any) => {
+      if (!data?.tag) {
+        return data.label;
+      }
+      return (
+        <span className="dropdown-option-with-tag">
+          <span>{data.label}</span>
+          <span className="dropdown-option-tag">{data.tag}</span>
+        </span>
+      );
+    },
     tabSelectsValue: false,
     noOptionsMessage: () => t('common.labels.empty-search'),
     unstyled: true,

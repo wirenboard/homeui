@@ -1,3 +1,4 @@
+import i18n from '@/i18n/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
 import type {
@@ -55,7 +56,12 @@ export class DeviceTypesStore {
       return {
         label: deviceTypeGroup.name,
         options: deviceTypeGroup.types.map((deviceType) => {
-          return { label: deviceType.name, value: deviceType.type, hidden: deviceType.deprecated };
+          return {
+            label: deviceType.name,
+            value: deviceType.type,
+            hidden: deviceType.deprecated,
+            tag: deviceType['user-defined'] ? i18n.t('device-manager.labels.user-defined') : undefined,
+          };
         }),
       };
     });
