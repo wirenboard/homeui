@@ -26,11 +26,9 @@ export class SvgDashboardPageStore {
     makeAutoObservable(this, {}, { autoBind: true });
 
     this._disposeReaction = reaction(
-      () => [this.getUsedChannels(), this.dashboardId],
+      () => [this.getUsedChannels(), this.dashboardId, devicesStore.cells.size > 0],
       () => {
-        if (devicesStore.cells.size) {
-          this.setDeviceData();
-        }
+        this.setDeviceData();
       },
     );
   }
