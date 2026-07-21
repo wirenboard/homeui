@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.243.6) stable; urgency=medium
+
+  * Update completions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 21 Jul 2026 19:10:00 +0400
+
 wb-mqtt-homeui (2.243.5) stable; urgency=medium
 
   * Fix colour temperature limits in DALI group and broadcast editors
