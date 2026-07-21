@@ -3,6 +3,7 @@ import { daliProxy } from '@/services';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore } from './base-item-store';
 import type { BusStore } from './bus-store';
+import { relativizeTcLimitPaths } from './tc-limit-paths';
 
 export class GroupStore extends BaseItemStore {
   readonly type = 'group' as const;
@@ -31,6 +32,7 @@ export class GroupStore extends BaseItemStore {
       const data = await daliProxy.GetGroup({ groupId: this.id });
       this.translator = new Translator();
       const schema = loadJsonSchema(data);
+      relativizeTcLimitPaths(schema);
       this.translator.addTranslations(schema.translations);
       this.objectStore = new ObjectStore(schema, {}, false, new StoreBuilder());
       this.objectStore.setDefault();
