@@ -9,6 +9,8 @@
     font-size: 12px;
     line-height: 1.5;
     white-space: nowrap;
+    background: var(--background-color);
+    border-radius: var(--container-border-radius);
 }
 
 /* Match the project's table header (.wb-tableRowHeading): bold dark text on the

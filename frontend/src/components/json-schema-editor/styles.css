@@ -42,7 +42,7 @@
 
 .wb-jsonEditor-objectEditorWithBorder {
     border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
     background: var(--background-accent-color-hover);
     padding: 12px;
 }
@@ -215,7 +215,7 @@
     border: 0;
     border-radius: 50%;
     background: var(--input-action-background);
-    transition: background .15s ease-in-out, var(--input-active-shadow-transition);
+    transition: background .15s ease-in-out, var(--form-element-focus-transition);
 }
 
 .dali-rgb-channel-slider::-moz-range-thumb {
@@ -225,7 +225,7 @@
     border: 0;
     border-radius: 50%;
     background: var(--input-action-background);
-    transition: background .15s ease-in-out, var(--input-active-shadow-transition);
+    transition: background .15s ease-in-out, var(--form-element-focus-transition);
 }
 
 .dali-rgb-channel-slider:not(:disabled):hover::-webkit-slider-thumb,
@@ -240,11 +240,13 @@
 }
 
 .dali-rgb-channel-slider:focus::-webkit-slider-thumb {
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
 }
 
 .dali-rgb-channel-slider:focus::-moz-range-thumb {
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
 }
 
 .dali-rgb-channel-slider-invalid::-webkit-slider-thumb {

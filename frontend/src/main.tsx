@@ -22,8 +22,6 @@ window.addEventListener('vite:preloadError', () => {
   window.location.reload();
 });
 
-document.documentElement.setAttribute('data-theme', 'bootstrap');
-
 switchToHttps().finally(() => {
   runInAction(() => {
     uiStore.isSettingUpHttps = false;

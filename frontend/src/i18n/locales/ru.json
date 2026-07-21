@@ -487,7 +487,8 @@
          "restoring-device": "Восстановление прошивки устройства",
          "uncommitted-settings": "У вас есть измененные настройки, которые будут утеряны. Продолжить?",
          "delete-title": "Подтверждение удаления",
-         "not-polled": "Устройство не опрашивается"
+         "not-polled": "Устройство не опрашивается",
+         "user-defined": "Пользовательский"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -716,7 +717,8 @@
          "type-system": "Системные",
          "type-virtual": "Виртуальные",
          "type-modbus": "Modbus",
-         "type-zigbee": "Zigbee"
+         "type-zigbee": "Zigbee",
+         "type-dali": "DALI"
       },
       "prompt": {
          "delete-title": "Удаление устройства",
@@ -1002,6 +1004,10 @@
          "show-page-in-title": "Показывать имя страницы в заголовке вкладки браузера",
          "show-widgets-page": "Отображать в навигации страницу Виджеты",
          "language": "Язык интерфейса",
+         "theme": "Тема оформления",
+         "theme-light": "Светлая",
+         "theme-dark": "Тёмная",
+         "theme-system": "Как в системе",
          "default-dashboard": "Панель по-умолчанию",
          "https-settings": "Настройки HTTPS",
          "enable-https": "Автоматическая конфигурация",

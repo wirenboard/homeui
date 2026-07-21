@@ -6,7 +6,7 @@
 
 .dali-busCommands-editor {
     border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
     overflow: hidden;
     min-height: 200px;
     max-height: 360px;

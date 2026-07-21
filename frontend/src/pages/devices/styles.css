@@ -18,3 +18,7 @@
     width: 20px;
     height: 16px;
 }
+
+.devices-filter {
+    min-width: 170px;
+}

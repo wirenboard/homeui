@@ -40,4 +40,5 @@ export enum DeviceType {
   Virtual,
   Modbus,
   Zigbee,
+  DALI,
 }

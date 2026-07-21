@@ -18,7 +18,11 @@ from urllib.parse import unquote, urlparse
 
 import bcrypt
 
-from .cert import CertificateCheckingThread
+from .cert import (
+    CertificateCheckingThread,
+    remove_nginx_https_config,
+    update_nginx_config,
+)
 from .config_file import Config
 from .dashboards import (
     DashboardsStore,
@@ -27,6 +31,7 @@ from .dashboards import (
     detect_board,
 )
 from .db import open_db
+from .gates import CUSTOM_MENU_DIR, apply_gates
 from .http_response import (
     HttpResponse,
     response_200,
@@ -48,7 +53,12 @@ from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
-CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
+# Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
+CUSTOM_MENU_DIRS = (
+    "/usr/share/wb-mqtt-homeui/custom-menu",
+    CUSTOM_MENU_DIR,
+    "/etc/wb-homeui/custom-menu",
+)
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -183,7 +193,12 @@ class WebRequestHandlerContext:
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
-    return UserType(request.headers.get("Required-User-Type", UserType.ADMIN.value))
+    """Fail safe to admin on a missing/empty/unknown Required-User-Type."""
+    value = request.headers.get("Required-User-Type") or UserType.ADMIN.value
+    try:
+        return UserType(value)
+    except ValueError:
+        return UserType.ADMIN
 
 
 def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
@@ -412,6 +427,27 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     )
 
 
+def effective_https_enabled(config: Config, certificate_thread: CertificateCheckingThread) -> bool:
+    """Gates and the main UI serve TLS only when the flag is on AND a usable certificate exists."""
+    return config.is_https_enabled() and certificate_thread.is_certificate_usable()
+
+
+def make_certificate_usable_change_handler(sn: str, config: Config) -> Callable[[bool], None]:
+    """On usability transitions keep the invariant: TLS configs on disk <=> usable certificate."""
+
+    def handle(usable: bool) -> None:
+        if usable:
+            update_nginx_config(sn)
+        else:
+            remove_nginx_https_config(reload_nginx=False)
+
+        result = apply_gates(config.is_https_enabled() and usable)
+        if not result.ok:
+            raise RuntimeError(result.error)
+
+    return handle
+
+
 def https_request_cert_handler(
     _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
@@ -439,8 +475,17 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
+            context.certificate_thread.request_certificate()
         else:
             context.certificate_thread.disable_certificate_update()
+        gates_result = apply_gates(
+            effective_https_enabled(WebRequestHandler.config, context.certificate_thread)
+        )
+        if not gates_result.ok:
+            return response_200(
+                [["Content-type", "application/json"]],
+                json.dumps({"enabled": https_enabled, "gatesError": gates_result.error}),
+            )
     return response_200()
 
 
@@ -591,6 +636,7 @@ def delete_dashboard_handler(
 class RequestHandler:
     fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
     rate_per_minute_limit: Optional[int] = None
+    rate_limit_per_client: bool = False
 
 
 def load_json_file(json_file: str) -> Optional[Any]:
@@ -626,7 +672,13 @@ def add_menu_items(src: list, dst: dict) -> None:
 
 def load_subfolder_items(folder_path: str) -> Optional[list]:
     menu_items: dict[str, dict] = {}
-    for file in sorted(os.listdir(folder_path)):
+    try:
+        entries = sorted(os.listdir(folder_path))
+    except OSError as e:
+        # One unreadable subfolder must not break the rest of /ui/menu.
+        logging.warning("Skipping custom menu subfolder %s: %s", folder_path, e)
+        return None
+    for file in entries:
         if file.endswith(".json"):
             file_path = os.path.join(folder_path, file)
             items_data = load_json_file(file_path)
@@ -650,15 +702,22 @@ def security_check_handler(
 
 def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
-    with os.scandir(CUSTOM_MENU_FOLDER) as entries:
-        for entry in sorted(entries, key=lambda e: e.name):
-            data = None
-            if entry.is_file() and entry.name.endswith(".json"):
-                data = load_json_file(entry.path)
-            elif entry.is_dir():
-                data = load_subfolder_items(entry.path)
-            if data is not None:
-                menu_items.append(data)
+    for menu_dir in CUSTOM_MENU_DIRS:
+        try:
+            with os.scandir(menu_dir) as entries:
+                for entry in sorted(entries, key=lambda e: e.name):
+                    data = None
+                    if entry.is_file() and entry.name.endswith(".json"):
+                        data = load_json_file(entry.path)
+                    elif entry.is_dir():
+                        data = load_subfolder_items(entry.path)
+                    if data is not None:
+                        menu_items.append(data)
+        except FileNotFoundError:
+            continue
+        except OSError as e:
+            # A file instead of a dir, permissions, etc. must not 500 the menu.
+            logging.warning("Skipping custom menu dir %s: %s", menu_dir, e)
     return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
 
 
@@ -706,8 +765,12 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         if handler is None:
             return response_404()
 
+        rate_limit_key = urlparse(self.path).path
+        if handler.rate_limit_per_client:
+            # X-Real-IP is nginx-set (sole route in); missing header → shared bucket.
+            rate_limit_key += "|" + self.headers.get("X-Real-IP", "")
         if not self.rate_limiter.check_call(
-            self.path, datetime.now(timezone.utc), handler.rate_per_minute_limit
+            rate_limit_key, datetime.now(timezone.utc), handler.rate_per_minute_limit
         ):
             return response_429()
 
@@ -735,7 +798,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
-                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
+                # Gates auth_request every request, hence 1000/min per client; nginx caps
+                # each IP at 900/min + burst 200 (nginx default.conf) — change only as a pair.
+                "/auth/check": RequestHandler(
+                    fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
+                ),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
@@ -832,9 +899,18 @@ def main():
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    usable_change_handler = make_certificate_usable_change_handler(sn, WebRequestHandler.config)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
-        sn, WebRequestHandler.config.is_https_enabled()
+        sn,
+        WebRequestHandler.config.is_https_enabled(),
+        usable_change_handler,
     )
+    try:
+        # With the certificate already gone at startup no usable transition ever
+        # fires, so the stale https.conf must be dropped here or the shared nginx -t keeps failing.
+        usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.exception("Startup TLS reconcile failed: %s", e)
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()

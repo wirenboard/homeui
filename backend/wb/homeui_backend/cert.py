@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import threading
 from enum import Enum
+from typing import Callable, Optional
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
@@ -47,6 +48,15 @@ def load_certificate(cert_pem_file_name: str) -> x509.Certificate:
 
 def has_enough_lifetime(cert: x509.Certificate) -> bool:
     return (cert.not_valid_after - datetime.datetime.now()).days >= MIN_DAYS_BEFORE_RENEW
+
+
+def is_certificate_usable() -> bool:
+    """Certificate on disk loads; even expired it keeps TLS up (browser warns, channel stays encrypted)."""
+    try:
+        load_certificate(SSL_CERT_PATH)
+        return True
+    except Exception:  # pylint: disable=broad-exception-caught
+        return False
 
 
 def read_or_generate_private_key(file_name: str) -> rsa.RSAPrivateKey:
@@ -187,10 +197,23 @@ def update_cert(sn: str) -> None:
         swap_certs(DEVICE_ORIGINAL_CERT, request_cert_file.name)
 
         fullchain_pem = request_certificate(request_cert_file.name, get_keyspec(), csr_file.name)
-        with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
-            cert_file.write(fullchain_pem)
+        save_certificate(fullchain_pem)
 
         logging.info("Certificate updated successfully")
+
+
+def save_certificate(fullchain_pem: str) -> None:
+    """Write the cert atomically so no reader ever sees a half-written file mid-update."""
+    cert_dir = os.path.dirname(SSL_CERT_PATH)
+    fd, tmp_path = tempfile.mkstemp(dir=cert_dir, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
+            tmp_file.write(fullchain_pem)
+        os.chmod(tmp_path, 0o644)
+        os.replace(tmp_path, SSL_CERT_PATH)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
 
 
 def update_nginx_config(sn: str) -> None:
@@ -217,26 +240,65 @@ def update_nginx_config(sn: str) -> None:
     subprocess.run(["systemctl", "reload", "nginx"], check=True)
 
 
+def remove_nginx_https_config(reload_nginx: bool = True) -> None:
+    """Drop the main-UI TLS config when no usable certificate exists, so nginx -t keeps passing."""
+    https_conf_path = os.path.join(WB_DYNAMIC_NGINX_CONF_DIR, "https.conf")
+
+    if not os.path.exists(https_conf_path):
+        return
+
+    try:
+        os.remove(https_conf_path)
+    except FileNotFoundError:
+        pass
+    except OSError as e:
+        logging.error("Failed to remove nginx HTTPS config: %s", e)
+        return
+    logging.info("Nginx HTTPS config removed")
+    if not reload_nginx:
+        return
+    try:
+        subprocess.run(["systemctl", "reload", "nginx"], check=True)
+    except subprocess.CalledProcessError as e:
+        # Other configs may still reference the missing certificate; the caller's
+        # follow-up reload fixes nginx, so the removal must not die here.
+        logging.error("Nginx reload after removing HTTPS config failed: %s", e)
+
+
 class CertificateState(Enum):
     VALID = "valid"
     REQUESTING = "requesting"
     UNAVAILABLE = "unavailable"
 
 
-class CertificateCheckingThread:
-    def __init__(self, sn: str, allow_certificate_update: bool):
+class CertificateCheckingThread:  # pylint: disable=too-many-instance-attributes # locks per shared field
+    def __init__(
+        self,
+        sn: str,
+        allow_certificate_update: bool,
+        on_usable_change: Optional[Callable[[bool], None]] = None,
+    ):
         self.sn = sn
         self._state_lock = threading.Lock()
         self._state: CertificateState = CertificateState.REQUESTING
         self._allow_certificate_update_lock = threading.Lock()
         self._allow_certificate_update = allow_certificate_update
         self._request_condition = threading.Condition(self._state_lock)
+        self._on_usable_change = on_usable_change
+        self._usable_lock = threading.Lock()
+        # Synchronous initial value: the caller's startup reconcile must not flap HTTP->HTTPS.
+        self._usable = is_certificate_usable()
+        self._notified_usable = self._usable
         self._thread = threading.Thread(target=self.run, daemon=True)
         self._thread.start()
 
     def get_certificate_state(self) -> CertificateState:
         with self._state_lock:
             return self._state
+
+    def is_certificate_usable(self) -> bool:
+        with self._usable_lock:
+            return self._usable
 
     def request_certificate(self) -> None:
         with self._request_condition:
@@ -268,30 +330,50 @@ class CertificateCheckingThread:
                 self._request_condition.wait_for(
                     lambda: self._state == CertificateState.REQUESTING, timeout=CERT_CHECK_INTERVAL_S
                 )
+            self._check_certificate()
+            # After the cycle, not inside it: the transient REQUESTING state must not flap gates.
+            self._refresh_usable()
 
-            state_on_update_fail = CertificateState.UNAVAILABLE
-            self._set_state(CertificateState.REQUESTING)
-            try:
-                cert = load_certificate(SSL_CERT_PATH)
-                if has_enough_lifetime(cert):
-                    self._set_state(CertificateState.VALID)
-                    update_nginx_config(self.sn)
-                    logging.debug("Certificate is valid")
-                    continue
-                state_on_update_fail = CertificateState.VALID
-                logging.debug("Certificate needs renewal")
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                logging.debug("Error checking certificate: %s", e)
-
-            with self._allow_certificate_update_lock:
-                if not self._allow_certificate_update:
-                    self._set_state(state_on_update_fail)
-                    continue
-
-            try:
-                update_cert(self.sn)
-                update_nginx_config(self.sn)
+    def _check_certificate(self) -> None:
+        state_on_update_fail = CertificateState.UNAVAILABLE
+        self._set_state(CertificateState.REQUESTING)
+        try:
+            cert = load_certificate(SSL_CERT_PATH)
+            if has_enough_lifetime(cert):
                 self._set_state(CertificateState.VALID)
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                logging.error("Error updating certificate: %s", e)
+                update_nginx_config(self.sn)
+                logging.debug("Certificate is valid")
+                return
+            state_on_update_fail = CertificateState.VALID
+            logging.debug("Certificate needs renewal")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logging.debug("Error checking certificate: %s", e)
+
+        with self._allow_certificate_update_lock:
+            if not self._allow_certificate_update:
                 self._set_state(state_on_update_fail)
+                return
+
+        try:
+            update_cert(self.sn)
+            update_nginx_config(self.sn)
+            self._set_state(CertificateState.VALID)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logging.error("Error updating certificate: %s", e)
+            self._set_state(state_on_update_fail)
+
+    def _refresh_usable(self) -> None:
+        usable = is_certificate_usable()
+        with self._usable_lock:
+            self._usable = usable
+            changed = usable != self._notified_usable
+        if not changed or self._on_usable_change is None:
+            return
+        try:
+            self._on_usable_change(usable)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            # Transition stays pending so the next cycle retries the handler.
+            logging.error("Certificate usability change handler failed: %s", e)
+            return
+        with self._usable_lock:
+            self._notified_usable = usable

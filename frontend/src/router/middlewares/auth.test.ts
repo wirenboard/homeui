@@ -44,12 +44,22 @@ describe('authGuard', () => {
     expect(result).toBe('next');
   });
 
-  test('redirects to /login on 401', async () => {
+  test('redirects to /login without returnState when there is no hash', async () => {
+    // Cold boot: empty hash → no returnState (must not leak as "undefined").
     authStoreMock.checkAuth.mockRejectedValue({ status: 401 });
     await expect(authGuard({} as any, next)).rejects.toEqual({
-      __redirect: '/login?returnState=undefined',
+      __redirect: '/login',
     });
-    expect(redirect).toHaveBeenCalledWith('/login?returnState=undefined');
+    expect(redirect).toHaveBeenCalledWith('/login');
+  });
+
+  test('redirects to /login carrying returnState from the hash', async () => {
+    location.hash = '#/dashboards/1';
+    authStoreMock.checkAuth.mockRejectedValue({ status: 401 });
+    await expect(authGuard({} as any, next)).rejects.toEqual({
+      __redirect: '/login?returnState=%2Fdashboards%2F1',
+    });
+    expect(redirect).toHaveBeenCalledWith('/login?returnState=%2Fdashboards%2F1');
   });
 
   test('logs error on HTML response without redirecting', async () => {
