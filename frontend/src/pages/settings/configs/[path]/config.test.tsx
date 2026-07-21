@@ -70,6 +70,11 @@ vi.mock('@/components/json-editor', () => ({
     </div>
   ),
 }));
+vi.mock('./json-schema-config-editor', () => ({
+  JsonSchemaConfigEditor: ({ schema }: any) => (
+    <div data-testid="json-schema-config-editor" data-schema={JSON.stringify(schema)} />
+  ),
+}));
 
 function renderPage(id = '~2Fetc~2Fwb~2Ftest.conf') {
   return render(
@@ -148,6 +153,23 @@ describe('ConfigPage', () => {
       JSON.stringify({ type: 'object' }),
     );
     expect(editor).toHaveAttribute('data-cells', JSON.stringify(['dev/ctrl']));
+  });
+
+  test('renders legacy JsonEditor when schema has no wb-json-editor flag', () => {
+    renderPage();
+    expect(screen.getByTestId('json-editor')).toBeInTheDocument();
+    expect(screen.queryByTestId('json-schema-config-editor')).not.toBeInTheDocument();
+  });
+
+  test('renders new JsonSchemaConfigEditor when schema opts in via wb-json-editor', () => {
+    configsStoreMock.config = {
+      configPath: '/etc/wb/test.conf',
+      schema: { type: 'object', 'wb-json-editor': true },
+      content: { key: 'value' },
+    };
+    renderPage();
+    expect(screen.getByTestId('json-schema-config-editor')).toBeInTheDocument();
+    expect(screen.queryByTestId('json-editor')).not.toBeInTheDocument();
   });
 
   test('shows load error', async () => {

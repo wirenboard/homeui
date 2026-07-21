@@ -29,7 +29,6 @@ export type EditorBuilderFunction = (props: EditorBuilderFunctionProps) => React
 export interface JsonSchemaEditorProps {
   store: PropertyStore;
   translator: Translator;
-  customEditorBuilder?: EditorBuilderFunction;
 }
 
 export interface BooleanEditorProps {

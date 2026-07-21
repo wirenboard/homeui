@@ -12,6 +12,7 @@ import { configsStore } from '@/stores/configs';
 import { devicesStore } from '@/stores/devices';
 import { useAsyncAction } from '@/utils/async-action';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
+import { JsonSchemaConfigEditor } from './json-schema-config-editor';
 
 const ConfigPage = observer(() => {
   const { t, i18n } = useTranslation();
@@ -93,12 +94,20 @@ const ConfigPage = observer(() => {
         />
       }
     >
-      <JsonEditor
-        schema={configsStore.config?.schema}
-        data={configsStore.config?.content}
-        cells={devicesStore.topicsWithoutSystem}
-        onChange={onChange}
-      />
+      {configsStore.config?.schema?.['wb-json-editor'] ? (
+        <JsonSchemaConfigEditor
+          schema={configsStore.config?.schema}
+          data={configsStore.config?.content}
+          onChange={onChange}
+        />
+      ) : (
+        <JsonEditor
+          schema={configsStore.config?.schema}
+          data={configsStore.config?.content}
+          cells={devicesStore.topicsWithoutSystem}
+          onChange={onChange}
+        />
+      )}
     </PageLayout>
   );
 });
