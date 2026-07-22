@@ -1,7 +1,7 @@
 .alice-container {
     display: grid;
     grid-template-columns: 230px 1fr;
-    gap: 16px;
+    gap: var(--content-gap);
     margin-top: 18px;
     color: var(--text-color);
 

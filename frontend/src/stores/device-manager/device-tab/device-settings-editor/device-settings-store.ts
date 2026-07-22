@@ -276,6 +276,16 @@ export class DeviceSettingsObjectStore {
     store?.setValue(id);
   }
 
+  // When switching to another template the params store is rebuilt from scratch, so the
+  // device identity (name, MQTT id, slave_id) must be re-applied from the previous config —
+  // otherwise these fields are reset to the new template's defaults.
+  restoreIdentity(previousConfig: JsonObject) {
+    const slaveId = previousConfig?.slave_id;
+    this.setSlaveId(slaveId === undefined || slaveId === '' ? undefined : (slaveId as string));
+    this._restoreOptionalParam('name', previousConfig?.name as string);
+    this._restoreOptionalParam('id', previousConfig?.id as string);
+  }
+
   setDefault() {
     this.commonParams.setDefault();
     this.topLevelGroup.setDefault();
@@ -303,5 +313,18 @@ export class DeviceSettingsObjectStore {
         channel.setFirmwareInDevice(fw);
       });
     });
+  }
+
+  _restoreOptionalParam(key: string, value: string | undefined) {
+    if (value === undefined) {
+      return;
+    }
+    const param = this.commonParams.getParamByKey(key);
+    if (param) {
+      // May be an opt-in param (e.g. id), disabled in a freshly built store; enable it
+      // so the restored value is kept and shown in the editor.
+      param.enable();
+      (param.store as StringStore).setValue(value);
+    }
   }
 }

@@ -64,6 +64,22 @@ def dashboard_content_hash(dashboard: dict) -> str:
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
+# In 2.237.0-2.238.0, for an id with no recorded baseline yet, a live default whose name
+# differed from the shipped one was wrongly assumed user-edited: the code stored the *new*
+# default's hash as the baseline without ever syncing it to the live content. That stored hash
+# then never matched anything real, so reconcile refused forever to update the (actually
+# unmodified) default. Keyed by (board_suffix, dashboard_id) -> the exact poisoned hash, so
+# reconcile can recognize it and force a sync. The shipped defaults were bumped alongside this
+# fix, so these exact values won't be produced again.
+KNOWN_POISONED_BASELINE_HASHES: dict[tuple[str, str], str] = {
+    ("wb6", "dashboard2"): "64da1ef77c1937e56286a8c203e0dcfb6a9102b637245e6dd37e3ec5c0599cbe",
+    ("wb7", "dashboard2"): "2d33d3b92a1ebf23f740e2a3d356d6a16156d2a62c0d11ff680032c522cbef9e",
+    ("wb74", "dashboard2"): "eb66ca52be3b905972454649e312205c57db489087c4f9d4787bc840435628b8",
+    ("wb8", "dashboard2"): "4d47af937147a394907092b4af282d3c4a0b5b412d9b548006052e93e5ade820",
+    ("wb85", "dashboard2"): "fa239835590829b7ef5382b5b4d8f0b0f4a3b77884f18db881d7db08c6685232",
+}
+
+
 @dataclass
 class BaselineState:
     # dashboard id -> content hash recorded when the default was last installed/updated
@@ -321,7 +337,7 @@ class DashboardsStore:
                 self._seed(board_config)
                 return
 
-            self._reconcile(board_config)
+            self._reconcile(board_suffix, board_config)
 
     # --- Private ---
 
@@ -379,7 +395,7 @@ class DashboardsStore:
                 state.hashes[dashboard["id"]] = dashboard_content_hash(dashboard)
         self._write_baseline_state(state)
 
-    def _reconcile(self, board_config: dict) -> None:
+    def _reconcile(self, board_suffix: str, board_config: dict) -> None:
         try:
             live_config = self._read_config()
         except Exception as e:  # pylint: disable=broad-exception-caught
@@ -399,10 +415,17 @@ class DashboardsStore:
             live_dashboard = self._find_dashboard(live_config, dashboard_id)
 
             if dashboard_id not in state.hashes:
-                # No baseline memory: add it if absent from live; if already present (pre-baseline
-                # migration), just adopt the hash so we neither duplicate nor clobber a user edit.
+                # No baseline memory: add it if absent from live. If already present (e.g. a
+                # pre-baseline install), the id alone doesn't tell us whether it was ever edited,
+                # so also check the name: unchanged name -> still the shipped default, safe to
+                # sync silently; a renamed dashboard is treated as user-modified and left alone.
                 if live_dashboard is None:
                     live_dashboards.append(copy.deepcopy(default_dashboard))
+                    self._add_missing_widgets(board_config, live_config, default_dashboard)
+                    config_changed = True
+                elif live_dashboard.get("name") == default_dashboard.get("name"):
+                    live_dashboard.clear()
+                    live_dashboard.update(copy.deepcopy(default_dashboard))
                     self._add_missing_widgets(board_config, live_config, default_dashboard)
                     config_changed = True
                 state.hashes[dashboard_id] = default_hash
@@ -413,7 +436,9 @@ class DashboardsStore:
                 # User-deleted: keep the baseline so it never resurrects.
                 continue
 
-            if dashboard_content_hash(live_dashboard) == state.hashes[dashboard_id]:
+            if dashboard_content_hash(live_dashboard) == state.hashes[dashboard_id] or state.hashes[
+                dashboard_id
+            ] == KNOWN_POISONED_BASELINE_HASHES.get((board_suffix, dashboard_id)):
                 # Unmodified default -> update to the new default (skip if already current).
                 if state.hashes[dashboard_id] != default_hash:
                     live_dashboard.clear()

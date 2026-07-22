@@ -1,7 +1,7 @@
-import { javascript } from '@codemirror/lang-javascript';
-import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { CodeEditor } from '@/components/code-editor';
 import { type JsonBindingsEditorProps } from './types';
 import './styles.css';
 
@@ -11,11 +11,9 @@ export const JsonBindingsEditor = ({ bindingsStore }: JsonBindingsEditorProps) =
   return (
     <>
       <div className="jsonBindingsEditor">
-        <CodeMirror
-          style={{ height: '100%' }}
-          value={bindingsStore.jsonSource}
-          height="100%"
-          extensions={[javascript({ jsx: false })]}
+        <CodeEditor
+          text={bindingsStore.jsonSource}
+          extensions={[json()]}
           autoFocus
           onChange={(value) => bindingsStore.setJsonSource(value)}
         />

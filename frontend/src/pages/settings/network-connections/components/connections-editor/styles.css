@@ -19,7 +19,7 @@
 
 .connectionEditor-content {
     width: 100%;
-    background: var(--table-item-hover);
+    background: var(--container-background-hover);
     padding: 12px;
     border-radius: var(--input-border-radius);
     border: 1px solid var(--border-color);

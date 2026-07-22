@@ -1,5 +1,5 @@
 .dialog {
-    background: var(--content-background);
+    background: var(--container-background);
     padding: 0;
     margin: auto;
     color: var(--text-color);
@@ -49,8 +49,9 @@
 }
 
 .dialog-close:focus {
-    box-shadow: var(--input-active-shadow);
-    z-index: 10;
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
 }
 
 .dialog-close svg {

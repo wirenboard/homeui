@@ -107,7 +107,11 @@ const HistoryPage = observer(() => {
           onSubmit={(ev) => {
             ev.preventDefault();
             const id = store.loadData();
-            navigate(`/history/${id}${searchParams.has('fullscreen') ? '?fullscreen=true' : ''}`);
+            navigate(`/history/${id}${searchParams.has('fullscreen') ? '?fullscreen=true' : ''}`, { replace: true });
+            const controlsToLoad = store.selectedControls.filter(Boolean);
+            if (controlsToLoad.length) {
+              store.startLoading(controlsToLoad);
+            }
           }}
         >
           {store.selectedControls.map((control, index) => (

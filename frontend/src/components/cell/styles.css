@@ -63,6 +63,9 @@
     color: #fff;
 }
 
+.deviceCell-alert.alertMessage-danger .alertMessage-icon {
+    color: inherit;
+}
 .deviceCell-reversed {
     flex-direction: row-reverse;
 }
@@ -151,6 +154,7 @@
     min-width: 0;
     height: 18px;
     transition: width ease 200ms, min-width ease 200ms;
+    color: var(--primary-color);
     cursor: pointer;
 }
 

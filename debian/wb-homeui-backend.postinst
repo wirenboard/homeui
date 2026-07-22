@@ -13,3 +13,8 @@ systemctl --system daemon-reload >/dev/null || true
 deb-systemd-invoke try-restart mosquitto || true
 deb-systemd-invoke try-restart fcgiwrap || true
 deb-systemd-invoke try-restart nginx || true
+
+# Re-render service gates with the freshly installed snippets/templates
+if [ "$1" = "configure" ] && [ -x /usr/bin/wb-homeui-gates ]; then
+    wb-homeui-gates apply >/dev/null 2>&1 || true
+fi

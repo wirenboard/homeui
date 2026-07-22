@@ -137,12 +137,14 @@ const DevicesPage = observer(() => {
     virtual: DeviceType.Virtual,
     modbus: DeviceType.Modbus,
     zigbee: DeviceType.Zigbee,
+    dali: DeviceType.DALI,
   };
   const typeLabelKeys: Record<string, string> = {
     system: 'devices.labels.type-system',
     virtual: 'devices.labels.type-virtual',
     modbus: 'devices.labels.type-modbus',
     zigbee: 'devices.labels.type-zigbee',
+    dali: 'devices.labels.type-dali',
   };
 
   const presentTypes = new Set(
@@ -219,6 +221,7 @@ const DevicesPage = observer(() => {
               value={typeFilter}
               options={typeOptions}
               ariaLabel={t('devices.labels.filter-type')}
+              className="devices-filter"
               onChange={(option: Option<string>) => setTypeFilter(option?.value ?? null)}
             />
           )}

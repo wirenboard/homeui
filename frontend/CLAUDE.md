@@ -85,5 +85,5 @@ Path alias: `@/` → `src/` (configured in `tsconfig.json`, `vite.config.ts`, `v
 ## Deploy
 
 - `make install` rsyncs the production build (`dist/`) to `/var/www`.
-- A custom left-nav menu can be supplied as JSON in `/usr/share/wb-mqtt-homeui/custom-menu`
+- A custom left-nav menu can be supplied as JSON in `/etc/wb-homeui/custom-menu`
   (structure documented in the root `README.md`).

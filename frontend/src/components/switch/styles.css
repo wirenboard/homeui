@@ -5,7 +5,11 @@
 .toggle-switchy > input:not(:checked) + .toggle {outline: 2px solid var(--primary-color);outline-offset:-2px;}
 .toggle-switchy > input:not(:checked) + .toggle > .switch {background:var(--primary-color);}
 .toggle-switchy > input:focus + .toggle,
-.toggle-switchy > input:active + .toggle {box-shadow:var(--input-active-shadow);}
+.toggle-switchy > input:active + .toggle {
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
+}
 
 .toggle-switchy > input + .toggle {border-radius:4px;}
 .toggle-switchy > input + .toggle .switch {border-radius:6px;}

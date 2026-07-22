@@ -4,9 +4,11 @@
     background: var(--nav-bg);
     height: 100%;
     width: 225px;
+    min-width: 225px;
     position: relative;
     border-right: 1px solid var(--nav-border);
     z-index: 1000;
+    transition: background ease 300ms;
 
     @media(max-width: 768px) {
         flex-direction: row;
@@ -23,6 +25,7 @@
 
 .navigation-compact {
     width: 60px;
+    min-width: 60px;
 }
 
 .navigation-header {
@@ -141,14 +144,16 @@
     padding: 8px 12px !important;
 }
 
+.navigation-tooltip svg {
+    fill: var(--nav-sublist-bg);
+}
+
 .navigation-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: var(--nav-bg);
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
 
     @media(max-width: 768px) {
         display: none;
@@ -156,7 +161,8 @@
 }
 
 .navigation-containerMobile {
-    display: block;
+    display: flex;
+    flex-direction: column;
     position: fixed;
     left: 0;
     top: 50px;
@@ -164,29 +170,36 @@
     width: 100%;
     max-width: 225px;
     height: calc(100dvh - 50px);
+    background: var(--nav-bg);
 }
 
+.navigation-scrollArea {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
-.navigation-container::-webkit-scrollbar {
+.navigation-scrollArea::-webkit-scrollbar {
     -webkit-appearance: none;
     background-color: var(--scrollbar-background);
     width: 12px;
     display: none;
 }
 
-.navigation-container:hover::-webkit-scrollbar,
-.navigation-container:focus::-webkit-scrollbar {
+.navigation-scrollArea:hover::-webkit-scrollbar,
+.navigation-scrollArea:focus::-webkit-scrollbar {
     display: block;
 }
 
-.navigation-container::-webkit-scrollbar-thumb {
+.navigation-scrollArea::-webkit-scrollbar-thumb {
     background-clip: padding-box;
     background-color: var(--scrollbar-color);
     border: 3px solid var(--scrollbar-background);
     border-radius: 8px;
 }
 
-.navigation-container::-webkit-scrollbar-thumb:hover {
+.navigation-scrollArea::-webkit-scrollbar-thumb:hover {
     border-width: 2px;
 }
 

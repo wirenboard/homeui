@@ -1,10 +1,15 @@
 import json
+import os
+import shutil
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 from unittest.mock import MagicMock, mock_open, patch
 
 from wb.homeui_backend.cert import CertificateState
+from wb.homeui_backend.gates import CUSTOM_MENU_DIR as GATES_CUSTOM_MENU_DIR
+from wb.homeui_backend.gates import ApplyResult
 from wb.homeui_backend.http_response import (
     response_200,
     response_204,
@@ -15,16 +20,23 @@ from wb.homeui_backend.http_response import (
     response_404,
 )
 from wb.homeui_backend.main import (
+    CUSTOM_MENU_DIRS,
+    RequestHandler,
     WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
     auth_who_am_i_handler,
+    custom_menu_handler,
     delete_user_handler,
     device_info_handler,
+    get_required_user_type,
     get_users_handler,
+    make_certificate_usable_change_handler,
     security_check_handler,
+    update_https_handler,
     update_user_handler,
 )
+from wb.homeui_backend.rate_limiter import RateLimiter
 from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
@@ -515,6 +527,164 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                     mock_client.stop.assert_called_once()
 
 
+class GetRequiredUserTypeTest(unittest.TestCase):
+    def test_role_header_parsing(self):
+        """A missing, empty (a gate left $wb_role unset) or unknown Required-User-Type
+        must fail safe to admin, never raise into a 500."""
+        for headers, expected in (
+            ({"Required-User-Type": "user"}, UserType.USER),
+            ({}, UserType.ADMIN),
+            ({"Required-User-Type": ""}, UserType.ADMIN),
+            ({"Required-User-Type": "bogus"}, UserType.ADMIN),
+        ):
+            with self.subTest(headers=headers):
+                request = MagicMock()
+                request.headers = headers
+                self.assertEqual(get_required_user_type(request), expected)
+
+
+class RequestHandlerRateLimitKeyTest(unittest.TestCase):
+    """The per-endpoint rate limit must key on the parsed path, not the raw request
+    target. Requests differing only by query string have to share one bucket, so a
+    client can't bypass the limit (nor grow RateLimiter.calls unbounded) by varying
+    ?params. Guards the urlparse() key normalisation in _request_handler."""
+
+    @staticmethod
+    def _handler():
+        handler = WebRequestHandler.__new__(WebRequestHandler)
+        handler.rate_limiter = RateLimiter()
+        handler.users_storage = MagicMock(spec=UsersStorage)
+        handler.sessions_storage = MagicMock(spec=SessionsStorage)
+        handler.certificate_thread = MagicMock()
+        handler.security_check_thread = MagicMock()
+        handler.dashboards_store = MagicMock()
+        handler.sn = ""
+        return handler
+
+    def test_query_string_variants_share_one_bucket(self):
+        """Three GETs to /auth/check differing only by ?nonce against a limit of 2:
+        they collapse onto a single bucket, so the third is throttled (429)."""
+        limit = 2
+        handler = self._handler()
+        handler.process_response = MagicMock()
+        handlers = {
+            "/auth/check": RequestHandler(
+                fn=lambda request, context: response_200(), rate_per_minute_limit=limit
+            )
+        }
+
+        statuses = []
+        with patch("wb.homeui_backend.main.get_session", return_value=None):
+            for nonce in range(limit + 1):
+                handler.path = f"/auth/check?nonce={nonce}"
+                handler.process_request(handlers)
+                statuses.append(handler.process_response.call_args.args[0].status)
+
+        self.assertEqual(statuses, [200, 200, 429])
+        self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check"])
+
+
+class CustomMenuHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+
+    def _make_dir(self, name, files):
+        dir_path = os.path.join(self.root, name)
+        os.makedirs(dir_path)
+        for file_name, items in files.items():
+            with open(os.path.join(dir_path, file_name), "w", encoding="utf-8") as f:
+                json.dump(items, f)
+        return dir_path
+
+    def _call(self, dirs):
+        with patch("wb.homeui_backend.main.CUSTOM_MENU_DIRS", tuple(dirs)):
+            response = custom_menu_handler(MagicMock(), MagicMock())
+        self.assertEqual(response.status, 200)
+        return json.loads(response.body)
+
+    def test_default_read_order_is_package_generated_user(self):
+        self.assertEqual(
+            CUSTOM_MENU_DIRS,
+            (
+                "/usr/share/wb-mqtt-homeui/custom-menu",
+                "/var/lib/wb-homeui/custom-menu",
+                "/etc/wb-homeui/custom-menu",
+            ),
+        )
+        # apply_gates writes its menu drop-ins into the served "generated" slot.
+        self.assertEqual(CUSTOM_MENU_DIRS[1], GATES_CUSTOM_MENU_DIR)
+
+    def test_collects_items_from_all_dirs_in_read_order(self):
+        """All three dirs are served, ordered by dir declaration order (beats file names)."""
+        pkg = self._make_dir("pkg", {"z-pkg.json": [{"id": "pkg"}]})
+        gen = self._make_dir("gen", {"a-gen.json": [{"id": "gen"}]})
+        user = self._make_dir("user", {"m-user.json": [{"id": "user"}]})
+        body = self._call([pkg, gen, user])
+        self.assertEqual(body, [[{"id": "pkg"}], [{"id": "gen"}], [{"id": "user"}]])
+
+    def test_missing_dirs_are_skipped(self):
+        """Absent dirs in the read list are skipped, not fatal; all absent serves []."""
+        user = self._make_dir("user", {"item.json": [{"id": "user"}]})
+        body = self._call([os.path.join(self.root, "absent1"), user, os.path.join(self.root, "absent2")])
+        self.assertEqual(body, [[{"id": "user"}]])
+        self.assertEqual(self._call([os.path.join(self.root, "absent1")]), [])
+
+    def test_path_that_is_a_file_is_skipped(self):
+        """A file accidentally created at a menu-dir path must not 500 the endpoint."""
+        user = self._make_dir("user", {"item.json": [{"id": "user"}]})
+        file_path = os.path.join(self.root, "not-a-dir")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("oops")
+        self.assertEqual(self._call([file_path, user]), [[{"id": "user"}]])
+
+    def test_unreadable_subfolder_is_skipped(self):
+        """A broken subfolder inside a menu dir must not break the endpoint."""
+        top = self._make_dir("top", {"item.json": [{"id": "ok"}]})
+        os.mkdir(os.path.join(top, "sub"))
+        with patch("wb.homeui_backend.main.os.listdir", side_effect=PermissionError("denied")):
+            body = self._call([top])
+        self.assertEqual(body, [[{"id": "ok"}]])
+
+
+class CertificateUsableChangeHandlerTest(unittest.TestCase):
+    def _run_handler(self, flag: bool, usable: bool, apply_ok: bool = True):
+        config = MagicMock()
+        config.is_https_enabled.return_value = flag
+        with patch("wb.homeui_backend.main.remove_nginx_https_config") as remove_mock, patch(
+            "wb.homeui_backend.main.update_nginx_config"
+        ) as update_mock, patch(
+            "wb.homeui_backend.main.apply_gates",
+            return_value=ApplyResult(ok=apply_ok, error=None if apply_ok else "nginx -t failed"),
+        ) as apply_mock:
+            make_certificate_usable_change_handler("TESTSN", config)(usable)
+        return remove_mock, update_mock, apply_mock
+
+    def test_degradation_removes_tls_config_and_renders_http_gates(self):
+        """The certificate disappeared: the main-UI https.conf is dropped before the
+        gates re-render, so nginx -t never sees a dangling ssl_certificate."""
+        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=False)
+        remove_mock.assert_called_once_with(reload_nginx=False)
+        update_mock.assert_not_called()
+        apply_mock.assert_called_once_with(False)
+
+    def test_recovery_recreates_tls_config_and_renders_https_gates(self):
+        remove_mock, update_mock, apply_mock = self._run_handler(flag=True, usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        remove_mock.assert_not_called()
+        apply_mock.assert_called_once_with(True)
+
+    def test_failed_gates_apply_raises_to_keep_transition_pending(self):
+        """A failed gates re-render propagates, so the cert thread retries the transition."""
+        with self.assertRaises(RuntimeError):
+            self._run_handler(flag=True, usable=True, apply_ok=False)
+
+    def test_recovery_with_flag_off_keeps_http_gates(self):
+        _, update_mock, apply_mock = self._run_handler(flag=False, usable=True)
+        update_mock.assert_called_once_with("TESTSN")
+        apply_mock.assert_called_once_with(False)
+
+
 class ProcessResponseTest(unittest.TestCase):
     def test_sends_304_via_send_response_without_body(self):
         """A 304 is emitted through send_response with its headers and no body, not send_error."""
@@ -532,3 +702,45 @@ class ProcessResponseTest(unittest.TestCase):
         handler.end_headers.assert_called_once()
         handler.wfile.write.assert_not_called()
         handler.send_error.assert_not_called()
+
+
+class UpdateHttpsHandlerTest(unittest.TestCase):
+    def _toggle(self, enabled: bool, apply_result: ApplyResult, cert_usable: bool = True):
+        config = MagicMock()
+        config.is_https_enabled.return_value = enabled
+        context = MagicMock()
+        context.certificate_thread.is_certificate_usable.return_value = cert_usable
+        request = MagicMock()
+        body = json.dumps({"enabled": enabled})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+        with patch.object(WebRequestHandler, "config", config, create=True), patch(
+            "wb.homeui_backend.main.apply_gates", return_value=apply_result
+        ) as apply_mock:
+            response = update_https_handler(request, context)
+        return response, apply_mock
+
+    def test_gates_error_is_reported_in_response(self):
+        """A failed gates re-render after the toggle must surface in the response
+        body (the toggle itself is applied) instead of being logged only."""
+        response, _ = self._toggle(False, ApplyResult(ok=False, error="boom"))
+        self.assertEqual(
+            response,
+            response_200(
+                [["Content-type", "application/json"]],
+                json.dumps({"enabled": False, "gatesError": "boom"}),
+            ),
+        )
+
+    def test_gates_success_keeps_plain_response(self):
+        response, _ = self._toggle(False, ApplyResult(ok=True))
+        self.assertEqual(response, response_200())
+
+    def test_gates_follow_effective_https(self):
+        """Toggling HTTPS on applies https gates only if the certificate is usable
+        too, so TLS configs never point at a missing file."""
+        for usable in (False, True):
+            with self.subTest(usable=usable):
+                response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
+                apply_mock.assert_called_once_with(usable)
+                self.assertEqual(response, response_200())

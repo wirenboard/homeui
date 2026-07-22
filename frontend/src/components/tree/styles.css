@@ -4,7 +4,7 @@
     width: 100%;
     padding: 0;
     font-size: var(--font-size-medium);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
     overflow: hidden;
 }
 
@@ -19,8 +19,8 @@
 }
 
 .tree-itemActive {
-    background: var(--card-header-background);
-    color: var(--card-header-text);
+    background: var(--primary-color);
+    color: var(--card-primary-header-text);
 }
 
 .tree-itemActive .tree-children {
@@ -51,7 +51,7 @@
 .tree-itemActive > .tree-itemButton > .tree-collapseButton:hover,
 .tree-itemActive > .tree-itemButton > .tree-collapseButton:focus {
     background: var(--primary-color-hover);
-    color: var(--button-color);
+    color: var(--button-text-color);
 }
 
 .tree-collapseIcon {

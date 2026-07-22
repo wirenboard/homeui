@@ -605,17 +605,20 @@ export default class HistoryStore {
     this.stopLoadData = false;
     this.loadPending = true;
     this.disableUi = true;
-    this.charts = controlsToLoad.map((control) => {
+    this.charts = controlsToLoad.reduce<ChartTraits[]>((acc, control) => {
       const [deviceId, controlId, widgetId] = control.split('/');
       const chartControl = this.controls.find((item) => {
         if (widgetId) {
-          return item.controlId === controlId && item.deviceId === deviceId && item.widget.id === widgetId;
+          return item.controlId === controlId && item.deviceId === deviceId && item.widget?.id === widgetId;
         } else {
           return item.controlId === controlId && item.deviceId === deviceId;
         }
       });
-      return new ChartTraits(chartControl);
-    });
+      if (chartControl) {
+        acc.push(new ChartTraits(chartControl));
+      }
+      return acc;
+    }, []);
     this.chartConfig = [];
     this.dataPointsMultiple = [];
     this.beforeLoadChunkedHistory(0, undefined, currentLoadId);

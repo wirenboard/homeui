@@ -12,6 +12,8 @@
 }
 
 .toggleButton:focus {
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
     z-index: 100;
 }

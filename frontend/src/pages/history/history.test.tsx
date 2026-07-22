@@ -49,6 +49,7 @@ const { storeMock } = vi.hoisted(() => ({
     resetDates: vi.fn(),
     stopLoadingData: vi.fn(),
     prepareLoad: vi.fn(),
+    startLoading: vi.fn(),
     onRelayout: vi.fn(),
   },
 }));
@@ -239,7 +240,8 @@ describe('HistoryPage', () => {
       render(<HistoryPage />);
       fireEvent.submit(screen.getByText('history.buttons.load').closest('form')!);
       expect(storeMock.loadData).toHaveBeenCalled();
-      expect(navigateMock).toHaveBeenCalledWith('/history/encoded-id');
+      expect(navigateMock).toHaveBeenCalledWith('/history/encoded-id', { replace: true });
+      expect(storeMock.startLoading).toHaveBeenCalledWith(['wb/temp/w1']);
     });
 
     test('shows stop button when loading', () => {
@@ -371,6 +373,7 @@ describe('HistoryPage', () => {
       );
       expect(navigateMock).toHaveBeenCalledWith(
         '/history/encoded-id?fullscreen=true',
+        { replace: true },
       );
     });
   });

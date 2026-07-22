@@ -86,7 +86,7 @@ const HttpsSettings = ({ onError }: HttpsSettingsProps) => {
         description={t('web-ui-settings.labels.enable-https-description')}
         onChange={setSwitchStateHandler}
       />
-      {switchState && <CertStatusBanner />}
+      {switchState && !disabled && <CertStatusBanner />}
     </FormFieldGroup>
   );
 };

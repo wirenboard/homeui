@@ -18,7 +18,9 @@ const { authMock, dashMock, uiMock } = vi.hoisted(() => ({
     setIsShowWidgetsPage: vi.fn(),
   },
   uiMock: {
+    theme: 'light',
     showPageInTitle: true,
+    setTheme: vi.fn(),
     setShowPageInTitle: vi.fn(),
   },
 }));

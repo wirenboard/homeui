@@ -73,13 +73,25 @@ export const DateTimePicker = ({
     }
 
     setSelected(newDate);
-    setInputValue(format(newDate, dateFormat));
-    onChange?.(newDate);
+  };
+
+  const handlePopupDismiss = (isOpen: boolean) => {
+    if (!isOpen) {
+      setSelected(value ?? null);
+      setInputValue(value ? format(value, dateFormat) : '');
+    }
+    setOpen(isOpen);
+  };
+
+  const handleApply = () => {
+    onChange?.(selected);
+    setInputValue(selected ? format(selected, dateFormat) : '');
+    setOpen(false);
   };
 
   const { refs, floatingStyles, context } = useFloating({
     open,
-    onOpenChange: setOpen,
+    onOpenChange: handlePopupDismiss,
     middleware: [offset(8), flip(), shift()],
     whileElementsMounted: autoUpdate,
   });
@@ -121,15 +133,15 @@ export const DateTimePicker = ({
     newDate.setSeconds(s);
 
     setSelected(newDate);
-    setInputValue(format(newDate, dateFormat));
-    onChange?.(newDate);
   };
 
   const handleInputChange = (val: string) => {
     setInputValue(val);
     if (!val || !/[0-9]/.test(val)) {
       setSelected(null);
-      onChange?.(null);
+      if (!open) {
+        onChange?.(null);
+      }
       return;
     }
 
@@ -146,7 +158,9 @@ export const DateTimePicker = ({
 
     if (isValid(parsedDate) && normalize(parsedDate) !== normalize(value)) {
       setSelected(parsedDate);
-      onChange?.(parsedDate);
+      if (!open) {
+        onChange?.(parsedDate);
+      }
     }
   };
 
@@ -227,7 +241,12 @@ export const DateTimePicker = ({
                     : `00:00${withSeconds ? ':00' : ''}`}
                   step={withSeconds ? 1 : null}
                   onChange={handleTimeChange}
-                  onEnter={() => setOpen(false)}
+                  onEnter={handleApply}
+                />
+                <Button
+                  className="datetimePicker-applyButton"
+                  label={t('common.buttons.select')}
+                  onClick={handleApply}
                 />
               </label>
             </div>

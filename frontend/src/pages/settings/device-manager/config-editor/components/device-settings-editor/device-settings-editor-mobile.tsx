@@ -77,7 +77,6 @@ const ChannelCard = observer((
     >
       <div className="deviceSettingsEditor-channel">
         {description && <ParamDescription description={description} />}
-        qweqweqwe
         <Suspense fallback="">
           <StringEditor store={channel.mode} translator={translator} />
         </Suspense>

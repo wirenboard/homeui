@@ -13,6 +13,11 @@ declare module '*.svg' {
 
 declare module '*.css' {}
 
+// json-editor reads window.DOMPurify to render HTML in descriptions.
+interface Window {
+  DOMPurify: typeof import('dompurify').default;
+}
+
 declare const __HIDE_COMPACT_MENU__: boolean;
 declare const __LOGO__: string;
 declare const __LOGO_COMPACT__: string;

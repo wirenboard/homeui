@@ -167,7 +167,7 @@ export class DeviceTabStore {
       return;
     }
     this._setLoading(i18n.t('device-manager.labels.loading-template'));
-    const oldSlaveId = this.slaveId;
+    const previousConfig = this.editedData;
     try {
       const schema = await this.deviceTypesStore.getSchema(type);
       runInAction(() => {
@@ -183,7 +183,7 @@ export class DeviceTabStore {
       return this._clearLoading();
     }
     this._initFromDeviceType(type);
-    this.schemaStore?.setSlaveId(oldSlaveId);
+    this.schemaStore?.restoreIdentity(previousConfig);
     this.readRegistersState.deviceTypeChanged(type, this.slaveId ?? '', !!(this.editedData?.enabled ?? true));
     this._clearError();
     await this._loadConfigFromDevice(portConfig);

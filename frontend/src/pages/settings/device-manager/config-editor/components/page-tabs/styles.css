@@ -30,7 +30,7 @@
 
 .deviceManagerPageTabs-tab {
     border: 1px solid var(--border-color);
-    background: var(--table-item-hover);
+    background: var(--container-background-hover);
     overflow-y: auto;
     padding: 8px 18px;
     flex-grow: 1;
