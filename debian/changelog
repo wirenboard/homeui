@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.243.8) stable; urgency=medium
+
+  * Update autocomplete snippet
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 22 Jul 2026 16:10:00 +0400
+
 wb-mqtt-homeui (2.243.7) stable; urgency=medium
 
   * Fix collapsing colour temperature slider in DALI bus editor
