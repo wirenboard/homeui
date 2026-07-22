@@ -15,6 +15,6 @@
     min-width: 0;
 }
 
-.dali-groupParam-editor .input {
-    width: 100%;
+.dali-groupParam-editor .input:not(.dali-color-temperature-slider-input) {
+     width: 100%;
 }
