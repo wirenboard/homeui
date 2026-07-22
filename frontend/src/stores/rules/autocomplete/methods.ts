@@ -160,8 +160,8 @@ const notifyMethodsSource: CompletionSource = (context) => {
         { label: 'sendSMS', type: 'function', detail: '(to, text, command?, callback?)' },
       ),
       snippetCompletion(
-        'sendTelegramMessage(${1:token}, ${2:chatId}, ${3:text}, ${4:callback})',
-        { label: 'sendTelegramMessage', type: 'function', detail: '(token, chatId, text, callback?)' },
+        'sendTelegramMessage(${1:token}, ${2:chatId}, ${3:text}, ${4:options}, ${5:callback})',
+        { label: 'sendTelegramMessage', type: 'function', detail: '(token, chatId, text, options?, callback?)' },
       ),
       snippetCompletion(
         'sendWebhook(${1:opts}, ${2:callback})',

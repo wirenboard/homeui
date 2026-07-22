@@ -59,10 +59,15 @@ def apply_command() -> int:
     return 1 if result.skipped else 0
 
 
-def main() -> int:
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("check", help="Validate gate configs without applying")
     subparsers.add_parser("apply", help="Render gate configs and reload nginx")
+    return parser
+
+
+def main() -> int:
+    parser = get_parser()
     args = parser.parse_args()
     return check() if args.command == "check" else apply_command()
