@@ -8,7 +8,7 @@ import { Button } from '@/components/button';
 import { JsonEditor } from '@/components/json-editor';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { configsStore } from '@/stores/configs';
+import { configsStore, WB_JSON_EDITOR } from '@/stores/configs';
 import { devicesStore } from '@/stores/devices';
 import { useAsyncAction } from '@/utils/async-action';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
@@ -94,7 +94,7 @@ const ConfigPage = observer(() => {
         />
       }
     >
-      {configsStore.config?.schema?.['wb-json-editor'] ? (
+      {configsStore.config?.editor === WB_JSON_EDITOR ? (
         <JsonSchemaConfigEditor
           schema={configsStore.config?.schema}
           data={configsStore.config?.content}

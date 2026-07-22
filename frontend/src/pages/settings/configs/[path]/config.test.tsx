@@ -23,7 +23,7 @@ const { configsStoreMock, devicesStoreMock, preventLeaveMock } = vi.hoisted(() =
 }));
 
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
-vi.mock('@/stores/configs', () => ({ configsStore: configsStoreMock }));
+vi.mock('@/stores/configs', () => ({ configsStore: configsStoreMock, WB_JSON_EDITOR: 'wb-json-editor' }));
 vi.mock('@/stores/devices', () => ({ devicesStore: devicesStoreMock }));
 vi.mock('@/utils/async-action', () => ({
   useAsyncAction: (fn: any) => [fn, false],
@@ -155,16 +155,17 @@ describe('ConfigPage', () => {
     expect(editor).toHaveAttribute('data-cells', JSON.stringify(['dev/ctrl']));
   });
 
-  test('renders legacy JsonEditor when schema has no wb-json-editor flag', () => {
+  test('renders legacy JsonEditor when config editor is not wb-json-editor', () => {
     renderPage();
     expect(screen.getByTestId('json-editor')).toBeInTheDocument();
     expect(screen.queryByTestId('json-schema-config-editor')).not.toBeInTheDocument();
   });
 
-  test('renders new JsonSchemaConfigEditor when schema opts in via wb-json-editor', () => {
+  test('renders new JsonSchemaConfigEditor when config opts in via editor wb-json-editor', () => {
     configsStoreMock.config = {
       configPath: '/etc/wb/test.conf',
-      schema: { type: 'object', 'wb-json-editor': true },
+      editor: 'wb-json-editor',
+      schema: { type: 'object' },
       content: { key: 'value' },
     };
     renderPage();

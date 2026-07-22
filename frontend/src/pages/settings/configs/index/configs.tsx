@@ -5,7 +5,7 @@ import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type ConfigListItem, configsStore } from '@/stores/configs';
+import { type ConfigListItem, configsStore, WB_JSON_EDITOR } from '@/stores/configs';
 import { copyToClipboard } from '@/utils/clipboard';
 import './styles.css';
 
@@ -22,7 +22,8 @@ const ConfigsPage = observer(() => {
   const getUrl = (config: ConfigListItem) => {
     const encodePath = (path: string) => path.replace(/\//g, '~2F');
 
-    return config.editor
+    // wb-json-editor is a renderer choice on the generic page
+    return config.editor && config.editor !== WB_JSON_EDITOR
       ? `/settings/configs/${config.editor}`
       : `/settings/configs/${encodePath(config.schemaPath)}`;
   };
