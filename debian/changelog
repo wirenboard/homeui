@@ -2,7 +2,37 @@ wb-mqtt-homeui (2.244.0) stable; urgency=medium
 
   * Add terminal
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Jul 2026 15:13:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 23 Jul 2026 12:45:00 +0300
+
+wb-mqtt-homeui (2.243.9) stable; urgency=medium
+
+  * Add opt-in new json-schema-editor for configs via the wb-json-editor flag
+
+ -- Valeriy Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 22 Jul 2026 18:35:00 +0300
+
+wb-mqtt-homeui (2.243.8) stable; urgency=medium
+
+  * Update autocomplete snippet
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 22 Jul 2026 16:10:00 +0400
+
+wb-mqtt-homeui (2.243.7) stable; urgency=medium
+
+  * Fix collapsing colour temperature slider in DALI bus editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Jul 2026 15:41:44 +0500
+
+wb-mqtt-homeui (2.243.6) stable; urgency=medium
+
+  * Update completions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 21 Jul 2026 19:10:00 +0400
+
+wb-mqtt-homeui (2.243.5) stable; urgency=medium
+
+  * Fix colour temperature limits in DALI group and broadcast editors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 21 Jul 2026 11:28:29 +0500
 
 wb-mqtt-homeui (2.243.4) stable; urgency=medium
 

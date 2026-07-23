@@ -5,6 +5,7 @@ import { BaseItemStore, ItemType } from './base-item-store';
 import { BusCommandsStore } from './bus-commands-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
+import { relativizeTcLimitPaths } from './tc-limit-paths';
 import type { CommissioningState } from './types';
 
 const IDLE_COMMISSIONING_STATE: CommissioningState = {
@@ -135,6 +136,7 @@ export class BusStore extends BaseItemStore {
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       if (schema) {
+        relativizeTcLimitPaths(schema);
         this.translator.addTranslations(schema.translations);
         this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       }
