@@ -14,6 +14,7 @@ export class BooleanStore implements PropertyStore {
   readonly defaultText = '';
 
   private _initialValue: MistypedValue | boolean | undefined;
+  private _forbidUndefined: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'boolean') {
@@ -42,6 +43,7 @@ export class BooleanStore implements PropertyStore {
       _checkConstraints: action,
       commit: action,
       reset: action,
+      setForbidUndefined: action,
     });
   }
 
@@ -50,7 +52,10 @@ export class BooleanStore implements PropertyStore {
       this.error = { key: 'json-editor.errors.not-a-boolean' };
       return;
     }
-    const forbidUndefined = this.schema.options?.wb?.show_editor || this.required || this.schema.options?.show_opt_in;
+    const forbidUndefined = this.schema.options?.wb?.show_editor
+      || this.required
+      || this.schema.options?.show_opt_in
+      || (this._forbidUndefined && !this.schema.options?.wb?.allow_undefined);
     if (forbidUndefined && this.value === undefined) {
       this.error = { key: 'json-editor.errors.required' };
       return;
@@ -90,6 +95,11 @@ export class BooleanStore implements PropertyStore {
   reset(): void {
     this.value = this._initialValue;
     this.isDirty = false;
+    this._checkConstraints();
+  }
+
+  setForbidUndefined(value: boolean) {
+    this._forbidUndefined = value;
     this._checkConstraints();
   }
 }
