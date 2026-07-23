@@ -26,6 +26,21 @@ const NULLABLE_SHOWN_SCHEMA = {
   },
 };
 
+// A nested object with fields that the reconcile logic seeds individually.
+const NESTED_SCHEMA = {
+  type: 'object',
+  properties: {
+    act: {
+      type: 'object',
+      properties: {
+        mode: { type: 'string', enum: ['a', 'b'], propertyOrder: 1 },
+        percent: { type: 'integer', minimum: 1, maximum: 100, propertyOrder: 2 },
+      },
+      propertyOrder: 1,
+    },
+  },
+};
+
 const build = (schema: object, value: object) =>
   new ObjectStore(loadJsonSchema(schema), value, false, new StoreBuilder());
 
@@ -97,6 +112,30 @@ describe('ObjectParamStore: an enabled param must carry a value', () => {
     expect(param.disabled).toBe(true);
     expect(param.store.hasErrors).toBe(false);
     expect(store.hasErrors).toBe(false);
+    expect(store.value).toEqual({});
+  });
+});
+
+describe('ObjectStore.isDirty across enable/disable', () => {
+  test('enabling a nested field then disabling the parent leaves the object not dirty', () => {
+    const store = build(NESTED_SCHEMA, {});
+    const act = store.getParamByKey('act')!;
+
+    act.enable();
+    (act.store as ObjectStore).getParamByKey('percent')!.enable(); // seed a field, as the reconcile does
+    expect(store.isDirty).toBe(true); // a real change was made
+
+    act.disable();
+    expect(store.isDirty).toBe(false); // fully reverted to the loaded state
+  });
+
+  test('disabling a nested object that was loaded with a value is a change', () => {
+    const store = build(NESTED_SCHEMA, { act: { percent: 5 } });
+    const act = store.getParamByKey('act')!;
+    expect(store.isDirty).toBe(false);
+
+    act.disable(); // remove a loaded value
+    expect(store.isDirty).toBe(true);
     expect(store.value).toEqual({});
   });
 });

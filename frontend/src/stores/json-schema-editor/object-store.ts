@@ -151,6 +151,7 @@ export class ObjectStore implements PropertyStore {
 
   setUndefined() {
     this.isUndefined = true;
+    this.params.forEach((param) => param.store.setUndefined());
   }
 
   setDefault() {
