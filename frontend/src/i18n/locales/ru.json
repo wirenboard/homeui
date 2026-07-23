@@ -777,6 +777,18 @@
          "more-tabs": "Ещё вкладки"
       }
    },
+   "terminal": {
+      "title": "Консоль",
+      "status": {
+         "connected": "Подключено",
+         "connecting": "Подключение…",
+         "disconnected": "Отключено",
+         "error": "Ошибка"
+      },
+      "buttons": {
+         "reconnect": "Переподключить"
+      }
+   },
    "logs":{
       "title": "Системный журнал",
       "labels": {

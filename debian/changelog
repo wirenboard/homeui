@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.244.0) stable; urgency=medium
+
+  * Add terminal
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 23 Jul 2026 12:45:00 +0300
+
 wb-mqtt-homeui (2.243.9) stable; urgency=medium
 
   * Add opt-in new json-schema-editor for configs via the wb-json-editor flag
