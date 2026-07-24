@@ -6,7 +6,6 @@ import { Button } from '@/components/button';
 import { useConfirm } from '@/components/confirm';
 import { Progress } from '@/components/progress';
 import { PageLayout } from '@/layouts/page';
-import { type NewDevicesScanPageStore } from '@/pages/settings/device-manager/scan';
 import { ScanState } from '@/pages/settings/device-manager/scan/stores/types';
 import { authStore, UserRole } from '@/stores/auth';
 import { DevicesTable } from './components/desktop';
@@ -18,7 +17,7 @@ import './styles.css';
 const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
   const { t, i18n } = useTranslation();
   const isDesktop = useMediaQuery({ minWidth: 874 });
-  const [confirmAddressChange, isConfirmOpened, handleConfirm, handleClose] = useConfirm<any>();
+  const [confirmAddressChange, isConfirmOpened, handleConfirm, handleClose, devicesToModify] = useConfirm<any>();
   const nothingFound = !pageStore.commonScanStore.devicesStore.newDevices.length
     && !pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices.length;
 
@@ -120,7 +119,7 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
       {scanType === 'new' && (
         <SetupAddressModal
           isOpened={isConfirmOpened}
-          devices={(pageStore as NewDevicesScanPageStore).devicesToModify}
+          devices={devicesToModify ?? []}
           onConfirm={handleConfirm}
           onClose={handleClose}
         />

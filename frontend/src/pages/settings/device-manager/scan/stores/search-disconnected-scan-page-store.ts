@@ -61,15 +61,13 @@ export class SearchDisconnectedScanPageStore {
       // it as configured. Keep it selectable so its connection settings can be re-applied.
       selectableConfiguredDevice = { portPath, slaveId: slaveIdInt };
     }
-    this.commonScanStore.startScanning(
-      SelectionPolicy.Single,
-      configuredDevices,
+    this.commonScanStore.startScanning(SelectionPolicy.Single, configuredDevices, {
       portPath,
       useModbusTcp,
       outOfOrderSlaveIds,
-      true,
+      allowToSelectDevicesInBootloader: true,
       selectableConfiguredDevice,
-    );
+    });
   }
 
   onOk() {
