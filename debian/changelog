@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.243.10) stable; urgency=medium
+
+  * Fix duplicate devices created when re-scanning the serial bus after adding devices without saving
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Jul 2026 10:49:56 +0300
+
 wb-mqtt-homeui (2.243.9) stable; urgency=medium
 
   * Add opt-in new json-schema-editor for configs via the wb-json-editor flag

@@ -1,4 +1,5 @@
-import type{ DeviceTypeDescriptionGroup } from '@/stores/device-manager/types';
+import type { PortTabConfig } from '@/stores/device-manager/port-tab/types';
+import type { DeviceTypeDescriptionGroup } from '@/stores/device-manager/types';
 import type { JsonSchema } from '@/stores/json-schema-editor';
 
 export interface ConfiguredDevice {
@@ -7,6 +8,15 @@ export interface ConfiguredDevice {
   deviceType: string;
   signatures: string[];
 }
+
+export interface ConfiguredPort {
+  type: string;
+  config: PortTabConfig;
+  devices: ConfiguredDevice[];
+}
+
+// Configured modbus devices grouped by port path (the internal shape ConfiguredDevices holds).
+export type ConfiguredDevicesByPort = Record<string, ConfiguredPort>;
 
 export interface SerialPort {
   baud_rate: number;
