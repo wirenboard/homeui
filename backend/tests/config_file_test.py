@@ -18,7 +18,6 @@ class ConfigInitTest(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
         self.users_storage = MagicMock(spec=UsersStorage)
-        self.users_storage.has_users.return_value = False
 
     def read_config(self) -> dict:
         with open(self.config_path, "r", encoding="utf-8") as f:
