@@ -322,7 +322,7 @@ class DashboardsStore:
             self._write_config(config)
 
     def seed_and_reconcile(self, board_suffix: str) -> None:
-        """Seed the config if absent, then reconcile defaults against the baseline state.
+        """Seed the config if absent or empty, then reconcile defaults against the baseline state.
 
         Reconciliation adds defaults never installed here and updates unmodified ones, leaving
         user-modified or user-deleted ones untouched. Raises SeedConfigError if
@@ -333,7 +333,7 @@ class DashboardsStore:
             if board_config is None:
                 raise SeedConfigError(f"No board config for suffix '{board_suffix}'")
 
-            if not os.path.exists(self._config_path):
+            if not os.path.exists(self._config_path) or os.path.getsize(self._config_path) == 0:
                 self._seed(board_config)
                 return
 
