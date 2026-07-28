@@ -19,7 +19,8 @@ Build-Depends: debhelper-compat (= 13),
                python3-requests,
                python3-requests-unixsocket,
                python3-setuptools,
-               python3-wb-common
+               python3-wb-common,
+               python3-websockets
 Homepage: https://github.com/wirenboard/homeui
 
 Package: wb-mqtt-homeui
@@ -61,6 +62,7 @@ Depends: ${shlibs:Depends},
          python3-requests,
          python3-requests-unixsocket,
          python3-wb-common,
+         python3-websockets,
          wb-release-info
 Breaks: wb-configs (<< 3.38.0~~),
         wb-mqtt-homeui (<< 2.140.0~~)
