@@ -22,6 +22,7 @@ async def _create_pty_process():
     env = os.environ.copy()
     env["TERM"] = "xterm-256color"
     env["LANG"] = "en_US.UTF-8"
+можно     env.setdefault("HOME", "/root")
     proc = await asyncio.create_subprocess_exec(
         "/bin/bash",
         "--login",
