@@ -19,6 +19,9 @@ function decodeBase64(base64: string): string {
   return new TextDecoder().decode(bytes);
 }
 
+const RECONNECT_BASE_DELAY = 1000;
+const RECONNECT_MAX_DELAY = 30000;
+
 export class TerminalStore {
   connectionState = TerminalConnectionState.Disconnected;
   terminal: any = null;
@@ -28,6 +31,9 @@ export class TerminalStore {
   private onDataCallback: ((data: string) => void) | null = null;
   private onReconnectCallback: (() => void) | null = null;
   private onConnectedCallback: (() => void) | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempt = 0;
+  private intentionalDisconnect = false;
 
   constructor() {
     makeAutoObservable<this, PrivateKeys>(this, {
@@ -35,6 +41,10 @@ export class TerminalStore {
       onDataCallback: false,
       onReconnectCallback: false,
       onConnectedCallback: false,
+      reconnectTimer: false,
+      reconnectAttempt: false,
+      intentionalDisconnect: false,
+      scheduleReconnect: false,
       terminal: false,
       handleOpen: action.bound,
       handleMessage: action.bound,
@@ -61,7 +71,10 @@ export class TerminalStore {
 
   connect() {
     const isReconnect = this.ws !== null;
-    this.disconnect();
+    this.intentionalDisconnect = false;
+    this.reconnectAttempt = 0;
+    this.clearReconnectTimer();
+    this.closeWebSocket();
 
     if (isReconnect) {
       this.onReconnectCallback?.();
@@ -149,15 +162,59 @@ export class TerminalStore {
   }
 
   disconnect() {
-    if (this.ws) {
-      this.ws.onclose = null;
-      this.ws.close();
-      this.ws = null;
-    }
+    this.intentionalDisconnect = true;
+    this.clearReconnectTimer();
+    this.closeWebSocket();
     this.connectionState = TerminalConnectionState.Disconnected;
   }
 
+  private closeWebSocket() {
+    if (this.ws) {
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
+  private clearReconnectTimer() {
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+  }
+
+  private scheduleReconnect() {
+    if (this.intentionalDisconnect) {
+      return;
+    }
+    const delay = Math.min(
+      RECONNECT_BASE_DELAY * Math.pow(2, this.reconnectAttempt),
+      RECONNECT_MAX_DELAY,
+    );
+    this.reconnectAttempt++;
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      if (this.intentionalDisconnect) {
+        return;
+      }
+      this.connectionState = TerminalConnectionState.Connecting;
+      this.onReconnectCallback?.();
+
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const url = `${proto}//${location.host}/api/terminal`;
+      const ws = new WebSocket(url);
+      this.ws = ws;
+
+      ws.onopen = () => this.handleOpen();
+      ws.onmessage = (event) => this.handleMessage(event);
+      ws.onerror = () => this.handleError();
+      ws.onclose = () => this.handleClose();
+    }, delay);
+  }
+
   private handleOpen() {
+    this.reconnectAttempt = 0;
     this.connectionState = TerminalConnectionState.Connected;
     this.onConnectedCallback?.();
   }
@@ -177,7 +234,12 @@ export class TerminalStore {
 
   private handleClose() {
     this.ws = null;
+    if (this.intentionalDisconnect) {
+      this.connectionState = TerminalConnectionState.Disconnected;
+      return;
+    }
     this.connectionState = TerminalConnectionState.Disconnected;
+    this.scheduleReconnect();
   }
 }
 

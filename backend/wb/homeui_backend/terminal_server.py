@@ -4,6 +4,7 @@ import fcntl
 import json
 import os
 import pty
+import signal
 import struct
 import termios
 
@@ -22,7 +23,7 @@ async def _create_pty_process():
     env = os.environ.copy()
     env["TERM"] = "xterm-256color"
     env["LANG"] = "en_US.UTF-8"
-можно     env.setdefault("HOME", "/root")
+    env.setdefault("HOME", "/root")
     proc = await asyncio.create_subprocess_exec(
         "/bin/bash",
         "--login",
@@ -34,6 +35,13 @@ async def _create_pty_process():
     )
     os.close(slave_fd)
     return master_fd, proc
+
+
+def _close_fd(fd):
+    try:
+        os.close(fd)
+    except OSError:
+        pass
 
 
 async def _read_pty_output(master_fd, websocket):
@@ -52,6 +60,11 @@ async def _read_pty_output(master_fd, websocket):
             await websocket.send(msg)
     except (OSError, websockets.exceptions.ConnectionClosed):
         pass
+
+
+async def _watch_process(proc, websocket):
+    await proc.wait()
+    await websocket.close(1000, "Shell exited")
 
 
 async def _idle_watchdog(activity_event, websocket):
@@ -90,15 +103,17 @@ async def _handle_messages(websocket, master_fd, activity_event):
 
 
 async def _cleanup_process(proc, master_fd):
-    try:
-        proc.terminate()
-        await proc.wait()
-    except ProcessLookupError:
-        pass
-    try:
-        os.close(master_fd)
-    except OSError:
-        pass
+    _close_fd(master_fd)
+    if proc.returncode is None:
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+        except (ProcessLookupError, OSError):
+            pass
+        try:
+            await asyncio.wait_for(proc.wait(), timeout=3)
+        except asyncio.TimeoutError:
+            proc.kill()
+            await proc.wait()
 
 
 async def terminal_handler(websocket):
@@ -111,6 +126,7 @@ async def terminal_handler(websocket):
     activity_event = asyncio.Event()
     reader_task = asyncio.create_task(_read_pty_output(master_fd, websocket))
     watchdog_task = asyncio.create_task(_idle_watchdog(activity_event, websocket))
+    process_task = asyncio.create_task(_watch_process(proc, websocket))
 
     try:
         await _handle_messages(websocket, master_fd, activity_event)
@@ -120,6 +136,7 @@ async def terminal_handler(websocket):
         active_connections.discard(websocket)
         reader_task.cancel()
         watchdog_task.cancel()
+        process_task.cancel()
         await _cleanup_process(proc, master_fd)
 
 

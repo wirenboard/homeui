@@ -75,6 +75,7 @@ export const TerminalContent = observer(() => {
             if (fitAddonRef.current) {
               fitAddonRef.current.fit();
             }
+            terminalStore.sendResize(terminal.cols, terminal.rows);
             terminal.focus();
           });
 

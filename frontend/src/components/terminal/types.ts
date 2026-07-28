@@ -13,7 +13,8 @@ export interface TerminalMessage {
 }
 
 export type PrivateKeys = 'ws' | 'onDataCallback' | 'onReconnectCallback' | 'onConnectedCallback'
-  | 'handleOpen' | 'handleMessage' | 'handleError' | 'handleClose';
+  | 'handleOpen' | 'handleMessage' | 'handleError' | 'handleClose'
+  | 'reconnectTimer' | 'reconnectAttempt' | 'intentionalDisconnect' | 'scheduleReconnect';
 
 export const KEY_MAP: Record<string, { key: string; code: string; keyCode: number }> = {
   tab: { key: 'Tab', code: 'Tab', keyCode: 9 },
