@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.245.2) stable; urgency=medium
+
+  * Exempt cloud tunnel requests from the service gate rate limit
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Thu, 30 Jul 2026 00:32:00 +0200
+
 wb-mqtt-homeui (2.245.0) stable; urgency=medium
 
   * Add sorting to text dashboards and devices
