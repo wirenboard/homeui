@@ -1,4 +1,4 @@
-import { makeObservable, observable, action, computed } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import { type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
@@ -22,7 +22,11 @@ export class NewDevicesScanPageStore {
     this.active = false;
     this.onLeave = onLeave;
 
-    makeObservable(this, { active: observable, select: action, stopScanning: action, devicesToModify: computed });
+    makeObservable(this, {
+      active: observable,
+      select: action,
+      stopScanning: action,
+    });
   }
 
   // Expected props structure
@@ -49,24 +53,24 @@ export class NewDevicesScanPageStore {
   select(configuredDevices: ConfiguredDevices) {
     this.configuredDevices = configuredDevices;
     this.active = true;
-    this.commonScanStore.startScanning(SelectionPolicy.Multiple, configuredDevices);
+    this.commonScanStore.startScanning(SelectionPolicy.Multiple, configuredDevices, {
+      matchConfiguredBySerialNumber: true,
+    });
   }
 
-  async onOk(confirmAddressChange: () => Promise<any>) {
+  async onOk(confirmAddressChange: (_devices: ScannedDevice[]) => Promise<any>) {
     try {
+      // Resolve address conflicts on a single selected-devices array and pass that same array on to
+      // addDevices, so the reassigned newAddress is never lost or mis-matched (e.g. when a device
+      // reports no serial number). The conflicting subset is handed to the confirm dialog through
+      // its payload, so this store keeps no transient UI state.
       const devices = this.commonScanStore.getSelectedDevices();
-      if (this.devicesToModify.length) {
-        const updatedDevices = await confirmAddressChange();
-        if (!updatedDevices) {
+      const devicesToModify = this._resolveDuplicateAddresses(devices);
+      if (devicesToModify.length) {
+        const confirmed = await confirmAddressChange(devicesToModify);
+        if (!confirmed) {
           return;
         }
-
-        devices.forEach((device) => {
-          const updatedDevice = updatedDevices.find((ud: any) => ud.sn === device.sn && ud.port === device.port);
-          if (updatedDevice && updatedDevice.newAddress) {
-            device.newAddress = updatedDevice.newAddress;
-          }
-        });
       }
       this.stopScanning();
       this?.onLeave(devices);
@@ -78,24 +82,6 @@ export class NewDevicesScanPageStore {
     this?.onLeave([]);
   }
 
-  get devicesToModify(): ScannedDevice[] {
-    const modbusAddressesSet = new ModbusAddressSet(this.configuredDevices.getUsedAddresses());
-    const devices = this.commonScanStore.getSelectedDevices();
-    const devicesWithDuplicateAddresses = devices.filter((device) => {
-      return !modbusAddressesSet.tryToAddUsedAddress(device.port, device.address);
-    });
-    const devicesToModify = [];
-    devicesWithDuplicateAddresses.forEach((scannedDevice: any) => {
-      const newAddress = modbusAddressesSet.fixAddress(scannedDevice.port, scannedDevice.address);
-      if (newAddress !== scannedDevice.address) {
-        scannedDevice.newAddress = newAddress;
-        devicesToModify.push(scannedDevice);
-      }
-    });
-
-    return devicesToModify;
-  }
-
   get isScanning() {
     return this.commonScanStore.isScanning;
   }
@@ -105,5 +91,27 @@ export class NewDevicesScanPageStore {
       this.commonScanStore.stopScanning();
     }
     this.active = false;
+  }
+
+  /**
+   * Assigns a new, non-conflicting address to every selected device whose address is already used
+   * (by the in-memory config or by another selected device). The new address is written onto the
+   * same object that onOk passes to addDevices, so the reassignment cannot be dropped. Returns the
+   * subset of devices that received a new address, for the confirmation dialog to display.
+   */
+  _resolveDuplicateAddresses(devices: Partial<ScannedDevice>[]): ScannedDevice[] {
+    const modbusAddressesSet = new ModbusAddressSet(this.configuredDevices.getUsedAddresses());
+    const devicesWithDuplicateAddresses = devices.filter((device) => {
+      return !modbusAddressesSet.tryToAddUsedAddress(device.port, device.address);
+    });
+    const devicesToModify: ScannedDevice[] = [];
+    devicesWithDuplicateAddresses.forEach((device) => {
+      const newAddress = modbusAddressesSet.fixAddress(device.port, device.address);
+      if (newAddress !== device.address) {
+        device.newAddress = newAddress;
+        devicesToModify.push(device as ScannedDevice);
+      }
+    });
+    return devicesToModify;
   }
 }
