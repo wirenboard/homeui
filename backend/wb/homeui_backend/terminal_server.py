@@ -24,6 +24,7 @@ async def _create_pty_process():
     env["TERM"] = "xterm-256color"
     env["LANG"] = "en_US.UTF-8"
     env.setdefault("HOME", "/root")
+    home = env["HOME"]
     proc = await asyncio.create_subprocess_exec(
         "/bin/bash",
         "--login",
@@ -32,6 +33,7 @@ async def _create_pty_process():
         stderr=slave_fd,
         preexec_fn=os.setsid,
         env=env,
+        cwd=home if os.path.isdir(home) else "/",
     )
     os.close(slave_fd)
     return master_fd, proc
