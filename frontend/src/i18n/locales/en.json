@@ -748,6 +748,18 @@
          "more-tabs": "More tabs"
       }
    },
+   "terminal": {
+      "title": "Console",
+      "status": {
+         "connected": "Connected",
+         "connecting": "Connecting…",
+         "disconnected": "Disconnected",
+         "error": "Error"
+      },
+      "buttons": {
+         "reconnect": "Reconnect"
+      }
+   },
    "logs":{
       "title": "Logs",
       "labels": {

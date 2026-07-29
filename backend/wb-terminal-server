@@ -1,0 +1,12 @@
+#!/usr/bin/env python3
+# pylint: disable=invalid-name
+
+import sys
+
+from wb.homeui_backend.terminal_server import run
+
+if __name__ == "__main__":
+    try:
+        sys.exit(run())
+    except KeyboardInterrupt:
+        pass
