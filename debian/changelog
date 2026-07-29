@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.245.0) stable; urgency=medium
+
+  * Add sorting to text dashboards and devices
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 29 Jul 2026 16:41:00 +0300
+
 wb-mqtt-homeui (2.244.0) stable; urgency=medium
 
   * Add terminal
@@ -299,7 +305,7 @@ wb-mqtt-homeui (2.235.3) stable; urgency=medium
 
   * Encode special characters in rule editor URLs
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 26 Jun 2026 13:2100 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 26 Jun 2026 13:21:00 +0300
 
 wb-mqtt-homeui (2.235.2) stable; urgency=medium
 

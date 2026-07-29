@@ -13,7 +13,9 @@
          "password-strength-4": "Strong password",
          "select-all": "Select all",
          "unselect-all": "Unselect all",
-         "setting-up-https": "Setting up HTTPS"
+         "setting-up-https": "Setting up HTTPS",
+         "columns": "Columns",
+         "columns-auto": "Auto"
       },
       "buttons": {
          "close": "Close",
@@ -33,7 +35,10 @@
          "expand": "Expand",
          "skip-to-main-content": "Skip to main content",
          "open-calendar": "Open calendar",
-         "back": "Back"
+         "back": "Back",
+         "edit-layout": "Edit layout",
+         "cancel-layout": "Cancel",
+         "save-layout": "Save"
       },
       "prompt": {
          "dirty": "The page has unsaved changes. Are you sure you want to leave?"

@@ -2,7 +2,6 @@
     border-radius: var(--container-border-radius);
     box-shadow: var(--container-box-shadow);
     margin-bottom: var(--content-gap);
-    max-width: 450px;
     width: 100%;
     transition: background ease 300ms, border ease 300ms, border-radius ease 300ms;
     display: inline-block;
