@@ -21,7 +21,7 @@
     min-width: 0;
 }
 
-.dali-busParam-editor .input {
+.dali-busParam-editor .input:not(.dali-color-temperature-slider-input) {
     width: 100%;
 }
 

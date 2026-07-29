@@ -1,8 +1,62 @@
-wb-mqtt-homeui (2.244.0) stable; urgency=medium
+wb-mqtt-homeui (2.245.0) stable; urgency=medium
 
   * Add sorting to text dashboards and devices
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 22 Jul 2026 12:03:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 29 Jul 2026 16:41:00 +0300
+
+wb-mqtt-homeui (2.244.0) stable; urgency=medium
+
+  * Add terminal
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 29 Jul 2026 12:02:00 +0300
+
+wb-mqtt-homeui (2.243.14) stable; urgency=medium
+
+  * Recreate wb-webui.conf and wb-homeui-backend.conf on startup if the existing file is empty
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Mon, 27 Jul 2026 12:00:00 +0300
+
+wb-mqtt-homeui (2.243.13) stable; urgency=medium
+
+  * Remove Wiren Board Cloud branding from Russian cloud status strings
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Tue, 28 Jul 2026 12:00:00 +0300
+
+wb-mqtt-homeui (2.243.12) stable; urgency=medium
+
+  * Fix History page not loading device topics on direct navigation
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 24 Jul 2026 17:12:00 +0300
+
+wb-mqtt-homeui (2.243.11) stable; urgency=medium
+
+  * Fix collapsing serial port selecting port tab instead of keeping device tab selected
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 24 Jul 2026 14:55:00 +0300
+
+wb-mqtt-homeui (2.243.10) stable; urgency=medium
+
+  * Fix duplicate devices created when re-scanning the serial bus after adding devices without saving
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Jul 2026 10:49:56 +0300
+
+wb-mqtt-homeui (2.243.9) stable; urgency=medium
+
+  * Add opt-in new json-schema-editor for configs via the wb-json-editor flag
+
+ -- Valeriy Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 22 Jul 2026 18:35:00 +0300
+
+wb-mqtt-homeui (2.243.8) stable; urgency=medium
+
+  * Update autocomplete snippet
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 22 Jul 2026 16:10:00 +0400
+
+wb-mqtt-homeui (2.243.7) stable; urgency=medium
+
+  * Fix collapsing colour temperature slider in DALI bus editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Jul 2026 15:41:44 +0500
 
 wb-mqtt-homeui (2.243.6) stable; urgency=medium
 

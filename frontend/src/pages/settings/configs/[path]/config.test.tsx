@@ -23,7 +23,7 @@ const { configsStoreMock, devicesStoreMock, preventLeaveMock } = vi.hoisted(() =
 }));
 
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
-vi.mock('@/stores/configs', () => ({ configsStore: configsStoreMock }));
+vi.mock('@/stores/configs', () => ({ configsStore: configsStoreMock, WB_JSON_EDITOR: 'wb-json-editor' }));
 vi.mock('@/stores/devices', () => ({ devicesStore: devicesStoreMock }));
 vi.mock('@/utils/async-action', () => ({
   useAsyncAction: (fn: any) => [fn, false],
@@ -68,6 +68,11 @@ vi.mock('@/components/json-editor', () => ({
         onClick={() => onChange({ changed: true }, ['err'])}
       />
     </div>
+  ),
+}));
+vi.mock('./json-schema-config-editor', () => ({
+  JsonSchemaConfigEditor: ({ schema }: any) => (
+    <div data-testid="json-schema-config-editor" data-schema={JSON.stringify(schema)} />
   ),
 }));
 
@@ -148,6 +153,24 @@ describe('ConfigPage', () => {
       JSON.stringify({ type: 'object' }),
     );
     expect(editor).toHaveAttribute('data-cells', JSON.stringify(['dev/ctrl']));
+  });
+
+  test('renders legacy JsonEditor when config editor is not wb-json-editor', () => {
+    renderPage();
+    expect(screen.getByTestId('json-editor')).toBeInTheDocument();
+    expect(screen.queryByTestId('json-schema-config-editor')).not.toBeInTheDocument();
+  });
+
+  test('renders new JsonSchemaConfigEditor when config opts in via editor wb-json-editor', () => {
+    configsStoreMock.config = {
+      configPath: '/etc/wb/test.conf',
+      editor: 'wb-json-editor',
+      schema: { type: 'object' },
+      content: { key: 'value' },
+    };
+    renderPage();
+    expect(screen.getByTestId('json-schema-config-editor')).toBeInTheDocument();
+    expect(screen.queryByTestId('json-editor')).not.toBeInTheDocument();
   });
 
   test('shows load error', async () => {

@@ -12,7 +12,7 @@ const { configsStoreMock, copyMock } = vi.hoisted(() => ({
 }));
 
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
-vi.mock('@/stores/configs', () => ({ configsStore: configsStoreMock }));
+vi.mock('@/stores/configs', () => ({ configsStore: configsStoreMock, WB_JSON_EDITOR: 'wb-json-editor' }));
 vi.mock('@/utils/clipboard', () => ({ copyToClipboard: copyMock }));
 vi.mock('@/layouts/page', () => ({
   PageLayout: ({ children, title, isLoading }: any) => (
@@ -123,6 +123,17 @@ describe('ConfigsPage', () => {
     expect(screen.getByTestId('config-row')).toHaveAttribute(
       'data-url',
       '/settings/configs/mbgate',
+    );
+  });
+
+  test('routes wb-json-editor configs by path, not to a dedicated route', () => {
+    configsStoreMock.configs = [
+      makeConfig({ editor: 'wb-json-editor', schemaPath: '/etc/wb/test.conf' }),
+    ];
+    render(<ConfigsPage />);
+    expect(screen.getByTestId('config-row')).toHaveAttribute(
+      'data-url',
+      '/settings/configs/~2Fetc~2Fwb~2Ftest.conf',
     );
   });
 

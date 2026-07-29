@@ -311,6 +311,9 @@ export class ConfigEditorPageStore {
     const jsonSchema = loadJsonSchema(await this.deviceTypesStore.getSchema(device.type));
     const deviceConfig = getDefaultValue(jsonSchema) ?? {};
     deviceConfig.slave_id = String(device.newAddress ? device.newAddress : device.address);
+    if (device.sn) {
+      deviceConfig.sn = device.sn;
+    }
     const deviceId = deviceConfig?.id || this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
     if (topics.has(deviceId)) {
       deviceConfig.id = deviceId + '_2';
