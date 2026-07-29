@@ -36,7 +36,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: 36px;
+    height: 36px;
     gap: 10px;
     padding-right: 12px;
     border-bottom: 1px solid var(--light-gray-color);
@@ -82,7 +82,6 @@
 .consolePanel-tabs li {
     height: fit-content;
     flex-shrink: 0;
-    border-top: 0;
     min-width: 0;
     overflow: hidden;
 }

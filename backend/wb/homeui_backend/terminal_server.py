@@ -5,13 +5,13 @@ import json
 import os
 import pty
 import signal
+import stat
 import struct
 import termios
 
 import websockets
 
-LISTEN_HOST = "127.0.0.1"
-LISTEN_PORT = 8765
+SOCKET_PATH = "/tmp/wb-homeui-terminal.socket"
 MAX_CONNECTIONS = 3
 IDLE_TIMEOUT = 1800  # 30 minutes
 
@@ -143,7 +143,10 @@ async def terminal_handler(websocket):
 
 
 async def main():
-    async with websockets.serve(terminal_handler, LISTEN_HOST, LISTEN_PORT):
+    if os.path.exists(SOCKET_PATH):
+        os.unlink(SOCKET_PATH)
+    async with websockets.unix_serve(terminal_handler, SOCKET_PATH):
+        os.chmod(SOCKET_PATH, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IWOTH)
         await asyncio.Future()
 
 
