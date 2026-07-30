@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.245.1) stable; urgency=medium
+
+  * Fix curl dependency (OpenSSL ENGINE support is broken in curl >= 8.14.0 and < 8.15.0)
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 30 Jul 2026 17:10:00 +0400
+
 wb-mqtt-homeui (2.245.0) stable; urgency=medium
 
   * Add sorting to text dashboards and devices
