@@ -88,6 +88,7 @@ def main():
     else:
         _error("Incorrect request body")
 
+    # pylint: disable=possibly-used-before-assignment
     with open(os.path.join(rw_dir, fname), "wb") as fp_save:  # wb-watch-update triggers on fd close
         for chunk in to_chunks(fp_upload):
             fp_save.write(chunk)

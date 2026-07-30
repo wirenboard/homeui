@@ -14,7 +14,7 @@ class Config:
 
     def __init__(self, users_storage: UsersStorage):
         self.enable_https = False
-        if os.path.exists(CONFIG_FILE):
+        if os.path.exists(CONFIG_FILE) and os.path.getsize(CONFIG_FILE) > 0:
             self._read_config(users_storage)
         else:
             self._create_config(users_storage)
