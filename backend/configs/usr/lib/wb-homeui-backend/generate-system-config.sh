@@ -2,8 +2,6 @@
 
 CONFFILE="/etc/wb-webui.conf"
 
-# -s: a config that exists but is empty (e.g. after a power cut during
-# write) must be re-seeded as if it were missing
 [ -s "$CONFFILE" ] && exit 0
 
 . /usr/lib/wb-utils/wb_env.sh
