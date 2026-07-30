@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.208.1-wb102) stable; urgency=medium
+
+  * Recreate configs on startup if the existing file is empty
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 30 Jul 2026 11:05:54 +0300
+
 wb-mqtt-homeui (2.208.1-wb101) stable; urgency=medium
 
   * Fix history dropdown width
