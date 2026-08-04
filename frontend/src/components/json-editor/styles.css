@@ -247,7 +247,7 @@
 
 .json-editor .nav:not(.nav-stacked) li:has(a[aria-selected="true"]) {
   position: relative;
-  background: var(--text-color);
+  background: var(--container-background);
   font-weight: bold;
 }
 

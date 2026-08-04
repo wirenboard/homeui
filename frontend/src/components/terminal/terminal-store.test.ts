@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+
 import { TerminalStore } from './terminal-store';
 import { TerminalConnectionState } from './types';
 

@@ -88,4 +88,6 @@
     --nav-status-color: #fff;
     --nav-toggle-bg: rgb(50 61 101);
     --nav-toggle-text-color: var(--nav-text-color);
+
+    .toggle-switchy > input[disabled] + .toggle {opacity:1;}
 }
