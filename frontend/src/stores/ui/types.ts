@@ -27,3 +27,10 @@ export interface CustomMenuItem {
   requiredRole?: UserRole;
   children?: CustomMenuItem[];
 }
+
+export enum Theme {
+  Light = 'light',
+  Dark = 'dark',
+  System = 'system',
+  Bootstrap = 'bootstrap',
+}

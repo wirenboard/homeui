@@ -6,14 +6,14 @@ import { type Option } from '@/components/dropdown';
 import { BooleanField, FormButtonGroup, FormFieldGroup, OptionsField, StringField } from '@/components/form';
 import { authStore, UserRole } from '@/stores/auth';
 import { dashboardsStore } from '@/stores/dashboards';
-import { uiStore } from '@/stores/ui';
+import { Theme, uiStore } from '@/stores/ui';
 
 const CommonSettings = observer(() => {
   const { t, i18n } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
   const [showPageInTitle, setShowPageInTitle] = useState(uiStore.showPageInTitle);
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
-  const [theme, setTheme] = useState(uiStore.theme);
+  const [theme, setTheme] = useState<Theme>(uiStore.theme);
   const [defaultDashboardId, setDefaultDashboardId] = useState('');
   const [description, setDescription] = useState('');
   const [isShowWidgetsPage, setIsShowWidgetsPage] = useState(false);
@@ -32,11 +32,11 @@ const CommonSettings = observer(() => {
     { label: 'Русский', value: 'ru' },
   ];
 
-  const themeOptions: Option<string>[] = [
-    { label: t('web-ui-settings.labels.theme-light'), value: 'light' },
-    { label: t('web-ui-settings.labels.theme-dark'), value: 'dark' },
-    { label: t('web-ui-settings.labels.theme-system'), value: 'system' },
-    { label: 'Bootstrap', value: 'bootstrap' },
+  const themeOptions: Option<Theme>[] = [
+    { label: t('web-ui-settings.labels.theme-light'), value: Theme.Light },
+    { label: t('web-ui-settings.labels.theme-dark'), value: Theme.Dark },
+    { label: t('web-ui-settings.labels.theme-system'), value: Theme.System },
+    { label: 'Bootstrap', value: Theme.Bootstrap },
   ];
 
   const applyHandler = async () => {

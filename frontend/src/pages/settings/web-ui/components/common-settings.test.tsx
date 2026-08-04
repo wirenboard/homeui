@@ -30,7 +30,10 @@ vi.mock('@/stores/auth', () => ({
   UserRole: { Operator: 'operator' },
 }));
 vi.mock('@/stores/dashboards', () => ({ dashboardsStore: dashMock }));
-vi.mock('@/stores/ui', () => ({ uiStore: uiMock }));
+vi.mock('@/stores/ui', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return { ...actual, uiStore: uiMock };
+});
 vi.mock('@/components/button', () => ({
   Button: ({ label, onClick }: any) => (
     <button onClick={onClick}>{label}</button>

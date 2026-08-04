@@ -291,6 +291,7 @@
 
 .consolePanel-logWarn {
     background: var(--alert-warn-background);
+    color: var(--alert-warn-color);
 }
 
 .consolePanel-logDebug {
@@ -307,4 +308,5 @@
     padding: 2px 12px;
     white-space: pre-wrap;
     border-bottom: 1px solid var(--border-color);
+    font-family: monospace;
 }

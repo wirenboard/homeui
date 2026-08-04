@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+/* eslint-disable max-lines */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { dashboardsStore } from '@/stores/dashboards';
 import { authStoreMock } from '@/test/mocks/auth-store';

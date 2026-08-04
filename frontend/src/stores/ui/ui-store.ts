@@ -4,13 +4,15 @@ import { authStore } from '@/stores/auth';
 import type { Dashboard } from '@/stores/dashboards';
 import { getMenu } from './api';
 import { getMenuItems, mergeMenuItems, normalizeMenuResponse, toMenuItemInstance } from './menu-items';
-import type { CustomMenuItem, MenuItemInstance } from './types';
+import { type CustomMenuItem, type MenuItemInstance, Theme } from './types';
 
 export default class UiStore {
   public isConnected = false;
   public isSettingUpHttps = true;
   public menuItems: MenuItemInstance[] = [];
-  public theme: string = localStorage.getItem('theme') ?? 'light';
+  public theme: Theme = Object.values(Theme).includes(localStorage.getItem('theme') as Theme)
+    ? localStorage.getItem('theme') as Theme
+    : Theme.Light;
   public modules: string[] = [];
   public currentPageTitle: string = '';
   public showPageInTitle: boolean = localStorage.getItem('show-page-in-title') !== 'false';
@@ -21,7 +23,7 @@ export default class UiStore {
     makeAutoObservable(this, {}, { autoBind: true });
     this.#applyResolvedTheme();
     this.#systemThemeQuery.addEventListener('change', () => {
-      if (this.theme === 'system') {
+      if (this.theme === Theme.System) {
         this.#applyResolvedTheme();
       }
     });
@@ -36,29 +38,29 @@ export default class UiStore {
   async buildMenu(dashboards: Dashboard[], isShowWidgetsPage: boolean, params: URLSearchParams) {
     const { hasRights } = authStore;
 
-    const commontems = getMenuItems(dashboards, isShowWidgetsPage, params, hasRights);
+    const commonItems = getMenuItems(dashboards, isShowWidgetsPage, params, hasRights);
     const customItems = await this.#getCustomMenuItems();
 
     runInAction(() => {
-      this.menuItems = mergeMenuItems(commontems, customItems);
+      this.menuItems = mergeMenuItems(commonItems, customItems);
     });
   }
 
-  setTheme(theme: string) {
+  setTheme(theme: Theme) {
     localStorage.setItem('theme', theme);
     this.theme = theme;
     this.#applyResolvedTheme();
   }
 
-  get resolvedTheme(): 'light' | 'dark' {
-    return this.theme === 'system'
-      ? (this.#systemThemeQuery.matches ? 'dark' : 'light')
-      : this.theme === 'dark' ? 'dark' : 'light';
+  get resolvedTheme(): Theme {
+    return this.theme === Theme.System
+      ? (this.#systemThemeQuery.matches ? Theme.Dark : Theme.Light)
+      : this.theme === Theme.Dark ? Theme.Dark : Theme.Light;
   }
 
   #applyResolvedTheme() {
-    const theme = this.theme === 'system'
-      ? (this.#systemThemeQuery.matches ? 'dark' : 'light')
+    const theme = this.theme === Theme.System
+      ? (this.#systemThemeQuery.matches ? Theme.Dark : Theme.Light)
       : this.theme;
     document.documentElement.setAttribute('data-theme', theme);
   }

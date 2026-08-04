@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
@@ -125,7 +126,7 @@ export const PageLayout = ({
           isLoading && !loadingOptions?.overlay
             ? <PageLoader options={loadingOptions} />
             : (
-              <div className="page-contentWrapper">
+              <div className={classNames('page-contentWrapper', { 'page-contentWrapperSticky': stickyHeader })}>
                 {isLoading && loadingOptions?.overlay && (
                   <div className="page-overlay">
                     <Loader />

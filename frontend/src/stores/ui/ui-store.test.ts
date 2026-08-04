@@ -1,5 +1,7 @@
 // @vitest-environment happy-dom
+/* eslint-disable max-lines */
 import { authStore, type UserRole } from '@/stores/auth';
+import { Theme } from '@/stores/ui/types';
 import { getMenu } from './api';
 import { normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
 import UiStore from './ui-store';
@@ -47,21 +49,21 @@ describe('UiStore', () => {
 
   describe('setTheme', () => {
     test('sets theme and persists', () => {
-      store.setTheme('dark');
-      expect(store.theme).toBe('dark');
-      expect(setItemMock).toHaveBeenCalledWith('theme', 'dark');
+      store.setTheme(Theme.Dark);
+      expect(store.theme).toBe(Theme.Dark);
+      expect(setItemMock).toHaveBeenCalledWith('theme', Theme.Dark);
     });
   });
 
   describe('constructor', () => {
     test('reads theme from localStorage', () => {
-      getItemMock.mockReturnValue('dark');
+      getItemMock.mockReturnValue(Theme.Dark);
       const s = new UiStore();
-      expect(s.theme).toBe('dark');
+      expect(s.theme).toBe(Theme.Dark);
     });
 
     test('defaults to light', () => {
-      expect(store.theme).toBe('light');
+      expect(store.theme).toBe(Theme.Light);
     });
   });
 

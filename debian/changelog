@@ -1,3 +1,13 @@
+wb-mqtt-homeui (2.245.3) stable; urgency=medium
+
+  * Fix scroll on logs page: filters stick at the top, only log entries scroll
+  * Fix active tab background in JSON editor (config pages)
+  * Improve disabled switch contrast in dark theme
+  * Use monospace font in console panel update component
+  * Validate theme value from localStorage against Theme enum
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 04 Aug 2026 12:52:00 +0300
+
 wb-mqtt-homeui (2.245.2) stable; urgency=medium
 
   * Let cloud tunnels through service gates from loopback
