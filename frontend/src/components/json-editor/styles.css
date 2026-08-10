@@ -132,6 +132,12 @@
   background: var(--input-background);
 }
 
+.json-editor select:disabled {
+  background: var(--input-background-disabled);
+  color: var(--gray-color);
+  cursor: not-allowed;
+}
+
 .json-editor input[type="text"],
 .json-editor input[type="number"] {
   width: 100%;

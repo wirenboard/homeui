@@ -174,7 +174,8 @@
 }
 
 .dropdown__control--is-disabled {
-  background-color: var(--border-color);
+  background-color: var(--input-background-disabled);
+  cursor: not-allowed;
 }
 
 .dropdown__menu-notice {

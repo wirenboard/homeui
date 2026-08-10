@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.245.4) stable; urgency=medium
+
+  * Fix disabled input background
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 10 Aug 2026 16:47:00 +0300
+
 wb-mqtt-homeui (2.245.3) stable; urgency=medium
 
   * Fix scroll on logs page: filters stick at the top, only log entries scroll
