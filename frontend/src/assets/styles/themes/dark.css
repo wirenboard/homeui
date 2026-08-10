@@ -39,7 +39,7 @@
     --input-action-background: var(--primary-color);
     --input-active-shadow: 0 0 0 2px #1d1e2e, 0 0 0 4px var(--primary-color);
     --input-background: rgb(50 61 101);
-    --input-background-disabled: var(--border-color);
+    --input-background-disabled: rgb(63 68 82);
     --input-color: #fff;
     --input-border-color: var(--light-gray-color);
     --input-border-radius: 8px;
