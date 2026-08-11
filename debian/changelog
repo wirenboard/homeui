@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.245.6) stable; urgency=medium
+
+  * Fix channel patterns like +/+ disappearing from MQTT history settings
+  * Show "Nothing found" in dropdowns instead of an empty box
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 11 Aug 2026 17:01:00 +0300
+
 wb-mqtt-homeui (2.245.5) stable; urgency=medium
 
   * Fix cell fraction after zero
