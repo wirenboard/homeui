@@ -53,6 +53,7 @@ class DeleteUserHandlerTest(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
             session=Session(
                 "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
             ),
@@ -109,6 +110,7 @@ class GetUsersHandlerTests(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
             session=session,
         )
 
@@ -136,6 +138,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
         )
 
     def test_no_required_user_type_no_user_without_users(self):
@@ -215,6 +218,7 @@ class DashboardsAuthorizationTest(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
         )
 
     def _check(self, required: str, user_type: UserType) -> int:
@@ -248,6 +252,7 @@ class WhoAmIHandlerTests(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
         )
 
     def test_with_authenticated_user(self):
@@ -291,6 +296,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
         )
 
     def test_device_info_handler(self):
@@ -341,6 +347,7 @@ class UpdateUserHandlerTest(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
         )
 
     def test_bad_url(self):
@@ -497,6 +504,7 @@ class SecurityCheckHandlerTest(unittest.TestCase):
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
             session=None,
         )
 

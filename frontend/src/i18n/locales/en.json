@@ -993,11 +993,17 @@
          "getting-https-cert-status": "Getting HTTPS certificate status...",
          "https-cert-valid": "HTTPS certificate is valid",
          "https-cert-requesting": "Requesting HTTPS certificate",
-         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet"
+         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet",
+         "panels-settings": "Panels",
+         "upload-font": "Upload font",
+         "delete-font": "Delete",
+         "no-fonts": "No fonts uploaded",
+         "fonts": "Fonts for SVG dashboards"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
-         "get-https-status": "Failed to get HTTPS status: {{error}}"
+         "get-https-status": "Failed to get HTTPS status: {{error}}",
+         "font-upload": "Font upload failed"
       }
    },
    "mqtt": {

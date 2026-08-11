@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CommonSettings from './common-settings';
+import { CommonSettings } from './common';
 
 const { authMock, dashMock, uiMock } = vi.hoisted(() => ({
   authMock: { hasRights: vi.fn(() => true) },
@@ -112,20 +112,9 @@ describe('CommonSettings', () => {
     expect(screen.getByText('English')).toBeDefined();
   });
 
-  test('renders default dashboard selector with non-hidden dashboards', () => {
-    render(<CommonSettings />);
-    const sel = screen.getByTestId(
-      'opt-web-ui-settings.labels.default-dashboard',
-    ) as HTMLSelectElement;
-    const opts = Array.from(sel.querySelectorAll('option'));
-    expect(opts.map((o) => o.textContent)).toContain('Main');
-    expect(opts.map((o) => o.textContent)).not.toContain('Hidden');
-  });
-
   test('renders boolean fields', () => {
     render(<CommonSettings />);
     expect(screen.getByTestId('bool-web-ui-settings.labels.show-page-in-title')).toBeDefined();
-    expect(screen.getByTestId('bool-web-ui-settings.labels.show-widgets-page')).toBeDefined();
     expect(screen.getByTestId('bool-web-ui-settings.labels.show-system-devices')).toBeDefined();
   });
 
@@ -165,9 +154,7 @@ describe('CommonSettings', () => {
     fireEvent.click(screen.getByText('common.buttons.apply'));
     await waitFor(() => {
       expect(uiMock.setShowPageInTitle).toHaveBeenCalledWith(true);
-      expect(dashMock.setDefaultDashboardId).toHaveBeenCalled();
       expect(dashMock.setDescription).toHaveBeenCalled();
-      expect(dashMock.setIsShowWidgetsPage).toHaveBeenCalled();
     });
   });
 
@@ -177,12 +164,4 @@ describe('CommonSettings', () => {
     expect(input.value).toBe('My Controller');
   });
 
-  test('dashboard selector disabled while store loading', () => {
-    dashMock.isLoading = true;
-    render(<CommonSettings />);
-    const sel = screen.getByTestId(
-      'opt-web-ui-settings.labels.default-dashboard',
-    ) as HTMLSelectElement;
-    expect(sel.disabled).toBe(true);
-  });
 });

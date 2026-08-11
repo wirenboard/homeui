@@ -43,7 +43,9 @@ class DashboardHandlerFixture(unittest.TestCase):
             "certificate_thread": MagicMock(),
             "security_check_thread": MagicMock(),
         }
-        self.context = WebRequestHandlerContext(**placeholder_deps, dashboards_store=self.store)
+        self.context = WebRequestHandlerContext(
+            **placeholder_deps, dashboards_store=self.store, fonts_store=MagicMock()
+        )
 
 
 class GetDashboardsHandlerTest(DashboardHandlerFixture):
