@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.245.8) stable; urgency=medium
+
+  * Fix DALI bus monitor showing a reply that never arrived or arrived corrupted as a
+    successful value: "no response" and framing errors are now marked as errors
+  * Keep 2000 lines in the DALI bus monitor instead of 500
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 12 Aug 2026 15:31:07 +0500
+
 wb-mqtt-homeui (2.245.7) stable; urgency=medium
 
   * Fix broken result of DALI manual commands for which the absence of a reply is itself
