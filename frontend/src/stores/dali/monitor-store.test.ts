@@ -84,15 +84,15 @@ describe('MonitorStore', () => {
       expect(store.logs).toEqual(['msg1', 'msg2']);
     });
 
-    test('caps at 500 messages', () => {
+    test('caps at 2000 messages', () => {
       store.enableMonitoring('bus1');
       const handler = mqttClientMock.addStickySubscription.mock.calls[0][1];
-      for (let i = 0; i < 501; i++) {
+      for (let i = 0; i < 2001; i++) {
         handler({ payload: `msg${i}` });
       }
-      expect(store.logs).toHaveLength(500);
+      expect(store.logs).toHaveLength(2000);
       expect(store.logs[0]).toBe('msg1');
-      expect(store.logs[499]).toBe('msg500');
+      expect(store.logs[1999]).toBe('msg2000');
     });
   });
 });

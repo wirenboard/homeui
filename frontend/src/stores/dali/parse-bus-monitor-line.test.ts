@@ -19,6 +19,37 @@ describe('parseBusMonitorLine', () => {
     expect(f.response.kind).toBe('none');
   });
 
+  it('reads "no response" as an error, not as a hex + value pair', () => {
+    const f = parseBusMonitorLine('12:34:56.870 >> 0191 QueryControlGearPresent(A0) - no response');
+    expect(f.command).toBe('QueryControlGearPresent(A0)');
+    expect(f.response).toEqual({ kind: 'error', text: 'no response' });
+  });
+
+  it('keeps a frameless decoded answer whole instead of splitting it into hex and value', () => {
+    const f = parseBusMonitorLine('12:34:56.870 >> 0191 QueryControlGearPresent(A0) - False');
+    expect(f.response).toEqual({ kind: 'value', text: 'False', value: 'False' });
+  });
+
+  it('splits a multi-word decoded answer only after its backward-packet hex', () => {
+    const f = parseBusMonitorLine(
+      '22:26:26.266 >> 01202f FF24.F32.QueryFeedbackCapability(A0, I0) - 0001 visible feedback',
+    );
+    expect(f.command).toBe('FF24.F32.QueryFeedbackCapability(A0, I0)');
+    expect(f.response).toEqual({
+      kind: 'value', text: '0001 visible feedback', hex: '0001', value: 'visible feedback',
+    });
+  });
+
+  it('treats a corrupt reply as an error in either python-dali wording, not as a value', () => {
+    const parenthesised = parseBusMonitorLine('16:14:01.491 >> bb00 QueryShortAddress - 0000 (framing error)');
+    expect(parenthesised.response).toEqual({ kind: 'error', text: '0000 (framing error)' });
+
+    const bitmap = parseBusMonitorLine(
+      '16:14:01.491 >> a390 QueryStatus(A5) - 00ff response received with framing error',
+    );
+    expect(bitmap.response.kind).toBe('error');
+  });
+
   it('request with an error response', () => {
     const f = parseBusMonitorLine('12:34:56.950 >> a3fa QueryActualLevel(A5) - no power on bus');
     expect(f.command).toBe('QueryActualLevel(A5)');
