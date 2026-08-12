@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.245.7) stable; urgency=medium
+
+  * Fix broken result of DALI manual commands for which the absence of a reply is itself
+    an answer: such commands now show "no response" plus the decoded value
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 12 Aug 2026 12:47:16 +0500
+
 wb-mqtt-homeui (2.245.6) stable; urgency=medium
 
   * Fix channel patterns like +/+ disappearing from MQTT history settings
