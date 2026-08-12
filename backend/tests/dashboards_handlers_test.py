@@ -3,6 +3,7 @@ import unittest
 from email.utils import formatdate
 from unittest.mock import MagicMock
 
+from tests.handler_helpers import make_placeholder_context_deps
 from wb.homeui_backend.dashboards import DashboardsStore, DashboardWriteOutcome
 from wb.homeui_backend.http_response import response_200, response_400, response_404
 from wb.homeui_backend.main import (
@@ -33,18 +34,8 @@ class DashboardHandlerFixture(unittest.TestCase):
         self.request.headers = {}
         self.store = MagicMock(spec=DashboardsStore)
         self.store.get_config_mtime.return_value = CONFIG_MTIME
-        # These handlers only touch dashboards_store; the other context deps are placeholder
-        # mocks. Built from a single mapping (then keyword-expanded) so the construction matches
-        # the rest of the suite without textually duplicating its setUp boilerplate.
-        placeholder_deps = {
-            "sn": "",
-            "users_storage": MagicMock(),
-            "sessions_storage": MagicMock(),
-            "certificate_thread": MagicMock(),
-            "security_check_thread": MagicMock(),
-        }
         self.context = WebRequestHandlerContext(
-            **placeholder_deps, dashboards_store=self.store, fonts_store=MagicMock()
+            **make_placeholder_context_deps(), dashboards_store=self.store, fonts_store=MagicMock()
         )
 
 

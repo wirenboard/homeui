@@ -2,6 +2,7 @@ import json
 import unittest
 from unittest.mock import MagicMock
 
+from tests.handler_helpers import make_placeholder_context_deps
 from wb.homeui_backend.fonts import FontsStore
 from wb.homeui_backend.http_response import response_404
 from wb.homeui_backend.main import (
@@ -17,15 +18,9 @@ class FontHandlerFixture(unittest.TestCase):
         self.request = MagicMock()
         self.request.headers = {}
         self.store = MagicMock(spec=FontsStore)
-        placeholder_deps = {
-            "sn": "",
-            "users_storage": MagicMock(),
-            "sessions_storage": MagicMock(),
-            "certificate_thread": MagicMock(),
-            "security_check_thread": MagicMock(),
-            "dashboards_store": MagicMock(),
-        }
-        self.context = WebRequestHandlerContext(**placeholder_deps, fonts_store=self.store)
+        self.context = WebRequestHandlerContext(
+            **make_placeholder_context_deps(), dashboards_store=MagicMock(), fonts_store=self.store
+        )
 
 
 class GetFontsHandlerTest(FontHandlerFixture):

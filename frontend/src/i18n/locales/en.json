@@ -413,7 +413,8 @@
          "text": "text",
          "path": "path",
          "circle": "circle",
-         "rect": "rectangle"
+         "rect": "rectangle",
+         "font-hint": "SVG contains font styles. You can upload custom fonts in <0>web interface settings</0>"
       },
       "buttons": {
          "save": "Save",

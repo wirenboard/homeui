@@ -645,17 +645,20 @@ def get_fonts_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandl
     return response_200([["Content-type", "application/json"]], json.dumps(fonts))
 
 
-def _parse_multipart_file(request: BaseHTTPRequestHandler) -> Optional[tuple[str, bytes]]:
-    """Extract (filename, data) from a multipart/form-data upload, or None on failure."""
-    content_type = request.headers.get("Content-Type", "")
+def _extract_boundary(content_type: str) -> Optional[str]:
     if "multipart/form-data" not in content_type:
         return None
     for param in content_type.split(";"):
         param = param.strip()
         if param.startswith("boundary="):
-            boundary = param[len("boundary=") :]
-            break
-    else:
+            return param[len("boundary=") :]
+    return None
+
+
+def _parse_multipart_file(request: BaseHTTPRequestHandler) -> Optional[tuple[str, bytes]]:
+    """Extract (filename, data) from a multipart/form-data upload, or None on failure."""
+    boundary = _extract_boundary(request.headers.get("Content-Type", ""))
+    if boundary is None:
         return None
 
     length = int(request.headers.get("Content-Length", 0))
