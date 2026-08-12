@@ -566,6 +566,7 @@ class RequestHandlerRateLimitKeyTest(unittest.TestCase):
         handler.certificate_thread = MagicMock()
         handler.security_check_thread = MagicMock()
         handler.dashboards_store = MagicMock()
+        handler.fonts_store = MagicMock()
         handler.sn = ""
         return handler
 
