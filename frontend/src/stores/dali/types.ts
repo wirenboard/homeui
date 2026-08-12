@@ -160,7 +160,11 @@ export interface SendCommandParams {
 }
 
 export interface SendCommandResponseValue {
-  raw: number;
+  /**
+   * Absent or null for commands where the absence of a reply is itself an answer: there is no
+   * backward frame to show the raw bytes of, while `value` still holds the decoded answer.
+   */
+  raw?: number | null;
   value: string;
 }
 
