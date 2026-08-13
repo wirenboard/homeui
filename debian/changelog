@@ -1,8 +1,14 @@
+wb-mqtt-homeui (2.245.10) stable; urgency=medium
+
+  * Fix create first user logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 13 Aug 2026 12:35:00 +0300
+
 wb-mqtt-homeui (2.245.9) stable; urgency=medium
 
   * Fix create first user flow without setup https
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 11 Aug 2026 12:35:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 12 Aug 2026 17:14:00 +0300
 
 wb-mqtt-homeui (2.245.8) stable; urgency=medium
 

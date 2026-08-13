@@ -100,9 +100,14 @@ vi.mock('@/components/dropdown', () => ({
     </select>
   ),
 }));
+vi.mock('@/components/alert', () => ({
+  Alert: ({ variant, children }: any) => (
+    <div data-testid="alert" data-variant={variant}>{children}</div>
+  ),
+}));
 vi.mock('@/pages/settings/users/components/edit-user', () => ({
-  EditUserModal: ({ user, onSave, onCancel }: any) => (
-    <div data-testid="edit-modal">
+  EditUserModal: ({ user, isFirstUser, onSave, onCancel }: any) => (
+    <div data-testid="edit-modal" data-first-user={isFirstUser}>
       <span data-testid="edit-user-login">{user?.login || 'new'}</span>
       <button
         data-testid="modal-save"
@@ -268,5 +273,39 @@ describe('UsersPage', () => {
     storeMock.errors = [{ variant: 'danger', text: 'Some error' }];
     render(<UsersPage />);
     expect(screen.getByText('Some error')).toBeDefined();
+  });
+
+  test('shows empty list alert when no users', () => {
+    storeMock.users = [];
+    render(<UsersPage />);
+    const alert = screen.getByTestId('alert');
+    expect(alert.getAttribute('data-variant')).toBe('info');
+    expect(alert.textContent).toBe('users.labels.empty-list');
+  });
+
+  test('hides table and autologin when no users', () => {
+    storeMock.users = [];
+    render(<UsersPage />);
+    expect(screen.queryByText('users.labels.login')).toBeNull();
+    expect(screen.queryByTestId('autologin-dropdown')).toBeNull();
+  });
+
+  test('passes isFirstUser to EditUserModal when users not configured', async () => {
+    storeMock.users = [];
+    authMock.areUsersConfigured = false;
+    storeMock.confirmSetupHttps.mockResolvedValue(true);
+    render(<UsersPage />);
+    fireEvent.click(screen.getByText('users.buttons.add'));
+    await waitFor(() => {
+      const modal = screen.getByTestId('edit-modal');
+      expect(modal.getAttribute('data-first-user')).toBe('true');
+    });
+  });
+
+  test('does not pass isFirstUser when users already configured', () => {
+    render(<UsersPage />);
+    fireEvent.click(screen.getByText('users.buttons.add'));
+    const modal = screen.getByTestId('edit-modal');
+    expect(modal.getAttribute('data-first-user')).toBe('false');
   });
 });
