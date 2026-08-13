@@ -62,7 +62,6 @@ const UsersPage = observer(() => {
           aria-haspopup="dialog"
           onClick={async () => {
             if (!authStore.areUsersConfigured) {
-              setEditedUser({ readOnly: true });
               if (!await store.confirmSetupHttps()) {
                 return;
               }
@@ -157,10 +156,23 @@ const UsersPage = observer(() => {
         width={650}
         isOpened={isOpened}
         heading={t('users.labels.https')}
-        acceptLabel={t('users.buttons.enable-https')}
-        cancelLabel={t('users.buttons.use-http')}
-        closeCallback={handleClose}
-        confirmCallback={handleConfirm}
+        closeCallback={() => handleClose()}
+        footerActions={
+          <>
+            <Button
+              className="confirm-action"
+              label={t('users.buttons.use-http')}
+              variant="secondary"
+              onClick={() => handleConfirm('http')}
+            />
+            <Button
+              className="confirm-action"
+              label={t('users.buttons.enable-https')}
+              variant="primary"
+              onClick={() => handleConfirm('https')}
+            />
+          </>
+        }
       >
         {t('users.labels.enable-https-warning', {
           domain: store.httpsDomainName,

@@ -2,8 +2,7 @@ import { type AxiosError } from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
 import { authStore, UserRole, type User } from '@/stores/auth';
-import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/https-utils';
-import { request } from '@/utils/request';
+import { getDeviceInfo, makeHttpsUrlOrigin, setupHttps } from '@/utils/https-utils';
 
 function sortUsers(users: User[]) {
   users.sort((a, b) => {
@@ -20,7 +19,7 @@ class UsersPageStore {
   public httpsDomainName = '';
   public autologinUser = null;
   public autologinOptions = [];
-  public showEnableHttpsConfirmModal: () => Promise<boolean>;
+  public showEnableHttpsConfirmModal: () => Promise<string | null>;
 
   constructor() {
     makeAutoObservable(this);
@@ -125,13 +124,17 @@ class UsersPageStore {
     if (location.protocol === 'https:') {
       return true;
     }
-    if (!await this.showEnableHttpsConfirmModal()) {
+    const choice = await this.showEnableHttpsConfirmModal();
+    if (!choice) {
+      return false;
+    }
+    if (choice === 'http') {
       return true;
     }
     this.errors = [];
 
     try {
-      await request.patch('/api/https', { enabled: true });
+      await setupHttps(true);
       location.reload();
       return false;
     } catch (error) {
