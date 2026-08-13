@@ -75,6 +75,14 @@ The structure of the JSON-file
 ]
 ```
 
+## Custom fonts
+
+Custom fonts (`.ttf`, `.woff`, `.woff2`, `.otf`) can be uploaded through the web interface
+(Settings → Web UI → Fonts) for use in SVG dashboards.
+
+Fonts are stored in `/var/lib/wb-homeui/fonts/` and persisted across firmware updates via
+`wb_move` (the directory is symlinked into `/mnt/data` after the next reboot).
+
 ## Developer documentation
 
 - [JSON Schema editor](frontend/src/components/json-schema-editor/README.md) — homeui's own
