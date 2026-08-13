@@ -206,4 +206,28 @@ describe('EditUserModal', () => {
       expect.objectContaining({ type: 'admin' }),
     );
   });
+
+  test('isFirstUser forces admin type and disables dropdown', () => {
+    render(<EditUserModal {...defaultProps} isFirstUser />);
+    const typeSelect = screen.getByTestId('type-select') as HTMLSelectElement;
+    expect(typeSelect.value).toBe('admin');
+    expect(typeSelect.disabled).toBe(true);
+  });
+
+  test('isFirstUser saves with admin type', () => {
+    render(<EditUserModal {...defaultProps} isFirstUser />);
+    fireEvent.change(screen.getByTestId('login-input'), {
+      target: { value: 'first' },
+    });
+    fireEvent.change(screen.getByTestId('pwd-new-password'), {
+      target: { value: 'pass' },
+    });
+    fireEvent.change(screen.getByTestId('pwd-off'), {
+      target: { value: 'pass' },
+    });
+    fireEvent.click(screen.getByTestId('save-btn'));
+    expect(defaultProps.onSave).toHaveBeenCalledWith({
+      login: 'first', password: 'pass', type: 'admin',
+    });
+  });
 });
