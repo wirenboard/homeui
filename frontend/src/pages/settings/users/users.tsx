@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { documentation } from '@/common/links';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
@@ -71,80 +72,89 @@ const UsersPage = observer(() => {
         />
       }
     >
-      <Table>
-        <TableRow isHeading>
-          <TableCell width="50%">
-            {t('users.labels.login')}
-          </TableCell>
-          <TableCell width="50%">
-            {t('users.labels.type')}
-          </TableCell>
-          <TableCell width={100} />
-        </TableRow>
+      {store.users.length ? (
+        <>
+          <Table>
+            <TableRow isHeading>
+              <TableCell width="50%">
+                {t('users.labels.login')}
+              </TableCell>
+              <TableCell width="50%">
+                {t('users.labels.type')}
+              </TableCell>
+              <TableCell width={100} />
+            </TableRow>
 
-        {store.users.map((user) => (
-          <TableRow key={user.id}>
-            <TableCell ellipsis>
-              <span id={`username-${user.login}`}>{user.login}</span>
-            </TableCell>
+            {store.users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell ellipsis>
+                  <span id={`username-${user.login}`}>{user.login}</span>
+                </TableCell>
 
-            <TableCell>
-              {t('users.labels.' + user.type)}
-            </TableCell>
+                <TableCell>
+                  {t('users.labels.' + user.type)}
+                </TableCell>
 
-            <TableCell align="right">
-              <div className="users-actions">
-                <Tooltip
-                  id={`edit-${user.login}`}
-                  text={t('users.buttons.edit')}
-                  aria-label={t('users.buttons.edit')}
-                >
-                  <Button
-                    size="small"
-                    variant="primary"
-                    aria-labelledby={`username-${user.login} edit-${user.login}`}
-                    icon={<EditIcon />}
-                    aria-haspopup="dialog"
-                    onClick={() => {
-                      setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
-                    }}
-                  />
-                </Tooltip>
+                <TableCell align="right">
+                  <div className="users-actions">
+                    <Tooltip
+                      id={`edit-${user.login}`}
+                      text={t('users.buttons.edit')}
+                      aria-label={t('users.buttons.edit')}
+                    >
+                      <Button
+                        size="small"
+                        variant="primary"
+                        aria-labelledby={`username-${user.login} edit-${user.login}`}
+                        icon={<EditIcon />}
+                        aria-haspopup="dialog"
+                        onClick={() => {
+                          setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
+                        }}
+                      />
+                    </Tooltip>
 
-                <Tooltip
-                  id={`delete-${user.login}`}
-                  text={t('users.buttons.delete')}
-                  aria-label={t('users.buttons.delete')}
-                >
-                  <Button
-                    size="small"
-                    variant="danger"
-                    icon={<TrashIcon />}
-                    disabled={user.type === 'admin' && store.onlyOneAdmin}
-                    aria-labelledby={`username-${user.login} delete-${user.login}`}
-                    aria-haspopup="dialog"
-                    onClick={() => setDeletedUserId(user.id)}
-                  />
-                </Tooltip>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </Table>
+                    <Tooltip
+                      id={`delete-${user.login}`}
+                      text={t('users.buttons.delete')}
+                      aria-label={t('users.buttons.delete')}
+                    >
+                      <Button
+                        size="small"
+                        variant="danger"
+                        icon={<TrashIcon />}
+                        disabled={user.type === 'admin' && store.onlyOneAdmin}
+                        aria-labelledby={`username-${user.login} delete-${user.login}`}
+                        aria-haspopup="dialog"
+                        onClick={() => setDeletedUserId(user.id)}
+                      />
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </Table>
 
-      <label className="users-autologin">
-        {t('users.labels.autologin')}
-        <Dropdown
-          options={store.autologinOptions}
-          value={store.autologinUser}
-          onChange={({ value }: Option<string>) => store.setAutologinUser(value)}
-        />
-      </label>
+          <label className="users-autologin">
+            {t('users.labels.autologin')}
+            <Dropdown
+              options={store.autologinOptions}
+              value={store.autologinUser}
+              onChange={({ value }: Option<string>) => store.setAutologinUser(value)}
+            />
+          </label>
+        </>
+      ) : (
+        <Alert variant="info">
+          {t('users.labels.empty-list')}
+        </Alert>
+      )}
 
       {editedUser && (
         <EditUserModal
           user={editedUser}
           isLoading={isSaving}
+          isFirstUser={!authStore.areUsersConfigured}
           onSave={save}
           onCancel={() => {
             setEditedUser(null);

@@ -38,7 +38,7 @@ export const Confirm = ({
       onClose={closeCallback}
     >
       <form
-        method="dialog"
+        onSubmit={(ev) => ev.preventDefault()}
         onKeyDown={(ev) => {
           if (isPreventSubmit && ev.key === 'Enter') {
             ev.preventDefault();
