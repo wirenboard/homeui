@@ -57,7 +57,7 @@ export class MonitorStore {
   }
 
   _subscribeToTopic() {
-    const MAX_MESSAGES = 500;
+    const MAX_MESSAGES = 2000;
     mqttClient.addStickySubscription(this.topic, ({ payload }) => {
       runInAction(() => {
         if (this.logs.length === MAX_MESSAGES) {

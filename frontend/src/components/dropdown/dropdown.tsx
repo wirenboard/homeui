@@ -94,14 +94,6 @@ const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
 );
 
-const NoOptionsMessage = (props: any, message: string = '') => {
-  return (
-    <components.NoOptionsMessage {...props}>
-      <span className="custom-css-class">{message}</span>
-    </components.NoOptionsMessage>
-  );
-};
-
 export const Dropdown = ({
   id,
   options,
@@ -119,6 +111,8 @@ export const Dropdown = ({
   noOptionsMessage,
   isButton,
   isCreatable,
+  createOptionPosition,
+  isValidNewOption,
   formatCreateLabel,
   minWidth = '150px',
   menuPortal = true,
@@ -171,7 +165,16 @@ export const Dropdown = ({
         return undefined;
       }
       const values = Array.isArray(value) ? value : [value];
+      // a creatable dropdown takes arbitrary values, so one missing from options must still show
+      if (isCreatable) {
+        return values
+          .filter((item) => item !== undefined && item !== null && item !== '')
+          .map((item) => findOption(options, item) ?? { value: item, label: String(item) });
+      }
       return values.map((item) => findOption(options, item)).filter(Boolean);
+    }
+    if (isCreatable && value !== undefined && value !== null && value !== '') {
+      return findOption(options, value) ?? { value, label: String(value) };
     }
     return findOption(options, value) ?? null;
   };
@@ -202,7 +205,6 @@ export const Dropdown = ({
     components: {
       MenuPortal: (props: any) => MenuPortal({ ...props, className }, size),
       DropdownIndicator: (props: any) => DropdownIndicator(props, isButton),
-      NoOptionsMessage: (props: any) => NoOptionsMessage(props, noOptionsMessage),
       Placeholder: (props: any) => Placeholder(props),
       SingleValue: (props: any) => SingleValue(props),
     },
@@ -229,7 +231,7 @@ export const Dropdown = ({
       );
     },
     tabSelectsValue: false,
-    noOptionsMessage: () => t('common.labels.empty-search'),
+    noOptionsMessage: () => noOptionsMessage || t('common.labels.empty-search'),
     unstyled: true,
     onMenuOpen: () => {
       setIsMenuOpen(true);
@@ -249,6 +251,8 @@ export const Dropdown = ({
     onChange: handleChange,
     ...(isCreatable && {
       formatCreateLabel: formatCreateLabel ?? ((inputValue: string) => `${t('common.buttons.add')} "${inputValue}"`),
+      createOptionPosition,
+      isValidNewOption,
     }),
   };
 

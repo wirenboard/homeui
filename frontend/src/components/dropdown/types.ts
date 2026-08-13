@@ -27,5 +27,7 @@ export interface DropdownProps<T = string | boolean | number | null | string[]> 
   captureMenuScroll?: boolean;
   isLoading?: boolean;
   isCreatable?: boolean;
+  createOptionPosition?: 'first' | 'last';
+  isValidNewOption?: (_inputValue: string, _selectValue: Option<T>[]) => boolean;
   formatCreateLabel?: (_inputValue: string) => string;
 }
