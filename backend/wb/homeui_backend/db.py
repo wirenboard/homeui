@@ -2,7 +2,24 @@ import logging
 import os
 import sqlite3
 
-DB_SCHEMA_VERSION = 2
+DB_SCHEMA_VERSION = 3
+
+
+def create_webauthn_credentials_table(con: sqlite3.Connection) -> None:
+    cursor = con.cursor()
+    cursor.execute(
+        (
+            "CREATE TABLE IF NOT EXISTS webauthn_credentials ("
+            "credential_id BLOB PRIMARY KEY NOT NULL, "
+            "user_id TEXT NOT NULL, "
+            "name TEXT NOT NULL, "
+            "credential_data BLOB NOT NULL, "
+            "sign_count INTEGER NOT NULL DEFAULT 0, "
+            "created_at INTEGER NOT NULL, "
+            "last_used_at INTEGER)"
+        )
+    )
+    con.commit()
 
 
 def create_tables(con: sqlite3.Connection):
@@ -27,6 +44,16 @@ def create_tables(con: sqlite3.Connection):
             "start_date INTEGER NOT NULL)"
         )
     )
+    con.commit()
+
+    create_webauthn_credentials_table(con)
+
+
+def migration_3(con: sqlite3.Connection) -> None:
+    logging.info("Migrating database to version 3")
+    create_webauthn_credentials_table(con)
+    cursor = con.cursor()
+    cursor.execute("PRAGMA user_version = 3")
     con.commit()
 
 
@@ -60,7 +87,7 @@ def migration_1(con: sqlite3.Connection) -> None:
 
 
 def update_db(con: sqlite3.Connection, version: int) -> None:
-    migrations = [migration_1, migration_2]
+    migrations = [migration_1, migration_2, migration_3]
     for migration_fn in migrations[version:]:
         migration_fn(con)
 
@@ -70,7 +97,7 @@ def create_db(db_file: str) -> sqlite3.Connection:
     con = sqlite3.connect(db_file)
     create_tables(con)
     cur = con.cursor()
-    cur.execute("PRAGMA user_version = 2")
+    cur.execute(f"PRAGMA user_version = {DB_SCHEMA_VERSION}")
     return con
 
 

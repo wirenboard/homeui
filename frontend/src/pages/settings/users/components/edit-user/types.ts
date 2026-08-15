@@ -6,6 +6,7 @@ export interface EditUserModalProps {
   user: UserParams;
   isLoading: boolean;
   isFirstUser?: boolean;
+  isCurrentUser?: boolean;
   onSave: (_user: Partial<UserParams>) => void;
   onCancel: () => void;
 }

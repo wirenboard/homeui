@@ -1,6 +1,11 @@
-# homeui
+# Wiren Board HomeUI with WebAuthn
 
-Wiren Board web interface.
+An independent extension of the official [Wiren Board HomeUI](https://github.com/wirenboard/homeui)
+with passkey authentication. It supports Touch ID, Windows Hello, Android screen lock, and
+hardware security keys while retaining password login as a recovery method.
+
+This repository is not an official Wiren Board release. See the
+[WebAuthn deployment guide](docs/webauthn.md) before installing it on a controller.
 
 ## MQTT naming conventions
 
@@ -79,3 +84,5 @@ The structure of the JSON-file
 
 - [JSON Schema editor](frontend/src/components/json-schema-editor/README.md) — homeui's own
   schema-driven form editor (React + MobX), successor to the legacy forked `@wirenboard/json-editor`.
+- [WebAuthn/passkey configuration](docs/webauthn.md) — HTTPS requirements, backend options,
+  enrollment, recovery, and reverse-proxy notes.

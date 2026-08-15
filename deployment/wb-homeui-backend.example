@@ -1,0 +1,2 @@
+# Add these options to any existing backend options and replace the example domain.
+WB_HOMEUI_BACKEND_OPTIONS="--webauthn-rp-id wb.example.com --webauthn-origin https://wb.example.com"
