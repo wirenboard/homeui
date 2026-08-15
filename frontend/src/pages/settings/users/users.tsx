@@ -155,6 +155,7 @@ const UsersPage = observer(() => {
           user={editedUser}
           isLoading={isSaving}
           isFirstUser={!authStore.areUsersConfigured}
+          isCurrentUser={editedUser.id === authStore.me?.id}
           onSave={save}
           onCancel={() => {
             setEditedUser(null);

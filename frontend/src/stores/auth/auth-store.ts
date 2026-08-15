@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { authenticateWithPasskey } from '@/services/webauthn';
 import { request } from '@/utils/request';
 import { rolePriority, UserRole } from './constants';
 import type { AuthResponse, User, UserBody } from './types';
@@ -40,6 +41,17 @@ export default class AuthStore {
 
   async login(body: { login: string; password: string }) {
     const { data } = await request.post<AuthResponse>('/auth/login', body);
+    return runInAction(() => {
+      this.userRole = data.user_type;
+      this.#currentUserId = data.user_id;
+      this.isAutologin = false;
+      this.areUsersConfigured = true;
+      return data;
+    });
+  }
+
+  async loginWithPasskey(login: string) {
+    const data = await authenticateWithPasskey(login);
     return runInAction(() => {
       this.userRole = data.user_type;
       this.#currentUserId = data.user_id;

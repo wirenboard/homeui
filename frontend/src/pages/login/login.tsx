@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useState, type SubmitEvent } from 'react';
+import { useEffect, useState, type SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LocaleIcon from '@/assets/icons/locale.svg';
@@ -11,6 +11,7 @@ import { Button, ButtonLink } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
+import { canUseWebAuthn, getWebAuthnConfig } from '@/services/webauthn';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
@@ -41,6 +42,16 @@ const LoginPage = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
+  const [isWebAuthnEnabled, setIsWebAuthnEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!canUseWebAuthn()) {
+      return;
+    }
+    getWebAuthnConfig()
+      .then(({ enabled }) => setIsWebAuthnEnabled(enabled))
+      .catch(() => setIsWebAuthnEnabled(false));
+  }, []);
 
   const onSubmit = async (ev: SubmitEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -65,6 +76,24 @@ const LoginPage = observer(() => {
     localStorage.setItem('language', lang);
     await i18n.changeLanguage(lang);
     setLanguage(lang);
+  };
+
+  const onPasskeyLogin = async () => {
+    try {
+      setIsShowError(false);
+      setIsLoading(true);
+      await authStore.loginWithPasskey(login);
+      const externalReturn = getSafeExternalReturn();
+      if (externalReturn) {
+        window.location.assign(externalReturn);
+        return;
+      }
+      navigate(searchParams.get('returnState') ?? '/', { replace: true });
+    } catch {
+      setIsShowError(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const languageOptions: Option<string>[] = [
@@ -143,6 +172,16 @@ const LoginPage = observer(() => {
               icon={isLoading && <LoaderIcon className="login-loader" />}
               label={t('login.buttons.login')}
             />
+            {isWebAuthnEnabled && (
+              <Button
+                className="login-button"
+                type="button"
+                variant="secondary"
+                disabled={isLoading || !login}
+                label={t('login.buttons.passkey')}
+                onClick={onPasskeyLogin}
+              />
+            )}
           </div>
         </form>
       </fieldset>
