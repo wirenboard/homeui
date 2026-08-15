@@ -14,7 +14,6 @@ from fido2.webauthn import (
     AuthenticatorData,
     CollectedClientData,
 )
-
 from wb.homeui_backend.db import create_tables, migration_3
 from wb.homeui_backend.users_storage import User, UserType
 from wb.homeui_backend.webauthn import (

@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.245.11) stable; urgency=medium
+wb-mqtt-homeui (2.246.0) stable; urgency=medium
 
   * Add optional WebAuthn passkey authentication
 
