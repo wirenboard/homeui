@@ -1,4 +1,4 @@
-import { autorun, runInAction, when } from 'mobx';
+import { autorun, when } from 'mobx';
 import { createRoot } from 'react-dom/client';
 import { createHashRouter } from 'react-router-dom';
 import { APP_NAME, APP_SHORT_NAME } from '@/common/constants';
@@ -9,8 +9,8 @@ import { authStore, UserRole } from '@/stores/auth';
 import { daliGlobalStore } from '@/stores/dali';
 import { dashboardsStore } from '@/stores/dashboards';
 import { registerRulesTab, rulesStore } from '@/stores/rules';
-import { uiStore } from '@/stores/ui';
-import { switchToHttps } from '@/utils/https-utils';
+import { HttpsSetupPhase, uiStore } from '@/stores/ui';
+import { CertificateStatus, findHttpsRedirectTarget, switchToHttps } from '@/utils/https-utils';
 import { routes } from './router/routes';
 import './i18n/config';
 import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
@@ -22,10 +22,51 @@ window.addEventListener('vite:preloadError', () => {
   window.location.reload();
 });
 
-switchToHttps().finally(() => {
-  runInAction(() => {
-    uiStore.isSettingUpHttps = false;
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+
+// createHashRouter() runs authGuard at once, so build the router only if we stay on this host:
+// the session cookie is host-bound, and the switch usually sends us to another hostname.
+let isAppStarted = false;
+const startApp = () => {
+  if (isAppStarted) {
+    return;
+  }
+  isAppStarted = true;
+  uiStore.setHttpsSetupPhase(HttpsSetupPhase.Done);
+  root.render(<App router={createHashRouter(routes)} />);
+};
+
+findHttpsRedirectTarget()
+  .then((deviceInfo) => {
+    if (!deviceInfo) {
+      return false;
+    }
+    if (deviceInfo.https_cert !== CertificateStatus.VALID) {
+      // Issuing a certificate takes minutes, and that is what the loader has to talk about
+      uiStore.setHttpsSetupPhase(HttpsSetupPhase.IssuingCertificate);
+    }
+    return switchToHttps(deviceInfo);
+  })
+  .catch((err) => {
+    console.warn('Failed to switch to HTTPS', err);
+    return false;
+  })
+  .then((isRedirectingToHttps) => {
+    if (!isRedirectingToHttps) {
+      startApp();
+    }
+  })
+  .catch((err) => {
+    console.error('Failed to start the app', err);
   });
+
+// A started redirect leaves this page alive with no router. Coming back to it means the target host
+// did not work out, so run the app here instead of restoring a dead loader from the bfcache.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    startApp();
+  }
 });
 
 let connectToMqtt = true;
@@ -70,9 +111,3 @@ mqttClient.whenConnected().then(async () => {
     return deviceManagerProxy.Stop().catch(() => {});
   }
 });
-
-const router = createHashRouter(routes);
-
-createRoot(document.getElementById('root')).render(
-  <App router={router} />,
-);

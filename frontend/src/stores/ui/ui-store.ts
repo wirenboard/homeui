@@ -4,11 +4,11 @@ import { authStore } from '@/stores/auth';
 import type { Dashboard } from '@/stores/dashboards';
 import { getMenu } from './api';
 import { getMenuItems, mergeMenuItems, normalizeMenuResponse, toMenuItemInstance } from './menu-items';
-import { type CustomMenuItem, type MenuItemInstance, Theme } from './types';
+import { type CustomMenuItem, HttpsSetupPhase, type MenuItemInstance, Theme } from './types';
 
 export default class UiStore {
   public isConnected = false;
-  public isSettingUpHttps = true;
+  public httpsSetupPhase: HttpsSetupPhase = HttpsSetupPhase.Checking;
   public menuItems: MenuItemInstance[] = [];
   public theme: Theme = Object.values(Theme).includes(localStorage.getItem('theme') as Theme)
     ? localStorage.getItem('theme') as Theme
@@ -33,6 +33,10 @@ export default class UiStore {
     runInAction(() => {
       this.isConnected = isConnected;
     });
+  }
+
+  setHttpsSetupPhase(phase: HttpsSetupPhase) {
+    this.httpsSetupPhase = phase;
   }
 
   async buildMenu(dashboards: Dashboard[], isShowWidgetsPage: boolean, params: URLSearchParams) {
