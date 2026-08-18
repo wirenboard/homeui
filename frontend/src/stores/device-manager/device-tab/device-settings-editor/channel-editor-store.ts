@@ -60,6 +60,7 @@ export class WbDeviceChannelEditor {
   public channel: WbDeviceTemplateChannel;
   public mode: StringStore;
   public period: NumberStore;
+  public maxPublishInterval: NumberStore;
   public isSupportedByFirmware: boolean = true;
 
   private _conditionFn?: Function;
@@ -117,6 +118,14 @@ export class WbDeviceChannelEditor {
       },
     }, period, true);
 
+    this.maxPublishInterval = new NumberStore({
+      type: 'integer',
+      minimum: 0,
+      options: {
+        compact: true,
+      },
+    }, (initialValue === undefined ? channel : initialValue).max_publish_interval, false);
+
     this._conditionFn = new Conditions().getFunction(channel.condition, channel.dependencies);
     this._dependencies = channel.dependencies;
 
@@ -143,7 +152,7 @@ export class WbDeviceChannelEditor {
   }
 
   get hasErrors() {
-    return this.mode.hasErrors || (this.hasCustomPeriod && this.period.hasErrors);
+    return this.mode.hasErrors || (this.hasCustomPeriod && this.period.hasErrors) || this.maxPublishInterval.hasErrors;
   }
 
   get hasCustomPeriod() {
@@ -197,6 +206,10 @@ export class WbDeviceChannelEditor {
         break;
       }
     }
+    const maxPublishInterval = this.maxPublishInterval.value;
+    if (typeof maxPublishInterval === 'number' && maxPublishInterval !== this.channel.max_publish_interval) {
+      res['max_publish_interval'] = maxPublishInterval;
+    }
     if (Object.keys(res).length === 1) {
       return undefined;
     }
@@ -204,7 +217,7 @@ export class WbDeviceChannelEditor {
   }
 
   get isDirty() {
-    if (this.mode.isDirty) {
+    if (this.mode.isDirty || this.maxPublishInterval.isDirty) {
       return true;
     }
     return this.mode.value === WbDeviceChannelModes.CustomPeriod && this.period.isDirty;
@@ -222,6 +235,7 @@ export class WbDeviceChannelEditor {
       this.mode.setValue(mode);
     }
     this.period.setValue(period);
+    this.maxPublishInterval.setValue(this.channel.max_publish_interval);
   }
 
   setFirmwareInDevice(fw: string) {
@@ -231,5 +245,6 @@ export class WbDeviceChannelEditor {
   commit() {
     this.mode.commit();
     this.period.commit();
+    this.maxPublishInterval.commit();
   }
 }

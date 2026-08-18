@@ -45,7 +45,7 @@ const DeviceSettingsSubGroup = (
   );
 };
 
-const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
+const ChannelNumberEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
   const errorId = useId();
   return (
     <div className="deviceSettingsEditor-parameter" >
@@ -86,11 +86,17 @@ const ChannelsTableRow = observer(({
       </TableCell>
       <TableCell>
         {channel.hasCustomPeriod && (
-          <CustomPeriodEditor
+          <ChannelNumberEditor
             store={channel.period}
             translator={translator}
           />
         )}
+      </TableCell>
+      <TableCell>
+        <ChannelNumberEditor
+          store={channel.maxPublishInterval}
+          translator={translator}
+        />
       </TableCell>
     </TableRow>
   );
@@ -110,6 +116,7 @@ const ChannelsTable = observer((
         <TableCell>{t('device-manager.labels.channel')}</TableCell>
         <TableCell>{t('device-manager.labels.mode')}</TableCell>
         <TableCell>{t('device-manager.labels.period')}</TableCell>
+        <TableCell>{t('device-manager.labels.max-publish-interval')}</TableCell>
       </TableRow>
       {channels.map((channel) => {
         if (!channel.isEnabledByCondition) {

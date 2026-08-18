@@ -99,6 +99,7 @@
 .deviceSettingsEditor-mobile .deviceSettingsEditor-channel {
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 .deviceSettingsEditor-customChannelsNoTabs .wb-jsonEditor{
