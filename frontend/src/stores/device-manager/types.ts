@@ -205,6 +205,7 @@ export interface WbDeviceTemplateChannelSettings {
   name: string;
   enabled?: boolean;
   read_period_ms?: number;
+  max_publish_interval?: number;
 }
 
 export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings {

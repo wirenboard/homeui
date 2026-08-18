@@ -37,17 +37,19 @@ const DeviceSettingsSubGroup = (
   );
 };
 
-const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
+const ChannelNumberEditor = observer((
+  { store, title, translator }:
+  { store: NumberStore; title: string; translator: Translator },
+) => {
   const errorId = useId();
   const inputId = useId();
-  const { t } = useTranslation();
   return (
     <div className="deviceSettingsEditor-parameter" >
       <ParamSimpleLabel
-        title={t('device-manager.labels.period')}
+        title={title}
         inputId={inputId}
       />
-      <NumberEditor store={store} translator={translator} />
+      <NumberEditor store={store} inputId={inputId} translator={translator} />
       {store.hasErrors && <ParamError id={errorId} error={store.error} translator={translator} />}
     </div>
   );
@@ -81,8 +83,17 @@ const ChannelCard = observer((
           <StringEditor store={channel.mode} translator={translator} />
         </Suspense>
         {channel.hasCustomPeriod && (
-          <CustomPeriodEditor store={channel.period} translator={translator} />
+          <ChannelNumberEditor
+            store={channel.period}
+            title={t('device-manager.labels.period')}
+            translator={translator}
+          />
         )}
+        <ChannelNumberEditor
+          store={channel.maxPublishInterval}
+          title={t('device-manager.labels.max-publish-interval')}
+          translator={translator}
+        />
       </div>
     </Card>
   );

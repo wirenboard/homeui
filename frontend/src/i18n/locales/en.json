@@ -484,6 +484,7 @@
          "channel": "Channel",
          "mode": "Mode",
          "period": "Period (ms)",
+         "max-publish-interval": "Max publish interval (s)",
          "custom-channels": "Custom channels",
          "loading-template": "Loading device template...",
          "reading-parameters": "Reading parameters from device...",
