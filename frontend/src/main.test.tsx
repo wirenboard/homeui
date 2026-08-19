@@ -19,6 +19,14 @@ vi.mock('@/services', async () => {
   const services = await import('@/test/mocks/services');
   return { ...services, mqttClient: { ...services.mqttClient, whenConnected: () => new Promise(() => {}) } };
 });
+// These stores only act after MQTT connects, which never happens here, but importing them pulls in
+// json-schema-editor, the console panel and xterm — most of the boot cost each test pays
+vi.mock('@/components/terminal', () => ({ registerTerminalTab: vi.fn() }));
+vi.mock('@/stores/dali', () => ({ daliGlobalStore: { refresh: vi.fn(() => Promise.resolve()) } }));
+vi.mock('@/stores/rules', () => ({
+  registerRulesTab: vi.fn(),
+  rulesStore: { subscribeRulesLogs: vi.fn(), subscribeRuleDebugging: vi.fn() },
+}));
 
 const renderMock = vi.fn();
 vi.mock('react-dom/client', () => ({ createRoot: () => ({ render: renderMock }) }));
