@@ -13,7 +13,7 @@ export enum ReleaseSuite {
   Testing = 'testing',
 }
 
-interface DeviceInfo {
+export interface DeviceInfo {
   sn: string;
   ip: string;
   https_cert: CertificateStatus;
@@ -117,37 +117,45 @@ export function urlIsSwitchableToHttps(): boolean {
 }
 
 /**
- * Checks the current protocol and attempts to redirect to an HTTPS version of the site if applicable.
+ * Looks for a device this site can be switched to over HTTPS.
  *
- * If the current protocol is HTTPS or the hostname is a localhost or 127.0.0.1, the function returns false.
- * If the hostname is an IP address or a local domain, it fetches device information using both HTTP and HTTPS.
- * If the device information matches and certificate is valid, it redirects the browser to the HTTPS URL.
+ * There is nothing to switch to, and null is returned, when:
+ * - we already speak HTTPS, or the hostname is localhost / 127.0.0.1;
+ * - the hostname is neither an IP address nor a local domain;
+ * - HTTPS is disabled on the device;
+ * - the device does not answer /device/info or reports no sane serial number.
  *
- * @returns {Promise<boolean>} - A promise that resolves to true if a redirect to HTTPS was initiated, otherwise false.
+ * Otherwise the device is returned, and its certificate state tells whether the
+ * switch can happen right away — see switchToHttps().
  */
-export async function switchToHttps() {
+export async function findHttpsRedirectTarget(): Promise<DeviceInfo | null> {
   if (location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname)) {
-    return false;
+    return null;
+  }
+
+  // Free and local, so it goes before the request — on a DNS hostname we ask the device nothing
+  if (!urlIsSwitchableToHttps()) {
+    return null;
   }
 
   if (!await isHttpsEnabled()) {
-    return false;
+    return null;
   }
 
-  if (!urlIsSwitchableToHttps()) {
-    return false;
-  }
-
-  let deviceInfo : DeviceInfo;
   try {
-    deviceInfo = await getDeviceInfo();
-    if (!isDeviceSn(deviceInfo.sn)) {
-      return false;
-    }
+    const deviceInfo = await getDeviceInfo();
+    return isDeviceSn(deviceInfo.sn) ? deviceInfo : null;
   } catch (e) {
-    return false;
+    return null;
   }
+}
 
+/**
+ * Redirects the browser to the HTTPS site, preferring the domain the certificate is issued for.
+ *
+ * @returns true when a redirect was started, false when we have to stay on http.
+ */
+export async function switchToHttps(deviceInfo: DeviceInfo): Promise<boolean> {
   if (await hasInvalidCertificate(deviceInfo.https_cert)) {
     return false;
   }

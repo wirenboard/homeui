@@ -13,6 +13,7 @@
          "password-strength-4": "Надежный пароль",
          "select-all": "Выбрать все",
          "unselect-all": "Снять выделение",
+         "checking-connection": "Проверка соединения",
          "setting-up-https": "Настройка HTTPS",
          "columns": "Столбцы",
          "columns-auto": "Авто"

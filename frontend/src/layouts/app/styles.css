@@ -1,6 +1,10 @@
+/* The checks before the app starts normally take ~0.2 s, so the loader is delayed by a second and
+   shows up only when something really takes long — issuing a certificate, or a slow device */
 .app-loader {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100dvh;
+    opacity: 0;
+    animation: appear-overlay 150ms ease-in 1s forwards;
 }

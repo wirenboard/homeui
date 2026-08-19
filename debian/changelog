@@ -1,9 +1,20 @@
-wb-mqtt-homeui (2.245.11) stable; urgency=medium
+wb-mqtt-homeui (2.245.13) stable; urgency=medium
 
   * Ask for confirmation before rereading device settings when they have unsaved
     changes, instead of discarding the entered values without a question
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 17 Aug 2026 13:22:00 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 19 Aug 2026 17:48:45 +0500
+
+wb-mqtt-homeui (2.245.12) stable; urgency=medium
+
+  * Fix a needless login prompt when opening the controller over HTTP: the session was
+    checked before the redirect to HTTPS, on the host whose cookie does not apply
+  * Show the loader during the HTTPS check only if it takes longer than a second, and
+    name the certificate issuing separately from the check itself
+  * Do not fall back to an unencrypted connection once the switch to HTTPS has started:
+    going back to the HTTP page restarts the switch instead of serving the app there
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 18 Aug 2026 13:55:00 +0500
 
 wb-mqtt-homeui (2.245.10) stable; urgency=medium
 
