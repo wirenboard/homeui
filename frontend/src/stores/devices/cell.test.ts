@@ -262,7 +262,15 @@ describe('Cell', () => {
   });
 
   describe('_setCellValue branches', () => {
-    test('unixtime stores value or defaults to 0', () => {
+    test('local_time stores value or defaults to 0', () => {
+      cell.setType('local_time');
+      cell.receiveValue('1700000000');
+      expect(cell.value).toBe('1700000000');
+      cell.receiveValue('');
+      expect(cell.value).toBe(0);
+    });
+
+    test('deprecated unixtime stores value or defaults to 0', () => {
       cell.setType('unixtime');
       cell.receiveValue('1700000000');
       expect(cell.value).toBe('1700000000');

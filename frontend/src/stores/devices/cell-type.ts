@@ -60,7 +60,7 @@ export const commonCellTypes = new Map<string, CellTypeEntry>([
     displayType: CellComponent.Button,
     readOnly: false,
   }],
-  ['unixtime', {
+  ['local_time', {
     valueType: 'number',
     displayType: CellComponent.DateTime,
     readOnly: false,
@@ -71,6 +71,12 @@ const deprecatedCellTypes = new Map<string, CellTypeEntry>([
   ['wo-switch', {
     valueType: 'boolean',
     displayType: CellComponent.Switch,
+    readOnly: false,
+  }],
+  // deprecated, use local_time
+  ['unixtime', {
+    valueType: 'number',
+    displayType: CellComponent.DateTime,
     readOnly: false,
   }],
   ['temperature', {

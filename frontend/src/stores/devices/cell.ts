@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import i18n from '@/i18n/config';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
-import { type CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
+import { type CellError, CellComponent, cellType, type CellType, type CellTypeEntry } from './cell-type';
 import type { CellMeta, EnumTranslations, NameTranslations, SendValueUpdate, ValueType } from './types';
 
 export default class Cell {
@@ -254,7 +254,7 @@ export default class Cell {
     const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
     switch (this.valueType) {
       case 'number':
-        if (this.type === 'unixtime') {
+        if (this.displayType === CellComponent.DateTime) {
           this._value = value || 0;
         } else if (!value || isNaN(value as number | null)) {
           this._value = 0;
