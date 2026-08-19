@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.245.13) stable; urgency=medium
+
+  * Ask for confirmation before rereading device settings when they have unsaved
+    changes, instead of discarding the entered values without a question
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 19 Aug 2026 17:48:45 +0500
+
 wb-mqtt-homeui (2.245.12) stable; urgency=medium
 
   * Fix a needless login prompt when opening the controller over HTTP: the session was
