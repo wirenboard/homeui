@@ -13,6 +13,7 @@
          "password-strength-4": "Strong password",
          "select-all": "Select all",
          "unselect-all": "Unselect all",
+         "checking-connection": "Checking the connection",
          "setting-up-https": "Setting up HTTPS",
          "columns": "Columns",
          "columns-auto": "Auto"
