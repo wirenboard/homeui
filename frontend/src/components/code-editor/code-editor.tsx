@@ -2,7 +2,7 @@ import { type EditorState } from '@codemirror/state';
 import { type EditorView, keymap, lineNumbers } from '@codemirror/view';
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { uiStore } from '@/stores/ui';
 import { breakpointState, customGutter, getGutterEffects } from './helpers';
 import { type CodeEditorProps } from './types';
@@ -21,16 +21,28 @@ export const CodeEditor = observer(({
 }: CodeEditorProps) => {
   const editor = useRef<ReactCodeMirrorRef>(null);
   const [allExtensions, setAllExtensions] = useState([]);
+  // The underlying CodeMirror component reconfigures its whole extension
+  // stack whenever its extensions or onChange props change identity, and
+  // pages passing inline handlers re-render per keystroke (observed MobX
+  // content) - so identity-unstable callbacks are bridged through refs and
+  // the stack is rebuilt only when its actual inputs change.
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const handleChange = useCallback((value: string) => onChangeRef.current?.(value), []);
 
   const onEditorReInit = (view: EditorView, state: EditorState) => {
-    if (withBreakpoints) {
-      if (errorLines?.length) {
-        view.dispatch({
-          selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
-          scrollIntoView: true,
-        });
-      }
+    // jump to the first error line whether or not the gutter marker is on:
+    // the page may render the marker itself (as a lint diagnostic)
+    if (errorLines?.length) {
+      view.dispatch({
+        selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
+        scrollIntoView: true,
+      });
+    }
 
+    if (withBreakpoints) {
       const effectList = getGutterEffects(view, state, errorLines);
 
       if (effectList.length > 0) {
@@ -41,6 +53,7 @@ export const CodeEditor = observer(({
     onCreateEditor?.(view, state);
   };
 
+  const hasOnSave = !!onSave;
   useEffect(() => {
     const settedExtensions = [...extensions, lineNumbers()];
 
@@ -48,18 +61,15 @@ export const CodeEditor = observer(({
       settedExtensions.push(customGutter, breakpointState);
     }
 
-    if (onSave) {
-      const saveHandler = (ev: Event) => {
-        ev.preventDefault();
-        onSave();
-      };
-
+    if (hasOnSave) {
       settedExtensions.push(
         keymap.of([
           {
             key: 'Mod-s',
             run: () => {
-              saveHandler(new Event('keydown'));
+              // through the ref: the handler prop may change identity per
+              // render without this keymap being rebuilt
+              onSaveRef.current?.();
               return true;
             },
           },
@@ -68,7 +78,7 @@ export const CodeEditor = observer(({
     }
 
     setAllExtensions(settedExtensions);
-  }, [extensions, onSave, withBreakpoints]);
+  }, [extensions, hasOnSave, withBreakpoints]);
 
   useEffect(() => {
     if (!withBreakpoints) {
@@ -96,7 +106,7 @@ export const CodeEditor = observer(({
       extensions={allExtensions}
       basicSetup={basicSetup}
       onCreateEditor={onEditorReInit}
-      onChange={onChange}
+      onChange={handleChange}
     />
   );
 });
