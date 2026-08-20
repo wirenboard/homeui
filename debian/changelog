@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.246.0) stable; urgency=medium
 
-  * Support local_time control type, unixtime is deprecated
+  * Rename unixtime control type to local_time
 
  -- Ilya Titov <ilya.titov@wirenboard.com>  Wed, 19 Aug 2026 14:05:00 +0300
 

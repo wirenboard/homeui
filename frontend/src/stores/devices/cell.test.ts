@@ -270,14 +270,6 @@ describe('Cell', () => {
       expect(cell.value).toBe(0);
     });
 
-    test('deprecated unixtime stores value or defaults to 0', () => {
-      cell.setType('unixtime');
-      cell.receiveValue('1700000000');
-      expect(cell.value).toBe('1700000000');
-      cell.receiveValue('');
-      expect(cell.value).toBe(0);
-    });
-
     test('number defaults to 0 for NaN', () => {
       cell.setType('value');
       cell.receiveValue('not-a-number');

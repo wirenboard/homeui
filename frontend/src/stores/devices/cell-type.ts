@@ -73,12 +73,6 @@ const deprecatedCellTypes = new Map<string, CellTypeEntry>([
     displayType: CellComponent.Switch,
     readOnly: false,
   }],
-  // deprecated, use local_time
-  ['unixtime', {
-    valueType: 'number',
-    displayType: CellComponent.DateTime,
-    readOnly: false,
-  }],
   ['temperature', {
     valueType: 'number',
     displayType: CellComponent.Value,
