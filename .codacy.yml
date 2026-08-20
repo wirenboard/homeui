@@ -1,0 +1,5 @@
+---
+exclude_paths:
+  # build/dev tooling, not shipped; the completions generator writes its
+  # output to a caller-supplied path by design (the drift test uses a temp file)
+  - frontend/scripts/**
