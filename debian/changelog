@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.246.2) stable; urgency=medium
+
+  * Fix emoji rendering in rules console
+  * Add emoji font fallbacks to the CSS font stack
+  * Add "Ctrl + `" global shortcut to toggle the console panel
+  * Persist console panel open/close state and active tab across page reloads
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 20 Aug 2026 13:13:00 +0300
+
 wb-mqtt-homeui (2.246.1) stable; urgency=medium
 
   * Fix info popup's transparency

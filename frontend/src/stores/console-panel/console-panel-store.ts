@@ -1,6 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import type { ConsoleTab } from './types';
 
+const SESSION_VISIBLE_KEY = 'console-panel-visible';
+const SESSION_ACTIVE_TAB_KEY = 'console-panel-active-tab';
+
 export class ConsolePanelStore {
   public tabs: ConsoleTab[] = [];
   public activeTabId: string | null = null;
@@ -11,7 +14,17 @@ export class ConsolePanelStore {
   public width: string = localStorage.getItem('console-panel-width') || '300px';
 
   constructor() {
+    this.isVisible = sessionStorage.getItem(SESSION_VISIBLE_KEY) === 'true';
     makeAutoObservable(this, {}, { autoBind: true });
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', (ev) => {
+        if (ev.ctrlKey && ev.code === 'Backquote') {
+          ev.preventDefault();
+          this.toggleVisibility();
+        }
+      });
+    }
   }
 
   registerTab(tab: ConsoleTab) {
@@ -21,6 +34,10 @@ export class ConsolePanelStore {
     this.tabs.push(tab);
     if (!this.activeTabId) {
       this.activeTabId = tab.id;
+    }
+    const storedTabId = sessionStorage.getItem(SESSION_ACTIVE_TAB_KEY);
+    if (storedTabId && tab.id === storedTabId && this.activeTabId !== storedTabId) {
+      this.activeTabId = storedTabId;
     }
   }
 
@@ -39,17 +56,20 @@ export class ConsolePanelStore {
     this.tabs = this.tabs.filter((t) => t.id !== id);
     if (this.activeTabId === id) {
       this.activeTabId = this.tabs.length > 0 ? this.tabs[0].id : null;
+      sessionStorage.setItem(SESSION_ACTIVE_TAB_KEY, this.activeTabId ?? '');
     }
   }
 
   setActiveTab(id: string) {
     if (this.tabs.some((t) => t.id === id)) {
       this.activeTabId = id;
+      sessionStorage.setItem(SESSION_ACTIVE_TAB_KEY, id);
     }
   }
 
   show(tabId?: string) {
     this.isVisible = true;
+    sessionStorage.setItem(SESSION_VISIBLE_KEY, 'true');
     if (tabId) {
       this.setActiveTab(tabId);
     }
@@ -57,10 +77,12 @@ export class ConsolePanelStore {
 
   hide() {
     this.isVisible = false;
+    sessionStorage.setItem(SESSION_VISIBLE_KEY, 'false');
   }
 
   toggleVisibility() {
     this.isVisible = !this.isVisible;
+    sessionStorage.setItem(SESSION_VISIBLE_KEY, String(this.isVisible));
   }
 
   setPosition(pos: 'bottom' | 'right') {
