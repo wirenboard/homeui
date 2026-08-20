@@ -79,7 +79,7 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
                 </Tooltip>
               </Suspense>
             )}
-            {name || cell.name}
+            <span className="deviceCell-nameText">{name || cell.name}</span>
 
             {cell.displayType === CellComponent.Range && !hideHistory && (
               <CellHistory cell={cell} />

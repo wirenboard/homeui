@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.246.5) stable; urgency=medium
+
+  * Fix device card expanding on hover when the cell history icon appears
+  * Temporarily disable custom column layout when a device type filter is active
+
+ -- Victor Vedenin <victor.vedenin@struhe.com>  Thu, 20 Aug 2026 17:10:00 +0300
+
 wb-mqtt-homeui (2.246.4) stable; urgency=medium
 
   * Show the terminal on-screen key panel only on devices without a physical keyboard: it was
