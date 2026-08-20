@@ -1,4 +1,4 @@
-import type { RuleFetchData, RuleListItem, RuleSaveData } from '@/stores/rules/types';
+import type { RuleFetchData, RuleListItem, RuleSaveData, TsCheckResult } from '@/stores/rules';
 import { createRpcProxy } from './rpc';
 
 interface EditorProxyMethods {
@@ -8,9 +8,11 @@ interface EditorProxyMethods {
   Save: (params: { path: string; content: string }) => Promise<RuleSaveData>;
   Remove: (params: { path: string }) => Promise<boolean>;
   Rename: (params: { path: string; new_path: string }) => Promise<void>;
+  Check: (params: { path: string }) => Promise<TsCheckResult>;
+  GetTypes: () => Promise<{ content: string }>;
 }
 
 export const editorProxy = createRpcProxy<EditorProxyMethods>(
   'wbrules/Editor',
-  ['ChangeState', 'List', 'Load', 'Save', 'Remove', 'Rename'],
+  ['ChangeState', 'List', 'Load', 'Save', 'Remove', 'Rename', 'Check', 'GetTypes'],
 );

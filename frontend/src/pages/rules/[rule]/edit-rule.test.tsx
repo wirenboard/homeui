@@ -18,12 +18,16 @@ const { rulesMock, navigateMock, paramsMock, setIsDirtyMock } = vi.hoisted(() =>
     setRule: vi.fn(),
     setRuleName: vi.fn(),
     checkIsNameUnique: vi.fn(async () => true),
+    tsCheckDiags: [],
+    checkTsFile: vi.fn(async () => {}),
+    clearTsCheck: vi.fn(),
   },
   navigateMock: vi.fn(),
   paramsMock: { id: 'test-rule.js' } as Record<string, string | undefined>,
   setIsDirtyMock: vi.fn(),
 }));
 
+vi.mock('@/services', () => import('@/test/mocks/services'));
 vi.mock('@/stores/rules', () => ({ rulesStore: rulesMock }));
 vi.mock('@/stores/rules/autocomplete', () => ({ getExtensions: () => [] }));
 vi.mock('@/stores/auth', () => ({
