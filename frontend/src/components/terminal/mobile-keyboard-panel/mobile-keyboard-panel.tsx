@@ -1,11 +1,14 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { type MouseEvent, type TouchEvent, useCallback, useEffect, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { terminalStore } from '../terminal-store';
 import { KEY_MAP } from '../types';
 import './styles.css';
 
-const MOBILE_BREAKPOINT = 768;
+// Show the panel only on devices without a physical keyboard: the primary pointer is a finger
+// and it cannot hover. Touch capability alone is not enough - a touchscreen laptop has a keyboard.
+const NO_KEYBOARD_QUERY = '(pointer: coarse) and (hover: none)';
 
 const vibrate = () => navigator.vibrate?.(25);
 
@@ -64,27 +67,22 @@ function toggleModifier(modifier: 'ctrl' | 'alt') {
 }
 
 export const MobileKeyboardPanel = observer(() => {
-  const [isMobile, setIsMobile] = useState(false);
+  const hasNoKeyboard = useMediaQuery({ query: NO_KEYBOARD_QUERY });
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
 
-  const checkMobile = useCallback(() => {
-    setIsMobile(
-      window.innerWidth <= MOBILE_BREAKPOINT ||
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0,
-    );
+  const checkScreenSize = useCallback(() => {
     setScreenWidth(window.innerWidth);
     setScreenHeight(window.innerHeight);
   }, []);
 
   useEffect(() => {
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  if (!isMobile || !terminalStore.terminal) {
+  if (!hasNoKeyboard || !terminalStore.terminal) {
     return null;
   }
 
