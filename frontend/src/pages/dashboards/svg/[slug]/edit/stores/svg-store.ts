@@ -11,6 +11,13 @@ export class SvgStore {
     return !!this.svg;
   }
 
+  get hasFontStyles() {
+    if (!this.svg) {
+      return false;
+    }
+    return /font-family\s*[:=]|font\s*[:=]/i.test(this.svg);
+  }
+
   setSvg(svg: string) {
     this.svg = svg || null;
   }
