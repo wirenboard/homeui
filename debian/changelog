@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.246.3) stable; urgency=medium
+
+  * Add user role description
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 20 Aug 2026 14:32:00 +0300
+
 wb-mqtt-homeui (2.246.2) stable; urgency=medium
 
   * Fix emoji rendering in rules console

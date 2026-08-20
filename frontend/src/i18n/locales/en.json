@@ -839,7 +839,10 @@
          "no-autologin": "Do not use autologin",
          "https": "HTTPS",
          "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access.",
-         "empty-list": "No users have been created. Click \"Add\" to create the first user."
+         "empty-list": "No users have been created. Click \"Add\" to create the first user.",
+         "role-user-desc": "view dashboards, history and MQTT channels",
+         "role-operator-desc": "all User permissions + create and edit dashboards",
+         "role-admin-desc": "full access: settings, rules, user management, firmware updates, archive downloads"
       },
       "buttons": {
          "save": "Save",
