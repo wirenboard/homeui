@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.246.1) stable; urgency=medium
+
+  * Fix info popup's transparency
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 20 Aug 2026 11:28:00 +0300
+
 wb-mqtt-homeui (2.246.0) stable; urgency=medium
 
   * Add custom font management for SVG dashboards
