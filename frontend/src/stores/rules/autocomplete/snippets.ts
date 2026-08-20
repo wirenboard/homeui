@@ -1,8 +1,8 @@
 /* eslint-disable stylistic/max-len */
 
-import { type CompletionSource, snippetCompletion } from '@codemirror/autocomplete';
+import { snippetCompletion } from '@codemirror/autocomplete';
 
-const snippets = [
+export const snippets = [
   snippetCompletion(
     'log("${1:string}");',
     { label: 'log', type: 'function', detail: '(fmt, ...args)' },
@@ -116,14 +116,3 @@ const snippets = [
     { label: 'defineRule', detail: 'whenChanged', type: 'function' },
   ),
 ];
-
-export const snippetSource: CompletionSource = (context) => {
-  const word = context.matchBefore(/\p{L}[\p{L}\d_]*$/u);
-  if (!word) return null;
-
-  return {
-    from: word.from,
-    to: context.pos,
-    options: snippets,
-  };
-};
