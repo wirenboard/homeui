@@ -45,23 +45,39 @@ const makeGetDeviceSource = (devices: string[]): CompletionSource => {
   };
 };
 
+// receiver forms handled here:
+//   getDevice("X").getControl("  -> device X's live controls (getDevice is
+//                                   not typed per-device, so TS can't help)
+//   getControl("                 -> the global function: full "dev/ctrl" refs
+// A method call on a variable (vdev.getControl(") is deliberately NOT
+// handled: the TS language service knows the variable's device type and
+// offers exactly that device's declared control names, so this source
+// returns null and lets it answer instead of dumping the global list.
+const GET_CONTROL_RE =
+  /(?:getDevice\(\s*(['"])([^'"]+)\1\)|([A-Za-z_$][\w$]*))?(\s*\.\s*)?getControl\(\s*(['"]?)([^'"]*)$/;
+
 const makeGetControlSource = (
   devices: Map<string, Device>,
   topics: string[] = [],
 ): CompletionSource => {
   return (context) => {
-    const before = context.matchBefore(/(?:getDevice\(\s*(['"])([^'"]+)\1\)\.)?getControl\(\s*(['"]?)([^'"]*)$/);
+    const before = context.matchBefore(GET_CONTROL_RE);
     if (!before) return null;
 
-    const m = before.text.match(/(?:getDevice\(\s*(['"])([^'"]+)\1\)\.)?getControl\(\s*(['"]?)([^'"]*)$/);
+    const m = before.text.match(GET_CONTROL_RE);
     if (!m) {
       return null;
     }
 
     const deviceId = m[2] || null;
-    const quote = m[3] || null;
+    const identReceiver = m[3] || null;
+    const dot = m[4] || null;
+    const quote = m[5] || null;
 
-    let controls = [];
+    // `something.getControl(` on a variable: defer to the TS service
+    if (identReceiver && dot) return null;
+
+    let controls: string[] = [];
     if (!deviceId) {
       controls = topics;
     } else if (devices.get(deviceId)) {
@@ -128,15 +144,18 @@ const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => 
 };
 
 export const getEnums = (devicesStore: DevicesStore) => {
-  const devices = Array.from(devicesStore.devices.keys());
-  const topics = devicesStore.topicsWithoutSystem.flatMap((g) => g.options.map((o) => o.value));
+  // read the store when a completion is requested, not when the editor
+  // extensions are built: the extension array is memoized upstream, and
+  // devices/topics keep arriving over MQTT long after that
+  const topics = () => devicesStore.topicsWithoutSystem.flatMap((g) => g.options.map((o) => o.value));
+  const live = (build: () => CompletionSource): CompletionSource => (context) => build()(context);
 
   return [
     typeCompletionSource,
-    makeGetDeviceSource(devices),
-    makeGetControlSource(devicesStore.devices, topics),
-    makeDevTopicsSource(topics),
-    makeTopicSource('publish', topics),
-    makeTopicSource('trackMqtt', topics),
+    live(() => makeGetDeviceSource(Array.from(devicesStore.devices.keys()))),
+    live(() => makeGetControlSource(devicesStore.devices, topics())),
+    live(() => makeDevTopicsSource(topics())),
+    live(() => makeTopicSource('publish', topics())),
+    live(() => makeTopicSource('trackMqtt', topics())),
   ];
 };
