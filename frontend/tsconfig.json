@@ -25,6 +25,9 @@
     "types": ["vitest/globals"]
   },
   "include": ["app/scripts", "src"],
-  "exclude": ["vite.config.ts"],
+  "exclude": [
+    "vite.config.ts",
+    "src/stores/rules/autocomplete/wb-rules.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
