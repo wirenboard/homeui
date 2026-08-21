@@ -148,4 +148,9 @@ export interface PropertyStore {
   setValue(value: unknown): void;
   commit(): void;
   reset(): void;
+
+  // Set by ObjectParamStore to mirror whether the param is part of the object.
+  // When true, an undefined value is an error (unless the schema allows undefined);
+  // composite stores that have no scalar undefined-error implement this as a no-op.
+  setForbidUndefined(value: boolean): void;
 }
