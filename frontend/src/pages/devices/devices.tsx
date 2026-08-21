@@ -204,11 +204,11 @@ const DevicesPage = observer(() => {
   }, [devicesStore.filteredDevices, actions]);
 
   const viewColumnItems = useMemo(() => {
-    if (!prefs.order) return undefined;
+    if (!prefs.order || typeFilter) return undefined;
     return reconcileOrder(displayedIds, prefs.order).map((col) =>
       col.map((id) => <Fragment key={id}>{renderDevice(id)}</Fragment>),
     );
-  }, [displayedIds, prefs.order, renderDevice]);
+  }, [displayedIds, prefs.order, typeFilter, renderDevice]);
 
   return (
     <PageLayout
