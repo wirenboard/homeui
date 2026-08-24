@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.248.0) stable; urgency=medium
+
+  * Add error state display for devices
+
+ -- Victor Vedenin <victor.vedenin@struhe.com>  Mon, 24 Aug 2026 13:18:00 +0300
+
 wb-mqtt-homeui (2.247.0) stable; urgency=medium
 
   * Rename unixtime control type to local_time

@@ -8,6 +8,7 @@ export default class Device {
   public cells: Set<string> = new Set();
   public explicit: boolean = false;
   public isVisible: boolean = true;
+  public error: string = null;
   public type: DeviceType;
   private _name: string;
   private _nameTranslations: NameTranslations = {};
@@ -77,5 +78,13 @@ export default class Device {
 
   getControls(): string[] {
     return [...this.cells].map((item) => item.replace(`${this.id}/`, ''));
+  }
+
+  setExplicit(explicit: boolean) {
+    this.explicit = explicit;
+  }
+
+  setError(error: string) {
+    this.error = error;
   }
 }
