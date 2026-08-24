@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.247.0) stable; urgency=medium
+wb-mqtt-homeui (2.248.0) stable; urgency=medium
 
   * Rules editor: TypeScript support. .ts rule files can be created and
     edited with an in-browser TypeScript language service: live error
@@ -26,7 +26,9 @@ wb-mqtt-homeui (2.247.0) stable; urgency=medium
   * Requires wb-rules >= 2.47 for the TypeScript engine support; the
     editor degrades gracefully on older firmware.
 
- -- Evgeny Boger <boger@wirenboard.com>  Thu, 20 Aug 2026 14:00:00 +0000
+ -- Evgeny Boger <boger@wirenboard.com>  Mon, 24 Aug 2026 18:55:23 +0000
+
+wb-mqtt-homeui (2.247.0) stable; urgency=medium
 
   * Rename unixtime control type to local_time
 
@@ -38,6 +40,7 @@ wb-mqtt-homeui (2.246.5) stable; urgency=medium
   * Temporarily disable custom column layout when a device type filter is active
 
  -- Victor Vedenin <victor.vedenin@struhe.com>  Thu, 20 Aug 2026 17:10:00 +0300
+
 wb-mqtt-homeui (2.246.4) stable; urgency=medium
 
   * Show the terminal on-screen key panel only on devices without a physical keyboard: it was
@@ -50,6 +53,7 @@ wb-mqtt-homeui (2.246.3) stable; urgency=medium
   * Add user role description
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 20 Aug 2026 14:32:00 +0300
+
 wb-mqtt-homeui (2.246.2) stable; urgency=medium
 
   * Fix emoji rendering in rules console
