@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MqttSettings } from './mqtt-settings';
+import { MqttSettings } from './mqtt';
 
 vi.mock('@/components/button', () => ({
   Button: ({ label, disabled, onClick }: any) => (

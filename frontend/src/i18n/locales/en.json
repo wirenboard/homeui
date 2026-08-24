@@ -13,6 +13,7 @@
          "password-strength-4": "Strong password",
          "select-all": "Select all",
          "unselect-all": "Unselect all",
+         "checking-connection": "Checking the connection",
          "setting-up-https": "Setting up HTTPS",
          "columns": "Columns",
          "columns-auto": "Auto"
@@ -413,7 +414,8 @@
          "text": "text",
          "path": "path",
          "circle": "circle",
-         "rect": "rectangle"
+         "rect": "rectangle",
+         "font-hint": "SVG contains font styles. You can upload custom fonts in <0>web interface settings</0>"
       },
       "buttons": {
          "save": "Save",
@@ -492,7 +494,8 @@
          "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
          "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
          "restoring-device": "Restoring device firmware",
-         "uncommitted-settings": "You have modified settings that will be lost. Continue?",
+         "reread-config-title": "Reread config?",
+         "uncommitted-settings": "The settings of this device are modified and not saved yet. If you reread the config, your changes will be lost and replaced with the values from the device.",
          "delete-title": "Confirmation of deletion",
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
          "not-polled": "The device is not being polled",
@@ -836,7 +839,10 @@
          "no-autologin": "Do not use autologin",
          "https": "HTTPS",
          "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access.",
-         "empty-list": "No users have been created. Click \"Add\" to create the first user."
+         "empty-list": "No users have been created. Click \"Add\" to create the first user.",
+         "role-user-desc": "view dashboards, history and MQTT channels",
+         "role-operator-desc": "all User permissions + create and edit dashboards",
+         "role-admin-desc": "full access: settings, rules, user management, firmware updates, archive downloads"
       },
       "buttons": {
          "save": "Save",
@@ -994,11 +1000,17 @@
          "getting-https-cert-status": "Getting HTTPS certificate status...",
          "https-cert-valid": "HTTPS certificate is valid",
          "https-cert-requesting": "Requesting HTTPS certificate",
-         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet"
+         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet",
+         "panels-settings": "Panels",
+         "upload-font": "Upload font",
+         "delete-font": "Delete",
+         "no-fonts": "No fonts uploaded",
+         "fonts": "Fonts for SVG dashboards"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
-         "get-https-status": "Failed to get HTTPS status: {{error}}"
+         "get-https-status": "Failed to get HTTPS status: {{error}}",
+         "font-upload": "Font upload failed"
       }
    },
    "mqtt": {

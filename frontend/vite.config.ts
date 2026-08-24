@@ -79,7 +79,8 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       port: 8080,
       open: true,
       proxy: {
-        '^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check|api/dashboards|api/integrations/alice)': {
+        ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
+          + '|api/dashboards|api/fonts|fonts|api/integrations/alice)']: {
           target: env.MQTT_BROKER_URI,
           changeOrigin: true,
           ws: true,

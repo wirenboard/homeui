@@ -58,6 +58,14 @@ vi.mock('./store', () => ({
   },
 }));
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
+vi.mock('@/stores/fonts', () => ({
+  fontsStore: {
+    fonts: [],
+    isLoading: false,
+    loadFonts: vi.fn().mockResolvedValue([]),
+    buildFontFaceCss: vi.fn().mockReturnValue(''),
+  },
+}));
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return { ...(actual as any), useNavigate: () => navigateMock };

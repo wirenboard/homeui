@@ -78,6 +78,58 @@ const makeScannedDevice = (overrides: Partial<ScannedDevice> = {}): ScannedDevic
     ...overrides,
   } as ScannedDevice);
 
+const addSelectedDeviceTab = async (store: ConfigEditorPageStore, portTab: PortTab) => {
+  const deviceTab = store.createDeviceTab({ slave_id: '5' });
+  store.tabs.addDeviceTab(portTab, deviceTab, true);
+  await deviceTab.loadContent(portTab.baseConfig);
+  return deviceTab;
+};
+
+describe('ConfigEditorPageStore.readRegisters forced reread', () => {
+  it('keeps the unsaved settings of the device when the user declines the confirmation', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const deviceTab = await addSelectedDeviceTab(store, portTab);
+    const schemaStoreBeforeReread = deviceTab.schemaStore;
+    deviceTab.schemaStore.setSlaveId('6');
+    expect(deviceTab.isDirty).toBe(true);
+    const showDiscardChangesModal = vi.fn(async () => false);
+
+    await store.readRegisters(deviceTab, true, showDiscardChangesModal);
+
+    expect(showDiscardChangesModal).toHaveBeenCalledTimes(1);
+    expect(deviceTab.schemaStore).toBe(schemaStoreBeforeReread);
+    expect(deviceTab.slaveId).toBe('6');
+    expect(deviceTab.isDirty).toBe(true);
+  });
+
+  it('discards the unsaved settings of the device when the user accepts the confirmation', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const deviceTab = await addSelectedDeviceTab(store, portTab);
+    deviceTab.schemaStore.setSlaveId('6');
+    const showDiscardChangesModal = vi.fn(async () => true);
+
+    await store.readRegisters(deviceTab, true, showDiscardChangesModal);
+
+    expect(showDiscardChangesModal).toHaveBeenCalledTimes(1);
+    expect(deviceTab.slaveId).toBe('5');
+    expect(deviceTab.isDirty).toBeFalsy();
+  });
+
+  it('rereads without asking anything when nothing was edited', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const deviceTab = await addSelectedDeviceTab(store, portTab);
+    const schemaStoreBeforeReread = deviceTab.schemaStore;
+    const showDiscardChangesModal = vi.fn(async () => false);
+
+    await store.readRegisters(deviceTab, true, showDiscardChangesModal);
+
+    expect(showDiscardChangesModal).not.toHaveBeenCalled();
+    // The forced reread rebuilds the settings editor from scratch
+    expect(deviceTab.schemaStore).not.toBe(schemaStoreBeforeReread);
+    expect(deviceTab.slaveId).toBe('5');
+  });
+});
+
 describe('ConfigEditorPageStore.addScannedDeviceToConfig serial-number persistence', () => {
   it('writes the scanned device serial number into the created device config entry', async () => {
     const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());

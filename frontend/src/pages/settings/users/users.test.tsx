@@ -168,8 +168,8 @@ describe('UsersPage', () => {
 
   test('renders user type labels', () => {
     render(<UsersPage />);
-    expect(screen.getByText('users.labels.admin')).toBeDefined();
-    expect(screen.getByText('users.labels.user')).toBeDefined();
+    expect(screen.getAllByText('users.labels.admin').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('users.labels.user').length).toBeGreaterThanOrEqual(1);
   });
 
   test('renders add button', () => {
@@ -278,9 +278,8 @@ describe('UsersPage', () => {
   test('shows empty list alert when no users', () => {
     storeMock.users = [];
     render(<UsersPage />);
-    const alert = screen.getByTestId('alert');
+    const alert = screen.getByText('users.labels.empty-list').closest('[data-testid="alert"]');
     expect(alert.getAttribute('data-variant')).toBe('info');
-    expect(alert.textContent).toBe('users.labels.empty-list');
   });
 
   test('hides table and autologin when no users', () => {

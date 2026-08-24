@@ -10,3 +10,17 @@
   display: flex;
   gap: 8px;
 }
+
+.users-rolesList {
+  margin-top: 12px;
+}
+
+.users-rolesItem dt,
+.users-rolesItem dd {
+  display: inline;
+  margin: 0;
+}
+
+.users-rolesItem dt::after {
+  content: ' — ';
+}
