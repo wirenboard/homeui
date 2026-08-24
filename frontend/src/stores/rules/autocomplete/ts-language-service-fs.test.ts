@@ -41,6 +41,21 @@ describe('built-in fs module', () => {
     expect(support.getDiagnostics()).toEqual([]);
   }, 30000);
 
+  it('accepts the CommonJS import/export forms the transpiler emits (module preserve)', async () => {
+    // import x = require("m") and export = ... are what the engine's CommonJS
+    // output runs; --module esnext rejects them as TS1202/TS1203, so the check
+    // (and this service) uses --module preserve
+    const content = [
+      'import x = require("fs");',
+      'const s: string = x.readFileSync("/x");', // typed through the import too
+      'log.info(s);',
+      'export = x;',
+      '',
+    ].join('\n');
+    const support = await loadTsEditorSupport('fs-cjs-forms.ts', content);
+    expect(support.getDiagnostics()).toEqual([]);
+  }, 30000);
+
   it('completes fs members after the dot', async () => {
     const content = 'const fs = require("fs");\nfs.';
     const support = await loadTsEditorSupport('fs-members.ts', content);
