@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.247.0) stable; urgency=medium
+
+  * Rename unixtime control type to local_time
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Mon, 24 Aug 2026 12:55:23 +0300
+
 wb-mqtt-homeui (2.246.5) stable; urgency=medium
 
   * Fix device card expanding on hover when the cell history icon appears
