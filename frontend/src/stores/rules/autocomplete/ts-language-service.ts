@@ -77,6 +77,12 @@ async function build(
     // to match the engine's on-controller check
     module: ts.ModuleKind.ESNext,
     moduleDetection: ts.ModuleDetectionKind.Force,
+    // the engine transpiles rule files to CommonJS with esModuleInterop, so a
+    // default import of a built-in module (import fs from "fs") works at
+    // runtime and its check passes --esModuleInterop; stated explicitly here
+    // (TypeScript 6 defaults it on) so the editor's verdict never depends on
+    // the bundled TypeScript's defaults
+    esModuleInterop: true,
   };
 
   const fsMap = new Map<string, string>();
