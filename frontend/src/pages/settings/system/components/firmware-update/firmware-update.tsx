@@ -54,18 +54,13 @@ const UploadWidget = observer(({ store, mode, onSetMode }: UploadWidgetProps) =>
   if (mode === 'reset') {
     return (
       <div>
-        <ul className="firmwareUpdate-list">
-          <li>{t('system.factory_reset.warning1')}</li>
-          {store.factoryResetFitsState.canDoFactoryReset && (<li>{t('system.factory_reset.warning2')}</li>)}
-        </ul>
-
         <div className="firmwareUpdate-actions">
           <Button
             type="button"
             variant="danger"
             aria-haspopup="dialog"
             aria-label={t('system.buttons.select_and_reset')}
-            label={t('system.buttons.select')}
+            label={t('system.buttons.select_and_reset')}
             onClick={() => {
               onSetMode(ModalMode.UpdateReset);
             }}
