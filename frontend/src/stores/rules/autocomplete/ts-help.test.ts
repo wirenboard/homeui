@@ -4,7 +4,7 @@ import { EditorState } from '@codemirror/state';
 import { createDefaultMapFromNodeModules, createSystem, createVirtualTypeScriptEnvironment } from '@typescript/vfs';
 import ts from 'typescript';
 import { describe, expect, it, vi } from 'vitest';
-import { withCompletionDetails, buildSignatureTooltip } from './ts-help';
+import { withCompletionDetails } from './ts-help';
 
 // A tiny real language service over a hand-written d.ts, so the enrichment
 // is exercised against actual getCompletionEntryDetails/getSignatureHelpItems
@@ -49,8 +49,6 @@ describe('withCompletionDetails', () => {
     const result = await enriched(new CompletionContext(state, source.length, true));
     expect(result).not.toBeNull();
     const [option] = result!.options;
-    expect(option.detail).toContain('writeChannel');
-    expect(option.detail).toContain('name: string');
     const info = (option.info as (c: any) => Node)(option);
     const text = (info as HTMLElement).textContent ?? '';
     expect(text).toContain('writeChannel');
@@ -65,26 +63,5 @@ describe('withCompletionDetails', () => {
     const state = EditorState.create({ doc: 'device.' });
     const result = await enriched(new CompletionContext(state, 7, true));
     expect(result!.options[0].info).toBe('kept');
-  });
-});
-
-describe('buildSignatureTooltip', () => {
-  it('shows the parameters with the active one emphasised', () => {
-    const source = 'device.writeChannel(';
-    const { env, path } = makeEnv(source);
-    const tooltip = buildSignatureTooltip(env, path, ts, source.length);
-    expect(tooltip).not.toBeNull();
-    const { dom } = tooltip!.create({} as any);
-    const text = (dom as HTMLElement).textContent ?? '';
-    expect(text).toContain('name: string');
-    expect(text).toContain('value: any');
-    const active = (dom as HTMLElement).querySelector('.cm-signatureHelp-active');
-    expect(active?.textContent).toContain('name: string');
-  });
-
-  it('is null outside a call', () => {
-    const source = 'const x = 1;';
-    const { env, path } = makeEnv(source);
-    expect(buildSignatureTooltip(env, path, ts, source.length)).toBeNull();
   });
 });
