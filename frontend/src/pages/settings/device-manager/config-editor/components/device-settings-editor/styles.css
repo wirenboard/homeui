@@ -69,6 +69,11 @@
     flex-basis: 100%;
 }
 
+.deviceSettingsEditor-channelsTable .deviceSettingsEditor-parameter input {
+    width: 100%;
+    min-width: 70px;
+}
+
 .deviceSettingsEditor-parameter {
     display: flex;
     flex-direction: column;
