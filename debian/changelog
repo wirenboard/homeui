@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.249.0) stable; urgency=medium
+
+  * Fix range slider label position when min/max metadata is not yet available from MQTT:
+    the value label was stuck at the left edge of the track instead of following the thumb
+
+ -- Victor Vedenin <victor.vedenin@struhe.com>  Mon, 25 Aug 2026 16:00:00 +0300
+
 wb-mqtt-homeui (2.248.0) stable; urgency=medium
 
   * Add error state display for devices
