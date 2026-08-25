@@ -1,5 +1,6 @@
 import type { Diagnostic, Node, Program, Type, TypeChecker } from 'typescript';
 import { tsDiagnosticsLinter } from './ts-diagnostics-linter';
+import { withCompletionDetails, signatureHelp } from './ts-help';
 import type { TsEditorSupport, TsModule } from './types';
 import wbRulesDts from './wb-rules.d.ts?raw';
 
@@ -287,8 +288,12 @@ async function build(
       cmts.tsSync(),
       tsDiagnosticsLinter(ts, env, path),
       cmts.tsHover(),
+      // valtown's completion/hover omit the parameter hints and the JSDoc
+      // panel; both come from the same service, so wb-rules.d.ts docs show
+      signatureHelp(env, path, ts),
     ],
-    completionSource: cmts.tsAutocomplete(),
+    // enrich the plain {label, kind} entries with the signature and JSDoc
+    completionSource: withCompletionDetails(cmts.tsAutocomplete(), env, path, ts),
     reseed: (content: string) => {
       // an empty file must still exist in the vfs (same rule as build)
       env.updateFile(path, normalizeEol(content) || '\n');

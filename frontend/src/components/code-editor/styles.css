@@ -8,3 +8,28 @@
 .codeEditor-gutters {
     width: 18px;
 }
+
+/* TypeScript completion detail panel and signature (parameter) help */
+.cm-completionInfo-signature,
+.cm-signatureHelp-signature {
+    font-family: var(--code-font, monospace);
+    white-space: pre-wrap;
+}
+.cm-completionInfo-doc,
+.cm-signatureHelp-doc,
+.cm-signatureHelp-param-doc {
+    margin-top: 4px;
+    opacity: 0.85;
+}
+.cm-completionInfo-tag {
+    margin-top: 2px;
+    opacity: 0.75;
+}
+.cm-signatureHelp {
+    padding: 4px 8px;
+    max-width: 48em;
+}
+.cm-signatureHelp-active {
+    font-weight: 700;
+    text-decoration: underline;
+}
