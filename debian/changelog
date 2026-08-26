@@ -5,17 +5,24 @@ wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Aug 2026 15:14:34 +0500
 
+wb-mqtt-homeui (2.248.2) stable; urgency=medium
+
+  * Fix range slider label position when min/max metadata is not yet available from MQTT:
+    the value label was stuck at the left edge of the track instead of following the thumb
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 25 Aug 2026 16:44:00 +0300
+
 wb-mqtt-homeui (2.248.1) stable; urgency=medium
 
   * Rename factory reset buttons
 
- -- Victor Vedenin <victor.vedenin@struhe.com>  Tue, 25 Aug 2026 14:28:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 25 Aug 2026 14:28:00 +0300
 
 wb-mqtt-homeui (2.248.0) stable; urgency=medium
 
   * Add error state display for devices
 
- -- Victor Vedenin <victor.vedenin@struhe.com>  Mon, 24 Aug 2026 13:18:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 24 Aug 2026 13:18:00 +0300
 
 wb-mqtt-homeui (2.247.0) stable; urgency=medium
 
@@ -28,7 +35,7 @@ wb-mqtt-homeui (2.246.5) stable; urgency=medium
   * Fix device card expanding on hover when the cell history icon appears
   * Temporarily disable custom column layout when a device type filter is active
 
- -- Victor Vedenin <victor.vedenin@struhe.com>  Thu, 20 Aug 2026 17:10:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 20 Aug 2026 17:10:00 +0300
 
 wb-mqtt-homeui (2.246.4) stable; urgency=medium
 
