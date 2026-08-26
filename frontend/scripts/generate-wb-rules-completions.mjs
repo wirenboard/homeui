@@ -41,16 +41,36 @@ const snippetFor = (name, params) => {
   return `${name}(${args.join(', ')})`;
 };
 
+// Overloads of one function collapse into a single completion, described by
+// the first overload - unless that one is specialised on literal arguments,
+// such as require(id: "fs" | "node:fs") declared ahead of require(id: string):
+// the first general overload then makes the better detail. Only top-level
+// statements are walked, so the members of a `declare module "fs" { ... }`
+// block are not offered as globals.
+const isLiteralType = (t) =>
+  ts.isLiteralTypeNode(t) || (ts.isUnionTypeNode(t) && t.types.every(isLiteralType));
+const isLiteralSpecialization = (fn) =>
+  fn.parameters.length > 0 && fn.parameters.every((p) => p.type && isLiteralType(p.type));
+const overloadFor = new Map();
+for (const stmt of source.statements) {
+  if (!ts.isFunctionDeclaration(stmt) || !stmt.name) continue;
+  const current = overloadFor.get(stmt.name.text);
+  if (!current || (isLiteralSpecialization(current) && !isLiteralSpecialization(stmt))) {
+    overloadFor.set(stmt.name.text, stmt);
+  }
+}
+
 for (const stmt of source.statements) {
   if (ts.isFunctionDeclaration(stmt) && stmt.name) {
     const name = stmt.name.text;
-    if (seen.has(name)) continue; // keep the first overload only
+    if (seen.has(name)) continue; // one entry per function, placed at its first overload
     seen.add(name);
+    const fn = overloadFor.get(name);
     completions.push({
       label: name,
       type: 'function',
-      detail: signatureOf(stmt),
-      snippet: snippetFor(name, stmt.parameters),
+      detail: signatureOf(fn),
+      snippet: snippetFor(name, fn.parameters),
     });
   } else if (ts.isVariableStatement(stmt)) {
     for (const decl of stmt.declarationList.declarations) {

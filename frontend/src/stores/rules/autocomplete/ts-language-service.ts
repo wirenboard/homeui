@@ -75,9 +75,18 @@ async function build(
     noEmit: true,
     // rule files may use top-level await (the engine wraps them in an async
     // function); TypeScript only allows it in a module, so force module mode
-    // to match the engine's on-controller check
-    module: ts.ModuleKind.ESNext,
+    // to match the engine's on-controller check. "preserve" rather than
+    // esnext: it also accepts the CommonJS forms the transpiler emits and
+    // runs - import x = require("m") and export = ... - which esnext rejects
+    // as TS1202/TS1203 syntax errors
+    module: ts.ModuleKind.Preserve,
     moduleDetection: ts.ModuleDetectionKind.Force,
+    // the engine transpiles rule files to CommonJS with esModuleInterop, so a
+    // default import of a built-in module (import fs from "fs") works at
+    // runtime and its check passes --esModuleInterop; stated explicitly here
+    // (TypeScript 6 defaults it on) so the editor's verdict never depends on
+    // the bundled TypeScript's defaults
+    esModuleInterop: true,
   };
 
   const fsMap = new Map<string, string>();
