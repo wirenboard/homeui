@@ -488,6 +488,65 @@ class UpdateUserHandlerTest(unittest.TestCase):
             )
             self.assertEqual(response, response_200())
 
+    def test_update_login_keeps_autologin(self):
+        """A partial update that doesn't mention autologin must not clear it.
+
+        The users page patches only {login, password, type}, so an omitted autologin
+        field means "unchanged", not "off".
+        """
+        self.request.path = "/users/1"
+        user = User("1", "user1", "password1", UserType.USER, True)
+        self.users_storage_mock.get_user_by_id.return_value = user
+        self.users_storage_mock.get_user_by_login.return_value = None
+        self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
+        self.request.rfile.read.return_value = b'{"login": "user2"}'
+        response = update_user_handler(self.request, self.context)
+        saved_user = self.users_storage_mock.update_user.call_args.args[0]
+        self.assertTrue(saved_user.autologin)
+        self.users_storage_mock.update_user.assert_called_once_with(
+            User("1", "user2", "password1", UserType.USER, True)
+        )
+        self.assertEqual(response, response_200())
+
+    def test_invalid_fields_are_rejected(self):
+        """Bad field values are 400s from the validator, not 500s from deeper in the handler.
+
+        Each payload is a field the handler would otherwise act on: an unknown type used to
+        reach UserType() and raise, and an empty password used to be hashed and stored.
+        """
+        self.request.path = "/users/1"
+        self.users_storage_mock.get_user_by_id.return_value = User(
+            "1", "user1", "password1", UserType.USER, True
+        )
+        self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
+        cases = [
+            (b'{"type": "root"}', "Invalid type field"),
+            (b'{"password": ""}', "Invalid password field"),
+            (b'{"password": 123}', "Invalid password field"),
+            (b'{"login": ""}', "Invalid login field"),
+            (b'{"autologin": "yes"}', "Invalid autologin field"),
+            (b'{"autologin": null}', "Invalid autologin field"),
+        ]
+        for body, message in cases:
+            with self.subTest(body=body):
+                self.request.rfile.read.return_value = body
+                response = update_user_handler(self.request, self.context)
+                self.assertEqual(response, response_400(message))
+                self.users_storage_mock.update_user.assert_not_called()
+
+    def test_update_autologin(self):
+        """An explicit autologin field is applied (the users page uses it to move autologin)."""
+        self.request.path = "/users/1"
+        user = User("1", "user1", "password1", UserType.USER, True)
+        self.users_storage_mock.get_user_by_id.return_value = user
+        self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
+        self.request.rfile.read.return_value = b'{"autologin": false}'
+        response = update_user_handler(self.request, self.context)
+        self.users_storage_mock.update_user.assert_called_once_with(
+            User("1", "user1", "password1", UserType.USER, False)
+        )
+        self.assertEqual(response, response_200())
+
 
 class SecurityCheckHandlerTest(unittest.TestCase):
     def setUp(self):
