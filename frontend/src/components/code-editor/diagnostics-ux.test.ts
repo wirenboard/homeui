@@ -39,6 +39,27 @@ describe('diagnostics lens', () => {
     }
   });
 
+  it('does not put the lens on the caret line, and brings it back when the caret leaves', () => {
+    const view = makeView();
+    try {
+      // caret on line 2 (the diagnostic line): no inline lens there while typing
+      view.dispatch({ selection: { anchor: line2.to } });
+      pushDiagnostics(view, [{ ...line2, severity: 'error', message: 'type error' }]);
+      const onActive = [...view.dom.querySelectorAll('.cm-wb-lens')]
+        .some((el) => el.closest('.cm-line')?.textContent?.includes('dev["buzzer/enabled"]'));
+      expect(onActive).toBe(false);
+      // the diagnostics did not move the caret
+      expect(view.state.selection.main.head).toBe(line2.to);
+      // move the caret to line 1: the lens on line 2 appears
+      view.dispatch({ selection: { anchor: 0 } });
+      const lens = view.dom.querySelectorAll('.cm-wb-lens');
+      expect(lens).toHaveLength(1);
+      expect(lens[0].closest('.cm-line')?.textContent).toContain('dev["buzzer/enabled"]');
+    } finally {
+      view.destroy();
+    }
+  });
+
   it('shows one lens per line: worst severity, first message, +N, all messages in the title', () => {
     const view = makeView();
     try {

@@ -66,11 +66,22 @@ class LensWidget extends WidgetType {
 }
 
 // One lens per line: the worst severity, the first message (plus "+N" for
-// the rest); every message in the hover title.
+// the rest); every message in the hover title. The line the caret is on is
+// left alone - an inline widget next to the cursor jumps around and reads
+// like the caret moved as you type (VS Code shows nothing inline there
+// either); the squiggle, the gutter marker and the hover still flag it, and
+// the lens reappears the moment the caret leaves the line.
 export function lensDecorations(view: EditorView): DecorationSet {
+  const cursorLines = new Set<number>();
+  for (const range of view.state.selection.ranges) {
+    const first = view.state.doc.lineAt(range.from).number;
+    const last = view.state.doc.lineAt(range.to).number;
+    for (let n = first; n <= last; n++) cursorLines.add(n);
+  }
   const byLine = new Map<number, Diagnostic[]>();
   forEachDiagnostic(view.state, (d, from) => {
     const line = view.state.doc.lineAt(from).number;
+    if (cursorLines.has(line)) return;
     byLine.set(line, [...(byLine.get(line) ?? []), d]);
   });
   const builder = new RangeSetBuilder<Decoration>();
@@ -101,7 +112,9 @@ const lensPlugin = ViewPlugin.fromClass(class {
   }
 
   update(update: ViewUpdate) {
-    if (update.docChanged || diagnosticsChanged(update)) {
+    // selectionSet too: the lens hides on the caret's line and comes back
+    // when the caret leaves it
+    if (update.docChanged || update.selectionSet || diagnosticsChanged(update)) {
       this.decorations = lensDecorations(update.view);
     }
   }
