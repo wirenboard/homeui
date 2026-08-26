@@ -4,11 +4,19 @@ import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
+import { Passkeys } from '@/pages/settings/users/components/passkeys';
 import { UserRole } from '@/stores/auth';
 import type { EditUserModalProps } from './types';
 import './styles.css';
 
-export const EditUserModal = ({ onSave, user, isLoading, isFirstUser, onCancel }: EditUserModalProps) => {
+export const EditUserModal = ({
+  onSave,
+  user,
+  isLoading,
+  isFirstUser,
+  isCurrentUser,
+  onCancel,
+}: EditUserModalProps) => {
   const { t } = useTranslation();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +43,7 @@ export const EditUserModal = ({ onSave, user, isLoading, isFirstUser, onCancel }
 
   return (
     <Confirm
-      width={450}
+      width={isCurrentUser ? 760 : 450}
       heading={t('users.labels.user')}
       acceptLabel={t('users.buttons.save')}
       confirmCallback={() => onSave({ login, password, type })}
@@ -82,6 +90,8 @@ export const EditUserModal = ({ onSave, user, isLoading, isFirstUser, onCancel }
           onChange={({ value }: Option<UserRole>) => setType(value)}
         />
       </label>
+
+      {isCurrentUser && <Passkeys />}
     </Confirm>
   );
 };

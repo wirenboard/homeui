@@ -838,6 +838,15 @@
          "https": "HTTPS",
          "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access.",
          "empty-list": "No users have been created. Click \"Add\" to create the first user.",
+         "passkeys": "Passkeys",
+         "passkey-name": "Device name",
+         "passkey-name-hint": "Enter a recognizable label such as “MacBook Touch ID”. The passkey itself will be registered in a system dialog after you press the button.",
+         "passkey-name-placeholder": "For example, MacBook Touch ID",
+         "passkey-created": "Created",
+         "passkey-last-used": "Last used",
+         "passkey-never-used": "Never",
+         "passkeys-empty": "No passkeys have been registered for the current user.",
+         "passkeys-unavailable": "Passkeys require a supported browser and a secure HTTPS connection.",
          "role-user-desc": "view dashboards, history and MQTT channels",
          "role-operator-desc": "all User permissions + create and edit dashboards",
          "role-admin-desc": "full access: settings, rules, user management, firmware updates, archive downloads"
@@ -848,7 +857,9 @@
          "edit": "Edit",
          "delete": "Delete",
          "enable-https": "Enable HTTPS",
-         "use-http": "Stay on HTTP"
+         "use-http": "Stay on HTTP",
+         "add-passkey": "Register passkey",
+         "delete-passkey": "Delete passkey"
       }
    },
    "login": {
@@ -860,7 +871,8 @@
          "login": "Sign in",
          "auto-login": "Sign in without password",
          "forgot-password": "Forgot password?",
-         "choose-language": "Choose language"
+         "choose-language": "Choose language",
+         "passkey": "Sign in with passkey"
       },
       "labels": {
          "authorization-title": "Logging in to the controller interface",

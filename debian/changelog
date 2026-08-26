@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.250.0) stable; urgency=medium
+
+  * Add optional WebAuthn passkey authentication
+
+ -- Anton Akinin <akinin@users.noreply.github.com>  Wed, 26 Aug 2026 21:36:45 +0300
+
 wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
   * Show the device template parameter variant matching the device firmware

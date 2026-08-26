@@ -13,7 +13,7 @@ from email.utils import formatdate, parsedate_to_datetime
 from http import cookies
 from http.server import BaseHTTPRequestHandler
 from sys import argv
-from typing import Any, Callable, Optional
+from typing import Any, Callable, ClassVar, Optional
 from urllib.parse import unquote, urlparse
 
 import bcrypt
@@ -51,6 +51,8 @@ from .rate_limiter import RateLimiter
 from .security import SecurityCheckingThread
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
+from .webauthn import WebAuthnService, json_dumps
+from .webauthn_storage import WebAuthnCredentialsStorage
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
@@ -76,12 +78,14 @@ def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
-def make_id_cookie(session: Session) -> cookies.SimpleCookie:
+def make_id_cookie(session: Session, secure: bool = False) -> cookies.SimpleCookie:
     cookie = cookies.SimpleCookie()
     cookie["id"] = session.id
     cookie["id"]["path"] = "/"
     cookie["id"]["httponly"] = True
     cookie["id"]["samesite"] = "Lax"
+    if secure:
+        cookie["id"]["secure"] = True
     expires = session.start_date + DEFAULT_COOKIE_LIFETIME
     cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return cookie
@@ -184,6 +188,7 @@ def validate_update_user_request(request: dict) -> None:
 
 @dataclass
 class WebRequestHandlerContext:  # pylint: disable=too-many-instance-attributes
+    webauthn_service: ClassVar[Optional[WebAuthnService]] = None
     sn: str
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
@@ -300,6 +305,139 @@ def auth_who_am_i_handler(
     return response_401()
 
 
+def read_json_request(request: BaseHTTPRequestHandler) -> dict:
+    length = int(request.headers.get("Content-Length", 0))
+    form = json.loads(request.rfile.read(length).decode("utf-8"))
+    if not isinstance(form, dict):
+        raise TypeError("JSON object expected")
+    return form
+
+
+def webauthn_config_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    res = {"enabled": context.webauthn_service is not None}
+    if context.webauthn_service is not None:
+        res["rp_id"] = context.webauthn_service.rp_id
+    return response_200([["Content-type", "application/json"]], json.dumps(res))
+
+
+def webauthn_registration_options_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if context.webauthn_service is None:
+        return response_404()
+    if context.session is None:
+        return response_401()
+    return response_200(
+        [["Content-type", "application/json"]],
+        json_dumps(context.webauthn_service.begin_registration(context.session.user)),
+    )
+
+
+def webauthn_registration_complete_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if context.webauthn_service is None:
+        return response_404()
+    if context.session is None:
+        return response_401()
+    try:
+        form = read_json_request(request)
+        credential = context.webauthn_service.complete_registration(
+            context.session.user,
+            form.get("challenge_id", ""),
+            form.get("name", ""),
+            form.get("response", {}),
+        )
+    except (KeyError, TypeError, ValueError) as e:
+        logging.warning("WebAuthn registration failed for user=%r: %s", context.session.user.login, e)
+        return response_400("WebAuthn registration failed")
+    return response_201(
+        [["Content-type", "application/json"]],
+        json.dumps(context.webauthn_service.credential_to_dict(credential)),
+    )
+
+
+def webauthn_authentication_options_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if context.webauthn_service is None:
+        return response_404()
+    try:
+        form = read_json_request(request)
+        user = context.users_storage.get_user_by_login(form.get("login"))
+        if user is None:
+            return response_401()
+        res = context.webauthn_service.begin_authentication(user)
+    except (KeyError, TypeError, ValueError):
+        return response_401()
+    return response_200([["Content-type", "application/json"]], json_dumps(res))
+
+
+def webauthn_authentication_complete_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if context.webauthn_service is None:
+        return response_404()
+    try:
+        form = read_json_request(request)
+        user_id, _credential = context.webauthn_service.complete_authentication(
+            form.get("challenge_id", ""), form.get("response", {})
+        )
+        user = context.users_storage.get_user_by_id(user_id)
+        if user is None:
+            return response_401()
+    except (KeyError, StopIteration, TypeError, ValueError) as e:
+        logging.warning("WebAuthn authentication failed: %s", e)
+        return response_401()
+
+    logging.info("WebAuthn login successful: user=%r type=%s", user.login, user.type.value)
+    session = context.sessions_storage.add_session(user)
+    res = {"user_type": user.type.value, "user_id": user.user_id}
+    return response_200(
+        headers=[
+            make_set_cookie_header(make_id_cookie(session, secure=True)),
+            ["Content-type", "application/json"],
+        ],
+        body=json.dumps(res),
+    )
+
+
+def webauthn_credentials_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if context.webauthn_service is None:
+        return response_404()
+    if context.session is None:
+        return response_401()
+    credentials = context.webauthn_service.credentials_storage.get_credentials_by_user(
+        context.session.user.user_id
+    )
+    return response_200(
+        [["Content-type", "application/json"]],
+        json.dumps([context.webauthn_service.credential_to_dict(item) for item in credentials]),
+    )
+
+
+def webauthn_delete_credential_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if context.webauthn_service is None:
+        return response_404()
+    if context.session is None:
+        return response_401()
+    credential_id = urlparse(request.path).path.rsplit("/", 1)[-1]
+    try:
+        deleted = context.webauthn_service.credentials_storage.delete_credential(
+            context.session.user.user_id,
+            context.webauthn_service.decode_credential_id(credential_id),
+        )
+    except ValueError:
+        return response_400("Invalid credential id")
+    return response_204() if deleted else response_404()
+
+
 def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     try:
         length = int(request.headers.get("Content-Length", 0))
@@ -392,6 +530,8 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     if user.type == UserType.ADMIN and context.users_storage.count_users_by_type(UserType.ADMIN) == 1:
         return response_400("Can't delete the last admin")
     context.sessions_storage.delete_sessions_by_user(user)
+    if context.webauthn_service is not None:
+        context.webauthn_service.credentials_storage.delete_credentials_by_user(user_id)
     context.users_storage.delete_user(user_id)
     return response_204()
 
@@ -824,6 +964,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     config: Config
     dashboards_store: DashboardsStore
     fonts_store: FontsStore
+    webauthn_service: Optional[WebAuthnService] = None
 
     def process_response(self, response: HttpResponse) -> None:
         if 200 <= response.status < 300 or response.status == 304:
@@ -886,6 +1027,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                     fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
                 ),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
+                "/auth/webauthn/config": RequestHandler(fn=webauthn_config_handler),
+                "/auth/webauthn/credentials": RequestHandler(fn=webauthn_credentials_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
@@ -903,6 +1046,22 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": RequestHandler(fn=add_user_handler),
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
+                "/auth/webauthn/register/options": RequestHandler(
+                    fn=webauthn_registration_options_handler, rate_per_minute_limit=10
+                ),
+                "/auth/webauthn/register/complete": RequestHandler(
+                    fn=webauthn_registration_complete_handler, rate_per_minute_limit=10
+                ),
+                "/auth/webauthn/login/options": RequestHandler(
+                    fn=webauthn_authentication_options_handler,
+                    rate_per_minute_limit=30,
+                    rate_limit_per_client=True,
+                ),
+                "/auth/webauthn/login/complete": RequestHandler(
+                    fn=webauthn_authentication_complete_handler,
+                    rate_per_minute_limit=30,
+                    rate_limit_per_client=True,
+                ),
                 "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
                 "/api/fonts": RequestHandler(fn=upload_font_handler),
             }
@@ -929,6 +1088,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.process_request(
             {
                 "/users/*": RequestHandler(fn=delete_user_handler),
+                "/auth/webauthn/credentials/*": RequestHandler(fn=webauthn_delete_credential_handler),
                 "/api/dashboards/*": RequestHandler(fn=delete_dashboard_handler),
                 "/api/fonts/*": RequestHandler(fn=delete_font_handler),
             }
@@ -968,7 +1128,12 @@ def main():
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--socket-file", default=DEFAULT_SOCKET_FILE, help="Socket file")
     parser.add_argument("--db-file", default=DEFAULT_DB_FILE, help="Database file path")
+    parser.add_argument("--webauthn-rp-id", help="WebAuthn relying party domain")
+    parser.add_argument("--webauthn-origin", help="Allowed WebAuthn HTTPS origin")
     args = parser.parse_args()
+
+    if bool(args.webauthn_rp_id) != bool(args.webauthn_origin):
+        parser.error("--webauthn-rp-id and --webauthn-origin must be used together")
 
     logging.basicConfig(
         level=logging.DEBUG if args.debug else logging.INFO,
@@ -981,6 +1146,13 @@ def main():
 
     WebRequestHandler.users_storage = UsersStorage(con)
     WebRequestHandler.sessions_storage = SessionsStorage(con)
+    if args.webauthn_rp_id:
+        WebRequestHandler.webauthn_service = WebAuthnService(
+            args.webauthn_rp_id,
+            args.webauthn_origin,
+            WebAuthnCredentialsStorage(con),
+        )
+    WebRequestHandlerContext.webauthn_service = WebRequestHandler.webauthn_service
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
