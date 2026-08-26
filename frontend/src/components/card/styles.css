@@ -146,3 +146,17 @@ button:not(:disabled).card-action:focus {
 button:disabled.card-action svg {
     color: var(--light-gray-color);
 }
+
+[data-theme='bootstrap'] {
+    .card-primary:has(.card-titleWithError) {
+        border: 1px solid var(--danger-color);
+    }
+
+    .card-primary .card-header:has(.card-titleWithError) {
+        background: var(--danger-color);
+    }
+
+    .card-primary .card-header:has(.card-titleWithError) .card-titleWithError {
+        color: #fff;
+    }
+}

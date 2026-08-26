@@ -18,6 +18,10 @@ vi.hoisted(() => {
     value: { getItem: () => null, setItem: () => {} },
     configurable: true,
   });
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    value: { getItem: () => null, setItem: () => {} },
+    configurable: true,
+  });
 });
 
 const hasTab = (busId: string) => consolePanelStore.tabs.some((t) => t.id === busTabId(busId));

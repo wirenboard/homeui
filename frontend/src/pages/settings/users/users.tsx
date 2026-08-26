@@ -150,6 +150,23 @@ const UsersPage = observer(() => {
         </Alert>
       )}
 
+      <Alert className="users-rolesList" variant="info" withIcon={false}>
+        <dl>
+          <div className="users-rolesItem">
+            <dt><strong>{t('users.labels.user')}</strong></dt>
+            <dd>{t('users.labels.role-user-desc')}</dd>
+          </div>
+          <div className="users-rolesItem">
+            <dt><strong>{t('users.labels.operator')}</strong></dt>
+            <dd>{t('users.labels.role-operator-desc')}</dd>
+          </div>
+          <div className="users-rolesItem">
+            <dt><strong>{t('users.labels.admin')}</strong></dt>
+            <dd>{t('users.labels.role-admin-desc')}</dd>
+          </div>
+        </dl>
+      </Alert>
+
       {editedUser && (
         <EditUserModal
           user={editedUser}

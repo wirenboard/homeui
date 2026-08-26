@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { BooleanField, FormFieldGroup } from '@/components/form';
 import { setupHttps, isHttpsEnabled, getHttpsCertificateStatus, CertificateStatus } from '@/utils/https-utils';
-import type { HttpsSettingsProps } from '../types';
+import type { HttpsSettingsProps } from './types';
 
 const CertStatusBanner = () => {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ const CertStatusBanner = () => {
   return <Alert variant={variant} role="status">{content}</Alert>;
 };
 
-const HttpsSettings = ({ onError }: HttpsSettingsProps) => {
+export const HttpsSettings = ({ onError }: HttpsSettingsProps) => {
   const { t } = useTranslation();
   const [switchState, setSwitchState] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -90,5 +90,3 @@ const HttpsSettings = ({ onError }: HttpsSettingsProps) => {
     </FormFieldGroup>
   );
 };
-
-export default HttpsSettings;
