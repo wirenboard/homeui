@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.249.0) stable; urgency=medium
+
+  * Show the device template parameter variant matching the device firmware
+    (wb-mqtt-serial parameter fw variants)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@struhe.com>  Wed, 26 Aug 2026 12:58:08 +0300
+
 wb-mqtt-homeui (2.248.1) stable; urgency=medium
 
   * Rename factory reset buttons
