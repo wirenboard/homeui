@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.249.0) stable; urgency=medium
+
+  * Show the device template parameter variant matching the device firmware
+    (wb-mqtt-serial parameter fw variants)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Aug 2026 15:14:34 +0500
+
 wb-mqtt-homeui (2.248.2) stable; urgency=medium
 
   * Fix range slider label position when min/max metadata is not yet available from MQTT:
