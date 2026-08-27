@@ -1,4 +1,5 @@
 import {
+  blankComments,
   importSpecifiers,
   joinVfs,
   MODULES_ROOT,
@@ -26,8 +27,36 @@ describe('importSpecifiers', () => {
     ]);
   });
 
+  it('keeps document order across the specifier forms', () => {
+    expect(importSpecifiers('import "sfx";\nimport a from "m";\nconst d = await import("dyn");'))
+      .toEqual(['sfx', 'm', 'dyn']);
+  });
+
   it('ignores import.meta and identifiers merely named import', () => {
     expect(importSpecifiers('log(import.meta.filename); const importer = 1;')).toEqual([]);
+  });
+
+  it('sees through comments inside a multi-line import clause and ignores commented-out imports', () => {
+    const src = [
+      'import {',
+      '  // don\'t use this one; it\'s slow',
+      '  helper, /* the "good" one */',
+      '} from "utils";',
+      '// import x from "commented-out";',
+      '/* import y from "also-out"; */',
+      'const u = "http://example.com/"; import z from "after-url";',
+      '',
+    ].join('\n');
+    expect(importSpecifiers(src)).toEqual(['utils', 'after-url']);
+  });
+});
+
+describe('blankComments', () => {
+  it('blanks comments, keeps strings and the text length', () => {
+    const src = 'a // c\nb /* d\ne */ f "s//t" \'q/*r\' `t//u`';
+    const out = blankComments(src);
+    expect(out).toHaveLength(src.length);
+    expect(out).toBe('a     \nb     \n     f "s//t" \'q/*r\' `t//u`');
   });
 });
 
@@ -80,7 +109,7 @@ describe('prefetchImports', () => {
   });
 
   it('follows imports transitively, placing each file once', async () => {
-    const graph = newImportGraph();
+    const graph = newImportGraph('/a.ts');
     const added = await prefetchImports(
       resolver, graph, '/a.ts', 'a.ts', 'import { l } from "./lib.ts"; import "nope";',
     );
@@ -101,7 +130,7 @@ describe('prefetchImports', () => {
   it('bounds the number of files and the depth', async () => {
     const wide = Array.from({ length: 10 }, (_, i) => `import "m${i}";`).join('\n');
     const many: ModuleResolver = async (_from, spec) => ({ path: `/mods/${spec}.js`, content: '' });
-    const graph = newImportGraph();
+    const graph = newImportGraph('/a.ts');
     const added = await prefetchImports(many, graph, '/a.ts', 'a.ts', wide, { maxFiles: 3 });
     expect(added).toHaveLength(3);
 
@@ -109,16 +138,39 @@ describe('prefetchImports', () => {
       const n = Number(spec.slice(1));
       return { path: `/mods/${spec}.js`, content: `import "c${n + 1}";` };
     };
-    const deep = newImportGraph();
+    const deep = newImportGraph('/a.ts');
     expect(await prefetchImports(chain, deep, '/a.ts', 'a.ts', 'import "c0";', { maxDepth: 3 }))
       .toEqual([MODULES_ROOT + '/c0.js', MODULES_ROOT + '/c1.js', MODULES_ROOT + '/c2.js']);
   });
 
-  it('treats a throwing resolver as unresolved', async () => {
+  it('treats a throwing resolver and a malformed reply as unresolved', async () => {
     const boom: ModuleResolver = async () => {
       throw new Error('rpc down');
     };
-    const graph = newImportGraph();
-    expect(await prefetchImports(boom, graph, '/a.ts', 'a.ts', 'import "x";')).toEqual([]);
+    expect(await prefetchImports(boom, newImportGraph('/a.ts'), '/a.ts', 'a.ts', 'import "x";')).toEqual([]);
+    const junk: ModuleResolver = async (_from, spec) => (spec === 'nopath'
+      ? ({ content: 'x' } as ResolvedModule)
+      : ({ path: 'relative/x.js', content: 'x' }));
+    expect(await prefetchImports(junk, newImportGraph('/a.ts'), '/a.ts', 'a.ts', 'import "nopath"; import "rel";'))
+      .toEqual([]);
+  });
+
+  it('bounds the wall clock: a hung resolver is abandoned at the deadline', async () => {
+    const hung: ModuleResolver = () => new Promise(() => {});
+    const started = Date.now();
+    expect(await prefetchImports(hung, newImportGraph('/a.ts'), '/a.ts', 'a.ts', 'import "x"; import "y";', {
+      deadlineMs: 50,
+    })).toEqual([]);
+    expect(Date.now() - started).toBeLessThan(1000);
+  });
+
+  it('never replaces the file under edit with its on-disk copy (an import cycle back to the rule)', async () => {
+    const cyc: ModuleResolver = async (_from, spec) => (spec === './circ.ts'
+      ? { path: '/etc/wb-rules/circ.ts', content: 'import { a } from "./self.ts"; export const c = a;' }
+      : { path: '/etc/wb-rules/self.ts', content: 'ON DISK' });
+    const graph = newImportGraph('/self.ts');
+    expect(await prefetchImports(cyc, graph, '/self.ts', 'self.ts', 'import { c } from "./circ.ts";'))
+      .toEqual(['/circ.ts']);
+    expect(graph.files.has('/self.ts')).toBe(false);
   });
 });

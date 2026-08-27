@@ -68,6 +68,8 @@ export type ModuleResolver = (from: string, specifier: string) => Promise<Resolv
 
 // the modules fetched for one language-service environment
 export interface ImportGraph {
+  // virtual FS path of the file under edit: never overwritten by a fetch
+  root: string;
   // virtual FS path -> source, for every module fetched so far
   files: Map<string, string>;
   // `from\0specifier` pairs already asked (including failed ones)
@@ -77,9 +79,18 @@ export interface ImportGraph {
 export interface PrefetchOptions {
   maxFiles?: number;
   maxDepth?: number;
-  // wall-clock bound for one prefetch run (ms); imports still unresolved
-  // when it elapses are left to the wildcard fallback
+  // wall-clock bound for one prefetch run (ms), each resolver call raced
+  // against what is left of it; imports still unresolved when it elapses
+  // are left to the wildcard fallback
   deadlineMs?: number;
+}
+
+// a file whose imports are still to be scanned (prefetchImports)
+export interface ImportQueueItem {
+  vfsPath: string;
+  from: string;
+  source: string;
+  depth: number;
 }
 
 // the imports of one language-service environment, see createImportSet

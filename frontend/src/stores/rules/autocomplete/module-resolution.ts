@@ -1,5 +1,11 @@
-import type { VirtualTypeScriptEnvironment } from '@typescript/vfs';
-import type { ImportGraph, ImportSet, ModuleResolver, PrefetchOptions, ResolvedModule } from './types';
+import type {
+  ImportGraph,
+  ImportQueueItem,
+  ImportSet,
+  ModuleResolver,
+  PrefetchOptions,
+  ResolvedModule,
+} from './types';
 
 // Imports in the editor's language service.
 //
@@ -14,8 +20,8 @@ import type { ImportGraph, ImportSet, ModuleResolver, PrefetchOptions, ResolvedM
 // own resolution, returning the module file's source). This module scans a
 // file for its specifiers, asks the resolver for each, places the sources in
 // the virtual FS where TypeScript will find them, and follows the modules'
-// own imports - bounded, so a pathological module graph cannot stall the
-// editor.
+// own imports - bounded in files, depth and time, so a pathological module
+// graph or an unresponsive controller cannot stall the editor.
 //
 // Placement (TypeScript resolves against the virtual FS exactly as against
 // a real one, with bundler resolution):
@@ -31,13 +37,62 @@ export const MODULES_ROOT = '/wb-rules-modules';
 
 // at most this many module files are fetched for one rule (a wide import
 // graph is served partially rather than stalling the editor)
-export const MAX_MODULE_FILES = 50;
+const MAX_MODULE_FILES = 50;
 // import chains deeper than this stay unresolved (the wildcard fallback)
-export const MAX_IMPORT_DEPTH = 8;
+const MAX_IMPORT_DEPTH = 8;
+// wall-clock bound of one prefetch run
+const DEFAULT_DEADLINE_MS = 5000;
+
+// CodeMirror normalizes line endings on ingest, so editor positions are
+// LF-based; the language service must hold the same text or every
+// diagnostic offset, completion and hover position after line 1 of a CRLF
+// file drifts (one character per preceding line)
+export const normalizeEol = (s: string) => s.replace(/\r\n/g, '\n');
+
+// Blanks comments out of a source (keeping its length, so match indexes
+// stay meaningful) while leaving string and template literals intact: a
+// comment inside a multi-line import clause must not hide the import from
+// the scan, and a specifier mentioned in a comment must not cost a lookup.
+// A lexical pass, not a parser: a regex literal containing a quote or `//`
+// can confuse it - the cost is one missed or wasted lookup, never an error.
+export function blankComments(source: string): string {
+  const out: string[] = [];
+  let i = 0;
+  const n = source.length;
+  while (i < n) {
+    const c = source[i];
+    const next = source[i + 1];
+    if (c === '/' && next === '/') {
+      const end = source.indexOf('\n', i);
+      const stop = end < 0 ? n : end;
+      out.push(' '.repeat(stop - i));
+      i = stop;
+    } else if (c === '/' && next === '*') {
+      const end = source.indexOf('*/', i + 2);
+      const stop = end < 0 ? n : end + 2;
+      // newlines kept so line-based reasoning elsewhere still holds
+      out.push(source.slice(i, stop).replace(/[^\n]/g, ' '));
+      i = stop;
+    } else if (c === '"' || c === '\'' || c === '`') {
+      let j = i + 1;
+      while (j < n && source[j] !== c) {
+        if (source[j] === '\\') j++;
+        else if (c !== '`' && source[j] === '\n') break; // an unterminated string ends at the line
+        j++;
+      }
+      const stop = Math.min(n, j + 1);
+      out.push(source.slice(i, stop));
+      i = stop;
+    } else {
+      out.push(c);
+      i++;
+    }
+  }
+  return out.join('');
+}
 
 // specifier positions: static import/export ... from "x", side-effect
-// import "x", dynamic import("x") and require("x"). A plain lexical scan:
-// a specifier mentioned in a comment or string costs one failed lookup.
+// import "x", dynamic import("x") and require("x")
 const SPECIFIER_RX = [
   /\b(?:import|export)\b[^'"`;]*?\bfrom\s*(['"])([^'"\n]+)\1/g,
   /\bimport\s*(['"])([^'"\n]+)\1/g,
@@ -46,24 +101,28 @@ const SPECIFIER_RX = [
 ];
 
 // the import specifiers of a source text, in order of first appearance,
-// each once
+// each once; comments are ignored
 export function importSpecifiers(source: string): string[] {
+  const code = blankComments(source);
+  const found: { index: number; spec: string }[] = [];
+  for (const rx of SPECIFIER_RX) {
+    for (const m of code.matchAll(rx)) {
+      if (m[2]) found.push({ index: m.index, spec: m[2] });
+    }
+  }
+  found.sort((a, b) => a.index - b.index);
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const rx of SPECIFIER_RX) {
-    rx.lastIndex = 0;
-    for (const m of source.matchAll(rx)) {
-      const spec = m[2];
-      if (!spec || seen.has(spec)) continue;
-      seen.add(spec);
-      out.push(spec);
-    }
+  for (const { spec } of found) {
+    if (seen.has(spec)) continue;
+    seen.add(spec);
+    out.push(spec);
   }
   return out;
 }
 
-export const isRelativeSpecifier = (spec: string) => spec.startsWith('./') || spec.startsWith('../');
-export const isAbsoluteSpecifier = (spec: string) => spec.startsWith('/');
+const isRelativeSpecifier = (spec: string) => spec.startsWith('./') || spec.startsWith('../');
+const isAbsoluteSpecifier = (spec: string) => spec.startsWith('/');
 
 const dirname = (p: string) => {
   const i = p.lastIndexOf('/');
@@ -95,11 +154,25 @@ export function vfsPathFor(importerVfsPath: string, specifier: string, resolvedP
   return joinVfs(isRelativeSpecifier(specifier) ? dirname(importerVfsPath) : MODULES_ROOT, rel);
 }
 
-export const newImportGraph = (): ImportGraph => ({ files: new Map(), asked: new Set() });
+// a well-formed reply: an absolute path and a source text
+const isResolvedModule = (r: unknown): r is ResolvedModule =>
+  !!r &&
+  typeof (r as ResolvedModule).path === 'string' &&
+  (r as ResolvedModule).path.startsWith('/') &&
+  typeof (r as ResolvedModule).content === 'string';
+
+export const newImportGraph = (rootVfsPath: string): ImportGraph => ({
+  root: rootVfsPath,
+  files: new Map(),
+  asked: new Set(),
+});
 
 // Fetches the imports of `source` (a file at `vfsPath`, known to the
 // controller as `from`) into `graph`, transitively. Returns the virtual FS
 // paths added by this run (an empty array when nothing new was learned).
+// Every resolver call is raced against the remaining deadline: a hung
+// controller leaves the rest of the imports to the wildcard fallback
+// instead of holding the editor.
 export async function prefetchImports(
   resolver: ModuleResolver,
   graph: ImportGraph,
@@ -110,28 +183,36 @@ export async function prefetchImports(
 ): Promise<string[]> {
   const maxFiles = options.maxFiles ?? MAX_MODULE_FILES;
   const maxDepth = options.maxDepth ?? MAX_IMPORT_DEPTH;
-  const deadline = Date.now() + (options.deadlineMs ?? 5000);
+  const deadline = Date.now() + (options.deadlineMs ?? DEFAULT_DEADLINE_MS);
   const added: string[] = [];
-  const queue: { vfsPath: string; from: string; source: string; depth: number }[] = [
-    { vfsPath, from, source, depth: 0 },
-  ];
+  const queue: ImportQueueItem[] = [{ vfsPath, from, source, depth: 0 }];
   while (queue.length > 0) {
     const item = queue.shift()!;
     if (item.depth >= maxDepth) continue;
     for (const spec of importSpecifiers(item.source)) {
       const key = item.from + '\0' + spec;
       if (graph.asked.has(key)) continue;
-      if (graph.files.size >= maxFiles || Date.now() > deadline) return added;
+      const left = deadline - Date.now();
+      if (graph.files.size >= maxFiles || left <= 0) return added;
       graph.asked.add(key);
-      let resolved: ResolvedModule | null;
+      let resolved: unknown;
+      let timer: ReturnType<typeof setTimeout> | undefined;
       try {
-        resolved = await resolver(item.from, spec);
+        resolved = await Promise.race([
+          resolver(item.from, spec),
+          new Promise<null>((resolve) => {
+            timer = setTimeout(() => resolve(null), left);
+          }),
+        ]);
       } catch {
         resolved = null;
       }
-      if (!resolved) continue;
+      clearTimeout(timer);
+      if (!isResolvedModule(resolved)) continue;
       const target = vfsPathFor(item.vfsPath, spec, resolved.path);
-      if (graph.files.has(target)) continue;
+      // the file under edit is never replaced by its on-disk copy (a cycle
+      // back to the rule); a module already placed keeps its first text
+      if (target === graph.root || graph.files.has(target)) continue;
       graph.files.set(target, resolved.content);
       added.push(target);
       queue.push({ vfsPath: target, from: resolved.path, source: resolved.content, depth: item.depth + 1 });
@@ -146,16 +227,16 @@ export async function prefetchImports(
 // Without a resolver (legacy firmware) both are no-ops and every import
 // falls to the `declare module "*"` any.
 export function createImportSet(resolver: ModuleResolver | null, vfsPath: string, from: string): ImportSet {
-  const graph = newImportGraph();
+  const graph = newImportGraph(vfsPath);
   const fetch = async (source: string) => (resolver ? prefetchImports(resolver, graph, vfsPath, from, source) : []);
   return {
     prefetch: async (source) => {
       await fetch(source);
       return graph.files;
     },
-    refresh: async (env: VirtualTypeScriptEnvironment, source) => {
+    refresh: async (env, source) => {
       const added = await fetch(source);
-      for (const modulePath of added) env.createFile(modulePath, graph.files.get(modulePath)!.replace(/\r\n/g, '\n'));
+      for (const modulePath of added) env.createFile(modulePath, normalizeEol(graph.files.get(modulePath)!));
       return added.length > 0;
     },
   };

@@ -87,7 +87,12 @@ describe('ts-language-service imports', () => {
   }, 30000);
 
   it('leaves an unresolvable import to the wildcard fallback (any, no error) and without a resolver too', async () => {
-    const content = 'import { whatever } from "no-such-module";\nlog(whatever.anything);\n';
+    const content = [
+      'import { whatever } from "no-such-module";',
+      'import { rel } from "./no-such-file.ts";',
+      'log(whatever.anything, rel);',
+      '',
+    ].join('\n');
     const withResolver = await loadTsEditorSupport('imports-missing.ts', content, undefined, '', resolver);
     expect(withResolver.getDiagnostics()).toEqual([]);
     const without = await loadTsEditorSupport('imports-noresolver.ts', content, undefined, '', null);

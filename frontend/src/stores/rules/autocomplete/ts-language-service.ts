@@ -1,7 +1,7 @@
 import type { Diagnostic, Node, Program, Type, TypeChecker } from 'typescript';
 import { importRefreshPlugin } from './import-refresh';
 import { lintRefresher } from './lint-refresh';
-import { createImportSet, MODULES_ROOT } from './module-resolution';
+import { createImportSet, MODULES_ROOT, normalizeEol } from './module-resolution';
 import { tsDiagnosticsLinter } from './ts-diagnostics-linter';
 import { withCompletionDetails } from './ts-help';
 import type { ModuleResolver, TsEditorSupport, TsModule } from './types';
@@ -26,10 +26,6 @@ let cached: Promise<TsEditorSupport> | null = null;
 let cachedPath = '';
 let cachedTypes = '';
 let cachedRegistry = '';
-
-// CodeMirror normalizes line endings on ingest, so the service must hold LF text
-// too or every position after line 1 of a CRLF file drifts
-const normalizeEol = (s: string) => s.replace(/\r\n/g, '\n');
 
 // custom diagnostic codes, well outside the range TypeScript itself emits
 const PROMISE_CONDITION_CODE = 990001;
@@ -320,9 +316,10 @@ export function loadTsEditorSupport(
       throw e;
     });
   }
+  // imports added since the environment was built are fetched by the
+  // view's refresh plugin, which also re-lints when they land
   return cached.then((support) => {
     support.reseed(initialContent);
-    support.refreshImports(initialContent).catch(() => {});
     return support;
   });
 }

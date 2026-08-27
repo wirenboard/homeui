@@ -65,27 +65,28 @@ const EditRulePage = observer(() => {
       new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 5000)),
     ]);
     const registryDts = buildControlsRegistry(devicesStore);
-    // imports are typed against the controller's own module files
+    // Imports are typed against the controller's own module files
     // (Editor.ResolveModule); firmware without the method keeps the
-    // wildcard `any` for every import
-    const resolveModule = editorProxy
-      .hasMethod('ResolveModule')
-      .catch(() => true)
-      .then((has) => (has
-        ? (from: string, specifier: string) => editorProxy
-          .ResolveModule({ from, specifier })
-          .then((r) => (r && typeof r.content === 'string' ? r : null), () => null)
-        : null));
+    // wildcard `any` for every import. The advertisement check is folded
+    // into the resolver rather than awaited up front: a negative answer
+    // takes the full advertisement timeout, which must not delay the
+    // language service of a file with no imports (the prefetch's own
+    // deadline bounds it for a file with some).
+    const hasResolveModule = Promise.resolve()
+      .then(() => editorProxy.hasMethod('ResolveModule'))
+      .catch(() => true);
+    const resolveModule = (from: string, specifier: string) => hasResolveModule.then((has) => (has
+      ? editorProxy.ResolveModule({ from, specifier }).then((r) => r ?? null, () => null)
+      : null));
     Promise.all([
       // the heavy TS chunk loads concurrently with the GetTypes reply
       hasGetTypes.then((has) => (has
         ? import('@/stores/rules/autocomplete/ts-language-service')
         : null)),
       controllerTypes,
-      resolveModule,
     ])
-      .then(([m, typesDts, resolver]) => (m && typesDts !== null
-        ? m.loadTsEditorSupport(servicePath, rule.content, typesDts, registryDts, resolver)
+      .then(([m, typesDts]) => (m && typesDts !== null
+        ? m.loadTsEditorSupport(servicePath, rule.content, typesDts, registryDts, resolveModule)
         : null))
       .then(
         (support) => alive && setTsSupport(support),
