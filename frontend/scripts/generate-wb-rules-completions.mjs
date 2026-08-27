@@ -1,20 +1,16 @@
-// Generates autocomplete/globals-generated.ts from autocomplete/wb-rules.d.ts.
-// The .d.ts (synced from wb-rules types/wb-rules.d.ts) is the single source
-// of truth for the builtin API; run `npm run generate:completions` after
-// updating it.
+// Generates autocomplete/globals-generated.ts from autocomplete/wb-rules.d.ts (synced
+// from the wb-rules repo); run `npm run generate:completions` after updating it.
 import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import ts from 'typescript';
 
-// single-quoted string literal matching the repo eslint style, so
-// regenerating never dirties the tree
+// single-quoted to match the repo eslint style, so regenerating never dirties the tree
 const q = (s) => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, '\\\'')}'`;
 
 const here = path.dirname(url.fileURLToPath(import.meta.url));
 const dtsPath = path.join(here, '../src/stores/rules/autocomplete/wb-rules.d.ts');
-// an explicit output path serves the drift test (globals-generated.test.ts),
-// which regenerates into a scratch file and diffs against the committed one
+// an explicit output path serves the drift test (globals-generated.test.ts)
 const outPath = process.argv[2]
   ? path.resolve(process.argv[2])
   : path.join(here, '../src/stores/rules/autocomplete/globals-generated.ts');
@@ -57,15 +53,11 @@ for (const stmt of source.statements) {
       const name = decl.name.getText(source);
       if (seen.has(name)) continue;
       seen.add(name);
-      // `declare const X: { (...): T; new (...): T }` - a callable (and maybe
-      // constructible) global such as PersistentStorage: complete it like a
-      // function, from its first call signature
+      // a callable global declared as a type literal (PersistentStorage): complete it like a function
       const callSig = decl.type && ts.isTypeLiteralNode(decl.type)
         ? decl.type.members.find((m) => ts.isCallSignatureDeclaration(m))
         : undefined;
       if (callSig) {
-        // read like a function signature: "PersistentStorage<T ...>(name, ...)"
-        // rather than the raw type literal "{ <T ...>(name...); new ... }"
         const sigText = printer.printNode(ts.EmitHint.Unspecified, callSig, source)
           .replace(/^\(/, '(')
           .replace(/;\s*$/, '')
@@ -96,8 +88,7 @@ const body = completions.map((c) => {
     : `  { label: ${q(c.label)}, type: '${c.type}', detail: ${detail}${c.snippet ? `, apply: ${q(c.snippet)}` : ''} },`;
 }).join('\n');
 
-// Codacy flags non-literal fs paths here; the path is our own default or the
-// drift test's temp dir, and the repo-level exclude is not honored there.
+// Codacy flags non-literal fs paths; the repo-level exclude is not honored here
 // eslint-disable-next-line
 fs.writeFileSync(outPath, `// GENERATED from wb-rules.d.ts — do not edit by hand.
 // Regenerate with: npm run generate:completions

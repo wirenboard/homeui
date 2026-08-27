@@ -6,10 +6,8 @@ import type { LocalTsDiag, TsCheckDiag } from '../types';
 import { lintRefresher } from './lint-refresh';
 import type { ControllerVerdict } from './types';
 
-// Renders the controller-side tsgo verdict (Editor.Check RPC) inline in
-// the editor: squiggles at the reported lines, merged with the local
-// language service's own lint entries. The tooltip is labeled with the
-// source so the two checks stay distinguishable.
+// Renders the controller-side tsgo verdict (Editor.Check) inline, next to the
+// local language service's own entries.
 
 export function controllerDiagsToCm(
   doc: Text,
@@ -17,12 +15,9 @@ export function controllerDiagsToCm(
   localDiags: LocalTsDiag[] = [],
   loadErrorLine: number | null = null,
 ): Diagnostic[] {
-  // the local language service usually reports the same finding at the
-  // same line; showing both doubles every squiggle. Keep only the
-  // controller entries the editor does not already show (version/skew
-  // differences - the controller's unique value). The controller carries
-  // only the head line of chained messages while the local service
-  // flattens the whole chain, so match by prefix, not equality.
+  // keep only what the local service does not already show (version skew is the
+  // controller's unique value); the controller carries only the head line of a
+  // chained message, so match by prefix
   const localByLine = new Map<number, string[]>();
   for (const l of localDiags) {
     localByLine.set(l.line, [...(localByLine.get(l.line) ?? []), l.message]);
@@ -32,10 +27,8 @@ export function controllerDiagsToCm(
     if (d.file) continue; // belongs to another file; cannot anchor here
     if (d.line < 1 || d.line > doc.lines) continue;
     if ((localByLine.get(d.line) ?? []).some((m) => m.startsWith(d.message))) continue;
-    // a .ts file that failed to transpile has its syntax error reported
-    // twice by the controller: as the load error of the save (already a
-    // diagnostic at that line, see load-error.ts) and as the check verdict
-    // (a grammar code TS1xxx, or no code at all for the transpile failure)
+    // a syntax error is reported twice: as the save's load error (already a diagnostic
+    // at that line, see load-error.ts) and in the verdict (grammar code TS1xxx or none)
     if (loadErrorLine !== null && d.line === loadErrorLine && d.severity === 'error'
       && (d.code === undefined || d.code < 2000)) continue;
     const line = doc.line(d.line);
@@ -51,20 +44,15 @@ export function controllerDiagsToCm(
   return result;
 }
 
-// The verdict describes the last-saved file. Once the user edits, its
-// line anchors and findings go stale - a fixed line must not keep its
-// old squiggle - so diagnostics render only while the document still
-// matches the checked content (the local language service covers the
-// live state; saving triggers a fresh verdict).
+// the verdict describes the last-saved file; once the user edits its anchors go
+// stale, so render only while the document still matches the checked content
 export function controllerDiagsForDoc(
   doc: Text,
   verdict: ControllerVerdict,
   localDiags: LocalTsDiag[] = [],
   loadErrorLine: number | null = null,
 ): Diagnostic[] {
-  // CodeMirror normalizes line endings on ingest while checkedContent is
-  // the raw stored file - a CRLF file must not permanently fail the match
-  // and silently disable the verdict
+  // CodeMirror normalizes line endings on ingest; checkedContent is the raw stored file
   if (verdict.checkedContent === null
     || verdict.checkedContent.replace(/\r\n/g, '\n') !== doc.toString()) {
     return [];
@@ -72,8 +60,7 @@ export function controllerDiagsForDoc(
   return controllerDiagsToCm(doc, verdict.diags, localDiags, loadErrorLine);
 }
 
-// getVerdict must be a mobx-observable read; new RPC data re-triggers
-// linting through the autorun below.
+// getVerdict must be a mobx-observable read; the autorun below re-triggers linting
 export function controllerDiagnostics(
   getVerdict: () => ControllerVerdict,
   getLocalDiags?: () => LocalTsDiag[],
@@ -98,9 +85,6 @@ export function controllerDiagnostics(
           first = false; // the linter's own initial run covers the mount
           return;
         }
-        // a verdict usually lands after the initial pass and before the user
-        // types: queue a fresh pass (see lint-refresh.ts), off the current
-        // update cycle
         if (timer !== null) return;
         timer = setTimeout(() => {
           timer = null;

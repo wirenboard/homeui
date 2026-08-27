@@ -5,22 +5,16 @@ import { comparer, reaction } from 'mobx';
 import type { RuleRuntimeError } from '../types';
 import { lintRefresher } from './lint-refresh';
 
-// Runtime errors from the rule debug console (/wbrules/log/error), rendered
-// inline in the editor at the line the engine attributes them to. The rules
-// store parses and records them (see runtime-error-parse.ts, kept free of
-// CodeMirror imports so the store does not pull the editor into the app
-// entry chunk); this module renders the recorded errors as lint entries.
+// Runtime errors from the rule console (/wbrules/log/error) rendered inline at the
+// line the engine attributes them to; parsing/recording lives in runtime-error-parse.ts.
 
-// The diagnostic carries the error text only. The repeat count and the time
-// of the last occurrence (kept in the store) deliberately stay out of it: a
-// rule that fails every second would otherwise change the message - and so
-// replace the whole diagnostic set, closing any open tooltip - every second.
+// count and lastSeen deliberately stay out of the message: a rule failing every
+// second would otherwise replace the diagnostic set (closing an open tooltip) every second
 export function runtimeErrorsToCm(doc: Text, errors: RuleRuntimeError[]): Diagnostic[] {
   const result: Diagnostic[] = [];
   for (const e of errors) {
     if (e.line < 1 || e.line > doc.lines) continue;
     const line = doc.line(e.line);
-    // skip leading indentation so the squiggle starts at the statement
     const indent = line.text.length - line.text.trimStart().length;
     const from = line.from + Math.min(indent, line.length);
     result.push({
@@ -34,10 +28,8 @@ export function runtimeErrorsToCm(doc: Text, errors: RuleRuntimeError[]): Diagno
   return result;
 }
 
-// Runtime errors describe the file as it RUNS on the controller. Once the
-// user edits, line anchors go stale, so they render only while the document
-// still matches the running content (what was loaded, or last saved). Saving
-// reloads the file and clears its errors; new ones re-arrive if still real.
+// errors describe the file as it RUNS; once the user edits, anchors go stale, so
+// render only while the document still matches the running content
 export function runtimeErrorsForDoc(
   doc: Text,
   errors: RuleRuntimeError[],
@@ -48,21 +40,14 @@ export function runtimeErrorsForDoc(
     || runningContent.replace(/\r\n/g, '\n') !== doc.toString()) {
     return [];
   }
-  // an exception while the file loads is reported twice by the engine: as
-  // the load error of the save (already a diagnostic at that line, see
-  // load-error.ts) and as a console error with the same traceback
+  // an exception while loading is reported twice: as the save's load error (already
+  // a diagnostic, see load-error.ts) and as a console error
   return runtimeErrorsToCm(doc, loadErrorLine === null ? errors : errors.filter((e) => e.line !== loadErrorLine));
 }
 
-// getErrors / getRunningContent must be mobx-observable reads; new console
-// messages re-trigger linting through the reaction below. Re-linting runs
-// every lint source (including the TypeScript one) and replaces the whole
-// diagnostic set, which closes an open tooltip - so it must happen only when
-// the SET OF LINES with errors in THIS file changes (one added or cleared),
-// never when an already-shown error merely repeats (count/lastSeen/message
-// are not part of the key: a rule failing every second with the rejected
-// value in its message would otherwise re-lint every second), never for
-// another file's errors, and at most once per 500 ms.
+// getErrors / getRunningContent must be mobx-observable reads. Re-linting replaces the
+// whole diagnostic set (closing an open tooltip), so it runs only when the SET OF LINES
+// with errors changes - never on a mere repeat (count/lastSeen/message) - and at most every 500 ms
 export function runtimeErrorDiagnostics(
   getErrors: () => RuleRuntimeError[],
   getRunningContent: () => string | null,

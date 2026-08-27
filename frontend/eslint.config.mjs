@@ -6,9 +6,7 @@ const getCustomConfig = (cfg) => {
   const customIgnores = [
     'src/custom.d.ts',
     'src/components/json-editor/extensions/*',
-    // vendored wb-rules engine declarations (raw-imported for the TS
-    // language service, not app code) and the completion list generated
-    // from them
+    // vendored wb-rules declarations and the completion list generated from them
     'src/stores/rules/autocomplete/wb-rules.d.ts',
     'src/stores/rules/autocomplete/globals-generated.ts',
   ];

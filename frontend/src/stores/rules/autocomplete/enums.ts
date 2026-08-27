@@ -45,14 +45,9 @@ const makeGetDeviceSource = (devices: string[]): CompletionSource => {
   };
 };
 
-// receiver forms handled here:
-//   getDevice("X").getControl("  -> device X's live controls (getDevice is
-//                                   not typed per-device, so TS can't help)
-//   getControl("                 -> the global function: full "dev/ctrl" refs
-// A method call on a variable (vdev.getControl(") is deliberately NOT
-// handled: the TS language service knows the variable's device type and
-// offers exactly that device's declared control names, so this source
-// returns null and lets it answer instead of dumping the global list.
+// getDevice("X").getControl(" -> device X's live controls (getDevice is not typed per
+// device); getControl(" -> full "dev/ctrl" refs. A call on a variable (vdev.getControl(")
+// is left to the TS service, which knows the variable's device type.
 const GET_CONTROL_RE =
   /(?:getDevice\(\s*(['"])([^'"]+)\1\)|([A-Za-z_$][\w$]*))?(\s*\.\s*)?getControl\(\s*(['"]?)([^'"]*)$/;
 
@@ -74,7 +69,6 @@ const makeGetControlSource = (
     const dot = m[4] || null;
     const quote = m[5] || null;
 
-    // `something.getControl(` on a variable: defer to the TS service
     if (identReceiver && dot) return null;
 
     let controls: string[] = [];
@@ -144,9 +138,8 @@ const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => 
 };
 
 export const getEnums = (devicesStore: DevicesStore) => {
-  // read the store when a completion is requested, not when the editor
-  // extensions are built: the extension array is memoized upstream, and
-  // devices/topics keep arriving over MQTT long after that
+  // read the store at completion time, not at build: the extension array is memoized
+  // upstream and devices keep arriving over MQTT long after that
   const topics = () => devicesStore.topicsWithoutSystem.flatMap((g) => g.options.map((o) => o.value));
   const live = (build: () => CompletionSource): CompletionSource => (context) => build()(context);
 

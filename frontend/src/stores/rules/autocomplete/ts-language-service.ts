@@ -4,13 +4,8 @@ import { withCompletionDetails } from './ts-help';
 import type { TsEditorSupport, TsModule } from './types';
 import wbRulesDts from './wb-rules.d.ts?raw';
 
-// Browser-side TypeScript language service for .ts rule files: live type
-// checking (squiggles while you type), type-aware completions and hover
-// type info, seeded with the wb-rules builtin declarations.
-//
-// Everything heavy (the typescript package and its lib.*.d.ts files) is
-// imported dynamically from here, and this module itself is imported
-// dynamically by the edit page, so .js-only users never download it.
+// Browser-side TypeScript language service for rule files: live diagnostics,
+// completions and hover. Lazy-loaded by the edit page (typescript + lib files are heavy).
 
 // the same set the engine-side check uses: --lib esnext, no DOM globals
 const libFiles = import.meta.glob('/node_modules/typescript/lib/lib.es*.d.ts', {
@@ -29,14 +24,11 @@ let cachedPath = '';
 let cachedTypes = '';
 let cachedRegistry = '';
 
-// CodeMirror normalizes line endings on ingest, so editor positions are
-// LF-based; the language service must hold the same text or every
-// diagnostic offset, completion and hover position after line 1 of a CRLF
-// file drifts (one character per preceding line)
+// CodeMirror normalizes line endings on ingest, so the service must hold LF text
+// too or every position after line 1 of a CRLF file drifts
 const normalizeEol = (s: string) => s.replace(/\r\n/g, '\n');
 
-// custom diagnostic code for "Promise used as a condition"; well outside the
-// range TypeScript itself emits, so it never collides with a real TS code
+// custom diagnostic codes, well outside the range TypeScript itself emits
 const PROMISE_CONDITION_CODE = 990001;
 const PROMISE_CONDITION_MESSAGE =
   'This condition is always truthy: the expression is a Promise. Did you forget \'await\'?';
@@ -66,16 +58,12 @@ async function build(
     target: ts.ScriptTarget.ESNext,
     lib: ['lib.esnext.d.ts'],
     allowJs: true,
-    // type-check .js rule files too (against the wb-rules types + registry), so
-    // e.g. dev["buzzer/enabled"] = 123 is flagged in legacy .js as well as .ts.
-    // TS parses each file per its extension, so a .js `a < b > (c)` stays JS
-    // comparisons, not a generic call - checkJs only turns error reporting on.
+    // .js rule files are type-checked too, as the controller does
     checkJs: true,
     strict: false,
     noEmit: true,
-    // rule files may use top-level await (the engine wraps them in an async
-    // function); TypeScript only allows it in a module, so force module mode
-    // to match the engine's on-controller check
+    // top-level await (the engine wraps rule files in an async function) is only
+    // allowed in a module; force module mode like the on-controller check
     module: ts.ModuleKind.ESNext,
     moduleDetection: ts.ModuleDetectionKind.Force,
   };
@@ -87,8 +75,7 @@ async function build(
   fsMap.set('/wb-rules.d.ts', typesDts);
   fsMap.set(path, normalizeEol(initialContent) || '\n');
 
-  // the live-device registry (declaration-merges into WbControls) types the
-  // stringly-referenced getControl()/dev[] APIs; only added when non-empty
+  // live-device registry, declaration-merged into WbControls (see registry.ts)
   const rootFiles = [path, '/wb-rules.d.ts'];
   if (registryDts) {
     fsMap.set('/wb-controls.d.ts', registryDts);
@@ -98,14 +85,8 @@ async function build(
   const system = vfs.createSystem(fsMap);
   const env = vfs.createVirtualTypeScriptEnvironment(system, rootFiles, ts, compilerOptions);
 
-  // A value used as a condition is coerced to boolean, so a Promise (any
-  // thenable) there is always truthy and never awaited - the classic
-  // `while (sleep(1000)) {}` that hangs the controller. TypeScript's built-in
-  // TS2801 only covers `if` and is off outside strict mode, so we flag it.
-  // `ts` is captured (not a param) so its guards narrow the node types.
   const isThenableType = (checker: TypeChecker, type: Type, at: Node): boolean => {
-    // `any`/`unknown` (and the error type) are pervasive in this loose
-    // codebase; never flag them - a Promise has a concrete, callable `then`
+    // any/unknown are pervasive in this loose codebase; never flag them
     if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) return false;
 
     const then = checker.getPropertyOfType(checker.getApparentType(type), 'then');
@@ -113,22 +94,13 @@ async function build(
       const thenType = checker.getTypeOfSymbolAtLocation(then, at);
       if (thenType.getCallSignatures().length > 0) return true;
     }
-    // opaque Promise aliases may not resolve a callable `then`; fall back to
-    // the name the checker gives the type
+    // opaque Promise aliases may not resolve a callable `then`
     return (type.aliasSymbol ?? type.getSymbol())?.getName() === 'Promise';
   };
 
-  // "forgot await" / Promise-misuse shapes the type checker misses under
-  // non-strict, all flagged as warnings:
-  //  (1) a Promise used as a condition (if/while/do/for/ternary) - always
-  //      truthy, never awaited: `while (sleep(1000)) {}`;
-  //  (2) a floating Promise statement inside an infinite loop - a Promise-
-  //      returning call whose result is thrown away: `for (;;) { sleep(1000); }`
-  //      never pauses (bounded loops are legitimate parallel dispatch);
-  //  (3) `await` on a non-Promise - a no-op, usually a misunderstanding, e.g.
-  //      `await getControl(x).getValue()` (getValue is synchronous);
-  //  (4) a Promise written to a control - `dev["d/c"] = sleep(1000)` stores
-  //      "[object Promise]" into the cell.
+  // "forgot await" shapes the checker misses under non-strict (TS2801 covers only
+  // `if`, and only in strict mode), all warnings: Promise as a condition, floating
+  // Promise in an infinite loop, `await` on a non-Promise, Promise written to a control
   const promiseAwaitDiagnostics = (program: Program | undefined): Diagnostic[] => {
     const sourceFile = program?.getSourceFile(path);
     if (!program || !sourceFile) return [];
@@ -146,29 +118,24 @@ async function build(
         messageText: message,
       });
     };
-    // warn only when the node's own type is a Promise/thenable
     const warn = (node: Node, code: number, message: string) => {
       if (isThenableType(checker, checker.getTypeAtLocation(node), node)) {
         pushWarning(node, code, message);
       }
     };
 
-    // never flag `await` on these: any/unknown/never are pervasive in this
-    // loose codebase, and a bare generic type parameter (`T`) has no callable
-    // `then` yet could resolve to a Promise once instantiated
+    // a bare type parameter has no callable `then` yet may resolve to a Promise once instantiated
     const isAnyOrUnknown = (type: Type): boolean =>
       (type.flags &
         (ts.TypeFlags.Any |
           ts.TypeFlags.Unknown |
           ts.TypeFlags.Never |
           ts.TypeFlags.TypeParameter)) !== 0;
-    // true if the type - or, for a union, any member of it - is a Promise
     const anyConstituentThenable = (type: Type, at: Node): boolean => {
       const parts = type.isUnion() ? type.types : [type];
       return parts.some((p) => isThenableType(checker, p, at));
     };
 
-    // await/void/assignment capture or unwrap the value - not a floating Promise
     const isFloating = (expr: Node): boolean => {
       if (ts.isAwaitExpression(expr) || ts.isVoidExpression(expr)) return false;
       if (
@@ -181,11 +148,8 @@ async function build(
       return true;
     };
 
-    // a loop that never terminates on its own: `for (;;)`, `while (true)`,
-    // `do ... while (true)`. Only inside such a loop is a floating Promise
-    // almost certainly a forgotten await meant to pace it; a bounded loop
-    // (`for (const z of zones) { runShellCommand(...); }`) is legitimate
-    // parallel dispatch, so don't flag it.
+    // only inside a never-terminating loop is a floating Promise almost certainly a
+    // forgotten pacing await; a bounded loop's fire-and-forget is legitimate parallel dispatch
     const isInfiniteLoop = (n: Node): boolean => {
       if (ts.isForStatement(n)) return !n.condition;
       if (ts.isWhileStatement(n) || ts.isDoStatement(n)) {
@@ -194,8 +158,7 @@ async function build(
       return false;
     };
 
-    // `(async () => {...})()` and the like intentionally start async work; a
-    // floating IIFE is not a forgotten await, so don't flag it.
+    // a floating IIFE intentionally starts async work
     const isIIFE = (expr: Node): boolean => {
       if (!ts.isCallExpression(expr)) return false;
       let callee: Node = expr.expression;
@@ -211,12 +174,6 @@ async function build(
       } else if (ts.isConditionalExpression(node)) {
         warn(node.condition, PROMISE_CONDITION_CODE, PROMISE_CONDITION_MESSAGE);
       } else if (
-        // only inside an infinite loop: a floating Promise there is almost
-        // always a forgotten await meant to pace the loop
-        // (`for (;;) { sleep(1000); }` never pauses). A bounded loop's
-        // fire-and-forget (`for (const z of zones) { runShellCommand(...); }`)
-        // is legitimate parallel dispatch, and so is fire-and-forget outside a
-        // loop (`scenario();`, `(async()=>{})()`), so don't flag those.
         inInfiniteLoop &&
         ts.isExpressionStatement(node) &&
         isFloating(node.expression) &&
@@ -224,24 +181,18 @@ async function build(
       ) {
         warn(node.expression, PROMISE_FLOATING_CODE, PROMISE_FLOATING_MESSAGE);
       } else if (ts.isAwaitExpression(node)) {
-        // awaiting a non-Promise is a no-op - usually a misunderstanding, e.g.
-        // getControl(x).getValue() is synchronous
         const t = checker.getTypeAtLocation(node.expression);
         if (!isAnyOrUnknown(t) && !anyConstituentThenable(t, node.expression)) {
           pushWarning(node.expression, AWAIT_NONTHENABLE_CODE, AWAIT_NONTHENABLE_MESSAGE);
         }
       } else if (
-        // writing a Promise to a control, e.g. dev["d/c"] = sleep(1000), stores
-        // "[object Promise]" into the cell - almost always a forgotten await
         ts.isBinaryExpression(node) &&
         node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
         ts.isElementAccessExpression(node.left) &&
         ts.isIdentifier(node.left.expression) &&
         node.left.expression.text === 'dev'
       ) {
-        // only the ambient global `dev` addresses controls; a user's own `dev`
-        // (e.g. `const dev = []`) declared in the rule file shadows it, so skip
-        // when any declaration of the symbol lives in the rule source itself
+        // a user's own `dev` declared in the rule file shadows the ambient global
         const sym = checker.getSymbolAtLocation(node.left.expression);
         const shadowed = sym
           ?.getDeclarations()
@@ -259,17 +210,13 @@ async function build(
     try {
       visit(sourceFile, false);
     } catch {
-      // a checker call in the walk threw; return the diagnostics collected so
-      // far rather than letting getSemanticDiagnostics throw and drop ALL
-      // squiggles (both the base checks and these custom warnings)
+      // keep what was collected rather than let getSemanticDiagnostics throw and drop all squiggles
     }
     return diagnostics;
   };
 
-  // Surface the custom forgot-await warnings through the language service's own
-  // semantic diagnostics, so they both render as warning squiggles (the linter
-  // reads getSemanticDiagnostics) and are picked up by getDiagnostics below -
-  // merged with, never replacing, the built-in checks.
+  // append the custom warnings to the service's own semantic diagnostics so the
+  // linter and getDiagnostics below both see them
   const baseGetSemanticDiagnostics = env.languageService.getSemanticDiagnostics.bind(
     env.languageService,
   );
@@ -281,30 +228,24 @@ async function build(
 
   return {
     extensions: [
-      // without the flag, valtown's completion filter drops every ambient
-      // global (sortText "15") not on its hardcoded standard-JS whitelist -
-      // i.e. the entire wb-rules API from wb-rules.d.ts
+      // without the flag valtown's completion filter drops every ambient global
+      // not on its standard-JS whitelist, i.e. the whole wb-rules API
       cmts.tsFacet.of({ env, path, keepLegacyLimitationForAutocompletionSymbols: false }),
       cmts.tsSync(),
       tsDiagnosticsLinter(ts, env, path),
       cmts.tsHover(),
     ],
-    // valtown's completions carry only {label, kind}; enrich them with the
-    // signature and JSDoc so the popup shows more than the name
     completionSource: withCompletionDetails(cmts.tsAutocomplete(), env, path, ts),
     reseed: (content: string) => {
-      // an empty file must still exist in the vfs (same rule as build)
+      // an empty file must still exist in the vfs
       env.updateFile(path, normalizeEol(content) || '\n');
     },
-    // current local verdict, used to de-duplicate the controller's
-    // diagnostics against what the editor already shows
+    // used to de-duplicate the controller's verdict against what the editor already shows
     getDiagnostics: () => {
       const sourceFile = env.getSourceFile(path);
       if (!sourceFile) return [];
       const all = [
         ...env.languageService.getSyntacticDiagnostics(path),
-        // getSemanticDiagnostics is wrapped above to append the custom
-        // Promise-in-condition warning, so it merges in here for free
         ...env.languageService.getSemanticDiagnostics(path),
       ];
       return all
@@ -317,15 +258,9 @@ async function build(
   };
 }
 
-// The controller runs the same check with checkJs; mirror its policy here so
-// the editor and the journal agree. In a .js file the check is advisory:
-// TypeScript's semantic complaints about valid sloppy-mode idioms are dropped
-// (Date arithmetic TS2362/2363, `with` TS2410, `delete` of an identifier
-// TS2703) and everything else is shown as a warning, not an error -
-// JavaScript is not typed by contract. Grammar-class codes (a legacy octal
-// literal, a top-level return) stay: TypeScript reports no semantic
-// diagnostics at all while one is present, so the user should see why the
-// file is otherwise unchecked. .ts files are untouched.
+// Mirrors the controller's checkJs policy so the editor and the journal agree: in a
+// .js file, complaints about valid sloppy-mode idioms (Date arithmetic, `with`,
+// `delete x`) are dropped and everything else is downgraded to a warning.
 const SLOPPY_JS_CODES = new Set([2362, 2363, 2410, 2703]);
 
 export function adviseForJs(ts: TsModule, fileName: string, diags: Diagnostic[]): Diagnostic[] {
@@ -340,8 +275,7 @@ export function adviseForJs(ts: TsModule, fileName: string, diags: Diagnostic[])
   return out;
 }
 
-// One shared environment: rule files are edited one at a time, and the
-// language service survives page switches (path changes recreate it).
+// one shared environment; a path/types/registry change recreates it
 export function loadTsEditorSupport(
   fileName: string,
   initialContent: string,
@@ -349,19 +283,12 @@ export function loadTsEditorSupport(
   registryDts = '',
 ): Promise<TsEditorSupport> {
   const path = '/' + (fileName.replace(/^\/+/, '') || 'rule.ts');
-  // No controller types means a transient GetTypes failure on firmware that
-  // ADVERTISES the method: fall back to the vendored declarations of the
-  // engine this UI ships for. Legacy firmware without Editor.GetTypes never
-  // gets here - the edit page builds no language service at all rather than
-  // advertise APIs the installed engine does not have.
+  // no controller types = a transient GetTypes failure on firmware that advertises
+  // it; legacy firmware never gets here (the edit page builds no service at all)
   const typesDts = controllerTypes || wbRulesDts;
-  // The registry is a snapshot taken when the editor opens (like the
-  // controller types), so a change in it rebuilds the environment. The
-  // same file reopened with the same types and registry reuses it - but
-  // its text must be reseeded: tsSync() tracks in-editor edits only, so the
-  // environment still holds whatever was typed (and possibly discarded) in
-  // the previous editor, and a new view does not resync until the first
-  // keystroke - phantom diagnostics, hover and completions until then.
+  // a reused environment must be reseeded: tsSync() tracks in-editor edits only, so
+  // it still holds whatever the previous editor typed (and maybe discarded), and a
+  // new view does not resync until the first keystroke
   if (
     !cached ||
     cachedPath !== path ||

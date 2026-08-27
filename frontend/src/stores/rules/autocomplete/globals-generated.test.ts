@@ -1,8 +1,5 @@
-// Drift guard: globals-generated.ts is produced from wb-rules.d.ts by
-// scripts/generate-wb-rules-completions.mjs. Regenerating must reproduce
-// the committed file byte for byte - otherwise the declarations were
-// updated without npm run generate:completions (or the file was edited by
-// hand) and the static completions no longer match the vendored API.
+// Drift guard: regenerating from wb-rules.d.ts must reproduce the committed file byte
+// for byte, otherwise the declarations changed without npm run generate:completions
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';

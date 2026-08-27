@@ -1,12 +1,9 @@
 // @vitest-environment happy-dom
-// enums.ts imports the devices store, whose module graph (i18n, auth) reads
-// localStorage/window at import time; happy-dom provides them.
+// happy-dom: the devices store's module graph reads localStorage/window at import time
 import { CompletionContext } from '@codemirror/autocomplete';
 import { EditorState } from '@codemirror/state';
 import { getEnums } from './enums';
 
-// minimal DevicesStore stand-in: one device with two controls, plus the
-// flat topic list used by the global-reference completions
 function fakeStore() {
   const device = { getControls: () => ['temperature', 'status'] };
   return {
@@ -31,8 +28,7 @@ async function enumsResult(doc: string) {
 
 describe('getControl completions', () => {
   it('defers vdev.getControl(" to the type service instead of dumping the global list', async () => {
-    // a method call on a variable: TS knows the variable's device type and
-    // offers only that device's controls, so the live-list source stays out
+    // a call on a variable is left to the TS service (it knows the device type)
     const r = await enumsResult('const vdev = defineVirtualDevice("ts_demo", {});\nvdev.getControl("');
     expect(r).toBeNull();
   });

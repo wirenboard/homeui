@@ -79,8 +79,7 @@ describe('controllerDiagsForDoc', () => {
 
 describe('controllerDiagsForDoc line endings', () => {
   it('matches CRLF checked content against the LF-normalized editor document', () => {
-    // CodeMirror normalizes to \n on ingest; a rule saved with CRLF
-    // (scp from Windows) must still get its controller verdict rendered
+    // CodeMirror normalizes to \n on ingest; a CRLF file must still match
     const doc = Text.of(['let n: number = 0;', 'n = \'oops\';']);
     const diags = [{ line: 2, column: 1, severity: 'error' as const, message: 'finding' }];
     const verdict = { diags, checkedContent: 'let n: number = 0;\r\nn = \'oops\';' };

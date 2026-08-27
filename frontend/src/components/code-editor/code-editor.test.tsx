@@ -1,9 +1,6 @@
 // @vitest-environment happy-dom
-// The underlying @uiw/react-codemirror reconfigures the whole CodeMirror
-// extension stack whenever its extensions or onChange props change
-// identity. Pages re-render per keystroke with inline handlers, so
-// CodeEditor must hand the library identity-stable props and rebuild the
-// stack only when its actual inputs change.
+// @uiw/react-codemirror reconfigures the whole extension stack whenever extensions or
+// onChange change identity; CodeEditor must hand it identity-stable props
 import { EditorView, runScopeHandlers } from '@codemirror/view';
 import { render } from '@testing-library/react';
 import { forwardRef } from 'react';

@@ -1,4 +1,3 @@
-// TypeScript rule-file support in the rules store (new engine feature).
 import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 
 vi.mock('@/services', () => import('@/test/mocks/services'));
@@ -141,8 +140,7 @@ describe('RulesStore.save and runtime errors', () => {
       resolveSave = resolve;
     }));
     const saving = store.save({ name: 'a.js', initName: 'a.js', content: 'dev["x/y"] = "bad";', enabled: true });
-    // the engine runs the file before it replies: an error of the NEW version
-    // arrives now, then the "changed" notification, then the reply
+    // the engine runs the file before it replies: new-version error, then changed, then the reply
     expect(store.runtimeErrors).toEqual([]);
     store.recordRuntimeError('control x/y: write ignored (bad) at /etc/wb-rules/a.js:1', 2);
     store.subscribeRulesLogs();
@@ -164,8 +162,7 @@ describe('RulesStore.save and runtime errors', () => {
     editorProxyMock.Save.mockRejectedValue({ data: 'MqttTimeoutError' });
     await expect(store.save({ name: 'a.js', initName: 'a.js', content: 'x', enabled: true }))
       .rejects.toMatchObject({ data: 'MqttTimeoutError' });
-    // the engine never got the new version: the old one keeps running and
-    // its errors still describe it
+    // the engine never got the new version: the old one keeps running
     expect(store.runtimeErrors).toHaveLength(1);
     expect(store.runtimeErrors[0]).toMatchObject({ path: '/etc/wb-rules/a.js', line: 1 });
     expect(store.runningContent).toBeNull();
@@ -183,9 +180,7 @@ describe('RulesStore.save and runtime errors', () => {
     const second = store.save({ name: 'a.js', initName: 'a.js', content: 'v2', enabled: true });
     resolvers[0]({ path: 'a.js' });
     await first;
-    // the second save is still in flight: what its version logs while
-    // loading, and its "changed", arrive now - and must not be wiped just
-    // because the first save has already finished
+    // the second save is still in flight: its load-time error and changed must not be wiped
     store.recordRuntimeError('e at /etc/wb-rules/a.js:2', 5);
     handler({ payload: 'a.js' });
     expect(store.runtimeErrors).toHaveLength(1);

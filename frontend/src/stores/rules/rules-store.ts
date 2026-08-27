@@ -6,10 +6,8 @@ import {
 } from './autocomplete/runtime-error-parse';
 import type { Rule, RuleError, RuleLevel, RuleListItem, RuleLog, RuleRuntimeError, TsCheckDiag } from './types';
 
-// How long before a /wbrules/updates/changed notification an error may
-// have arrived and still describe the version being (re)loaded: the engine
-// runs the new file first and publishes "changed" right after it on the
-// same ordered MQTT connection, so the two arrive back to back.
+// the engine runs a (re)loaded file first and publishes /wbrules/updates/changed right
+// after it on the same ordered MQTT connection, so a load-time error arrives just before
 const RELOAD_LOG_GRACE_MS = 1000;
 
 export default class RulesStore {
@@ -24,13 +22,11 @@ export default class RulesStore {
   public logLevelFilter = 'all';
   public tsCheckDiags: TsCheckDiag[] = [];
   public tsCheckedContent: string | null = null;
-  // the open rule's content as it runs on the controller (loaded, or last
-  // saved); runtime errors are anchored to this version
+  // the open rule's content as it runs on the controller; runtime errors anchor to it
   public runningContent: string | null = null;
   public runtimeErrors: RuleRuntimeError[] = [];
-  // in-flight Save count per rule path (see save / the "changed"
-  // subscription); a counter, not a set: overlapping saves of the same
-  // path must keep the changed-clear suppressed until the LAST one ends
+  // in-flight saves per path; a counter, not a set: overlapping saves must keep
+  // the "changed" clear suppressed until the last one ends
   private _saving = new Map<string, number>();
   private _tsCheckToken = 0;
   private _runningContentEpoch = 0;
@@ -97,15 +93,10 @@ export default class RulesStore {
     if (!path) {
       path = this.getValidRuleName(rule.name);
     }
-    // The engine runs the saved file before it replies (and before it
-    // publishes /wbrules/updates/changed), and an error logged during that
-    // run - a rejected write at top level - arrives BEFORE both; clearing
-    // on either would wipe it. So: clear the previous version's errors now,
-    // remember that this path is being saved so the coming "changed" does
-    // not clear again, and keep what arrives from here on.
+    // the engine runs the saved file before it replies and before "changed", so an
+    // error of the new version can arrive before both: clear the old errors now
     const savedContent = rule.content ?? null;
-    // remember what is cleared: a save that FAILS never reached the engine,
-    // so the previous version keeps running and its errors still describe it
+    // stashed for a failed save: the old version keeps running and its errors still apply
     const cleared = this.runtimeErrors.filter((e) => locationBelongsToRule(e, path));
     runInAction(() => {
       this.clearRuntimeErrorsFor(path);
@@ -123,8 +114,7 @@ export default class RulesStore {
           } else {
             rule.error = null;
           }
-          // the content handed to the engine is what runs now (the user
-          // may have typed on while the reply was in flight)
+          // what runs now is what was sent, not the buffer (the user may have typed on)
           this.setRunningContent(savedContent);
         });
         return res.path;
@@ -134,8 +124,7 @@ export default class RulesStore {
         throw err;
       })
       .finally(() => {
-        // the "changed" for this save has arrived by the time the engine
-        // replies (same ordered MQTT client)
+        // the "changed" for this save has arrived by the time the engine replies
         runInAction(() => {
           const left = (this._saving.get(path) ?? 1) - 1;
           if (left > 0) this._saving.set(path, left);
@@ -145,8 +134,7 @@ export default class RulesStore {
   }
 
   async rename(oldName: string, newName: string): Promise<string> {
-    // an extensionless new title keeps the file's language: renaming
-    // foo.ts to "bar" must not silently turn it into bar.js
+    // an extensionless new title keeps the file's language (foo.ts -> "bar" is not bar.js)
     const extension = oldName.endsWith('.ts') ? '.ts' : '.js';
     return editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName, extension) })
       .then(async () => {
@@ -156,8 +144,6 @@ export default class RulesStore {
   }
 
   async checkIsNameUnique(name: string): Promise<boolean> {
-    // test the same path the upcoming save/rename will target: a rename
-    // keeps the old file's extension, a fresh save defaults to .js
     const extension = this.rule?.initName?.endsWith('.ts') ? '.ts' : '.js';
     const path = this.getValidRuleName(name, extension);
     const list = await this.getList();
@@ -257,12 +243,9 @@ export default class RulesStore {
         }
       });
     });
-    // The engine (re)loaded a file. A save from this store owns the error
-    // lifecycle itself (cleared on save start, suppressed here). Otherwise
-    // the reload is external (scp, another tab, an engine restart): the
-    // previous version's errors are obsolete - but errors that arrived just
-    // before the notification were logged WHILE the new version loaded
-    // (see RELOAD_LOG_GRACE_MS) and must survive the clear.
+    // a save from this store owns its error lifecycle (cleared on save start). An
+    // external reload (scp, another tab, restart) obsoletes the old errors, except
+    // those logged while the new version loaded (see RELOAD_LOG_GRACE_MS)
     mqttClient.addStickySubscription('/wbrules/updates/changed', ({ payload }) => {
       const changed = payload.trim();
       if (this._saving.has(changed)) return;
@@ -271,9 +254,6 @@ export default class RulesStore {
     });
   }
 
-  // keep an error-level console message as a per-line runtime error when
-  // the engine attributed it to a rule file (attribution, dedupe and
-  // bounding policy live in runtime-error-parse.ts)
   recordRuntimeError(payload: string, now = Date.now()) {
     recordRuntimeErrorIn(this.runtimeErrors, payload, now);
   }
@@ -282,9 +262,7 @@ export default class RulesStore {
     return this.runtimeErrors.filter((e) => locationBelongsToRule(e, virtualPath));
   }
 
-  // clears the errors recorded for a rule file; with keepSince, entries
-  // that arrived at or after that time survive (they describe the version
-  // an external reload just loaded, not the one it replaced)
+  // with keepSince, entries that arrived at or after it survive (they describe the reloaded version)
   clearRuntimeErrorsFor(virtualPath: string, keepSince?: number) {
     if (!virtualPath) return;
     this.runtimeErrors = this.runtimeErrors.filter(
@@ -298,29 +276,20 @@ export default class RulesStore {
     mqttClient.unsubscribe('/wbrules/updates/changed');
   }
 
-  // The controller re-checks .ts rules with the same tsgo it runs them
-  // with (Editor.Check RPC) - the authoritative verdict, pulled on file
-  // open and after each save, shown next to the editor's own live check.
+  // the controller's own tsgo verdict (Editor.Check), pulled on open and after each save
   async checkTsFile(fileName: string, contentOverride?: string) {
-    // the verdict describes the saved file; capture the matching editor
-    // content so stale diagnostics are suppressed once the user edits
-    // (callers pass the exact content they saved when they have it)
+    // the verdict describes the saved file; keep that content so stale diagnostics hide once the user edits
     const checkedContent = contentOverride ?? this.rule?.content ?? '';
     this._tsCheckToken += 1;
     const token = this._tsCheckToken;
     try {
-      // old firmware has no Editor.Check: the retained method advertisement
-      // answers that once (cached afterwards) instead of an RPC dangling for
-      // its full timeout on every open and save
+      // old firmware has no Editor.Check; the retained advertisement answers without a dangling RPC
       if (!(await editorProxy.hasMethod('Check'))) {
         if (token === this._tsCheckToken) runInAction(() => this.clearTsCheck());
         return;
       }
-      // the controller answers 'pending' while its background check for a
-      // freshly loaded/saved file is still running. Right after a restart
-      // that check covers every rule file at once and can take a while on a
-      // slow controller, so poll for about a minute, backing off; a newer
-      // check or leaving the page cancels this one
+      // 'pending' while the controller's background check is still running; after a
+      // restart it covers every rule file at once, so poll for about a minute with backoff
       for (let attempt = 0; attempt < 40; attempt++) {
         const result = await editorProxy.Check({ path: fileName });
         if (token !== this._tsCheckToken) return; // superseded by a newer check
@@ -351,9 +320,7 @@ export default class RulesStore {
     this.logs = [];
   }
 
-  // The open rule was reloaded outside this store (scp, another tab):
-  // re-fetch the content runtime errors anchor to so it describes what
-  // runs NOW. Only runningContent is refreshed, never the editing buffer.
+  // an external reload of the open rule: re-fetch what runs now; the editing buffer is never touched
   private refreshRunningContent(virtualPath: string) {
     if (!virtualPath || this.rule?.initName !== virtualPath) return;
     const epoch = ++this._runningContentEpoch;
@@ -366,9 +333,8 @@ export default class RulesStore {
       });
   }
 
-  // every runningContent write goes through here: bumping the epoch drops
-  // any in-flight refreshRunningContent reply that would otherwise clobber
-  // a fresher value (a save reply, a navigation load, a newer refresh)
+  // bumping the epoch drops any in-flight refreshRunningContent reply that would
+  // clobber a fresher value
   private setRunningContent(content: string | null) {
     this._runningContentEpoch++;
     this.runningContent = content;

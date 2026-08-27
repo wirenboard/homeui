@@ -3,9 +3,7 @@ import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { tsDiagnosticsLinter, tsDiagnosticsSource, tsSeverity } from './ts-diagnostics-linter';
 
-// A chained TypeScript message keeps its explanation: the head alone
-// ("... is not assignable to type 'ControlsSpec'") says nothing the user can
-// act on; the chain names the offending property.
+// a chained TypeScript message must keep the part that names the offending property
 describe('tsDiagnosticsLinter', () => {
   it('renders the whole message chain, one line per link', async () => {
     const ts = (await import('typescript')).default;
@@ -36,8 +34,7 @@ describe('tsDiagnosticsLinter', () => {
     expect(lines.length).toBeGreaterThan(1);
     expect(d.message).toMatch(/Types of property 'type' are incompatible/); // the explaining link is there
     expect(content.slice(d.from, d.to)).toBe('spec');
-    // 30s: importing typescript and building the lib map exceed the 5s
-    // default on loaded CI hosts
+    // 30s: the language-service cold start exceeds the 5s default on CI
   }, 30000);
 
   it('maps categories like the linter it replaces', async () => {

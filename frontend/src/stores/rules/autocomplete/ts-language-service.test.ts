@@ -7,8 +7,7 @@ describe('ts-language-service', () => {
     const support = await loadTsEditorSupport('demo.ts', 'const n: number = 1;\n');
     expect(support.extensions.length).toBeGreaterThanOrEqual(4);
     expect(typeof support.completionSource).toBe('function');
-    // 30s: the first build pays the language-service cold start (parsing
-    // every lib.*.d.ts), which exceeds the 5s default on loaded CI hosts
+    // 30s: the language-service cold start exceeds the 5s default on CI
   }, 30000);
 
   it('builds support for plain .js rule files too (allowJs completions/hover)', async () => {
@@ -28,11 +27,9 @@ describe('ts-language-service', () => {
   it('reseeds a reused environment with the stored content (discarded edits do not linger)', async () => {
     const support = await loadTsEditorSupport('reseed.ts', 'const n: number = 1;\n');
     expect(support.getDiagnostics()).toEqual([]);
-    // the editor typed something wrong and the page was left without saving:
-    // the environment now holds the discarded text
+    // typed and left without saving: the environment holds the discarded text
     support.reseed('const n: number = "nope";\n');
     expect(support.getDiagnostics()).toHaveLength(1);
-    // reopening the rule seeds the same (cached) environment from the store
     const reopened = await loadTsEditorSupport('reseed.ts', 'const n: number = 1;\n');
     expect(reopened).toBe(support);
     expect(reopened.getDiagnostics()).toEqual([]);
@@ -119,11 +116,8 @@ describe('live-device registry typing', () => {
   }, 30000);
 
   it('keeps require() loose and accepts new PersistentStorage/StorableObject in .js', async () => {
-    // TypeScript treats a call to the ambient require as a CommonJS import in a
-    // .js file; wb-rules modules resolve at runtime through module dirs the
-    // checker cannot see, so the wildcard module in wb-rules.d.ts must keep this
-    // clean instead of "Cannot find module". The shipped system rules also
-    // write new PersistentStorage(...), which the runtime supports.
+    // in a .js file TypeScript treats require() as a CommonJS import; the wildcard
+    // module in wb-rules.d.ts must keep it clean (modules resolve at runtime)
     const content = [
       'var Logger = require("logger.mod").Logger;',
       'var log = new Logger("x");',
@@ -190,8 +184,6 @@ describe('live-device registry typing', () => {
 });
 
 describe('promise-in-condition warning', () => {
-  // `sleep(ms)` returns Promise<void>, so a bare `sleep(...)` condition is
-  // always truthy and never awaits - the classic controller-hanging loop.
   const isPromiseWarning = (message: string) =>
     message.includes('Promise') && message.includes('await');
 
@@ -236,8 +228,6 @@ describe('promise-in-condition warning', () => {
 });
 
 describe('floating promise in a loop warning', () => {
-  // a Promise-returning call whose result is discarded inside a loop is almost
-  // always a forgotten await meant to pace the loop: `for (;;) { sleep(1000); }`
   const isFloatingWarning = (message: string) => message.includes('not awaited');
 
   it('warns on a floating promise statement inside a for(;;) loop', async () => {
@@ -279,9 +269,6 @@ describe('floating promise in a loop warning', () => {
   }, 30000);
 
   it('does not flag a floating promise in a bounded loop (parallel dispatch)', async () => {
-    // a `for...of` over a finite array terminates on its own, so a
-    // fire-and-forget call inside it is legitimate parallel dispatch, not a
-    // forgotten pacing await
     const content = [
       'for (const x of [1, 2]) {',
       '  sleep(1000);',
@@ -340,8 +327,6 @@ describe('await-non-Promise and Promise-to-control warnings', () => {
   }, 30000);
 
   it('does not flag dev[...] writes when dev is shadowed by a local', async () => {
-    // a user's own `const dev = []` shadows the ambient global, so it is not a
-    // control at all - writing a Promise into it is just an array assignment
     const content = [
       'const dev = [];',
       'dev["k"] = sleep(1000);',
@@ -354,8 +339,7 @@ describe('await-non-Promise and Promise-to-control warnings', () => {
   }, 30000);
 
   it('does not warn on awaiting a bare generic type parameter', async () => {
-    // `T` is not any/unknown/never but has no callable `then`; it could still
-    // resolve to a Promise once instantiated, so awaiting it is not a no-op
+    // T has no callable then yet may resolve to a Promise once instantiated
     const content = [
       'async function pick<T>(v: T) { return await v; }',
       'pick(sleep(1000));',

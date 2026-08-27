@@ -152,22 +152,19 @@ function rpcCall(prefix: string, method: string, params?: Record<string, any>): 
 }
 
 function rpcHasMethod(prefix: string, method: string): Promise<boolean> {
-  // availability is cached per target AND method (the advertisement topic):
-  // different services may well share a method name
+  // cached per target AND method: different services may share a method name
   const topic = prefix + method;
   if (!subs[topic]) {
     subs[topic] = true;
     mqttClient.addStickySubscription(topic, () => {
-      // the entry may be gone (a disconnect clears them) or not created yet
-      // (the retained advertisement can arrive before the first hasMethod)
+      // the entry may be gone (disconnect) or not created yet (retained advertisement before the first hasMethod)
       const entry = (methods[topic] ??= {});
       if (entry.timeout) {
         mqttClient.cancel(entry.timeout);
       }
       entry.available = true;
       entry.resolve?.(true);
-      // a method that appears later (the service was upgraded or restarted
-      // while the page is open) must not stay "unavailable" for the session
+      // a method appearing later (service upgraded/restarted) must not stay "unavailable"
       entry.promise = Promise.resolve(true);
     });
   }

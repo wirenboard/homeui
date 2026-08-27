@@ -2,12 +2,8 @@ import { CompletionContext } from '@codemirror/autocomplete';
 import { EditorState } from '@codemirror/state';
 import { loadTsEditorSupport } from './ts-language-service';
 
-// CRLF rule files: Editor.Load hands over the raw stored file; a
-// dos-line-ending file must be LF-normalized at seed time, because
-// CodeMirror normalizes line endings on ingest and all editor positions
-// are LF-based. Without the normalization every position after line 1
-// drifts by one character per preceding line, and the member completion
-// below lands before the dot.
+// Editor.Load hands over the raw stored file; a CRLF file must be LF-normalized at
+// seed time or every editor position after line 1 drifts (CodeMirror positions are LF-based)
 describe('CRLF rule files', () => {
   it('normalizes line endings at seed time so positions match the editor doc', async () => {
     const crlf = 'const s = "x";\r\n\r\n\r\n\r\n\r\nconst t = s.charAt(0);\r\n';

@@ -8,10 +8,8 @@ export const useAsyncAction = <T extends any[], R>(
   asyncFunction: AsyncFunction<T, R>,
 ): [AsyncFunction<T, R>, boolean] => {
   const [isLoading, setIsLoading] = useState(false);
-  // the latest callback lives in a ref so execute keeps one identity for
-  // the component's lifetime: with an inline action a new execute per
-  // render would cascade through props into consumers' effects (e.g. the
-  // code editor rebuilding its extension stack on every keystroke)
+  // execute keeps one identity for the component's lifetime: a new one per render
+  // would cascade into consumers' effects (the code editor rebuilding its extensions)
   const fnRef = useRef(asyncFunction);
   fnRef.current = asyncFunction;
 

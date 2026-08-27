@@ -30,9 +30,7 @@ declare module '*?raw' {
   export default text;
 }
 
-// import.meta.glob is provided by vite; the project compiles with
-// types: ["vitest/globals"] instead of vite/client, so declare the
-// subset we use
+// vite provides import.meta.glob; the project compiles without vite/client types, so declare the subset used
 interface ImportMeta {
   glob(
     pattern: string,

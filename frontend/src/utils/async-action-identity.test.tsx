@@ -1,9 +1,6 @@
 // @vitest-environment happy-dom
-// The execute function must keep one identity for the component's
-// lifetime even when the wrapped action is an inline function (a new one
-// per render), and must always run the latest one - consumers pass it
-// down as a prop and hang effects off it (e.g. the code editor's
-// extension stack).
+// execute must keep one identity for the component's lifetime even with an inline
+// action, and must always run the latest one (consumers hang effects off it)
 import { renderHook, act } from '@testing-library/react';
 import { useAsyncAction } from './async-action';
 

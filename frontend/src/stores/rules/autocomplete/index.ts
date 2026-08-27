@@ -14,14 +14,10 @@ export function mergeSources(sources: CompletionSource[]): CompletionSource {
     for (const s of sources) {
       const result = await s(context);
       if (!result) continue;
-      // an empty result must not shadow later sources: the TS language
-      // service answers with zero entries inside dev["..."] (index
-      // signature, no literal keys), where the device-list source has
-      // the real completions
+      // an empty result must not shadow later sources: the TS service answers with
+      // zero entries inside dev["..."], where the device-list source has the real ones
       if (result.options.length > 0) return result;
-      // ...but inside a string literal the tail sources (global
-      // identifiers/snippets) are never the answer: a control reference
-      // with no matches keeps its empty popup instead of junk globals
+      // ...but inside a string literal global identifiers/snippets are never the answer
       const prev = context.state.sliceDoc(Math.max(0, result.from - 1), result.from);
       if (prev === '"' || prev === '\'') return result;
     }
@@ -29,9 +25,7 @@ export function mergeSources(sources: CompletionSource[]): CompletionSource {
   };
 }
 
-// snippets and generated globals are one namespace: offered together,
-// snippet variants first (they insert richer templates), generated
-// signatures for everything the snippet list does not cover
+// a snippet wins over the generated global of the same label (richer template)
 const snippetLabels = new Set(snippets.map((s) => s.label));
 const staticCompletions = [
   ...snippets,
@@ -44,17 +38,12 @@ const staticSource: CompletionSource = (context) => {
   return { from: word.from, options: staticCompletions, validFor: /^[\w$]*$/ };
 };
 
-// the language service returns plain type-aware entries (label + kind
-// only); the static list still contributes its richer snippet templates
-// (which replace the plain entry of the same label) and any generated
-// signature the service did not surface. Member accesses (obj.foo) stay
-// the service's alone - global snippets don't belong in property lists.
+// the service's entries are label + kind only; the static list adds snippet templates
+// (replacing the plain entry of the same label) and generated globals it did not surface
 const withStaticExtras = (typeAware: CompletionSource): CompletionSource => async (context) => {
   const result = await typeAware(context);
   if (!result || result.options.length === 0) return null;
-  // member accesses (obj.foo) and string-literal completions (inside
-  // "..." - e.g. vdev.getControl("<control name>)) are the service's
-  // alone; global snippets/identifiers must not be spliced into them
+  // member accesses and string literals are the service's alone
   const prev = context.state.sliceDoc(Math.max(0, result.from - 1), result.from);
   if (prev === '.' || prev === '"' || prev === '\'') return result;
   const tsLabels = new Set(result.options.map((o) => o.label));
@@ -73,13 +62,9 @@ export const getExtensions = (
   options?: { typescript?: boolean; typeAwareSource?: CompletionSource },
 ) => {
   const autocomplete = mergeSources([
-    // device/topic string-argument contexts (dev["...], getDevice(...)
-    // answer from the live device list first - the language service
-    // returns non-empty identifier lists in the unquoted variants and
-    // would shadow them
+    // device/topic string contexts answer from the live device list first: the service
+    // returns non-empty identifier lists in the unquoted variants and would shadow them
     ...getEnums(devicesStore),
-    // the TS language service (when loaded) answers next with type-aware
-    // completions; static sources below are the no-service fallback
     ...(options?.typeAwareSource ? [withStaticExtras(options.typeAwareSource)] : []),
     ...methods,
     staticSource,

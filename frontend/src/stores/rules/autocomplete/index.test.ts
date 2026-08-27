@@ -1,7 +1,5 @@
 // @vitest-environment happy-dom
-// index.ts imports the devices store (via enums.ts), whose module graph
-// (i18n, auth) reads localStorage/window at import time; happy-dom provides
-// them.
+// happy-dom: the devices store's module graph reads localStorage/window at import time
 import { CompletionContext, type CompletionSource } from '@codemirror/autocomplete';
 import { EditorState } from '@codemirror/state';
 import { mergeSources } from './index';
@@ -10,8 +8,7 @@ const contextAtEnd = (doc: string) =>
   new CompletionContext(EditorState.create({ doc }), doc.length, false);
 
 describe('mergeSources', () => {
-  // a context-specific source that matched the position but has nothing to
-  // offer: its result anchors at the 2-char word before the cursor
+  // matched the position but has nothing to offer
   const emptyContextSource: CompletionSource = (context) => ({ from: context.pos - 2, options: [] });
   const globalsSource: CompletionSource = (context) => ({
     from: context.pos,
@@ -26,8 +23,6 @@ describe('mergeSources', () => {
 
   it('does not fall through to global sources inside a string literal', async () => {
     const merged = mergeSources([emptyContextSource, globalsSource]);
-    // a control reference with no matches keeps its empty popup: global
-    // identifiers/snippets are never the answer inside "..."
     for (const doc of ['getControl("bu', 'vdev.getControl(\'bu']) {
       const result = await merged(contextAtEnd(doc));
       expect(result).not.toBeNull();

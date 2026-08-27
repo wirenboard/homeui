@@ -1,8 +1,5 @@
-// rpcHasMethod edge cases: availability is cached per target AND method
-// (the advertisement topic), a retained advertisement may be delivered
-// synchronously at subscribe time, and a method appearing later (service
-// upgraded or restarted while the page is open) must not stay
-// "unavailable" for the session.
+// rpcHasMethod edge cases: per-target caching, a retained advertisement delivered
+// synchronously at subscribe time, a method appearing later in the session
 import type { createRpcProxy as createRpcProxyType } from './rpc';
 
 describe('rpcHasMethod', () => {
@@ -51,8 +48,7 @@ describe('rpcHasMethod', () => {
   });
 
   test('a retained advertisement delivered synchronously at subscribe answers with no timeout', async () => {
-    // the broker may deliver the retained advertisement during subscribe,
-    // before hasMethod has created its bookkeeping entry
+    // the retained advertisement may be delivered during subscribe, before the bookkeeping entry exists
     mqttMock.addStickySubscription.mockImplementation((topic: string, cb: (msg: any) => void) => {
       if (topic === '/rpc/v1/svc/Ready') cb({ topic, payload: '1' });
     });

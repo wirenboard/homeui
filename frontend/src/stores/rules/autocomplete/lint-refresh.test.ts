@@ -7,11 +7,8 @@ import type { RuleRuntimeError } from '../types';
 import { controllerDiagnostics } from './controller-diagnostics';
 import { runtimeErrorDiagnostics } from './runtime-errors';
 
-// Diagnostics that come from OUTSIDE the editor (a console message, an RPC
-// verdict) must show up without the user typing: @codemirror/lint's
-// forceLinting() alone is a no-op when no lint pass is queued, which is the
-// normal state of an idle editor. These tests drive a real EditorView and
-// change only the store.
+// Diagnostics from OUTSIDE the editor must show up without typing; forceLinting()
+// alone is a no-op on an idle editor. These tests drive a real EditorView.
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const DOC = 'defineRule("x", {\n  then: function () {\n    dev["a/b"] = 1;\n  },\n});';
@@ -42,10 +39,7 @@ describe('runtimeErrorDiagnostics reacts to store changes without a document edi
         store.errors.push({ path: '/etc/wb-rules/x.js', line: 3, message: 'write ignored', count: 1, lastSeen: 0 });
       });
       await untilCount(view, 1);
-      // a REPEAT of the same error (count/lastSeen change) must not re-run the
-      // linters: that would replace the diagnostic set and close an open
-      // tooltip every time the rule fails again. Count the lint passes via a
-      // marker effect-free probe: the diagnostic object identity must survive.
+      // a repeat (count/lastSeen) must not re-run the linters: the diagnostic identity must survive
       let before: unknown;
       forEachDiagnostic(view.state, (d) => {
         before = d;

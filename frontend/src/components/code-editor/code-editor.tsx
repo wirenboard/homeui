@@ -21,11 +21,8 @@ export const CodeEditor = observer(({
 }: CodeEditorProps) => {
   const editor = useRef<ReactCodeMirrorRef>(null);
   const [allExtensions, setAllExtensions] = useState([]);
-  // The underlying CodeMirror component reconfigures its whole extension
-  // stack whenever its extensions or onChange props change identity, and
-  // pages passing inline handlers re-render per keystroke (observed MobX
-  // content) - so identity-unstable callbacks are bridged through refs and
-  // the stack is rebuilt only when its actual inputs change.
+  // @uiw/react-codemirror reconfigures its whole extension stack whenever extensions or
+  // onChange change identity, and pages pass inline handlers per keystroke: bridge them through refs
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
   const onChangeRef = useRef(onChange);
@@ -33,8 +30,7 @@ export const CodeEditor = observer(({
   const handleChange = useCallback((value: string) => onChangeRef.current?.(value), []);
 
   const onEditorReInit = (view: EditorView, state: EditorState) => {
-    // jump to the first error line whether or not the gutter marker is on:
-    // the page may render the marker itself (as a lint diagnostic)
+    // jump to the first error line even without the gutter marker (the page may render it as a lint diagnostic)
     if (errorLines?.length) {
       view.dispatch({
         selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
@@ -67,8 +63,6 @@ export const CodeEditor = observer(({
           {
             key: 'Mod-s',
             run: () => {
-              // through the ref: the handler prop may change identity per
-              // render without this keymap being rebuilt
               onSaveRef.current?.();
               return true;
             },

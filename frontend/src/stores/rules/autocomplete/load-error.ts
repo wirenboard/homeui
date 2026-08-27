@@ -5,16 +5,9 @@ import { autorun } from 'mobx';
 import { lintRefresher } from './lint-refresh';
 import type { RuleLoadError } from './types';
 
-// The load error of the open rule (the in-band error of Editor.Save /
-// Editor.Load: a syntax error or an exception thrown while the file was
-// being loaded), rendered as a diagnostic at the line the engine reported.
-//
-// It lives in the same lint gutter as the type-check and runtime
-// diagnostics, so the editor has a single marker column; the full message
-// stays in the banner above the editor, the line gets its first line.
+// The load error of the open rule (the in-band error of Editor.Save / Editor.Load)
+// as a diagnostic at the reported line, so the editor has a single marker column.
 
-// the first line of a load error: "SyntaxError: unexpected token" without
-// the traceback the engine appends
 export function loadErrorSummary(message: string): string {
   const nl = message.indexOf('\n');
   return (nl >= 0 ? message.slice(0, nl) : message).trim();
@@ -23,8 +16,7 @@ export function loadErrorSummary(message: string): string {
 export function loadErrorToCm(
   doc: Text,
   error: RuleLoadError | null | undefined,
-  // shown when the engine reported a line but an empty message; the page
-  // passes a translated label
+  // used when the engine reported a line but an empty message
   fallbackMessage = 'load error',
 ): Diagnostic[] {
   const lineNo = error?.errorLine;
@@ -40,11 +32,9 @@ export function loadErrorToCm(
   }];
 }
 
-// getError must be a mobx-observable read (the rules store). The store
-// clears errorLine as soon as the user edits, so the marker disappears with
-// the first keystroke - the line anchor describes the file as it was saved.
-// The refresh is deferred: the store update that clears the line runs inside
-// the editor's own change transaction, where dispatching is not allowed.
+// getError must be a mobx-observable read. The store clears errorLine on the first
+// keystroke (the anchor describes the saved file); the refresh is deferred because that
+// store update runs inside the editor's own change transaction, where dispatching is not allowed
 export function loadErrorDiagnostics(
   getError: () => RuleLoadError | null | undefined,
   getFallbackMessage?: () => string,

@@ -1,11 +1,6 @@
 // @vitest-environment happy-dom
-// How the edit page decides whether to build the TypeScript language
-// service: Editor.GetTypes doubles as the feature gate. Legacy firmware
-// (method not advertised) gets a plain editor - building the service from
-// the vendored declarations would advertise APIs the installed engine
-// does not have. On advertising firmware a failed GetTypes call is
-// transient and falls back to the vendored declarations. A service init
-// that resolves after navigating away must not leak into the page.
+// Editor.GetTypes doubles as the feature gate: legacy firmware (not advertised) gets a
+// plain editor; on advertising firmware a failed call falls back to the vendored declarations
 import { act, render, waitFor } from '@testing-library/react';
 import EditRulePage from './edit-rule';
 

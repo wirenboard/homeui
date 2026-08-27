@@ -1,6 +1,3 @@
-// Runtime errors from the rule console: recording, attribution, filtering
-// and clearing (moved here from rules-store.test.ts so the pre-existing
-// store tests stay untouched).
 import { editorProxyMock, mqttClientMock } from '@/test/mocks/services';
 import RulesStore from './rules-store';
 
@@ -116,9 +113,7 @@ describe('runtime errors from the rule console', () => {
     logHandler({ topic: '/wbrules/log/error', payload: WRITE_IGNORED + '\n' });
     logHandler({ topic: '/wbrules/log/warning', payload: 'w at /etc/wb-rules/buzz.js:1' });
     expect(store.runtimeErrorsFor('buzz.js')).toHaveLength(1);
-    // long after the old version's error, the file is reloaded externally:
-    // the notification arrives with no fresh errors - everything recorded
-    // for the file described the replaced version and is cleared
+    // a minute later: an external reload with no fresh errors clears everything
     vi.setSystemTime(160000);
     changedHandler({ topic: '/wbrules/updates/changed', payload: 'buzz.js' });
     expect(store.runtimeErrorsFor('buzz.js')).toEqual([]);
@@ -126,9 +121,8 @@ describe('runtime errors from the rule console', () => {
   });
 });
 
-// The engine loads the new version of a file BEFORE it publishes
-// /wbrules/updates/changed (same ordered MQTT connection), so an error the
-// new version logs while loading arrives just before the notification.
+// the engine loads the new version BEFORE publishing /wbrules/updates/changed (same
+// ordered MQTT connection), so a load-time error arrives just before the notification
 describe('external reloads (scp, another tab, an engine restart)', () => {
   let store: RulesStore;
   let logHandler: (msg: { topic: string; payload: string }) => void;
@@ -147,8 +141,7 @@ describe('external reloads (scp, another tab, an engine restart)', () => {
     vi.useFakeTimers();
     vi.setSystemTime(100000);
     logHandler({ topic: '/wbrules/log/error', payload: 'old at /etc/wb-rules/buzz.js:3' });
-    // a minute later the file is replaced over scp; the engine runs the new
-    // version (logging its load-time error) and publishes changed right after
+    // a minute later the new version logs a load-time error, then changed arrives
     vi.setSystemTime(160000);
     logHandler({ topic: '/wbrules/log/error', payload: 'boom at /etc/wb-rules/buzz.js:7' });
     changedHandler({ topic: '/wbrules/updates/changed', payload: 'buzz.js' });
