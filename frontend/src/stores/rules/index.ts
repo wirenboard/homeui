@@ -21,3 +21,4 @@ export {
   rulesStore,
   RulesStore
 };
+export { RULE_FILE_EXTENSION_RX, TS_RULE_FILE_EXTENSION_RX, ruleFileExtension } from './rule-file-extension';

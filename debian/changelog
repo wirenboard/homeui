@@ -9,7 +9,9 @@ wb-mqtt-homeui (2.250.0) stable; urgency=medium
     imported modules are real instead of `any`; firmware without the RPC keeps
     the wildcard fallback. Compiler options follow the engine: module
     "preserve", allowImportingTsExtensions, a paths map for bare specifiers.
-    wb-rules.d.ts re-synced (import.meta).
+    wb-rules.d.ts re-synced (import.meta). The explicit-format rule file
+    extensions the engine now loads (.mjs/.mts ES modules, .cjs/.cts classic
+    scripts) are editable: language mode, rename and copy keep them.
   * Rules editor: TypeScript support. .ts rule files can be created and
     edited with an in-browser TypeScript language service: live error
     squiggles while typing, hover type info and type-aware completions,

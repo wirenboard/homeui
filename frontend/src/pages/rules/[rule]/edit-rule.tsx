@@ -18,6 +18,7 @@ import { controllerDiagnostics } from '@/stores/rules/autocomplete/controller-di
 import { loadErrorDiagnostics } from '@/stores/rules/autocomplete/load-error';
 import { buildControlsRegistry } from '@/stores/rules/autocomplete/registry';
 import { runtimeErrorDiagnostics } from '@/stores/rules/autocomplete/runtime-errors';
+import { TS_RULE_FILE_EXTENSION_RX } from '@/stores/rules/rule-file-extension';
 import { useAsyncAction } from '@/utils/async-action';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import './styles.css';
@@ -38,7 +39,7 @@ const EditRulePage = observer(() => {
   const [problems, setProblems] = useState<DiagnosticCounts>({ errors: 0, warnings: 0, total: 0 });
   const editorViewRef = useRef<EditorView | null>(null);
   const ruleFileName = params['*'] || rule.name || '';
-  const isTypeScript = ruleFileName.endsWith('.ts');
+  const isTypeScript = TS_RULE_FILE_EXTENSION_RX.test(ruleFileName);
   const [tsSupport, setTsSupport] = useState<TsEditorSupport | null>(null);
   // a stable placeholder for an unsaved rule, so typing a title does not rebuild the service
   const servicePath = params['*'] || (isTypeScript ? 'unsaved.ts' : 'unsaved.js');
