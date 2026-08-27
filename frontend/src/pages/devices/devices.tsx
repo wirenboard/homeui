@@ -195,6 +195,7 @@ const DevicesPage = observer(() => {
         actions={actions}
         toggleBody={device.toggleDeviceVisibility}
         isBodyVisible={device.isVisible}
+        withError={!!device.error}
       >
         {devicesStore.getDeviceCells(device.id).map((cell) => (
           <Cell cell={cell} key={cell.id} />

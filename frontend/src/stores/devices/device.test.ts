@@ -20,6 +20,7 @@ describe('Device', () => {
       expect(d.id).toBe('lamp');
       expect(d.isVisible).toBe(true);
       expect(d.explicit).toBe(false);
+      expect(d.error).toBe(null);
       expect(d.cells.size).toBe(0);
     });
 
@@ -102,6 +103,32 @@ describe('Device', () => {
       d.toggleDeviceVisibility();
 
       expect(d.isVisible).toBe(true);
+    });
+  });
+
+  describe('setExplicit', () => {
+    test('sets explicit flag', () => {
+      const d = new Device('lamp');
+      expect(d.explicit).toBe(false);
+      d.setExplicit(true);
+      expect(d.explicit).toBe(true);
+      d.setExplicit(false);
+      expect(d.explicit).toBe(false);
+    });
+  });
+
+  describe('setError', () => {
+    test('sets error message', () => {
+      const d = new Device('lamp');
+      d.setError('device disconnected');
+      expect(d.error).toBe('device disconnected');
+    });
+
+    test('clears error with null', () => {
+      const d = new Device('lamp');
+      d.setError('some error');
+      d.setError(null);
+      expect(d.error).toBe(null);
     });
   });
 

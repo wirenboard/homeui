@@ -270,7 +270,7 @@ export default class DevicesStore {
           if (payload) {
             const device = this.#getOrCreateDevice(deviceId);
             device.setMeta(payload);
-            device.explicit = true;
+            device.setExplicit(true);
           } else if (this.devices.has(deviceId)) {
             this.devices.get(deviceId).explicit = false;
             this.#maybeRemoveDevice(deviceId);
@@ -283,12 +283,19 @@ export default class DevicesStore {
           if (payload) {
             const device = this.#getOrCreateDevice(deviceId);
             device.name = payload;
-            device.explicit = true;
+            device.setExplicit(true);
           } else if (this.devices.has(deviceId)) {
             this.devices.get(deviceId).name = deviceId;
-            this.devices.get(deviceId).explicit = false;
+            this.devices.get(deviceId).setExplicit(false);
             this.#maybeRemoveDevice(deviceId);
           }
+        },
+      },
+      {
+        handledTopic: `${deviceTopicBase}/meta/error`,
+        handler: (message: string) => {
+          const device = this.#getOrCreateDevice(deviceId);
+          device.setError(message);
         },
       },
       {
