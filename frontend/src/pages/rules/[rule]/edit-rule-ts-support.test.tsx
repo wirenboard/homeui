@@ -102,6 +102,7 @@ describe('language service gating on Editor.GetTypes', () => {
       'defineRule("test", {})',
       'declare const controllerTypes: 1;',
       expect.any(String),
+      expect.any(Function), // the import resolver (Editor.ResolveModule)
     );
   });
 
@@ -115,6 +116,7 @@ describe('language service gating on Editor.GetTypes', () => {
       'defineRule("test", {})',
       undefined,
       expect.any(String),
+      expect.any(Function),
     );
   });
 

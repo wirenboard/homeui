@@ -1,6 +1,7 @@
 import type { CompletionSource } from '@codemirror/autocomplete';
 import type { Extension } from '@codemirror/state';
 import type { EditorView, ViewUpdate } from '@codemirror/view';
+import type { VirtualTypeScriptEnvironment } from '@typescript/vfs';
 import type ts from 'typescript';
 import type { LocalTsDiag, TsCheckDiag } from '../types';
 
@@ -12,6 +13,9 @@ export interface TsEditorSupport {
   completionSource: CompletionSource;
   getDiagnostics: () => LocalTsDiag[];
   reseed: (content: string) => void;
+  // fetch any imports of `source` not yet in the environment (see
+  // module-resolution.ts); resolves to whether anything was added
+  refreshImports: (source: string) => Promise<boolean>;
 }
 
 export interface ControllerVerdict {
@@ -47,4 +51,42 @@ export interface CellLike {
 export interface DeviceCells {
   // optional: a store without cells yet must not break editor loading
   cells?: Map<string, CellLike>;
+}
+
+// a module file resolved by the controller (Editor.ResolveModule), see
+// module-resolution.ts
+export interface ResolvedModule {
+  // absolute path of the module file on the controller - the `from` for the
+  // module's own imports
+  path: string;
+  content: string;
+}
+
+// resolves `specifier` as written in `from` (a rule's virtual path or a
+// module's absolute path); null when the controller cannot resolve it
+export type ModuleResolver = (from: string, specifier: string) => Promise<ResolvedModule | null>;
+
+// the modules fetched for one language-service environment
+export interface ImportGraph {
+  // virtual FS path -> source, for every module fetched so far
+  files: Map<string, string>;
+  // `from\0specifier` pairs already asked (including failed ones)
+  asked: Set<string>;
+}
+
+export interface PrefetchOptions {
+  maxFiles?: number;
+  maxDepth?: number;
+  // wall-clock bound for one prefetch run (ms); imports still unresolved
+  // when it elapses are left to the wildcard fallback
+  deadlineMs?: number;
+}
+
+// the imports of one language-service environment, see createImportSet
+export interface ImportSet {
+  // fetch the imports of `source` (transitively); the files collected so far
+  prefetch: (source: string) => Promise<Map<string, string>>;
+  // fetch imports of `source` not yet known and add them to `env`; whether
+  // anything was added
+  refresh: (env: VirtualTypeScriptEnvironment, source: string) => Promise<boolean>;
 }

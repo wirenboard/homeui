@@ -1,5 +1,15 @@
 wb-mqtt-homeui (2.250.0) stable; urgency=medium
 
+  * Rules editor: imports are typed against the controller's own module
+    files. The language service resolves a rule's import specifiers through
+    the engine (Editor.ResolveModule RPC) - relative ones next to the file,
+    bare ones from the module directories - fetches the modules (transitively,
+    bounded) into its virtual file system and re-lints when an import added
+    while typing arrives, so exported types, signatures and completions of
+    imported modules are real instead of `any`; firmware without the RPC keeps
+    the wildcard fallback. Compiler options follow the engine: module
+    "preserve", allowImportingTsExtensions, a paths map for bare specifiers.
+    wb-rules.d.ts re-synced (import.meta).
   * Rules editor: TypeScript support. .ts rule files can be created and
     edited with an in-browser TypeScript language service: live error
     squiggles while typing, hover type info and type-aware completions,

@@ -1,7 +1,10 @@
 import type { Diagnostic, Node, Program, Type, TypeChecker } from 'typescript';
+import { importRefreshPlugin } from './import-refresh';
+import { lintRefresher } from './lint-refresh';
+import { createImportSet, MODULES_ROOT } from './module-resolution';
 import { tsDiagnosticsLinter } from './ts-diagnostics-linter';
 import { withCompletionDetails } from './ts-help';
-import type { TsEditorSupport, TsModule } from './types';
+import type { ModuleResolver, TsEditorSupport, TsModule } from './types';
 import wbRulesDts from './wb-rules.d.ts?raw';
 
 // Browser-side TypeScript language service for rule files: live diagnostics,
@@ -47,6 +50,8 @@ async function build(
   initialContent: string,
   typesDts: string,
   registryDts: string,
+  resolveModule: ModuleResolver | null,
+  from: string,
 ): Promise<TsEditorSupport> {
   const [ts, vfs, cmts] = await Promise.all([
     import('typescript').then((m) => m.default),
@@ -62,10 +67,11 @@ async function build(
     checkJs: true,
     strict: false,
     noEmit: true,
-    // top-level await (the engine wraps rule files in an async function) is only
-    // allowed in a module; force module mode like the on-controller check
-    module: ts.ModuleKind.ESNext,
+    // module mode (TLA is only legal there), engine settings; bare specifiers -> MODULES_ROOT
+    module: ts.ModuleKind.Preserve,
     moduleDetection: ts.ModuleDetectionKind.Force,
+    allowImportingTsExtensions: true,
+    paths: { '*': [MODULES_ROOT + '/*'] },
   };
 
   const fsMap = new Map<string, string>();
@@ -74,6 +80,9 @@ async function build(
   }
   fsMap.set('/wb-rules.d.ts', typesDts);
   fsMap.set(path, normalizeEol(initialContent) || '\n');
+
+  const imports = createImportSet(resolveModule, path, from);
+  for (const [modulePath, text] of await imports.prefetch(initialContent)) fsMap.set(modulePath, normalizeEol(text));
 
   // live-device registry, declaration-merged into WbControls (see registry.ts)
   const rootFiles = [path, '/wb-rules.d.ts'];
@@ -226,15 +235,20 @@ async function build(
     return [...base, ...promiseAwaitDiagnostics(env.languageService.getProgram())];
   };
 
+  const refresher = lintRefresher();
+  const refreshImports = (source: string) => imports.refresh(env, source);
+
   return {
     extensions: [
       // without the flag valtown's completion filter drops every ambient global
       // not on its standard-JS whitelist, i.e. the whole wb-rules API
       cmts.tsFacet.of({ env, path, keepLegacyLimitationForAutocompletionSymbols: false }),
       cmts.tsSync(),
-      tsDiagnosticsLinter(ts, env, path),
+      tsDiagnosticsLinter(ts, env, path, refresher),
       cmts.tsHover(),
+      importRefreshPlugin(refreshImports, refresher, resolveModule !== null),
     ],
+    refreshImports,
     completionSource: withCompletionDetails(cmts.tsAutocomplete(), env, path, ts),
     reseed: (content: string) => {
       // an empty file must still exist in the vfs
@@ -281,6 +295,7 @@ export function loadTsEditorSupport(
   initialContent: string,
   controllerTypes?: string,
   registryDts = '',
+  resolveModule: ModuleResolver | null = null, // Editor.ResolveModule; null on old firmware
 ): Promise<TsEditorSupport> {
   const path = '/' + (fileName.replace(/^\/+/, '') || 'rule.ts');
   // no controller types = a transient GetTypes failure on firmware that advertises
@@ -298,7 +313,7 @@ export function loadTsEditorSupport(
     cachedPath = path;
     cachedTypes = typesDts;
     cachedRegistry = registryDts;
-    const building = build(path, initialContent, typesDts, registryDts);
+    const building = build(path, initialContent, typesDts, registryDts, resolveModule, fileName);
     cached = building;
     return building.catch((e) => {
       if (cached === building) cached = null; // a failed load must not poison TS support forever
@@ -307,6 +322,7 @@ export function loadTsEditorSupport(
   }
   return cached.then((support) => {
     support.reseed(initialContent);
+    support.refreshImports(initialContent).catch(() => {});
     return support;
   });
 }

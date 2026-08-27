@@ -65,15 +65,27 @@ const EditRulePage = observer(() => {
       new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 5000)),
     ]);
     const registryDts = buildControlsRegistry(devicesStore);
+    // imports are typed against the controller's own module files
+    // (Editor.ResolveModule); firmware without the method keeps the
+    // wildcard `any` for every import
+    const resolveModule = editorProxy
+      .hasMethod('ResolveModule')
+      .catch(() => true)
+      .then((has) => (has
+        ? (from: string, specifier: string) => editorProxy
+          .ResolveModule({ from, specifier })
+          .then((r) => (r && typeof r.content === 'string' ? r : null), () => null)
+        : null));
     Promise.all([
       // the heavy TS chunk loads concurrently with the GetTypes reply
       hasGetTypes.then((has) => (has
         ? import('@/stores/rules/autocomplete/ts-language-service')
         : null)),
       controllerTypes,
+      resolveModule,
     ])
-      .then(([m, typesDts]) => (m && typesDts !== null
-        ? m.loadTsEditorSupport(servicePath, rule.content, typesDts, registryDts)
+      .then(([m, typesDts, resolver]) => (m && typesDts !== null
+        ? m.loadTsEditorSupport(servicePath, rule.content, typesDts, registryDts, resolver)
         : null))
       .then(
         (support) => alive && setTsSupport(support),

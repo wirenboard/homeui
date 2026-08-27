@@ -41,6 +41,7 @@ export const editorProxyMock = {
   Remove: vi.fn(),
   Check: vi.fn(),
   GetTypes: vi.fn(),
+  ResolveModule: vi.fn(),
   hasMethod: vi.fn(async () => true),
 };
 
