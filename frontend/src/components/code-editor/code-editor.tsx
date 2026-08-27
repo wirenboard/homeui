@@ -2,7 +2,7 @@ import { type EditorState } from '@codemirror/state';
 import { type EditorView, keymap, lineNumbers } from '@codemirror/view';
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { uiStore } from '@/stores/ui';
 import { breakpointState, customGutter, getGutterEffects } from './helpers';
 import { type CodeEditorProps } from './types';
@@ -21,16 +21,24 @@ export const CodeEditor = observer(({
 }: CodeEditorProps) => {
   const editor = useRef<ReactCodeMirrorRef>(null);
   const [allExtensions, setAllExtensions] = useState([]);
+  // @uiw/react-codemirror reconfigures its whole extension stack whenever extensions or
+  // onChange change identity, and pages pass inline handlers per keystroke: bridge them through refs
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const handleChange = useCallback((value: string) => onChangeRef.current?.(value), []);
 
   const onEditorReInit = (view: EditorView, state: EditorState) => {
-    if (withBreakpoints) {
-      if (errorLines?.length) {
-        view.dispatch({
-          selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
-          scrollIntoView: true,
-        });
-      }
+    // jump to the first error line even without the gutter marker (the page may render it as a lint diagnostic)
+    if (errorLines?.length) {
+      view.dispatch({
+        selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
+        scrollIntoView: true,
+      });
+    }
 
+    if (withBreakpoints) {
       const effectList = getGutterEffects(view, state, errorLines);
 
       if (effectList.length > 0) {
@@ -41,6 +49,7 @@ export const CodeEditor = observer(({
     onCreateEditor?.(view, state);
   };
 
+  const hasOnSave = !!onSave;
   useEffect(() => {
     const settedExtensions = [...extensions, lineNumbers()];
 
@@ -48,18 +57,13 @@ export const CodeEditor = observer(({
       settedExtensions.push(customGutter, breakpointState);
     }
 
-    if (onSave) {
-      const saveHandler = (ev: Event) => {
-        ev.preventDefault();
-        onSave();
-      };
-
+    if (hasOnSave) {
       settedExtensions.push(
         keymap.of([
           {
             key: 'Mod-s',
             run: () => {
-              saveHandler(new Event('keydown'));
+              onSaveRef.current?.();
               return true;
             },
           },
@@ -68,7 +72,7 @@ export const CodeEditor = observer(({
     }
 
     setAllExtensions(settedExtensions);
-  }, [extensions, onSave, withBreakpoints]);
+  }, [extensions, hasOnSave, withBreakpoints]);
 
   useEffect(() => {
     if (!withBreakpoints) {
@@ -96,7 +100,7 @@ export const CodeEditor = observer(({
       extensions={allExtensions}
       basicSetup={basicSetup}
       onCreateEditor={onEditorReInit}
-      onChange={onChange}
+      onChange={handleChange}
     />
   );
 });

@@ -23,3 +23,17 @@ declare const __LOGO__: string;
 declare const __LOGO_COMPACT__: string;
 declare const __APP_NAME__: string;
 declare const __APP_SHORT_NAME__: string;
+
+// raw-text imports (vite ?raw suffix) used by the TS language service
+declare module '*?raw' {
+  const text: string;
+  export default text;
+}
+
+// vite provides import.meta.glob; the project compiles without vite/client types, so declare the subset used
+interface ImportMeta {
+  glob(
+    pattern: string,
+    options: { query: string; import: string; eager: true }
+  ): Record<string, string>;
+}

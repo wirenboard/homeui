@@ -39,6 +39,9 @@ export const editorProxyMock = {
   Rename: vi.fn(),
   ChangeState: vi.fn(),
   Remove: vi.fn(),
+  Check: vi.fn(),
+  GetTypes: vi.fn(),
+  hasMethod: vi.fn(async () => true),
 };
 
 export const fwUpdateProxyMock = {};

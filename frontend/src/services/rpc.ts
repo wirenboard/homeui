@@ -152,38 +152,43 @@ function rpcCall(prefix: string, method: string, params?: Record<string, any>): 
 }
 
 function rpcHasMethod(prefix: string, method: string): Promise<boolean> {
+  // cached per target AND method: different services may share a method name
   const topic = prefix + method;
   if (!subs[topic]) {
     subs[topic] = true;
     mqttClient.addStickySubscription(topic, () => {
-      if (methods[method].timeout) {
-        mqttClient.cancel(methods[method].timeout);
+      // the entry may be gone (disconnect) or not created yet (retained advertisement before the first hasMethod)
+      const entry = (methods[topic] ??= {});
+      if (entry.timeout) {
+        mqttClient.cancel(entry.timeout);
       }
-      methods[method].available = true;
-      methods[method].resolve(true);
+      entry.available = true;
+      entry.resolve?.(true);
+      // a method appearing later (service upgraded/restarted) must not stay "unavailable"
+      entry.promise = Promise.resolve(true);
     });
   }
   maybeStartWatching();
 
-  if (methods[method] === undefined) {
-    methods[method] = {};
-    methods[method].promise = new Promise<boolean>((resolve, reject) => {
-      methods[method].resolve = resolve;
-      methods[method].reject = reject;
+  if (methods[topic] === undefined) {
+    methods[topic] = {};
+    methods[topic].promise = new Promise<boolean>((resolve, reject) => {
+      methods[topic].resolve = resolve;
+      methods[topic].reject = reject;
     });
 
-    if (methods[method].available !== undefined) {
-      methods[method].resolve(methods[method].available);
-      return methods[method].promise;
+    if (methods[topic].available !== undefined) {
+      methods[topic].resolve(methods[topic].available);
+      return methods[topic].promise;
     }
 
-    methods[method].timeout = mqttClient.timeout(() => {
-      methods[method].available = false;
-      methods[method].resolve(false);
+    methods[topic].timeout = mqttClient.timeout(() => {
+      methods[topic].available = false;
+      methods[topic].resolve(false);
     }, METHOD_AVAILABLE_TIMEOUT);
   }
 
-  return methods[method].promise;
+  return methods[topic].promise;
 }
 
 type RpcMethod = (params?: any) => Promise<any>;

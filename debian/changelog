@@ -1,3 +1,36 @@
+wb-mqtt-homeui (2.250.0) stable; urgency=medium
+
+  * Rules editor: TypeScript support. .ts rule files can be created and
+    edited with an in-browser TypeScript language service: live error
+    squiggles while typing, hover type info and type-aware completions,
+    seeded with the controller's installed wb-rules API declarations
+    (Editor.GetTypes RPC, vendored fallback for older firmware). The
+    completion popup shows each entry's signature and JSDoc, and a
+    parameter-hint tooltip appears while typing a call's arguments (the
+    @valtown/codemirror-ts adapter surfaces neither on its own).
+  * Plain .js rules get the same language service: completions and hover
+    reflect the running engine's API, and type problems such as a wrong-typed
+    write to a known control (dev["buzzer/enabled"] = 123) are shown as
+    advisory warnings, mirroring the controller's own check.
+  * Device references are typed from the controller's live device list:
+    dev["device/control"], getControl(...) and changed(...) know the
+    control's type and complete the existing names.
+  * Promise misuse is flagged while typing: a promise used as a condition,
+    a forgotten await in an endless loop, await of a non-promise.
+  * The controller's own background check verdict (Editor.Check RPC) and
+    runtime errors from the rules console (a rejected control write, an
+    exception with a file:line) are rendered inline at the reported lines,
+    de-duplicated against the local check and held back while the buffer
+    has unsaved edits.
+  * Diagnostics no longer depend on hovering: a short message after the
+    offending line, a marker in the gutter, a "N problems" button that opens
+    the problems panel (F8 jumps to the next one). The load error of the
+    file is shown in the same gutter.
+  * Requires wb-rules >= 2.47 for the TypeScript engine support; the
+    editor degrades gracefully on older firmware.
+
+ -- Evgeny Boger <boger@wirenboard.com>  Mon, 24 Aug 2026 18:55:23 +0000
+
 wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
   * Show the device template parameter variant matching the device firmware

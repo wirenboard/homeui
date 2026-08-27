@@ -31,7 +31,7 @@ Depends: ${shlibs:Depends},
          wb-homeui-backend (= ${binary:Version})
 Recommends: wb-mqtt-logs (>= 1.2.0),
             wb-device-manager,
-            wb-rules (>= 2.37.0~~)
+            wb-rules (>= 3.0.0~~)
 Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3),
         wb-mqtt-db (<< 1.5),

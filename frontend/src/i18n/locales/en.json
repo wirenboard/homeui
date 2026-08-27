@@ -719,7 +719,11 @@
          "with-errors": "With errors",
          "inactive": "Rule inactive",
          "switch-on": "Switch on",
-         "switch-off": "Switch off"
+         "switch-off": "Switch off",
+         "problems_one": "{{count}} problem",
+         "problems_other": "{{count}} problems",
+         "problems-hint": "Show the list of problems (F8: next problem)",
+         "load-error": "Load error"
       },
       "prompt": {
          "delete": "Are you sure you want to delete <0>{{name}}</0> rule?"

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 type AsyncFunction<T extends any[], R> = (...args: T) => Promise<R>;
 
@@ -8,6 +8,10 @@ export const useAsyncAction = <T extends any[], R>(
   asyncFunction: AsyncFunction<T, R>,
 ): [AsyncFunction<T, R>, boolean] => {
   const [isLoading, setIsLoading] = useState(false);
+  // execute keeps one identity for the component's lifetime: a new one per render
+  // would cascade into consumers' effects (the code editor rebuilding its extensions)
+  const fnRef = useRef(asyncFunction);
+  fnRef.current = asyncFunction;
 
   const execute = useCallback(
     async (...args: T) => {
@@ -16,7 +20,7 @@ export const useAsyncAction = <T extends any[], R>(
       setIsLoading(true);
 
       try {
-        return await asyncFunction(...args);
+        return await fnRef.current(...args);
       } finally {
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, MIN_LOADING_TIME - elapsed);
@@ -28,7 +32,7 @@ export const useAsyncAction = <T extends any[], R>(
         setIsLoading(false);
       }
     },
-    [asyncFunction],
+    [],
   );
 
   return [execute, isLoading];
