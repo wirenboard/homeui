@@ -20,8 +20,98 @@
     flex-wrap: wrap;
 }
 
-.deviceTab-contentHeaderSelect {
+.deviceTab-typeGroup {
+    display: flex;
+    align-items: stretch;
     flex-basis: 45%;
+}
+
+.deviceTab-typeGroup .deviceTab-contentHeaderSelect {
+    flex: 1;
+    min-width: 0;
+}
+
+.deviceTab-typeGroup .deviceTab-contentHeaderSelect .dropdown__control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 0;
+}
+
+.deviceTab-templateMenuBtn {
+    all: unset;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 10px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 0 var(--input-border-radius) var(--input-border-radius) 0;
+    background: var(--input-background);
+    cursor: pointer;
+    color: var(--gray-color);
+    flex-shrink: 0;
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+}
+
+.deviceTab-templateMenuBtn:hover:not(:disabled) {
+    background: var(--light-gray-color);
+    color: var(--text-color);
+}
+
+.deviceTab-templateMenuBtn:disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.deviceTab-templateMenuBtn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.deviceTab-templateMenuBtnSpinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.deviceTab-templateMenu {
+    padding: 4px;
+}
+
+.deviceTab-templateMenuList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.deviceTab-templateMenuItem {
+    all: unset;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.deviceTab-templateMenuItem:hover {
+    background-color: var(--light-gray-color);
+}
+
+.deviceTab-templateMenuItem:focus {
+    box-shadow: var(--input-active-shadow);
+}
+
+.deviceTab-templateMenuItem--danger {
+    color: var(--danger-color);
 }
 
 .deviceTab-contentHeaderButtons {
@@ -30,7 +120,7 @@
 }
 
 @media (max-width: 1280px) {
-    .deviceTab-contentHeaderSelect {
+    .deviceTab-typeGroup {
         flex-grow: 1;
         min-width: 10px;
     }

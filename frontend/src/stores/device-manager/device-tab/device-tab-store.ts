@@ -1,3 +1,4 @@
+/* eslint max-lines: ["warn", 410] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import i18n from '@/i18n/config';
@@ -72,6 +73,7 @@ export class DeviceTabStore {
       isDirty: computed,
       hasJsonValidationErrors: computed,
       hidden: observable,
+      isUnknownType: observable,
       isDeprecated: observable,
       withSubdevices: observable,
       deviceType: observable,
@@ -95,6 +97,7 @@ export class DeviceTabStore {
       setUniqueMqttTopic: action,
       _setError: action,
       setEmbeddedSoftwareUpdateProgress: action,
+      reloadSchema: action,
       _initFromDeviceType: action,
       hasInvalidConfig: computed,
       showDisconnectedError: computed,
@@ -211,6 +214,24 @@ export class DeviceTabStore {
       if (portConfig) {
         await this._loadConfigFromDevice(portConfig, isForce);
       }
+    } catch (err) {
+      this._setError(err);
+    }
+    this._clearLoading();
+  }
+
+  async reloadSchema() {
+    this._initFromDeviceType(this.deviceType);
+    if (this.isUnknownType || this.withSubdevices) {
+      return;
+    }
+    const currentData = cloneDeep(this.editedData);
+    this._setLoading(i18n.t('device-manager.labels.loading-template'));
+    try {
+      const schema = await this.deviceTypesStore.getSchema(this.deviceType);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(schema, currentData);
+      });
     } catch (err) {
       this._setError(err);
     }

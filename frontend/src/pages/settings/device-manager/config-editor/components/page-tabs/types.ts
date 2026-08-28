@@ -10,6 +10,7 @@ export interface PageTabsProps {
   showButtons: boolean;
   deviceTypeSelectOptions: DeviceTypeDropdownOptionGroup[];
   mobileModeStore: MobileModeTabsStore;
+  isUserDefinedTypeFn?: (_type: string) => boolean;
   onSelect: (_index: number) => boolean;
   onDeleteTab: () => Promise<void>;
   onDeletePortDevices: (_portTab: PortTab) => Promise<void>;
@@ -21,4 +22,9 @@ export interface PageTabsProps {
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
   onReadRegisters: (_tab: DeviceTabStore, _isForce: boolean) => void;
+  onDeleteTemplate?: (_deviceType: string) => void;
+  onUploadTemplate?: () => void;
+  templateOperationPending?: boolean;
+  templateError?: string;
+  onClearTemplateError?: () => void;
 }
