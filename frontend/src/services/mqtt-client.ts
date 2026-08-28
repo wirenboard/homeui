@@ -48,7 +48,7 @@ function decodeMqttPayload(buf: Uint8Array): string {
   }
 
   const out: number[] = [];
-  for (let i = 0; i < buf.length; ) {
+  for (let i = 0; i < buf.length;) {
     if (
       i + 5 < buf.length
       && buf[i] === 0xED && (buf[i + 1] & 0xF0) === 0xA0

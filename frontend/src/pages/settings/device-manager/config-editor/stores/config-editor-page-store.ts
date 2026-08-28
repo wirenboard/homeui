@@ -1,4 +1,4 @@
-/* eslint max-lines: ["warn", 450] */
+/* eslint max-lines: ["warn", 460] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
@@ -39,6 +39,8 @@ export class ConfigEditorPageStore {
   public loading: boolean = true;
   public saving: boolean = false;
   public error = '';
+  public templateOperationPending: boolean = false;
+  public templateError: string = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -71,6 +73,11 @@ export class ConfigEditorPageStore {
       isDirty: computed,
       loading: observable,
       saving: observable,
+      templateOperationPending: observable,
+      templateError: observable,
+      startTemplateOperation: action,
+      endTemplateOperation: action,
+      clearTemplateError: action,
       addDevices: action,
     });
   }
@@ -161,6 +168,40 @@ export class ConfigEditorPageStore {
 
   setError(error) {
     this.error = formatError(error);
+  }
+
+  startTemplateOperation() {
+    this.templateOperationPending = true;
+    this.templateError = '';
+  }
+
+  endTemplateOperation(error?: unknown) {
+    this.templateOperationPending = false;
+    if (error) {
+      this.templateError = formatError(error);
+    }
+  }
+
+  clearTemplateError() {
+    this.templateError = '';
+  }
+
+  async refreshDeviceTypeSchemas(deviceTypes: Set<string>) {
+    await Promise.all(
+      this.tabs.portTabs.flatMap((portTab) =>
+        portTab.children
+          .filter((deviceTab) => deviceTypes.has(deviceTab.deviceType))
+          .map((deviceTab) => deviceTab.reloadSchema()),
+      ),
+    );
+  }
+
+  async reload() {
+    runInAction(() => {
+      this.loading = true;
+    });
+    this.tabs.clear();
+    await this.load();
   }
 
   async addPort(showAddPortModal: () => Promise<string | null>) {

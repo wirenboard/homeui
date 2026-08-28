@@ -497,7 +497,13 @@
          "delete-title": "Confirmation of deletion",
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
          "not-polled": "The device is not being polled",
-         "user-defined": "Custom"
+         "user-defined": "Custom",
+         "upload-template-title": "Upload template",
+         "upload-template-warning": "After uploading the template, the current configuration will be saved automatically",
+         "template-in-use-upload-title": "Template in use",
+         "confirm-template-in-use-upload": "The current configuration contains devices using template \"{{item}}\". Their settings will be displayed using the new template.",
+         "template-in-use-delete-title": "Template in use",
+         "confirm-template-in-use-delete": "The current configuration contains devices using template \"{{item}}\". Deleting it will revert them to the standard template."
       },
       "buttons": {
          "save": "Save config",
@@ -515,7 +521,11 @@
          "update": "Update",
          "parameters": "Parameters",
          "reread-config": "Reread config",
-         "switch-template": "Switch template"
+         "switch-template": "Switch template",
+         "upload-template": "Upload custom template",
+         "delete-template": "Delete custom template",
+         "overwrite-template": "Overwrite",
+         "template-actions": "Template"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",

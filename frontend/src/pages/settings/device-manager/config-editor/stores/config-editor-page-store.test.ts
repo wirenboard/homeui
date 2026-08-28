@@ -151,3 +151,83 @@ describe('ConfigEditorPageStore.addScannedDeviceToConfig serial-number persisten
     expect(portTab.children[0].editedData.slave_id).toBe('5');
   });
 });
+
+const addDeviceTabWithType = async (
+  store: ConfigEditorPageStore,
+  portTab: PortTab,
+  deviceType: string,
+  slaveId: string,
+) => {
+  const deviceTab = store.createDeviceTab({ slave_id: slaveId, device_type: deviceType });
+  store.tabs.addDeviceTab(portTab, deviceTab, false);
+  await deviceTab.loadContent(portTab.baseConfig);
+  return deviceTab;
+};
+
+describe('ConfigEditorPageStore template operation state', () => {
+  it('startTemplateOperation sets pending flag and clears previous error', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.endTemplateOperation(new Error('old error'));
+    expect(store.templateError).not.toBe('');
+
+    store.startTemplateOperation();
+
+    expect(store.templateOperationPending).toBe(true);
+    expect(store.templateError).toBe('');
+  });
+
+  it('endTemplateOperation without error clears pending flag', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.startTemplateOperation();
+
+    store.endTemplateOperation();
+
+    expect(store.templateOperationPending).toBe(false);
+    expect(store.templateError).toBe('');
+  });
+
+  it('endTemplateOperation with error clears pending flag and stores formatted error', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.startTemplateOperation();
+
+    store.endTemplateOperation(new Error('upload failed'));
+
+    expect(store.templateOperationPending).toBe(false);
+    expect(store.templateError).toBe('upload failed');
+  });
+
+  it('clearTemplateError resets templateError to empty string', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.endTemplateOperation(new Error('some error'));
+    expect(store.templateError).not.toBe('');
+
+    store.clearTemplateError();
+
+    expect(store.templateError).toBe('');
+  });
+});
+
+describe('ConfigEditorPageStore.refreshDeviceTypeSchemas', () => {
+  it('reloads schemas for device tabs matching the given types', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const deviceTab = await addDeviceTabWithType(store, portTab, 'wb-map12', '1');
+    const schemaStoreBefore = deviceTab.schemaStore;
+
+    await store.refreshDeviceTypeSchemas(new Set(['wb-map12']));
+
+    expect(deviceTab.schemaStore).not.toBe(schemaStoreBefore);
+  });
+
+  it('does not reload schemas for device tabs whose type is not in the set', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const matchingTab = await addDeviceTabWithType(store, portTab, 'wb-map12', '1');
+    const untouchedTab = await addDeviceTabWithType(store, portTab, 'wb-mdm3', '2');
+    const matchingBefore = matchingTab.schemaStore;
+    const untouchedBefore = untouchedTab.schemaStore;
+
+    await store.refreshDeviceTypeSchemas(new Set(['wb-map12']));
+
+    expect(matchingTab.schemaStore).not.toBe(matchingBefore);
+    expect(untouchedTab.schemaStore).toBe(untouchedBefore);
+  });
+});

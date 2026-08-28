@@ -3,9 +3,10 @@ import { type DeviceTypeDropdownOptionGroup } from '@/stores/device-manager/type
 
 export interface DeviceTabContentProps {
   tab: DeviceTabStore;
+  deviceTypeSelectOptions: DeviceTypeDropdownOptionGroup[];
+  isUserDefinedType?: boolean;
   onDeleteTab: () => void;
   onCopyTab: () => Promise<void>;
-  deviceTypeSelectOptions: DeviceTypeDropdownOptionGroup[];
   onDeviceTypeChange: (tab: DeviceTabStore, newType: string) => void;
   onSetUniqueMqttTopic: (topic: string) => void;
   onSearchDisconnectedDevice: () => void;
@@ -13,6 +14,11 @@ export interface DeviceTabContentProps {
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
   onReadRegisters: (tab: DeviceTabStore, isForce?: boolean) => void;
+  onDeleteTemplate?: () => void;
+  onUploadTemplate?: () => void;
+  templateOperationPending?: boolean;
+  templateError?: string;
+  onClearTemplateError?: () => void;
 }
 
 export interface ReadRegistersResultAlertProps {

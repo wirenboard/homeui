@@ -31,6 +31,12 @@ export const PageTabs = observer(
     onUpdateBootloader,
     onUpdateComponents,
     onReadRegisters,
+    isUserDefinedTypeFn,
+    onDeleteTemplate,
+    onUploadTemplate,
+    templateOperationPending,
+    templateError,
+    onClearTemplateError,
   }: PageTabsProps) => {
     const { t } = useTranslation();
 
@@ -96,6 +102,10 @@ export const PageTabs = observer(
                 <DeviceTabContent
                   tab={tab as DeviceTabStore}
                   deviceTypeSelectOptions={deviceTypeSelectOptions}
+                  isUserDefinedType={isUserDefinedTypeFn?.((tab as DeviceTabStore).deviceType)}
+                  templateOperationPending={templateOperationPending}
+                  templateError={templateError}
+                  onClearTemplateError={onClearTemplateError}
                   onDeleteTab={onDeleteTab}
                   onCopyTab={onCopyTab}
                   onDeviceTypeChange={onDeviceTypeChange}
@@ -105,6 +115,8 @@ export const PageTabs = observer(
                   onUpdateBootloader={onUpdateBootloader}
                   onUpdateComponents={onUpdateComponents}
                   onReadRegisters={onReadRegisters}
+                  onDeleteTemplate={() => onDeleteTemplate?.((tab as DeviceTabStore).deviceType)}
+                  onUploadTemplate={onUploadTemplate}
                 />
               )}
               {tab.type === TabType.Settings && (

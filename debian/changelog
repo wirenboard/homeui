@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.250.0) stable; urgency=medium
+
+  * Add custom device template management
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 28 Aug 2026 15:19:00 +0300
+
 wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
   * Show the device template parameter variant matching the device firmware

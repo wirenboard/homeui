@@ -12,4 +12,5 @@ export { logsProxy } from './logs-proxy';
 export { serialDeviceProxy } from './serial-device-proxy';
 export { serialPortProxy } from './serial-port-proxy';
 export { serialProxy } from './serial-proxy';
+export { serialTemplatesProxy } from './serial-templates-proxy';
 export { mqttClient } from './mqtt-client';
