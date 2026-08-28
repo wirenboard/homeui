@@ -200,6 +200,7 @@ export const DeviceTabContent = observer(
             {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Tooltip text={t('device-manager.buttons.parameters')}>
                 <Button
+                  aria-label={t('device-manager.buttons.parameters')}
                   variant="secondary"
                   icon={<SettingsIcon />}
                   aria-haspopup="dialog"
@@ -209,6 +210,7 @@ export const DeviceTabContent = observer(
             )}
             <Tooltip text={t('device-manager.buttons.delete')}>
               <Button
+                aria-label={t('device-manager.buttons.delete')}
                 icon={<TrashIcon />}
                 variant="danger"
                 aria-haspopup="dialog"
@@ -218,6 +220,7 @@ export const DeviceTabContent = observer(
             {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Tooltip text={t('device-manager.buttons.copy')}>
                 <Button
+                  aria-label={t('device-manager.buttons.copy')}
                   icon={<CopyIcon />}
                   aria-haspopup="dialog"
                   onClick={onCopyTab}
@@ -226,6 +229,7 @@ export const DeviceTabContent = observer(
             )}
             <Tooltip text={t('device-manager.buttons.reread-config')}>
               <Button
+                aria-label={t('device-manager.buttons.reread-config')}
                 icon={<RefreshIcon />}
                 aria-haspopup="dialog"
                 onClick={() => onReadRegisters(tab, true)}
