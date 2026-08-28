@@ -4,6 +4,7 @@ import { generateNextId } from '@/utils/id';
 import {
   locationBelongsToRule, recordRuntimeErrorIn, restoreRuntimeErrorsIn,
 } from './autocomplete/runtime-error-parse';
+import { RULE_FILE_EXTENSION_RX, ruleFileExtension } from './rule-file-extension';
 import type { Rule, RuleError, RuleLevel, RuleListItem, RuleLog, RuleRuntimeError, TsCheckDiag } from './types';
 
 // the engine runs a (re)loaded file first and publishes /wbrules/updates/changed right
@@ -135,7 +136,7 @@ export default class RulesStore {
 
   async rename(oldName: string, newName: string): Promise<string> {
     // an extensionless new title keeps the file's language (foo.ts -> "bar" is not bar.js)
-    const extension = oldName.endsWith('.ts') ? '.ts' : '.js';
+    const extension = ruleFileExtension(oldName);
     return editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName, extension) })
       .then(async () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -144,7 +145,7 @@ export default class RulesStore {
   }
 
   async checkIsNameUnique(name: string): Promise<boolean> {
-    const extension = this.rule?.initName?.endsWith('.ts') ? '.ts' : '.js';
+    const extension = ruleFileExtension(this.rule?.initName ?? '');
     const path = this.getValidRuleName(name, extension);
     const list = await this.getList();
     if (list.some((rule) => rule.virtualPath === path)) {
@@ -155,7 +156,7 @@ export default class RulesStore {
   }
 
   getValidRuleName(path: string, defaultExtension = '.js'): string {
-    return path.endsWith('.js') || path.endsWith('.ts') ? path : `${path}${defaultExtension}`;
+    return RULE_FILE_EXTENSION_RX.test(path) ? path : `${path}${defaultExtension}`;
   }
 
   async changeState(path: string, state: boolean): Promise<void> {
@@ -177,10 +178,10 @@ export default class RulesStore {
 
   async copyRule(path: string) {
     const copiedRule = await this.load(path);
-    const extension = copiedRule.name.endsWith('.ts') ? '.ts' : '.js';
+    const extension = ruleFileExtension(copiedRule.name);
     copiedRule.name = generateNextId(
-      this.rules.map((rule) => rule.virtualPath.replace(/\.(js|ts)$/, '')),
-      copiedRule.name.replace(/\.(js|ts)$/, ''),
+      this.rules.map((rule) => rule.virtualPath.replace(RULE_FILE_EXTENSION_RX, '')),
+      copiedRule.name.replace(RULE_FILE_EXTENSION_RX, ''),
     );
     const copiedRuleName = await this.save({
       ...copiedRule,

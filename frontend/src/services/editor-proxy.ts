@@ -10,9 +10,12 @@ interface EditorProxyMethods {
   Rename: (params: { path: string; new_path: string }) => Promise<void>;
   Check: (params: { path: string }) => Promise<TsCheckResult>;
   GetTypes: () => Promise<{ content: string }>;
+  // the engine's own import resolution: `from` is a rule's virtual path or
+  // a module's absolute path, the reply the resolved module's path + source
+  ResolveModule: (params: { from: string; specifier: string }) => Promise<{ path: string; content: string }>;
 }
 
 export const editorProxy = createRpcProxy<EditorProxyMethods>(
   'wbrules/Editor',
-  ['ChangeState', 'List', 'Load', 'Save', 'Remove', 'Rename', 'Check', 'GetTypes'],
+  ['ChangeState', 'List', 'Load', 'Save', 'Remove', 'Rename', 'Check', 'GetTypes', 'ResolveModule'],
 );

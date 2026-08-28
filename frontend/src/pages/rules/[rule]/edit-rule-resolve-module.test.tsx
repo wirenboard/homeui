@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
-// Editor.GetTypes doubles as the feature gate: legacy firmware (not advertised) gets a
-// plain editor; on advertising firmware a failed call falls back to the vendored declarations
+// The import resolver handed to the language service: it goes through
+// Editor.ResolveModule only when the controller advertises the method, and
+// the advertisement check never delays the service itself (a negative
+// answer takes the full advertisement timeout - firmware with GetTypes but
+// without ResolveModule is the firmware in the field).
 import { act, render, waitFor } from '@testing-library/react';
 import EditRulePage from './edit-rule';
 
@@ -9,7 +12,7 @@ const { rulesMock, paramsMock, getExtensionsMock, loadTsSupportMock } = vi.hoist
     rule: {
       name: 'test-rule.js',
       initName: 'test-rule.js',
-      content: 'defineRule("test", {})',
+      content: 'import { x } from "mod";',
       enabled: true,
       error: null as any,
     },
@@ -69,76 +72,51 @@ vi.mock('@/layouts/page', () => ({
 
 const { editorProxyMock } = await import('@/test/mocks/services');
 
+// the resolver argument of the last loadTsEditorSupport call
+const lastResolver = () => loadTsSupportMock.mock.calls.at(-1)![4] as (f: string, s: string) => Promise<unknown>;
+
 beforeEach(() => {
   vi.clearAllMocks();
   paramsMock['*'] = 'test-rule.js';
   rulesMock.load.mockResolvedValue(undefined);
   getExtensionsMock.mockReturnValue([]);
+  editorProxyMock.GetTypes.mockResolvedValue({ content: 'declare const t: 1;' });
   loadTsSupportMock.mockResolvedValue({
     extensions: [],
     completionSource: () => null,
     getDiagnostics: () => [],
     reseed: () => {},
+    refreshImports: async () => false,
   });
 });
 
-describe('language service gating on Editor.GetTypes', () => {
-  test('legacy firmware (method not advertised): no GetTypes call, no language service - a plain editor', async () => {
-    editorProxyMock.hasMethod.mockResolvedValue(false);
+describe('the import resolver passed to the language service', () => {
+  test('GetTypes without ResolveModule: the service builds without waiting, the resolver answers null', async () => {
+    let answerResolveModule: (has: boolean) => void = () => {};
+    editorProxyMock.hasMethod.mockImplementation((m?: string) => (m === 'ResolveModule'
+      ? new Promise<boolean>((resolve) => {
+        answerResolveModule = resolve;
+      })
+      : Promise.resolve(true)));
     render(<EditRulePage />);
-    await waitFor(() => expect(editorProxyMock.hasMethod).toHaveBeenCalledWith('GetTypes'));
+    // the service is built while the ResolveModule advertisement is still unanswered
+    await waitFor(() => expect(loadTsSupportMock).toHaveBeenCalled());
+    const pending = lastResolver()('test-rule.js', 'mod');
+    answerResolveModule(false);
+    expect(await pending).toBeNull();
+    expect(editorProxyMock.ResolveModule).not.toHaveBeenCalled();
+  });
+
+  test('advertising firmware: the resolver calls Editor.ResolveModule and maps a failure to null', async () => {
+    editorProxyMock.hasMethod.mockResolvedValue(true);
+    editorProxyMock.ResolveModule.mockResolvedValueOnce({ path: '/etc/wb-rules-modules/mod.js', content: 'export {}' });
+    render(<EditRulePage />);
+    await waitFor(() => expect(loadTsSupportMock).toHaveBeenCalled());
     await act(async () => {});
-    expect(editorProxyMock.GetTypes).not.toHaveBeenCalled();
-    expect(loadTsSupportMock).not.toHaveBeenCalled();
-  });
-
-  test('advertising firmware: the service is seeded with the controller-reported declarations', async () => {
-    editorProxyMock.hasMethod.mockResolvedValue(true);
-    editorProxyMock.GetTypes.mockResolvedValue({ content: 'declare const controllerTypes: 1;' });
-    render(<EditRulePage />);
-    await waitFor(() => expect(loadTsSupportMock).toHaveBeenCalled());
-    expect(loadTsSupportMock).toHaveBeenCalledWith(
-      'test-rule.js',
-      'defineRule("test", {})',
-      'declare const controllerTypes: 1;',
-      expect.any(String),
-      expect.any(Function), // the import resolver (Editor.ResolveModule)
-    );
-  });
-
-  test('advertising firmware, failing GetTypes call: the service builds on the vendored fallback', async () => {
-    editorProxyMock.hasMethod.mockResolvedValue(true);
-    editorProxyMock.GetTypes.mockRejectedValue({ data: 'MqttTimeoutError' });
-    render(<EditRulePage />);
-    await waitFor(() => expect(loadTsSupportMock).toHaveBeenCalled());
-    expect(loadTsSupportMock).toHaveBeenCalledWith(
-      'test-rule.js',
-      'defineRule("test", {})',
-      undefined,
-      expect.any(String),
-      expect.any(Function),
-    );
-  });
-
-  test('a service init resolving after navigation away is dropped and never rendered', async () => {
-    editorProxyMock.hasMethod.mockResolvedValue(true);
-    editorProxyMock.GetTypes.mockResolvedValue({ content: 'declare const x: 1;' });
-    let resolveSupport: (v: any) => void = () => {};
-    loadTsSupportMock.mockImplementation(() => new Promise((resolve) => {
-      resolveSupport = resolve;
-    }));
-    const { unmount } = render(<EditRulePage />);
-    await waitFor(() => expect(loadTsSupportMock).toHaveBeenCalled());
-    unmount();
-    resolveSupport({
-      extensions: [],
-      completionSource: () => null,
-      getDiagnostics: () => [],
-      reseed: () => {},
-    });
-    await act(async () => {});
-    for (const call of getExtensionsMock.mock.calls) {
-      expect((call as any[])[1]?.typeAwareSource).toBeUndefined();
-    }
+    expect(await lastResolver()('test-rule.js', 'mod'))
+      .toEqual({ path: '/etc/wb-rules-modules/mod.js', content: 'export {}' });
+    expect(editorProxyMock.ResolveModule).toHaveBeenCalledWith({ from: 'test-rule.js', specifier: 'mod' });
+    editorProxyMock.ResolveModule.mockRejectedValueOnce({ code: 1003, message: 'cannot find module' });
+    expect(await lastResolver()('test-rule.js', 'nope')).toBeNull();
   });
 });

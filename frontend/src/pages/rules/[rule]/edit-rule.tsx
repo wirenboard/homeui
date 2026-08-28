@@ -18,6 +18,7 @@ import { controllerDiagnostics } from '@/stores/rules/autocomplete/controller-di
 import { loadErrorDiagnostics } from '@/stores/rules/autocomplete/load-error';
 import { buildControlsRegistry } from '@/stores/rules/autocomplete/registry';
 import { runtimeErrorDiagnostics } from '@/stores/rules/autocomplete/runtime-errors';
+import { TS_RULE_FILE_EXTENSION_RX } from '@/stores/rules/rule-file-extension';
 import { useAsyncAction } from '@/utils/async-action';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import './styles.css';
@@ -38,7 +39,7 @@ const EditRulePage = observer(() => {
   const [problems, setProblems] = useState<DiagnosticCounts>({ errors: 0, warnings: 0, total: 0 });
   const editorViewRef = useRef<EditorView | null>(null);
   const ruleFileName = params['*'] || rule.name || '';
-  const isTypeScript = ruleFileName.endsWith('.ts');
+  const isTypeScript = TS_RULE_FILE_EXTENSION_RX.test(ruleFileName);
   const [tsSupport, setTsSupport] = useState<TsEditorSupport | null>(null);
   // a stable placeholder for an unsaved rule, so typing a title does not rebuild the service
   const servicePath = params['*'] || (isTypeScript ? 'unsaved.ts' : 'unsaved.js');
@@ -65,6 +66,19 @@ const EditRulePage = observer(() => {
       new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 5000)),
     ]);
     const registryDts = buildControlsRegistry(devicesStore);
+    // Imports are typed against the controller's own module files
+    // (Editor.ResolveModule); firmware without the method keeps the
+    // wildcard `any` for every import. The advertisement check is folded
+    // into the resolver rather than awaited up front: a negative answer
+    // takes the full advertisement timeout, which must not delay the
+    // language service of a file with no imports (the prefetch's own
+    // deadline bounds it for a file with some).
+    const hasResolveModule = Promise.resolve()
+      .then(() => editorProxy.hasMethod('ResolveModule'))
+      .catch(() => true);
+    const resolveModule = (from: string, specifier: string) => hasResolveModule.then((has) => (has
+      ? editorProxy.ResolveModule({ from, specifier }).then((r) => r ?? null, () => null)
+      : null));
     Promise.all([
       // the heavy TS chunk loads concurrently with the GetTypes reply
       hasGetTypes.then((has) => (has
@@ -73,7 +87,7 @@ const EditRulePage = observer(() => {
       controllerTypes,
     ])
       .then(([m, typesDts]) => (m && typesDts !== null
-        ? m.loadTsEditorSupport(servicePath, rule.content, typesDts, registryDts)
+        ? m.loadTsEditorSupport(servicePath, rule.content, typesDts, registryDts, resolveModule)
         : null))
       .then(
         (support) => alive && setTsSupport(support),

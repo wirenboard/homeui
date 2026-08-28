@@ -2,16 +2,19 @@ import { linter, type Diagnostic as CmDiagnostic, type LintSource } from '@codem
 import type { Extension } from '@codemirror/state';
 import type { VirtualTypeScriptEnvironment } from '@typescript/vfs';
 import type { Diagnostic } from 'typescript';
-import type { TsModule } from './types';
+import type { LintRefresher, TsModule } from './types';
 
 // TypeScript diagnostics as a CodeMirror lint source. Replaces valtown's tsLinter(),
 // which shows only the head of a chained message and drops the part that explains it.
+// `refresher` lets an outside event (an imported module arriving) queue a pass
+// without a document change (see lint-refresh.ts).
 export function tsDiagnosticsLinter(
   tsm: TsModule,
   env: VirtualTypeScriptEnvironment,
   path: string,
+  refresher?: LintRefresher,
 ): Extension {
-  return linter(tsDiagnosticsSource(tsm, env, path));
+  return linter(tsDiagnosticsSource(tsm, env, path), refresher ? { needsRefresh: refresher.needsRefresh } : {});
 }
 
 // exported for tests
