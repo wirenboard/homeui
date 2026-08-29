@@ -8,6 +8,7 @@ import { Loader } from '@/components/loader';
 import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 import { useAsyncAction } from '@/utils/async-action';
+import { DeviceControls } from '../device-controls';
 import { ResetConfirm } from './reset-confirm';
 import type { ResetMode } from './types';
 
@@ -70,6 +71,7 @@ export const DeviceTabContent = observer(({
           />
         </FormButtonGroup>
       </div>
+      {store.mqttId && <DeviceControls mqttId={store.mqttId} />}
       {store.isLoading ? (
         <div className="dali-contentLoader">
           <Loader />
