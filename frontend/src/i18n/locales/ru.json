@@ -1124,7 +1124,8 @@
             "monitor-col-response": "Ответ",
             "monitor-foreign": "сторонний",
             "monitor-broadcast": "Широковещательные",
-            "device-controls": "Управление устройством"
+            "device-controls": "Управление устройством",
+            "all-controls": "Все элементы управления"
         },
         "buttons": {
             "rescan": "Пересканировать",

@@ -1095,7 +1095,8 @@
             "monitor-col-response": "Response",
             "monitor-foreign": "foreign",
             "monitor-broadcast": "Broadcast",
-            "device-controls": "Device controls"
+            "device-controls": "Device controls",
+            "all-controls": "All controls"
         },
         "buttons": {
             "rescan": "Rescan",
