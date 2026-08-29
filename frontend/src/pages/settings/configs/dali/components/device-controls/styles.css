@@ -20,22 +20,12 @@
 .daliDeviceControls-cell {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
     min-height: 32px;
-}
-
-.daliDeviceControls-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--text-secondary-color);
-}
-
-.daliDeviceControls-widget {
-    display: flex;
-    align-items: center;
     min-width: 0;
-    flex-shrink: 0;
-    max-width: 60%;
+}
+
+/* The cell widget brings its own name label; just let it fill the column. */
+.daliDeviceControls-cell > * {
+    flex: 1;
+    min-width: 0;
 }

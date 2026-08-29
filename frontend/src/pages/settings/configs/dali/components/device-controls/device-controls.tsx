@@ -79,10 +79,7 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
       <div className="daliDeviceControls-grid">
         {visible.map((cell) => (
           <div className="daliDeviceControls-cell" key={cell.id}>
-            <span className="daliDeviceControls-name" title={cell.name}>{cell.name}</span>
-            <div className="daliDeviceControls-widget">
-              <CellContent cell={cell} hideHistory={true} />
-            </div>
+            <CellContent cell={cell} hideHistory={true} />
           </div>
         ))}
       </div>
