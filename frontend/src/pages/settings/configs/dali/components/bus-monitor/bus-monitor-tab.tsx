@@ -137,10 +137,33 @@ export const DaliBusMonitorContent = observer(({ monitorStore }: { monitorStore:
     })
     : frames;
 
+  // Consecutive identical error rows collapse into one with a xN badge:
+  // a DALI-2 device initializing probes absent features three times per
+  // instance, and rendering every retry paints the whole viewport red for
+  // what is one fact. Only error rows collapse - ordinary traffic keeps its
+  // one-row-per-frame timeline, and foreign frames their counters.
+  const rows: Array<{ frame: ParsedBusMonitorLine; repeat: number }> = [];
+  visible.forEach((frame) => {
+    const prev = rows[rows.length - 1];
+    if (
+      prev
+      && frame.response.kind === 'error'
+      && prev.frame.response.kind === 'error'
+      && prev.frame.hex === frame.hex
+      && prev.frame.command === frame.command
+      && prev.frame.response.text === frame.response.text
+    ) {
+      prev.repeat += 1;
+      prev.frame = frame;
+      return;
+    }
+    rows.push({ frame, repeat: 1 });
+  });
+
   return (
     <ConsoleLogScroller scrollKey={visible.length}>
       <BusMonitorHeader />
-      {visible.map((frame, i) => <BusMonitorRow key={i} frame={frame} />)}
+      {rows.map((row, i) => <BusMonitorRow key={i} frame={row.frame} repeat={row.repeat} />)}
     </ConsoleLogScroller>
   );
 });

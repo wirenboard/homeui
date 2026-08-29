@@ -180,3 +180,13 @@
 .daliMonitor-menuItem:focus {
     box-shadow: var(--input-active-shadow);
 }
+
+.daliMonitor-repeatBadge {
+    flex-shrink: 0;
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 11px;
+    background: var(--background-accent-color);
+    color: var(--text-secondary-color);
+}

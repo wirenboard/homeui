@@ -56,3 +56,19 @@
 .dali .dropdown__control--is-disabled .dropdown__indicator {
     display: none;
 }
+
+.dali-contentTitle {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.dali-contentTitleContext {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary-color);
+}

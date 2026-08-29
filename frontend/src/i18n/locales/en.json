@@ -1096,7 +1096,8 @@
             "monitor-foreign": "foreign",
             "monitor-broadcast": "Broadcast",
             "device-controls": "Device controls",
-            "all-controls": "All controls"
+            "all-controls": "All controls",
+            "monitor-repeats": "repeated {{count}} times"
         },
         "buttons": {
             "rescan": "Rescan",

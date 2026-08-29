@@ -152,6 +152,23 @@ const DaliPage = observer(() => {
           )}
           {(!isMobile || selectedItem) && (
             <section className="dali-content">
+              {selectedItem && (
+                // The pane had no heading: which device is being edited was
+                // carried only by the tree selection — invisible on mobile,
+                // where the tree is hidden while a page is open.
+                <h2 className="dali-contentTitle">
+                  {selectedItem.type === 'group'
+                    ? t('dali.labels.group', { name: selectedItem.label })
+                    : selectedItem.type === 'bus'
+                      ? t('dali.labels.bus', { num: (selectedItem as BusStore).index })
+                      : selectedItem.label}
+                  {selectedItem.type === 'device' && (selectedItem as DeviceStore).parent != null && (
+                    <span className="dali-contentTitleContext">
+                      {t('dali.labels.bus', { num: (selectedItem as DeviceStore).parent!.index })}
+                    </span>
+                  )}
+                </h2>
+              )}
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>
               )}

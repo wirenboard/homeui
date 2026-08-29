@@ -13,7 +13,7 @@ const formatHexBytes = (hex: string) => hex.match(/.{1,2}/g)?.join(' ') ?? hex;
  * it with the address filter); memoised on the raw line so unchanged rows skip
  * re-rendering as new entries arrive.
  */
-export const BusMonitorRow = memo(({ frame }: { frame: ParsedBusMonitorLine }) => {
+export const BusMonitorRow = memo(({ frame, repeat = 1 }: { frame: ParsedBusMonitorLine; repeat?: number }) => {
   const { t } = useTranslation();
   const { direction, response, badges } = frame;
 
@@ -30,6 +30,11 @@ export const BusMonitorRow = memo(({ frame }: { frame: ParsedBusMonitorLine }) =
           </span>
         )}
         {badges.fromLunatone && <span className="daliMonitor-badge">lunatone</span>}
+        {repeat > 1 && (
+          <span className="daliMonitor-repeatBadge" title={t('dali.labels.monitor-repeats', { count: repeat })}>
+            ×{repeat}
+          </span>
+        )}
       </span>
       <span className="daliMonitor-response">
         {response.kind === 'error' && (

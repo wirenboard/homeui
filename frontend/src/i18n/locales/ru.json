@@ -1125,7 +1125,8 @@
             "monitor-foreign": "сторонний",
             "monitor-broadcast": "Широковещательные",
             "device-controls": "Управление устройством",
-            "all-controls": "Все элементы управления"
+            "all-controls": "Все элементы управления",
+            "monitor-repeats": "повторено {{count}} раз"
         },
         "buttons": {
             "rescan": "Пересканировать",
