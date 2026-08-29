@@ -10,6 +10,10 @@ export class GroupStore extends BaseItemStore {
   public index: number;
   #parent: BusStore | null;
 
+  get parent(): BusStore | null {
+    return this.#parent;
+  }
+
   constructor(id: string, groupIndex: number, parent: BusStore | null = null) {
     super(id, String(groupIndex));
     this.index = groupIndex;

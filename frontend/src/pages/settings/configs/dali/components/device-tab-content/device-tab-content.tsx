@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { FormButtonGroup } from '@/components/form';
@@ -9,14 +9,17 @@ import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 import { useAsyncAction } from '@/utils/async-action';
 import { DeviceControls } from '../device-controls';
+import { TabToolbar } from '../tab-toolbar';
 import { ResetConfirm } from './reset-confirm';
 import type { ResetMode } from './types';
 
 export const DeviceTabContent = observer(({
   store,
+  title,
   onDeviceRemoved,
 }: {
   store: DeviceStore;
+  title?: ReactNode;
   onDeviceRemoved: (device: DeviceStore) => void;
 }) => {
   const { t } = useTranslation();
@@ -46,7 +49,7 @@ export const DeviceTabContent = observer(({
   }
   return (
     <>
-      <div className="dali-deviceToolbar">
+      <TabToolbar title={title}>
         <FormButtonGroup>
           <Tooltip text={t('dali.labels.identify-tooltip')}>
             <Button
@@ -70,7 +73,7 @@ export const DeviceTabContent = observer(({
             onClick={() => store.save()}
           />
         </FormButtonGroup>
-      </div>
+      </TabToolbar>
       {store.mqttId && <DeviceControls mqttId={store.mqttId} />}
       {store.isLoading ? (
         <div className="dali-contentLoader">

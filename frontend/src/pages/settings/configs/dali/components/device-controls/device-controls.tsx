@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Cell as CellContent } from '@/components/cell';
-import { CollapsiblePanel } from '@/components/collapsible-panel';
 import { mqttClient } from '@/services/mqtt-client';
 import Cell from '@/stores/devices/cell';
 import './styles.css';
@@ -75,6 +74,7 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
   const { t } = useTranslation();
   const [cells, setCells] = useState<Cell[]>([]);
   const [isSheetOpen, setSheetOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const isPhone = useMediaQuery({ maxWidth: 767 });
 
   useEffect(() => {
@@ -174,21 +174,29 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
             <CellContent cell={cell} hideHistory={true} />
           </div>
         ))}
-      </div>
-      {rest.length > 0 && (
-        <div className="daliDeviceControls">
-          <CollapsiblePanel
-            title={t('dali.labels.all-controls')}
-            isCollapsed={rest.length > 8}
+        {rest.length > 0 && (
+          // The toggle rides in the strip itself: a header below the sticky
+          // strip scrolls underneath it and becomes unclickable at exactly
+          // the moment someone reaches for it.
+          <button
+            type="button"
+            className="daliDeviceControls-showAll"
+            aria-expanded={showAll}
+            onClick={() => setShowAll(!showAll)}
           >
-            <div className="daliDeviceControls-grid">
-              {rest.map((cell) => (
-                <div className="daliDeviceControls-cell" key={cell.id}>
-                  <CellContent cell={cell} hideHistory={true} />
-                </div>
-              ))}
-            </div>
-          </CollapsiblePanel>
+            {t('dali.labels.all-controls')} {showAll ? '▴' : '▾'}
+          </button>
+        )}
+      </div>
+      {rest.length > 0 && showAll && (
+        <div className="daliDeviceControls">
+          <div className="daliDeviceControls-grid">
+            {rest.map((cell) => (
+              <div className="daliDeviceControls-cell" key={cell.id}>
+                <CellContent cell={cell} hideHistory={true} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </>

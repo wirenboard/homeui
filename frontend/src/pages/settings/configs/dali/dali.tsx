@@ -27,21 +27,24 @@ import './styles.css';
 
 const TabContent = ({
   store,
+  title,
   onDeviceRemoved,
 }: {
   store: ItemStore;
+  title?: ReactNode;
   onDeviceRemoved: (device: DeviceStore) => void;
 }) => {
   if (store?.type === 'bus') {
-    return <BusTabContent store={store as BusStore} />;
+    return <BusTabContent store={store as BusStore} title={title} />;
   }
   if (store?.type === 'group') {
-    return <GroupTabContent store={store as GroupStore} />;
+    return <GroupTabContent store={store as GroupStore} title={title} />;
   }
   if (store?.type === 'device') {
     return (
       <DeviceTabContent
         store={store as DeviceStore}
+        title={title}
         onDeviceRemoved={onDeviceRemoved}
       />
     );
@@ -50,6 +53,27 @@ const TabContent = ({
     return <GatewayTabContent store={store} />;
   }
   return null;
+};
+
+// What the page is, for the toolbar row: the tree selection is the only
+// other place that says so, and on mobile the tree is hidden while a page is
+// open.
+const itemTitle = (item: ItemStore, t: TFunction<'translation', undefined>): ReactNode => {
+  if (item.type === 'group') {
+    return t('dali.labels.group', { name: item.label });
+  }
+  if (item.type === 'bus') {
+    return t('dali.labels.bus', { num: (item as BusStore).index });
+  }
+  const parent = item.type === 'device' ? (item as DeviceStore).parent : null;
+  return (
+    <>
+      {item.label}
+      {parent && (
+        <span className="dali-contentTitleContext">{t('dali.labels.bus', { num: parent.index })}</span>
+      )}
+    </>
+  );
 };
 
 const buildTreeItems = (
@@ -152,28 +176,12 @@ const DaliPage = observer(() => {
           )}
           {(!isMobile || selectedItem) && (
             <section className="dali-content">
-              {selectedItem && (
-                // The pane had no heading: which device is being edited was
-                // carried only by the tree selection — invisible on mobile,
-                // where the tree is hidden while a page is open.
-                <h2 className="dali-contentTitle">
-                  {selectedItem.type === 'group'
-                    ? t('dali.labels.group', { name: selectedItem.label })
-                    : selectedItem.type === 'bus'
-                      ? t('dali.labels.bus', { num: (selectedItem as BusStore).index })
-                      : selectedItem.label}
-                  {selectedItem.type === 'device' && (selectedItem as DeviceStore).parent != null && (
-                    <span className="dali-contentTitleContext">
-                      {t('dali.labels.bus', { num: (selectedItem as DeviceStore).parent!.index })}
-                    </span>
-                  )}
-                </h2>
-              )}
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>
               )}
               <TabContent
                 store={selectedItem}
+                title={selectedItem ? itemTitle(selectedItem, t) : undefined}
                 onDeviceRemoved={onDeviceRemoved}
               />
             </section>

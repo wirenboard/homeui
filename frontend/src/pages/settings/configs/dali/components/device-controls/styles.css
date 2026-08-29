@@ -121,3 +121,20 @@
         padding-bottom: 60px;
     }
 }
+
+.daliDeviceControls-showAll {
+    margin-left: auto;
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--input-border-radius, 6px);
+    background: var(--container-background);
+    color: var(--text-color);
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.daliDeviceControls-showAll:hover {
+    background: var(--background-accent-color-hover);
+}

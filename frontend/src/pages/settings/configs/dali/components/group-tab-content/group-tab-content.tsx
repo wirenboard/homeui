@@ -1,10 +1,12 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties } from 'react';
+import { type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
+import { DeviceControls } from '../device-controls';
+import { TabToolbar } from '../tab-toolbar';
 import type { GroupStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor';
 import { useAsyncAction } from '@/utils/async-action';
@@ -50,7 +52,7 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
   );
 });
 
-export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
+export const GroupTabContent = observer(({ store, title }: { store: GroupStore; title?: ReactNode }) => {
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -62,6 +64,12 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   if (!store.objectStore) {
     return null;
   }
+
+  // The daemon publishes each group as a virtual device — "<bus>_group_NN" —
+  // whose controls act on every member at once.
+  const groupMqttId = store.parent
+    ? `${store.parent.id}_group_${String(store.index).padStart(2, '0')}`
+    : null;
 
   const params = store.objectStore.params.filter((p) => !p.hidden);
 
@@ -85,6 +93,8 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
 
   return (
     <>
+      <TabToolbar title={title} />
+      {groupMqttId && <DeviceControls mqttId={groupMqttId} />}
       {rows.map((rowParams) => {
         const rowKey = rowParams.map((p) => p.key).join('-');
         const items = rowParams.map((param) => (

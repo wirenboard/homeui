@@ -57,11 +57,24 @@
     display: none;
 }
 
+.dali-tabToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.dali-tabToolbar-actions {
+    margin-left: auto;
+}
+
 .dali-contentTitle {
     display: flex;
     align-items: baseline;
     gap: 10px;
-    margin: 0 0 4px;
+    margin: 0;
+    min-width: 0;
     font-size: 18px;
     font-weight: 600;
     line-height: 1.3;

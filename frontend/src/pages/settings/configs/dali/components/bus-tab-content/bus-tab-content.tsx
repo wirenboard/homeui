@@ -1,10 +1,12 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties } from 'react';
+import { type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
+import { DeviceControls } from '../device-controls';
+import { TabToolbar } from '../tab-toolbar';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
@@ -118,7 +120,7 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
   );
 });
 
-export const BusTabContent = observer(({ store }: { store: BusStore }) => {
+export const BusTabContent = observer(({ store, title }: { store: BusStore; title?: ReactNode }) => {
   const { t } = useTranslation();
 
   if (store.isLoading) {
@@ -136,12 +138,18 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
       ) : (
         <>
           <CommissioningErrorBanner store={store} />
-          <FormButtonGroup>
-            <Button
-              label={t('dali.buttons.rescan')}
-              onClick={() => store.scan()}
-            />
-          </FormButtonGroup>
+          <TabToolbar title={title}>
+            <FormButtonGroup>
+              <Button
+                label={t('dali.buttons.rescan')}
+                onClick={() => store.scan()}
+              />
+            </FormButtonGroup>
+          </TabToolbar>
+          {/* The daemon publishes the bus's broadcast commands as a virtual
+              device of their own — every lamp at once, which is what one
+              wants to try first after a scan. */}
+          <DeviceControls mqttId={`${store.id}_broadcast`} />
           <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
           <BusCommands store={store.commands} />
