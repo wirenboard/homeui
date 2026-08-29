@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Cell as CellContent } from '@/components/cell';
+import { CollapsiblePanel } from '@/components/collapsible-panel';
 import { mqttClient } from '@/services/mqtt-client';
 import Cell from '@/stores/devices/cell';
 import './styles.css';
@@ -74,15 +75,20 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
   }
 
   return (
+    // The same collapsible-section idiom the bus page uses for its Broadcast
+    // settings, so the page visibly holds two things — live controls here,
+    // the configuration form below — rather than looking like one form that
+    // starts strangely.
     <div className="daliDeviceControls">
-      <div className="daliDeviceControls-title">{t('dali.labels.device-controls')}</div>
-      <div className="daliDeviceControls-grid">
-        {visible.map((cell) => (
-          <div className="daliDeviceControls-cell" key={cell.id}>
-            <CellContent cell={cell} hideHistory={true} />
-          </div>
-        ))}
-      </div>
+      <CollapsiblePanel title={t('dali.labels.device-controls')}>
+        <div className="daliDeviceControls-grid">
+          {visible.map((cell) => (
+            <div className="daliDeviceControls-cell" key={cell.id}>
+              <CellContent cell={cell} hideHistory={true} />
+            </div>
+          ))}
+        </div>
+      </CollapsiblePanel>
     </div>
   );
 });

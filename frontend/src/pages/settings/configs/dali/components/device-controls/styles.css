@@ -2,16 +2,12 @@
     border: 1px solid var(--border-color);
     border-radius: var(--container-border-radius);
     background: var(--container-background);
-    padding: 10px 12px;
+    padding: 6px 12px 10px;
     margin-bottom: 12px;
 }
 
-.daliDeviceControls-title {
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
 .daliDeviceControls-grid {
+    margin-top: 6px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 6px 20px;
