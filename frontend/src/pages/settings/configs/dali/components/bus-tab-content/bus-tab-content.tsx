@@ -5,15 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
-import { DeviceControls } from '../device-controls';
-import { TabToolbar } from '../tab-toolbar';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
+import { daliHostCapabilities } from '@/stores/dali/host-capabilities';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
 import { BusCommands } from '../bus-commands';
 import { BusToggle } from '../bus-toggle';
+import { DeviceControls } from '../device-controls';
+import { TabToolbar } from '../tab-toolbar';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
 import { PollingIntervalField } from './polling-interval-field';
@@ -162,11 +163,13 @@ export const BusTabContent = observer(({ store, title }: { store: BusStore; titl
           .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
           .then(() => store.setError(null), (e) => store.setError(e))}
       />
-      <BusToggle
-        label={t('dali.labels.bus-monitor-syslog')}
-        value={store.busMonitorSyslogEnabled}
-        onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
-      />
+      {daliHostCapabilities.syslogMonitor && (
+        <BusToggle
+          label={t('dali.labels.bus-monitor-syslog')}
+          value={store.busMonitorSyslogEnabled}
+          onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
+        />
+      )}
     </>
   );
 });

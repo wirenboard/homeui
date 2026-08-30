@@ -5,6 +5,7 @@ import { useMediaQuery } from 'react-responsive';
 import { Cell as CellContent } from '@/components/cell';
 import { mqttClient } from '@/services/mqtt-client';
 import Cell from '@/stores/devices/cell';
+import type { StripEntry } from './types';
 import './styles.css';
 
 /**
@@ -26,13 +27,14 @@ import './styles.css';
  * dozens of per-button event indicators otherwise.
  */
 
-const FEATURED_LIMIT = 6;
+export const FEATURED_LIMIT = 6;
 
 /**
  * The cells worth pinning, from structure rather than device-specific names:
  * readings (read-only cells that are NOT part of a per-instance family), the
- * primary actuator range (a lamp's Wanted Level), and the one
- * universally-wanted button, Off.
+ * actuator ranges (a lamp's Wanted Level, a colour temperature), colour
+ * pickers, and the two universally-wanted buttons — Off and its "on"
+ * counterpart, Recall Max Level.
  *
  * "Per-instance family" is detected by stripping a trailing index and counting
  * siblings: a DALI-2 sensor publishes "Button 2".."Button 18" (17 of a kind) —
@@ -41,7 +43,7 @@ const FEATURED_LIMIT = 6;
  */
 const familyBase = (cell: Cell) => cell.name.replace(/\s\d+$/, '');
 
-function pickFeatured(cells: Cell[]): Cell[] {
+export function pickFeatured(cells: Cell[]): Cell[] {
   const byOrder = [...cells].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const familySize = new Map<string, number>();
   byOrder.forEach((cell) => {
@@ -50,16 +52,82 @@ function pickFeatured(cells: Cell[]): Cell[] {
   });
   const readings = byOrder.filter(
     (cell) =>
-      cell.readOnly && cell.type !== 'pushbutton' && (familySize.get(familyBase(cell)) ?? 0) < 3
+      cell.readOnly && cell.type !== 'pushbutton' && (familySize.get(familyBase(cell)) ?? 0) < 3,
   );
-  const primaryRange = byOrder.filter((cell) => !cell.readOnly && cell.type === 'range').slice(0, 1);
-  const off = byOrder
-    .filter((cell) => !cell.readOnly && (cell.controlId === 'Off' || cell.name === 'Off'))
-    .slice(0, 1);
+  const writable = byOrder.filter((cell) => !cell.readOnly);
+  const ranges = writable.filter((cell) => cell.type === 'range');
+  const colours = writable.filter((cell) => cell.type === 'rgb');
+  // Match by the wire control id first (stable), by the English title second
+  // (what gear devices carry) — never by the localized display name alone.
+  const named = (id: string, title: string) =>
+    writable
+      .filter((cell) => cell.controlId === id || cell.controlId === title || cell.name === title)
+      .slice(0, 1);
+  const off = named('off', 'Off');
+  const recallMax = named('recall_max_level', 'Recall Max Level');
   const seen = new Set<string>();
-  return [...readings, ...primaryRange, ...off]
+  // Priority when the limit bites: live readings, the primary slider, colour,
+  // Off — then the nice-to-haves: Recall Max and the secondary sliders
+  // (colour temperature, white channel). Broadcast and group devices have no
+  // readings, which is exactly what frees the room for the extras.
+  return [...readings, ...ranges.slice(0, 1), ...colours, ...off, ...recallMax, ...ranges.slice(1)]
     .filter((cell) => !seen.has(cell.id) && seen.add(cell.id))
     .slice(0, FEATURED_LIMIT);
+}
+
+/**
+ * Setpoint ↔ readback pairs, by the daemon's wire control ids (see
+ * `control_ids.py`): a lamp publishes "Actual Level" next to "Wanted Level",
+ * "Current RGB" next to "Set RGB", and so on. Shown merged — the setpoint
+ * control with the live readback in brackets — the pair takes one slot
+ * instead of two.
+ */
+const SETPOINT_OF: Record<string, string> = {
+  actual_level: 'wanted_level',
+  current_rgb: 'set_rgb',
+  current_white: 'set_white',
+  current_colour_temperature: 'set_colour_temperature',
+  current_x_coordinate: 'set_x_coordinate',
+  current_y_coordinate: 'set_y_coordinate',
+};
+
+const setpointIdFor = (controlId: string): string | undefined => {
+  const primary = /^current_primary_n(\d+)$/.exec(controlId);
+  return primary ? `set_primary_n${primary[1]}` : SETPOINT_OF[controlId];
+};
+
+/**
+ * Fold readbacks into their setpoint controls: a featured reading whose
+ * setpoint exists is shown AS the setpoint (so the strip is operable, not just
+ * observable), and a featured setpoint gets its live reading as a suffix.
+ */
+export function mergeReadbacks(featured: Cell[], all: Cell[]): StripEntry[] {
+  const byControlId = new Map(all.map((cell) => [cell.controlId, cell]));
+  const readbackOf = new Map<string, Cell>();
+  all.forEach((cell) => {
+    if (!cell.readOnly) {
+      return;
+    }
+    const setpointId = setpointIdFor(cell.controlId);
+    const setpoint = setpointId ? byControlId.get(setpointId) : undefined;
+    if (setpoint && !setpoint.readOnly) {
+      readbackOf.set(setpoint.id, cell);
+    }
+  });
+  const entries: StripEntry[] = [];
+  const seen = new Set<string>();
+  featured.forEach((cell) => {
+    const setpointId = cell.readOnly ? setpointIdFor(cell.controlId) : undefined;
+    const setpoint = setpointId ? byControlId.get(setpointId) : undefined;
+    const shown = setpoint && !setpoint.readOnly ? setpoint : cell;
+    if (seen.has(shown.id)) {
+      return;
+    }
+    seen.add(shown.id);
+    const readback = readbackOf.get(shown.id);
+    entries.push(readback ? { cell: shown, readback } : { cell: shown });
+  });
+  return entries;
 }
 
 const peekValue = (cell: Cell): string => {
@@ -69,6 +137,28 @@ const peekValue = (cell: Cell): string => {
   const value = cell.value === null || cell.value === undefined || cell.value === '' ? '—' : String(cell.value);
   return cell.units ? `${value} ${cell.units}` : value;
 };
+
+/** The wire carries colour both ways: "#rrggbb" from the daemon, "r;g;b" per the conventions. */
+const asCssColour = (value: string) =>
+  (value.startsWith('#') ? value : `rgb(${value.split(';').join(',')})`);
+
+/** The live reading, rendered small next to its setpoint control. */
+const ReadbackSuffix = observer(({ cell }: { cell: Cell }) => {
+  if (cell.type === 'rgb' && typeof cell.value === 'string' && cell.value) {
+    return (
+      <span
+        className="daliDeviceControls-readback daliDeviceControls-swatch"
+        title={`${cell.name}: ${cell.value}`}
+        style={{ background: asCssColour(String(cell.value)) }}
+      />
+    );
+  }
+  return (
+    <span className="daliDeviceControls-readback" title={cell.name}>
+      ({peekValue(cell)})
+    </span>
+  );
+});
 
 export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
   const { t } = useTranslation();
@@ -126,8 +216,11 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
     .filter((cell) => !cell.hidden)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const featured = useMemo(() => pickFeatured(visible), [visible]);
-  const featuredIds = new Set(featured.map((cell) => cell.id));
-  const rest = visible.filter((cell) => !featuredIds.has(cell.id));
+  const strip = useMemo(() => mergeReadbacks(featured, visible), [featured, visible]);
+  const stripIds = new Set(
+    strip.flatMap((entry) => (entry.readback ? [entry.cell.id, entry.readback.id] : [entry.cell.id])),
+  );
+  const rest = visible.filter((cell) => !stripIds.has(cell.id));
 
   if (!visible.length) {
     return null;
@@ -143,9 +236,9 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
           onClick={() => setSheetOpen(!isSheetOpen)}
         >
           <span className="daliDeviceControls-peekValues">
-            {featured.filter((cell) => cell.type !== 'pushbutton').map((cell) => (
+            {strip.filter(({ cell }) => cell.type !== 'pushbutton').map(({ cell, readback }) => (
               <span className="daliDeviceControls-peekItem" key={cell.id}>
-                {cell.name}: <b>{peekValue(cell)}</b>
+                {(readback ?? cell).name}: <b>{peekValue(readback ?? cell)}</b>
               </span>
             ))}
           </span>
@@ -169,9 +262,10 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
   return (
     <>
       <div className="daliDeviceControls-strip">
-        {featured.map((cell) => (
+        {strip.map(({ cell, readback }) => (
           <div className="daliDeviceControls-stripCell" key={cell.id}>
             <CellContent cell={cell} hideHistory={true} />
+            {readback && <ReadbackSuffix cell={readback} />}
           </div>
         ))}
         {rest.length > 0 && (

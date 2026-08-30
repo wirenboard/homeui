@@ -2,7 +2,11 @@
    under the (already sticky) toolbar while the form scrolls beneath it. */
 .daliDeviceControls-strip {
     position: sticky;
-    top: 34px;
+    /* The toolbar above is sticky at top: -12px and stands 58px tall (its
+       tallest row of buttons plus 12px padding each side), so 46px of it stays
+       on screen; parking the strip any higher tucks the strip's first line —
+       a slider's name label — underneath it. */
+    top: 46px;
     z-index: 100;
     display: flex;
     flex-wrap: wrap;
@@ -137,4 +141,32 @@
 
 .daliDeviceControls-showAll:hover {
     background: var(--background-accent-color-hover);
+}
+
+/* Setpoint cells carry their live readback in brackets; readings get their
+   value emphasized and a colon after the name, so "Illuminance 1" followed by
+   "537" stops reading as the single number 1537. */
+.daliDeviceControls-readback {
+    flex: 0 0 auto !important;
+    margin-left: 4px;
+    color: var(--text-secondary-color);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.daliDeviceControls-swatch {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.daliDeviceControls-stripCell .deviceCell:not(.deviceCell-columns) .deviceCell-nameText::after,
+.daliDeviceControls-cell .deviceCell:not(.deviceCell-columns) .deviceCell-nameText::after {
+    content: ':';
+}
+
+.daliDeviceControls-stripCell .deviceCell-value,
+.daliDeviceControls-cell .deviceCell-value {
+    font-weight: 600;
 }

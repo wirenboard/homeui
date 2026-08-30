@@ -85,3 +85,13 @@
     font-weight: 400;
     color: var(--text-secondary-color);
 }
+
+/* The event-scheme warning: explanation and its one-click fix on one line,
+   wrapping on narrow screens. */
+.dali-schemeWarning {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
