@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { type Option } from '@/components/dropdown';
 import { mqttClient } from '@/services';
 import Cell from './cell';
+import { sendCellValueUpdate } from './send-cell-value';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
 import type { ValueType } from './types';
@@ -168,8 +169,7 @@ export default class DevicesStore {
   }
 
   async sendCellValueUpdate(deviceId: string, controlId: string, value: string) {
-    const topic = `/devices/${deviceId}/controls/${controlId}/on`;
-    await mqttClient.send(topic, value, false);
+    await sendCellValueUpdate(deviceId, controlId, value);
   }
 
   #getOrCreateTopics(deviceId: string) {

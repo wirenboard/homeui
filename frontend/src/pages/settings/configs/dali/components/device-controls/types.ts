@@ -5,3 +5,7 @@ export interface StripEntry {
   cell: Cell;
   readback?: Cell;
 }
+
+export interface DeviceControlsProps {
+  mqttId: string;
+}

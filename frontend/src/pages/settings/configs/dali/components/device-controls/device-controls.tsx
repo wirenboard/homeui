@@ -1,11 +1,12 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Cell as CellContent } from '@/components/cell';
 import { mqttClient } from '@/services/mqtt-client';
 import Cell from '@/stores/devices/cell';
-import type { StripEntry } from './types';
+import { sendCellValueUpdate } from '@/stores/devices/send-cell-value';
+import type { DeviceControlsProps, StripEntry } from './types';
 import './styles.css';
 
 /**
@@ -130,9 +131,11 @@ export function mergeReadbacks(featured: Cell[], all: Cell[]): StripEntry[] {
   return entries;
 }
 
-const peekValue = (cell: Cell): string => {
+type Translate = (key: string) => string;
+
+const peekValue = (cell: Cell, t: Translate): string => {
   if (cell.type === 'switch' || typeof cell.value === 'boolean') {
-    return cell.value ? 'on' : 'off';
+    return cell.value ? t('dali.labels.state-on') : t('dali.labels.state-off');
   }
   const value = cell.value === null || cell.value === undefined || cell.value === '' ? '—' : String(cell.value);
   return cell.units ? `${value} ${cell.units}` : value;
@@ -144,6 +147,7 @@ const asCssColour = (value: string) =>
 
 /** The live reading, rendered small next to its setpoint control. */
 const ReadbackSuffix = observer(({ cell }: { cell: Cell }) => {
+  const { t } = useTranslation();
   if (cell.type === 'rgb' && typeof cell.value === 'string' && cell.value) {
     return (
       <span
@@ -155,18 +159,22 @@ const ReadbackSuffix = observer(({ cell }: { cell: Cell }) => {
   }
   return (
     <span className="daliDeviceControls-readback" title={cell.name}>
-      ({peekValue(cell)})
+      ({peekValue(cell, t)})
     </span>
   );
 });
 
-export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
+export const DeviceControls = observer(({ mqttId }: DeviceControlsProps) => {
   const { t } = useTranslation();
   const [cells, setCells] = useState<Cell[]>([]);
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const isPhone = useMediaQuery({ maxWidth: 767 });
 
+  // A private per-device cell store rather than devicesStore on purpose:
+  // getDeviceCells rides the always-on `/devices/#` firehose and its own
+  // completeness rules, while this page shows exactly one device at a time
+  // over a loopback broker where three narrow subscriptions are cheap.
   useEffect(() => {
     if (!mqttId) {
       setCells([]);
@@ -178,9 +186,7 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
     const ensure = (controlName: string): Cell => {
       let cell = byName.get(controlName);
       if (!cell) {
-        cell = new Cell(`${mqttId}/${controlName}`, async (deviceId, controlId, value) => {
-          mqttClient.send(`/devices/${deviceId}/controls/${controlId}/on`, value, false);
-        });
+        cell = new Cell(`${mqttId}/${controlName}`, sendCellValueUpdate);
         byName.set(controlName, cell);
         // A new control appeared; values and meta keep flowing into the
         // existing observable cells without re-rendering the list.
@@ -212,11 +218,13 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
     };
   }, [mqttId]);
 
+  // Plain calls, not useMemo: `visible` is rebuilt every render, so a memo
+  // keyed on it would never hit — and the lists are a few dozen cells.
   const visible = cells
     .filter((cell) => !cell.hidden)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  const featured = useMemo(() => pickFeatured(visible), [visible]);
-  const strip = useMemo(() => mergeReadbacks(featured, visible), [featured, visible]);
+  const featured = pickFeatured(visible);
+  const strip = mergeReadbacks(featured, visible);
   const stripIds = new Set(
     strip.flatMap((entry) => (entry.readback ? [entry.cell.id, entry.readback.id] : [entry.cell.id])),
   );
@@ -238,7 +246,7 @@ export const DeviceControls = observer(({ mqttId }: { mqttId: string }) => {
           <span className="daliDeviceControls-peekValues">
             {strip.filter(({ cell }) => cell.type !== 'pushbutton').map(({ cell, readback }) => (
               <span className="daliDeviceControls-peekItem" key={cell.id}>
-                {(readback ?? cell).name}: <b>{peekValue(readback ?? cell)}</b>
+                {(readback ?? cell).name}: <b>{peekValue(readback ?? cell, t)}</b>
               </span>
             ))}
           </span>

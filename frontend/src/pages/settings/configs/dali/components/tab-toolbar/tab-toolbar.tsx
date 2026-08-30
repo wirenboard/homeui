@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, type PropsWithChildren, type ReactNode } from 'react';
+import { useLayoutEffect, useRef } from 'react';
+import type { TabToolbarProps } from './types';
 
 /**
  * The sticky row at the top of every DALI page: what the page is, and what
@@ -10,7 +11,7 @@ import { useLayoutEffect, useRef, type PropsWithChildren, type ReactNode } from 
  * against this toolbar's bottom edge, which moves whenever the title or the
  * button row wraps.
  */
-export const TabToolbar = ({ title, children }: PropsWithChildren<{ title?: ReactNode }>) => {
+export const TabToolbar = ({ title, children }: TabToolbarProps) => {
   const toolbarRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {

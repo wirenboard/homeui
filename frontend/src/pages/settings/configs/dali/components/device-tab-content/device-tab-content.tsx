@@ -12,7 +12,7 @@ import { useAsyncAction } from '@/utils/async-action';
 import { DeviceControls } from '../device-controls';
 import { TabToolbar } from '../tab-toolbar';
 import { ResetConfirm } from './reset-confirm';
-import type { ResetMode } from './types';
+import type { InstanceConfig, ResetMode } from './types';
 
 // IEC 62386-103 Table 8: only the "device short and instance number" scheme
 // puts both the sender's short address and the instance number into an event
@@ -20,13 +20,13 @@ import type { ResetMode } from './types';
 // left in another scheme (the factory default is "instance type and number")
 // sends events that decode fine in the monitor yet update nothing, an
 // invisible misconfiguration worth a visible warning.
-const ATTRIBUTABLE_EVENT_SCHEME = 2;
+export const ATTRIBUTABLE_EVENT_SCHEME = 2;
 
-const wrongSchemeInstances = (config: object | undefined): string[] =>
+export const wrongSchemeInstances = (config: object | undefined): string[] =>
   Object.entries(config ?? {})
     .filter(([key, value]) => /^instance\d+$/.test(key)
-      && typeof (value as any)?.event_scheme === 'number'
-      && (value as any).event_scheme !== ATTRIBUTABLE_EVENT_SCHEME)
+      && typeof (value as InstanceConfig)?.event_scheme === 'number'
+      && (value as InstanceConfig).event_scheme !== ATTRIBUTABLE_EVENT_SCHEME)
     .map(([key]) => key);
 
 export const DeviceTabContent = observer(({

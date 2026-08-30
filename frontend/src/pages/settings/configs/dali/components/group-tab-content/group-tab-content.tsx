@@ -78,12 +78,6 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
     );
   }
 
-  // The daemon publishes each group as a virtual device — "<bus>_group_NN" —
-  // whose controls act on every member at once.
-  const groupMqttId = store.parent
-    ? `${store.parent.id}_group_${String(store.index).padStart(2, '0')}`
-    : null;
-
   const params = store.objectStore.params.filter((p) => !p.hidden);
 
   const rows: (typeof params)[] = [];
@@ -107,7 +101,7 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
   return (
     <>
       <TabToolbar title={title} />
-      {groupMqttId && <DeviceControls mqttId={groupMqttId} />}
+      {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
       {rows.map((rowParams) => {
         const rowKey = rowParams.map((p) => p.key).join('-');
         const items = rowParams.map((param) => (

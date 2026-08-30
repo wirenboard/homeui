@@ -18,6 +18,7 @@ import {
   type BusStore,
   DaliPageStore,
 } from '@/stores/dali';
+import { ItemType } from '@/stores/dali/base-item-store';
 import { useStore } from '@/utils/use-store';
 import { BusTabContent } from './components/bus-tab-content';
 import { DeviceTabContent } from './components/device-tab-content';
@@ -59,13 +60,13 @@ const TabContent = ({
 // other place that says so, and on mobile the tree is hidden while a page is
 // open.
 const itemTitle = (item: ItemStore, t: TFunction<'translation', undefined>): ReactNode => {
-  if (item.type === 'group') {
+  if (item.type === ItemType.Group) {
     return t('dali.labels.group', { name: item.label });
   }
-  if (item.type === 'bus') {
+  if (item.type === ItemType.Bus) {
     return t('dali.labels.bus', { num: (item as BusStore).index });
   }
-  const parent = item.type === 'device' ? (item as DeviceStore).parent : null;
+  const parent = item.type === ItemType.Device ? (item as DeviceStore).parent : null;
   return (
     <>
       {item.label}
@@ -84,7 +85,7 @@ const buildTreeItems = (
   items.map((item) => {
     storeMap.set(item.id, item);
     let label: string | ReactNode = item.label;
-    if (item.type === 'group') {
+    if (item.type === ItemType.Group) {
       label = t('dali.labels.group', { name: item.label });
     } else if (item.type === 'device' && item.groups.length) {
       label = <>{item.label} <strong>{item.groups.map((g) => `G${g}`).join(' ')}</strong></>;
