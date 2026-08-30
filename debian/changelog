@@ -1,3 +1,17 @@
+wb-mqtt-homeui (2.250.0) stable; urgency=medium
+
+  * DALI: live device controls on device, group and bus pages — featured strip
+    with merged setpoint/readback pairs, "All controls" grid, phone bottom sheet
+  * DALI: event-scheme warning banner with a one-click fix for DALI-2 devices
+    whose events cannot be attributed (factory addressing scheme)
+  * DALI: bus monitor — per-bus console tabs, collapsed repeated error rows,
+    an explanatory empty state with per-bus enable buttons
+  * DALI: host-capability gating for embedding hosts (syslog toggle, topic copy)
+  * Console panel: optional empty-state content; collapsible panel: whole-row
+    toggle (fixes double-toggle on chevron clicks in Chrome)
+
+ -- Wiren Board Robot <info@wirenboard.com>  Sat, 30 Aug 2026 18:00:00 +0300
+
 wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
   * Show the device template parameter variant matching the device firmware
