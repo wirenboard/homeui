@@ -69,6 +69,13 @@
     margin-left: auto;
 }
 
+/* On phone widths the four device actions cannot share one line; the shared
+   button group does not wrap, which stacked the buttons on top of each other. */
+.dali-tabToolbar-actions .form-buttonGroup {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
 .dali-contentTitle {
     display: flex;
     align-items: baseline;
