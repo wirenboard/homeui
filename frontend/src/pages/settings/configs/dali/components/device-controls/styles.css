@@ -2,11 +2,13 @@
    under the (already sticky) toolbar while the form scrolls beneath it. */
 .daliDeviceControls-strip {
     position: sticky;
-    /* The toolbar above is sticky at top: -12px and stands 58px tall (its
-       tallest row of buttons plus 12px padding each side), so 46px of it stays
-       on screen; parking the strip any higher tucks the strip's first line —
-       a slider's name label — underneath it. */
-    top: 46px;
+    /* The toolbar above is sticky at top: -12px, so the height it keeps on
+       screen is its own height minus those 12px — and that height moves when
+       the title or the buttons wrap, which is why the toolbar publishes it
+       (see TabToolbar). Parking the strip exactly there keeps it flush: any
+       higher clips the strip's first line, any lower opens a gap that
+       scrolled form rows show through. */
+    top: calc(var(--dali-toolbar-height, 58px) - 12px);
     z-index: 100;
     display: flex;
     flex-wrap: wrap;

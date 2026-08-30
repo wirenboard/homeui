@@ -2,14 +2,15 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
-import { DeviceControls } from '../device-controls';
-import { TabToolbar } from '../tab-toolbar';
 import type { GroupStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor';
 import { useAsyncAction } from '@/utils/async-action';
+import { DeviceControls } from '../device-controls';
+import { TabToolbar } from '../tab-toolbar';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -53,6 +54,8 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
 });
 
 export const GroupTabContent = observer(({ store, title }: { store: GroupStore; title?: ReactNode }) => {
+  const { t } = useTranslation();
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -62,7 +65,17 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
   }
 
   if (!store.objectStore) {
-    return null;
+    // The one way here is a failed GetGroup — a busy bus can time the RPC
+    // out. Rendering nothing looked like a blank page with no way back; say
+    // what happened and offer the retry.
+    return (
+      <Alert variant="warn">
+        <div className="dali-groupLoadFailed">
+          <span>{t('dali.labels.group-load-failed')}</span>
+          <Button label={t('dali.buttons.retry-load')} onClick={() => store.load()} />
+        </div>
+      </Alert>
+    );
   }
 
   // The daemon publishes each group as a virtual device — "<bus>_group_NN" —

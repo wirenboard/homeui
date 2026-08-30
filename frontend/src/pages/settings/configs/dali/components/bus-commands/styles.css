@@ -99,11 +99,13 @@
         height: 180px;
     }
 
-    .dali-busCommands-catalogButton .button-text {
-        display: none;
-    }
-
     .dali-busCommands-results .wb-tableWrapper {
         overflow-x: visible;
     }
+}
+
+/* At phone widths the flex row squeezed the catalog button into a label-less
+   pill; buttons here keep their intrinsic width and wrap instead. */
+.dali-busCommands-toolbar .button {
+    flex-shrink: 0;
 }
