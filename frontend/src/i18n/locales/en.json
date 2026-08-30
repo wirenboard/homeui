@@ -1067,6 +1067,7 @@
             "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices",
             "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
             "group-load-failed": "Could not read the group settings — the bus may be busy.",
+            "monitor-empty-hint": "The bus monitor is off, so no frames are being captured. Enable it for a bus below, or with the Bus Monitor toggle at the bottom of that bus's tab:",
             "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>.",
             "scan-error": "Scan failed at {{when}}: {{error}}",
             "scan-stage-queued": "Queued",
