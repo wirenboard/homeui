@@ -13,4 +13,12 @@
 export const daliHostCapabilities = {
   /** wb-mqtt-dali can copy bus monitor rows to the controller's syslog. */
   syslogMonitor: true,
+  /**
+   * The daemon's MQTT topics are served by a real broker that other tools
+   * (dashboards, rules, history) can see, so a device's MQTT id is a
+   * meaningful, user-editable identity. The WASM host runs a loopback broker
+   * nothing external ever reaches — there the id is an implementation detail
+   * and its editor is hidden.
+   */
+  externalBroker: true,
 };

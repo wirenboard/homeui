@@ -4,6 +4,7 @@ import { type GetDeviceParams } from '@/stores/dali/types';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
+import { daliHostCapabilities } from './host-capabilities';
 
 export class DeviceStore extends BaseItemStore {
   readonly type = ItemType.Device;
@@ -50,6 +51,14 @@ export class DeviceStore extends BaseItemStore {
       const data = await daliProxy.GetDevice(params);
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
+      if (!daliHostCapabilities.externalBroker) {
+        // With no external broker the MQTT id names nothing anyone can see;
+        // keep the daemon's default instead of offering an editor for it.
+        const mqttIdSchema = schema.properties?.mqtt_id;
+        if (mqttIdSchema) {
+          mqttIdSchema.options = { ...mqttIdSchema.options, hidden: true };
+        }
+      }
       this.translator.addTranslations(schema.translations);
       this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
