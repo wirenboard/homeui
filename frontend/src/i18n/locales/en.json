@@ -367,6 +367,7 @@
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
          "edit": "Edit",
+         "fix-event-schemes": "Set recommended scheme",
          "retry": "Retry"
       },
       "prompt": {
@@ -1095,6 +1096,7 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

@@ -56,3 +56,13 @@
 .dali .dropdown__control--is-disabled .dropdown__indicator {
     display: none;
 }
+
+/* The event-scheme warning: explanation and its one-click fix on one line,
+   wrapping on narrow screens. */
+.dali-schemeWarning {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
