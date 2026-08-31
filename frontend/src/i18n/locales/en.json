@@ -367,7 +367,6 @@
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
          "edit": "Edit",
-         "fix-event-schemes": "Set recommended scheme",
          "retry": "Retry"
       },
       "prompt": {
@@ -1100,6 +1099,7 @@
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {
+         "fix-event-schemes": "Set recommended scheme",
          "rescan": "Rescan",
          "stop-scan": "Stop",
          "return": "To devices list",
