@@ -1085,6 +1085,7 @@
          "group": "Группа {{name}}",
          "bus": "Шина {{num}}",
          "bus-monitor": "Монитор шины",
+         "bus-monitor-description": "Шлюз должен быть подключён на скорости 115200. Если скорость ниже, при активном обмене на шине DALI монитор покажет лишь часть трафика.",
          "bus-monitor-syslog": "Сохранять в syslog",
          "bus-settings": "Широковещательные настройки",
          "websocket-enabled": "Эмуляция шлюза Lunatone DALI-2 IoT",

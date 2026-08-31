@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
-import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { JsonSchemaEditor, ParamDescription } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
 import { daliHostCapabilities } from '@/stores/dali/host-capabilities';
@@ -156,13 +156,16 @@ export const BusTabContent = observer(({ store, title }: { store: BusStore; titl
           <BusCommands store={store.commands} />
         </>
       )}
-      <BusToggle
-        label={t('dali.labels.bus-monitor')}
-        value={daliGlobalStore.isMonitorEnabled(store.id)}
-        onToggle={(v) => daliGlobalStore
-          .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
-          .then(() => store.setError(null), (e) => store.setError(e))}
-      />
+      <div className="wb-jsonEditor-objectProperty">
+        <BusToggle
+          label={t('dali.labels.bus-monitor')}
+          value={daliGlobalStore.isMonitorEnabled(store.id)}
+          onToggle={(v) => daliGlobalStore
+            .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
+            .then(() => store.setError(null), (e) => store.setError(e))}
+        />
+        <ParamDescription description={t('dali.labels.bus-monitor-description')} />
+      </div>
       {daliHostCapabilities.syslogMonitor && (
         <BusToggle
           label={t('dali.labels.bus-monitor-syslog')}

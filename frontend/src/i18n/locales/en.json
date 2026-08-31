@@ -1056,6 +1056,7 @@
          "group": "Group #{{name}}",
          "bus": "Bus {{num}}",
          "bus-monitor": "Bus Monitor",
+         "bus-monitor-description": "The gateway must be connected at 115200. At a lower speed the monitor will show only part of the traffic while the DALI bus is busy.",
          "bus-monitor-syslog": "Save to syslog",
          "bus-settings": "Broadcast settings",
          "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",

@@ -10,7 +10,21 @@ wb-mqtt-homeui (2.250.0) stable; urgency=medium
   * Console panel: optional empty-state content; collapsible panel: whole-row
     toggle (fixes double-toggle on chevron clicks in Chrome)
 
- -- Wiren Board Robot <info@wirenboard.com>  Sat, 30 Aug 2026 18:00:00 +0300
+ -- Wiren Board Robot <info@wirenboard.com>  Mon, 31 Aug 2026 20:00:00 +0300
+
+wb-mqtt-homeui (2.249.2) stable; urgency=medium
+
+  * Add a note under the DALI bus monitor switch: the gateway has to be
+    connected at 115200, otherwise on a busy bus the monitor shows only part
+    of the traffic
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 31 Aug 2026 18:34:17 +0500
+
+wb-mqtt-homeui (2.249.1) stable; urgency=medium
+
+  * Optional hide info icon
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 31 Aug 2026 13:07:00 +0300
 
 wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
