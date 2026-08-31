@@ -8,6 +8,7 @@ import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor, ParamDescription } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
+import { daliHostCapabilities } from '@/stores/dali/host-capabilities';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
 import { BusCommands } from '../bus-commands';
@@ -157,11 +158,13 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
         />
         <ParamDescription description={t('dali.labels.bus-monitor-description')} />
       </div>
-      <BusToggle
-        label={t('dali.labels.bus-monitor-syslog')}
-        value={store.busMonitorSyslogEnabled}
-        onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
-      />
+      {daliHostCapabilities.syslogMonitor && (
+        <BusToggle
+          label={t('dali.labels.bus-monitor-syslog')}
+          value={store.busMonitorSyslogEnabled}
+          onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
+        />
+      )}
     </>
   );
 });

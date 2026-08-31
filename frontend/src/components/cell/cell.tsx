@@ -15,6 +15,7 @@ import { Tooltip } from '@/components/tooltip';
 import { CellComponent } from '@/stores/devices';
 import { CellError } from '@/stores/devices/cell-type';
 import { copyToClipboard } from '@/utils/clipboard';
+import { topicCopyPolicy } from './topic-copy-policy';
 import { type CellProps } from './types';
 import './styles.css';
 
@@ -59,15 +60,11 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
         },
       )}
     >
-      {!isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (
-        <Tooltip
-          text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
-          placement="top-start"
-          trigger="click"
-        >
+      {!isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (() => {
+        const nameBlock = (
           <div
             className="deviceCell-name"
-            onClick={() => copyToClipboard(cell.id)}
+            onClick={topicCopyPolicy.enabled ? () => copyToClipboard(cell.id) : undefined}
           >
             {cell.error?.includes(CellError.Period) && (
               <Suspense>
@@ -85,8 +82,22 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
               <CellHistory cell={cell} />
             )}
           </div>
-        </Tooltip>
-      )}
+        );
+        // Without a broker to use the topic in, neither the copy nor its
+        // "copied to clipboard" tooltip has a point — see topicCopyPolicy.
+        if (!topicCopyPolicy.enabled) {
+          return nameBlock;
+        }
+        return (
+          <Tooltip
+            text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
+            placement="top-start"
+            trigger="click"
+          >
+            {nameBlock}
+          </Tooltip>
+        );
+      })()}
       {isCompact && !hideHistory && cell.displayType === CellComponent.Range && (
         <CellHistory cell={cell} />
       )}

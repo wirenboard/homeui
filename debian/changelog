@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.250.0) stable; urgency=medium
+
+  * DALI: host capabilities for embedding hosts — the syslog toggle and the MQTT id
+    editor only where a controller's syslog and broker exist; topic copy on cell click
+    behind a policy a broker-less host switches off
+
+ -- Wiren Board Robot <info@wirenboard.com>  Mon, 31 Aug 2026 20:00:00 +0300
+
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
   * Add a note under the DALI bus monitor switch: the gateway has to be
