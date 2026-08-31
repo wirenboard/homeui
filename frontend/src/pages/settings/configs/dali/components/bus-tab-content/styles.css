@@ -36,3 +36,13 @@
     flex-grow: 1;
     width: unset;
 }
+
+.dali-busMonitor {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dali-busMonitor-description {
+    color: var(--gray-color);
+}

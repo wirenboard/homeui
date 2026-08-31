@@ -147,14 +147,16 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
           <BusCommands store={store.commands} />
         </>
       )}
-      <BusToggle
-        label={t('dali.labels.bus-monitor')}
-        description={t('dali.labels.bus-monitor-description')}
-        value={daliGlobalStore.isMonitorEnabled(store.id)}
-        onToggle={(v) => daliGlobalStore
-          .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
-          .then(() => store.setError(null), (e) => store.setError(e))}
-      />
+      <div className="dali-busMonitor">
+        <BusToggle
+          label={t('dali.labels.bus-monitor')}
+          value={daliGlobalStore.isMonitorEnabled(store.id)}
+          onToggle={(v) => daliGlobalStore
+            .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
+            .then(() => store.setError(null), (e) => store.setError(e))}
+        />
+        <span className="dali-busMonitor-description">{t('dali.labels.bus-monitor-description')}</span>
+      </div>
       <BusToggle
         label={t('dali.labels.bus-monitor-syslog')}
         value={store.busMonitorSyslogEnabled}
