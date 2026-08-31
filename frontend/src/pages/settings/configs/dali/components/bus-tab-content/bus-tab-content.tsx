@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
+import { FormField } from '@/components/form/form-field';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
@@ -147,7 +148,7 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
           <BusCommands store={store.commands} />
         </>
       )}
-      <div className="dali-busMonitor">
+      <FormField description={t('dali.labels.bus-monitor-description')}>
         <BusToggle
           label={t('dali.labels.bus-monitor')}
           value={daliGlobalStore.isMonitorEnabled(store.id)}
@@ -155,8 +156,7 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
             .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
             .then(() => store.setError(null), (e) => store.setError(e))}
         />
-        <span className="dali-busMonitor-description">{t('dali.labels.bus-monitor-description')}</span>
-      </div>
+      </FormField>
       <BusToggle
         label={t('dali.labels.bus-monitor-syslog')}
         value={store.busMonitorSyslogEnabled}
