@@ -1,0 +1,440 @@
+.configurator-summary {
+  margin-bottom: 16px;
+}
+
+.configurator-device {
+  margin-bottom: 24px;
+}
+
+.configurator-deviceTitle {
+  margin: 0 0 8px;
+}
+
+.configurator-deviceId {
+  color: #888;
+  font-weight: normal;
+  font-size: 0.85em;
+}
+
+.configurator-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.configurator-table th,
+.configurator-table td {
+  padding: 4px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.configurator-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.configurator-devices {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.configurator-preview {
+  position: sticky;
+  top: 16px;
+  flex: 0 0 380px;
+  max-width: 380px;
+}
+
+.configurator-previewHead {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.configurator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.configurator-saveButton {
+  font-weight: 600;
+  color: #fff;
+  background: var(--accentColor, #3c6f18);
+  border: 1px solid var(--accentColor, #3c6f18);
+  border-radius: 4px;
+}
+.configurator-saveButton:disabled {
+  opacity: 0.5;
+}
+
+.configurator-saveStatus {
+  margin: 6px 0 0;
+  font-size: 0.85em;
+}
+.configurator-saveStatus.is-ok {
+  color: #3c6f18;
+}
+.configurator-saveStatus.is-error {
+  color: #d9534f;
+}
+
+.configurator-previewHead h3 {
+  margin: 0;
+}
+
+.configurator-empty {
+  color: #888;
+}
+
+.configurator-roleSelect {
+  max-width: 160px;
+  padding: 1px 4px;
+}
+
+.configurator-nameInput {
+  width: 100%;
+  min-width: 140px;
+  padding: 1px 4px;
+}
+
+.configurator-ctrlId {
+  color: #888;
+  font-size: 0.8em;
+}
+
+.configurator-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.configurator-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.configurator-deviceHead {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.configurator-deviceType {
+  flex: 1 1 auto;
+  color: #888;
+  font-size: 0.85em;
+}
+
+.configurator-deviceMeta {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.configurator-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.configurator-field input {
+  width: 100%;
+  padding: 1px 4px;
+}
+
+.configurator-fieldLabel {
+  font-size: 0.78em;
+  font-weight: 600;
+  color: #555;
+}
+
+.configurator-fieldHint {
+  font-weight: 400;
+  color: #999;
+}
+
+.configurator-field.is-missing input {
+  border-color: #d9534f;
+}
+
+.configurator-field.is-missing .configurator-fieldLabel {
+  color: #d9534f;
+}
+
+.configurator-serviceMeta {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 6px;
+}
+
+.configurator-serviceMeta input {
+  flex: 1;
+  padding: 1px 4px;
+}
+
+.configurator-propName {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 1px 4px;
+  font-size: 0.8em;
+}
+
+.configurator-device.is-invalid {
+  border-left: 3px solid #e0a800;
+  padding-left: 8px;
+}
+
+.configurator-warn {
+  margin: 0 0 8px;
+  color: #b8860b;
+  font-size: 0.85em;
+}
+
+.configurator-req {
+  color: #d33;
+  margin-left: 2px;
+}
+
+.configurator-table tr.is-missing td {
+  background: #fff8e1;
+}
+
+.configurator-slotSelect {
+  min-width: 220px;
+  padding: 1px 4px;
+}
+
+.configurator-range {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.configurator-range label {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 0.76rem;
+  color: #888;
+}
+
+.configurator-range input {
+  width: 66px;
+  padding: 1px 4px;
+}
+
+.configurator-service {
+  margin: 8px 0 8px 16px;
+  padding: 6px 0 6px 10px;
+  border-left: 2px solid #d0d5da;
+}
+
+.configurator-service.is-invalid {
+  border-left-color: #e0a800;
+}
+
+.configurator-serviceHead {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.configurator-addService {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0 0 16px;
+}
+
+.configurator-rooms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.configurator-roomChip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 6px;
+  background: #eef1f4;
+  border-radius: 4px;
+}
+
+.configurator-roomChip input {
+  min-width: 90px;
+  padding: 1px 4px;
+}
+
+.configurator-roomSelect {
+  max-width: 160px;
+  padding: 1px 4px;
+}
+
+.configurator-hint {
+  align-self: center;
+  color: #888;
+  font-size: 0.8em;
+}
+
+.configurator-config {
+  max-height: 70vh;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  font-size: 0.8em;
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+}
+
+/* Панель «Обнаружено» (T1) — сворачиваемая, чтобы не занимать весь экран */
+.configurator-discovery {
+  margin: 12px 0 20px;
+  padding: 0 14px;
+  border: 1px solid var(--separationLineColor, #d7dde3);
+  border-radius: 8px;
+  background: var(--cardBackgroundColor, #fff);
+}
+
+/* Заголовок всей панели — клик сворачивает/разворачивает */
+.configurator-discovery-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.configurator-discovery-summary::-webkit-details-marker {
+  display: none;
+}
+.configurator-discovery-summary::before {
+  content: '▸';
+  align-self: center;
+  font-size: 12px;
+  opacity: 0.6;
+}
+.configurator-discovery[open] > .configurator-discovery-summary::before {
+  content: '▾';
+}
+.configurator-discovery-summaryCount {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+/* Ряд фильтров — виден только когда панель раскрыта */
+.configurator-discovery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+.configurator-discovery-filters label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Устройство — тоже сворачиваемое, свёрнуто по умолчанию */
+.configurator-discovery-device {
+  border-top: 1px solid var(--separationLineColor, #eef1f4);
+}
+.configurator-discovery-deviceHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0;
+  cursor: pointer;
+  list-style: none;
+}
+.configurator-discovery-deviceHead::-webkit-details-marker {
+  display: none;
+}
+.configurator-discovery-deviceHead::before {
+  content: '▸';
+  align-self: center;
+  font-size: 11px;
+  opacity: 0.5;
+}
+.configurator-discovery-device[open] > .configurator-discovery-deviceHead::before {
+  content: '▾';
+}
+.configurator-discovery-deviceName {
+  font-weight: 600;
+}
+.configurator-discovery-deviceId {
+  font-size: 12px;
+  opacity: 0.6;
+  font-family: monospace;
+}
+.configurator-discovery-count {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.6;
+}
+.configurator-discovery-cells {
+  margin: 2px 0 10px;
+  padding-left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  list-style: none;
+}
+.configurator-discovery-cell {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+.configurator-discovery-role {
+  font-size: 11px;
+  opacity: 0.6;
+  font-family: monospace;
+}
+.configurator-discovery-ambiguous {
+  align-self: center;
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e6a700;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Кнопка «создать из контрола» (T1, шаг 4) */
+.configurator-discovery-add {
+  margin-left: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  border: 1px solid var(--accentColor, #3c6f18);
+  color: var(--accentColor, #3c6f18);
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.configurator-discovery-add:hover {
+  background: rgba(60, 111, 24, 0.08);
+}
