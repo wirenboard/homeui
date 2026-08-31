@@ -1095,6 +1095,8 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "group-load-failed": "Could not read the group settings — the bus may be busy.",
+         "group-members-initializing": "The group's devices are still being initialized — the settings will appear as soon as one member has been read.",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

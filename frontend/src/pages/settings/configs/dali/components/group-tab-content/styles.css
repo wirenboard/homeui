@@ -18,3 +18,12 @@
 .dali-groupParam-editor .input:not(.dali-color-temperature-slider-input) {
      width: 100%;
 }
+
+/* The failed-load alert: message and its retry on one line, wrapping when narrow. */
+.dali-groupLoadFailed {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}

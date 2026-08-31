@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.250.3) stable; urgency=medium
+
+  * DALI group page: an empty GetGroup answer (no member initialized yet) is no
+    longer cached as the group's configuration — the page says the members are
+    initializing and re-asks every 3 s; a failed GetGroup shows a retry instead of
+    a blank page
+
+ -- Wiren Board Robot <info@wirenboard.com>  Mon, 31 Aug 2026 20:30:00 +0300
+
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
   * Add a note under the DALI bus monitor switch: the gateway has to be
