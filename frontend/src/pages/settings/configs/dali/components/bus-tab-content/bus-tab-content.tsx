@@ -149,6 +149,7 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
       )}
       <BusToggle
         label={t('dali.labels.bus-monitor')}
+        description={t('dali.labels.bus-monitor-description')}
         value={daliGlobalStore.isMonitorEnabled(store.id)}
         onToggle={(v) => daliGlobalStore
           .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })

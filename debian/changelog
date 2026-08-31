@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.249.1) stable; urgency=medium
+
+  * Add a note under the DALI bus monitor switch: the gateway has to be
+    connected at 115200, otherwise on a busy bus the monitor shows only part
+    of the traffic
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 31 Aug 2026 11:08:41 +0500
+
 wb-mqtt-homeui (2.249.0) stable; urgency=medium
 
   * Show the device template parameter variant matching the device firmware

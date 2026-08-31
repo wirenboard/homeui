@@ -4,3 +4,17 @@
     gap: 8px;
     cursor: pointer;
 }
+
+.dali-busToggle-withDescription {
+    align-items: flex-start;
+}
+
+.dali-busToggle-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dali-busToggle-description {
+    color: var(--gray-color);
+}
