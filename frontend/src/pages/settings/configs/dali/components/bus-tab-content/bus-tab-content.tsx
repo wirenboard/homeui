@@ -147,14 +147,16 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
           <BusCommands store={store.commands} />
         </>
       )}
-      <BusToggle
-        label={t('dali.labels.bus-monitor')}
-        value={daliGlobalStore.isMonitorEnabled(store.id)}
-        onToggle={(v) => daliGlobalStore
-          .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
-          .then(() => store.setError(null), (e) => store.setError(e))}
-      />
-      <ParamDescription description={t('dali.labels.bus-monitor-description')} />
+      <div className="wb-jsonEditor-objectProperty">
+        <BusToggle
+          label={t('dali.labels.bus-monitor')}
+          value={daliGlobalStore.isMonitorEnabled(store.id)}
+          onToggle={(v) => daliGlobalStore
+            .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
+            .then(() => store.setError(null), (e) => store.setError(e))}
+        />
+        <ParamDescription description={t('dali.labels.bus-monitor-description')} />
+      </div>
       <BusToggle
         label={t('dali.labels.bus-monitor-syslog')}
         value={store.busMonitorSyslogEnabled}
