@@ -1095,6 +1095,9 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "monitor-empty-hint": "The bus monitor is off, so no frames are being captured. Enable it for a bus below, or with the Bus Monitor toggle at the bottom of that bus's tab:",
+         "monitor-repeats": "repeated {{count}} times",
+         "monitor-repeats_one": "repeated {{count}} time",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

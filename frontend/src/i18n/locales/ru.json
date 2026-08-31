@@ -1124,6 +1124,11 @@
          "monitor-col-command": "Команда",
          "monitor-col-response": "Ответ",
          "monitor-foreign": "сторонний",
+         "monitor-empty-hint": "Монитор шины выключен, кадры не записываются. Включите его для нужной шины ниже или переключателем «Монитор шины» внизу вкладки этой шины:",
+         "monitor-repeats": "повторено {{count}} раз",
+         "monitor-repeats_one": "повторено {{count}} раз",
+         "monitor-repeats_few": "повторено {{count}} раза",
+         "monitor-repeats_many": "повторено {{count}} раз",
          "monitor-broadcast": "Широковещательные"
       },
       "buttons": {
