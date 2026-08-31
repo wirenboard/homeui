@@ -180,3 +180,39 @@
 .daliMonitor-menuItem:focus {
     box-shadow: var(--input-active-shadow);
 }
+
+.daliMonitor-repeatBadge {
+    flex-shrink: 0;
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 11px;
+    background: var(--background-accent-color);
+    color: var(--text-secondary-color);
+}
+
+/* The panel with nothing to monitor: why it is empty, and the one-click way
+   to change that, centered in the drawer's space. */
+.daliMonitorEmpty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex: 1;
+    min-height: 120px;
+    padding: 16px;
+    text-align: center;
+}
+
+.daliMonitorEmpty-hint {
+    margin: 0;
+    color: var(--text-secondary-color);
+}
+
+.daliMonitorEmpty-buses {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}

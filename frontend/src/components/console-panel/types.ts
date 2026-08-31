@@ -13,3 +13,9 @@ export interface ConsoleLogScrollerProps {
   scrollKey: number | string;
   children: ReactNode;
 }
+
+export interface ConsolePanelProps {
+  /** Shown in the content area while no tab is registered — an open panel with
+      nothing to say otherwise reads as a rendering bug. */
+  emptyState?: ReactNode;
+}

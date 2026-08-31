@@ -56,3 +56,49 @@
 .dali .dropdown__control--is-disabled .dropdown__indicator {
     display: none;
 }
+
+.dali-tabToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.dali-tabToolbar-actions {
+    margin-left: auto;
+}
+
+/* On phone widths the four device actions cannot share one line; the shared
+   button group does not wrap, which stacked the buttons on top of each other. */
+.dali-tabToolbar-actions .form-buttonGroup {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.dali-contentTitle {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0;
+    min-width: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.dali-contentTitleContext {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary-color);
+}
+
+/* The event-scheme warning: explanation and its one-click fix on one line,
+   wrapping on narrow screens. */
+.dali-schemeWarning {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}

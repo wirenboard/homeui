@@ -1,13 +1,16 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties } from 'react';
+import { type CSSProperties, type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import type { GroupStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor';
 import { useAsyncAction } from '@/utils/async-action';
+import { DeviceControls } from '../device-controls';
+import { TabToolbar } from '../tab-toolbar';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -50,7 +53,21 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
   );
 });
 
-export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
+export const GroupTabContent = observer(({ store, title }: { store: GroupStore; title?: ReactNode }) => {
+  const { t } = useTranslation();
+
+  // While the members are still initializing the daemon has no parameters to
+  // offer; keep asking — the form fills itself in as soon as one member is
+  // read, with no reload required.
+  const awaitingMembers = store.isAwaitingMembers;
+  useEffect(() => {
+    if (!awaitingMembers) {
+      return undefined;
+    }
+    const timer = window.setInterval(() => store.load(), 3000);
+    return () => window.clearInterval(timer);
+  }, [awaitingMembers, store]);
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -60,7 +77,27 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   }
 
   if (!store.objectStore) {
-    return null;
+    // The one way here is a failed GetGroup — a busy bus can time the RPC
+    // out. Rendering nothing looked like a blank page with no way back; say
+    // what happened and offer the retry.
+    return (
+      <Alert variant="warn">
+        <div className="dali-groupLoadFailed">
+          <span>{t('dali.labels.group-load-failed')}</span>
+          <Button label={t('dali.buttons.retry-load')} onClick={() => store.load()} />
+        </div>
+      </Alert>
+    );
+  }
+
+  if (store.isAwaitingMembers) {
+    return (
+      <>
+        <TabToolbar title={title} />
+        {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
+        <Alert variant="info">{t('dali.labels.group-members-initializing')}</Alert>
+      </>
+    );
   }
 
   const params = store.objectStore.params.filter((p) => !p.hidden);
@@ -85,6 +122,8 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
 
   return (
     <>
+      <TabToolbar title={title} />
+      {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
       {rows.map((rowParams) => {
         const rowKey = rowParams.map((p) => p.key).join('-');
         const items = rowParams.map((param) => (
