@@ -20,6 +20,7 @@ export class GroupStore extends BaseItemStore {
       saveParam: action,
       isLoading: observable,
       error: observable,
+      isAwaitingMembers: observable,
     });
   }
 
@@ -36,8 +37,16 @@ export class GroupStore extends BaseItemStore {
     return this.#parent ? `${this.#parent.id}_group_${String(this.index).padStart(2, '0')}` : null;
   }
 
+  /**
+   * GetGroup merges parameters over the group's members that have finished
+   * initializing; while none has, it legitimately answers an empty schema.
+   * That answer is a moment, not a fact — it must never be cached as the
+   * group's real (absent) configuration.
+   */
+  isAwaitingMembers = false;
+
   async load() {
-    if (this.objectStore) {
+    if (this.objectStore && !this.isAwaitingMembers) {
       return;
     }
     this.isLoading = true;
@@ -49,6 +58,9 @@ export class GroupStore extends BaseItemStore {
       this.translator.addTranslations(schema.translations);
       this.objectStore = new ObjectStore(schema, {}, false, new StoreBuilder());
       this.objectStore.setDefault();
+      runInAction(() => {
+        this.isAwaitingMembers = !Object.keys((data as unknown as { properties?: object })?.properties ?? {}).length;
+      });
       this.setError(null);
     } catch (error) {
       this.setError(error);

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties, type ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -56,6 +56,18 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
 export const GroupTabContent = observer(({ store, title }: { store: GroupStore; title?: ReactNode }) => {
   const { t } = useTranslation();
 
+  // While the members are still initializing the daemon has no parameters to
+  // offer; keep asking — the form fills itself in as soon as one member is
+  // read, with no reload required.
+  const awaitingMembers = store.isAwaitingMembers;
+  useEffect(() => {
+    if (!awaitingMembers) {
+      return undefined;
+    }
+    const timer = window.setInterval(() => store.load(), 3000);
+    return () => window.clearInterval(timer);
+  }, [awaitingMembers, store]);
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -75,6 +87,16 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
           <Button label={t('dali.buttons.retry-load')} onClick={() => store.load()} />
         </div>
       </Alert>
+    );
+  }
+
+  if (store.isAwaitingMembers) {
+    return (
+      <>
+        <TabToolbar title={title} />
+        {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
+        <Alert variant="info">{t('dali.labels.group-members-initializing')}</Alert>
+      </>
     );
   }
 
