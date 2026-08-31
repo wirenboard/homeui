@@ -1,0 +1,174 @@
+/* Wide screens: the featured cells ride in a slim strip that stays pinned
+   under the (already sticky) toolbar while the form scrolls beneath it. */
+.daliDeviceControls-strip {
+    position: sticky;
+    /* The toolbar above is sticky at top: -12px, so the height it keeps on
+       screen is its own height minus those 12px — and that height moves when
+       the title or the buttons wrap, which is why the toolbar publishes it
+       (see TabToolbar). Parking the strip exactly there keeps it flush: any
+       higher clips the strip's first line, any lower opens a gap that
+       scrolled form rows show through. */
+    top: calc(var(--dali-toolbar-height, 58px) - 12px);
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 24px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--container-border-radius);
+    background: var(--container-background);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.daliDeviceControls-stripCell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/* Sliders need real width to be grabbable; readings can shrink. */
+.daliDeviceControls-stripCell:has(input[type='range']) {
+    flex: 1 1 220px;
+    max-width: 340px;
+}
+
+.daliDeviceControls {
+    border: 1px solid var(--border-color);
+    border-radius: var(--container-border-radius);
+    background: var(--container-background);
+    padding: 6px 12px 10px;
+    margin-bottom: 12px;
+}
+
+.daliDeviceControls-grid {
+    margin-top: 6px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 6px 20px;
+}
+
+.daliDeviceControls-cell {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    min-width: 0;
+}
+
+/* The cell widget brings its own name label; just let it fill the column. */
+.daliDeviceControls-cell > *,
+.daliDeviceControls-stripCell > * {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Phones: the same featured set as a bottom sheet. Closed, it is a one-line
+   peek bar with live values in thumb reach; open, the full control set
+   scrolls inside 60vh while the form keeps the whole screen. */
+.daliDeviceControls-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 150;
+    background: var(--container-background);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.daliDeviceControls-peek {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-color);
+}
+
+.daliDeviceControls-peekValues {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    white-space: nowrap;
+}
+
+.daliDeviceControls-peekItem {
+    color: var(--text-secondary-color);
+    font-size: 13px;
+}
+
+.daliDeviceControls-peekItem b {
+    color: var(--text-color);
+}
+
+.daliDeviceControls-peekChevron {
+    flex-shrink: 0;
+    color: var(--text-secondary-color);
+}
+
+.daliDeviceControls-sheetBody {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 4px 14px 14px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Let the last form rows scroll clear of the closed peek bar. */
+@media (max-width: 767px) {
+    .dali-content {
+        padding-bottom: 60px;
+    }
+}
+
+.daliDeviceControls-showAll {
+    margin-left: auto;
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--input-border-radius, 6px);
+    background: var(--container-background);
+    color: var(--text-color);
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.daliDeviceControls-showAll:hover {
+    background: var(--background-accent-color-hover);
+}
+
+/* Setpoint cells carry their live readback in brackets; readings get their
+   value emphasized and a colon after the name, so "Illuminance 1" followed by
+   "537" stops reading as the single number 1537. */
+.daliDeviceControls-readback {
+    flex: 0 0 auto !important;
+    margin-left: 4px;
+    color: var(--text-secondary-color);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.daliDeviceControls-swatch {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.daliDeviceControls-stripCell .deviceCell:not(.deviceCell-columns) .deviceCell-nameText::after,
+.daliDeviceControls-cell .deviceCell:not(.deviceCell-columns) .deviceCell-nameText::after {
+    content: ':';
+}
+
+.daliDeviceControls-stripCell .deviceCell-value,
+.daliDeviceControls-cell .deviceCell-value {
+    font-weight: 600;
+}

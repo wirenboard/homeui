@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.250.4) stable; urgency=medium
+
+  * DALI: live device controls on device, group and bus pages — a featured strip
+    of the controls one reaches for (level, colour, temperature, on/off) with
+    the rest behind "All controls"; the page toolbar names what is open, which
+    the hidden tree no longer does on mobile, and its buttons wrap on phones
+
+ -- Wiren Board Robot <info@wirenboard.com>  Mon, 31 Aug 2026 20:40:00 +0300
+
 wb-mqtt-homeui (2.250.0) stable; urgency=medium
 
   * DALI: host capabilities for embedding hosts — the syslog toggle and the MQTT id
