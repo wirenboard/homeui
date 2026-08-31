@@ -35,7 +35,9 @@ describe('GroupStore', () => {
     });
 
     test('skips if already loaded', async () => {
-      daliProxyMock.GetGroup.mockResolvedValue({ config: {}, schema: {} });
+      // A non-empty schema: an empty one means "members still initializing"
+      // and is deliberately not cached (see the awaiting-members test file).
+      daliProxyMock.GetGroup.mockResolvedValue({ properties: { min_level: {} } });
       await store.load();
       vi.clearAllMocks();
 

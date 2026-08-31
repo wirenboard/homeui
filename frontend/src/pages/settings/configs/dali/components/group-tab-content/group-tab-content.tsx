@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties } from 'react';
+import { type CSSProperties, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
@@ -51,6 +52,20 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
 });
 
 export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
+  const { t } = useTranslation();
+
+  // While the members are still initializing the daemon has no parameters to
+  // offer; keep asking — the form fills itself in as soon as one member is
+  // read, with no reload required.
+  const awaitingMembers = store.isAwaitingMembers;
+  useEffect(() => {
+    if (!awaitingMembers) {
+      return undefined;
+    }
+    const timer = window.setInterval(() => store.load(), 3000);
+    return () => window.clearInterval(timer);
+  }, [awaitingMembers, store]);
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -60,7 +75,21 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   }
 
   if (!store.objectStore) {
-    return null;
+    // The one way here is a failed GetGroup — a busy bus can time the RPC
+    // out. Rendering nothing looked like a blank page with no way back; say
+    // what happened and offer the retry.
+    return (
+      <Alert variant="warn">
+        <div className="dali-groupLoadFailed">
+          <span>{t('dali.labels.group-load-failed')}</span>
+          <Button label={t('dali.buttons.retry-load')} onClick={() => store.load()} />
+        </div>
+      </Alert>
+    );
+  }
+
+  if (store.isAwaitingMembers) {
+    return <Alert variant="info">{t('dali.labels.group-members-initializing')}</Alert>;
   }
 
   const params = store.objectStore.params.filter((p) => !p.hidden);
