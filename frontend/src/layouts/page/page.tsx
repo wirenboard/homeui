@@ -82,7 +82,7 @@ export const PageLayout = ({
               ) : (
                 <>
                   <h1 className="page-title" tabIndex={-1}>{title}</h1>
-                  <Info link={infoLink} />
+                  {infoLink !== null && <Info link={infoLink} />}
                 </>
               )}
 
