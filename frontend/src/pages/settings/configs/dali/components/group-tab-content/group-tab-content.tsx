@@ -82,7 +82,7 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
       <Alert variant="warn">
         <div className="dali-groupLoadFailed">
           <span>{t('dali.labels.group-load-failed')}</span>
-          <Button label={t('dali.buttons.retry-load')} onClick={() => store.load()} />
+          <Button label={t('dali.buttons.retry')} onClick={() => store.load()} />
         </div>
       </Alert>
     );

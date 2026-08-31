@@ -367,7 +367,6 @@
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
          "edit": "Edit",
-         "retry-load": "Retry",
          "retry": "Retry"
       },
       "prompt": {
