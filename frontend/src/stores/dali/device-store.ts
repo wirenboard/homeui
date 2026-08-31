@@ -26,6 +26,7 @@ export class DeviceStore extends BaseItemStore {
       isLoading: observable,
       error: observable,
       label: observable,
+      mqttId: observable,
       groups: observable.shallow,
     });
   }
@@ -33,6 +34,8 @@ export class DeviceStore extends BaseItemStore {
   get parent(): BusStore | null {
     return this.#parent;
   }
+
+  public mqttId: string | null = null;
 
   async load(forceReload = false) {
     if (this.objectStore && !forceReload) {
@@ -52,6 +55,7 @@ export class DeviceStore extends BaseItemStore {
       this.setError(null);
       runInAction(() => {
         this.label = data.name || this.label;
+        this.mqttId = (data.config as any).mqtt_id ?? null;
         this.updateGroups((data.config as any).groups);
         this.#parent?.syncGroupChildren();
       });
