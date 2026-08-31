@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { MonitorStore } from '@/stores/dali/monitor-store';
+import type { ParsedBusMonitorLine } from '@/stores/dali/types';
 
 export interface BusMonitorTabProps {
   monitorStore: MonitorStore;
@@ -16,4 +17,10 @@ export interface RegisterBusTabParams {
 export interface ConsoleMenuProps {
   /** Menu body; `close` collapses the menu (call after acting on an item). */
   renderContent: (_close: () => void) => ReactNode;
+}
+
+/** One rendered monitor line: a frame, possibly standing for `repeat` identical errors. */
+export interface MonitorRow {
+  frame: ParsedBusMonitorLine;
+  repeat: number;
 }

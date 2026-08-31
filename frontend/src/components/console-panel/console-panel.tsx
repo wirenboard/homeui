@@ -24,11 +24,12 @@ import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { consolePanelStore as store } from '@/stores/console-panel';
 import { getOverflowIds } from './get-overflow-ids';
+import type { ConsolePanelProps } from './types';
 import './styles.css';
 
 const OVERFLOW_BTN_SPACE = 26;
 
-export const ConsolePanel = observer(() => {
+export const ConsolePanel = observer(({ emptyState }: ConsolePanelProps = {}) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const container = useRef<HTMLDivElement>(null);
@@ -348,7 +349,7 @@ export const ConsolePanel = observer(() => {
         </div>
       </header>
 
-      {activeTab && <activeTab.renderContent />}
+      {activeTab ? <activeTab.renderContent /> : emptyState}
     </aside>
   );
 });

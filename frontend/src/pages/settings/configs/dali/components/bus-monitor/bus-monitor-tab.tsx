@@ -15,6 +15,7 @@ import { parseBusMonitorLine } from '@/stores/dali/parse-bus-monitor-line';
 import type { ParsedBusMonitorLine } from '@/stores/dali/types';
 import { downloadFile } from '@/utils/download';
 import { BusMonitorHeader, BusMonitorRow } from './bus-monitor-row';
+import { collapseErrorRows } from './collapse-error-rows';
 import { ConsoleMenu } from './console-menu';
 import type { BusMonitorTabProps } from './types';
 import './styles.css';
@@ -137,10 +138,12 @@ export const DaliBusMonitorContent = observer(({ monitorStore }: { monitorStore:
     })
     : frames;
 
+  const rows = collapseErrorRows(visible);
+
   return (
     <ConsoleLogScroller scrollKey={visible.length}>
       <BusMonitorHeader />
-      {visible.map((frame, i) => <BusMonitorRow key={i} frame={frame} />)}
+      {rows.map((row, i) => <BusMonitorRow key={i} frame={row.frame} repeat={row.repeat} />)}
     </ConsoleLogScroller>
   );
 });

@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.250.2) stable; urgency=medium
+
+  * DALI bus monitor: a run of identical error lines collapses into one row with a
+    repeat badge; the console panel takes an emptyState for a host with no monitor
+    tabs registered, and the DALI page provides one that says how to enable the
+    monitor per bus
+
+ -- Wiren Board Robot <info@wirenboard.com>  Mon, 31 Aug 2026 20:20:00 +0300
+
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
   * Add a note under the DALI bus monitor switch: the gateway has to be
