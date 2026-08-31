@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.250.1) stable; urgency=medium
+
+  * DALI: a DALI-2 device whose instances use an event addressing scheme that cannot
+    name the sender gets a warning with a one-click "Set recommended scheme" — such
+    events decode in the bus monitor but could never update the controls (SOFT-7398)
+
+ -- Wiren Board Robot <info@wirenboard.com>  Mon, 31 Aug 2026 20:10:00 +0300
+
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
   * Add a note under the DALI bus monitor switch: the gateway has to be
