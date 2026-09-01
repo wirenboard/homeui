@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.249.3) stable; urgency=medium
+
+  * Fix autologin being switched off when the autologin user is edited
+  * Validate user update requests
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 01 Sep 2026 13:40:00 +0400
+
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
   * Add a note under the DALI bus monitor switch: the gateway has to be
