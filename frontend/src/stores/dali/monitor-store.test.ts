@@ -1,5 +1,5 @@
 import { mqttClientMock } from '@/test/mocks/services';
-import { MonitorStore } from './monitor-store';
+import { MAX_MESSAGES, MonitorStore } from './monitor-store';
 
 vi.mock('@/services', () => import('@/test/mocks/services'));
 
@@ -84,15 +84,25 @@ describe('MonitorStore', () => {
       expect(store.logs).toEqual(['msg1', 'msg2']);
     });
 
-    test('caps at 2000 messages', () => {
+    test('caps at MAX_MESSAGES', () => {
       store.enableMonitoring('bus1');
       const handler = mqttClientMock.addStickySubscription.mock.calls[0][1];
-      for (let i = 0; i < 2001; i++) {
+      for (let i = 0; i < MAX_MESSAGES + 1; i++) {
         handler({ payload: `msg${i}` });
       }
-      expect(store.logs).toHaveLength(2000);
+      expect(store.logs).toHaveLength(MAX_MESSAGES);
       expect(store.logs[0]).toBe('msg1');
-      expect(store.logs[1999]).toBe('msg2000');
+      expect(store.logs[MAX_MESSAGES - 1]).toBe(`msg${MAX_MESSAGES}`);
+    });
+
+    test('totalAppended keeps counting past the cap, so derived row keys stay unique', () => {
+      store.enableMonitoring('bus1');
+      const handler = mqttClientMock.addStickySubscription.mock.calls[0][1];
+      for (let i = 0; i < MAX_MESSAGES + 5; i++) {
+        handler({ payload: `msg${i}` });
+      }
+      expect(store.logs).toHaveLength(MAX_MESSAGES);
+      expect(store.totalAppended).toBe(MAX_MESSAGES + 5);
     });
   });
 });

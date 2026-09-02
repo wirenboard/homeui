@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.249.3) stable; urgency=medium
+
+  * Fix the DALI bus monitor and the wb-rules log freezing and no longer
+    following new lines once their message buffer is full
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 02 Sep 2026 10:36:25 +0500
+
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
   * Add a note under the DALI bus monitor switch: the gateway has to be

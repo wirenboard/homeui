@@ -8,6 +8,7 @@ import { ConsoleIconButton } from '@/components/console-panel/console-icon-butto
 import { ConsoleLogScroller } from '@/components/console-panel/console-log-scroller';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { rulesStore } from '@/stores/rules/index';
+import type { RulesConsoleRowProps, SequencedRuleLog } from '@/stores/rules/types';
 
 export const RulesConsoleToolbar = observer(() => {
   const { t } = useTranslation();
@@ -45,33 +46,42 @@ export const RulesConsoleToolbar = observer(() => {
   );
 });
 
+/**
+ * Own component so that observer's memoisation can skip untouched rows, and
+ * their timestamp formatting, when a new log arrives. Safe because a log object
+ * is never mutated after it is pushed.
+ */
+const RulesConsoleRow = observer(({ log }: RulesConsoleRowProps) => (
+  <div
+    className={classNames('consolePanel-log', {
+      'consolePanel-logWarn': log.level === 'warning',
+      'consolePanel-logError': log.level === 'error',
+      'consolePanel-logDebug': log.level === 'debug',
+    })}
+    tabIndex={0}
+  >
+    <time
+      dateTime={new Date(log.time).toISOString()}
+      className="consolePanel-logDate"
+    >
+      {format(log.time, 'dd-MM-yyyy HH:mm:ss')}
+    </time>
+    <div>{log.payload}</div>
+  </div>
+));
+
 export const RulesConsoleContent = observer(() => {
   const filter = rulesStore.logLevelFilter;
+  const { totalAppended } = rulesStore;
+  const firstSeq = totalAppended - rulesStore.logs.length;
+  const entries: SequencedRuleLog[] = rulesStore.logs.map((log, i) => ({ seq: firstSeq + i, log }));
   const logs = filter === 'all'
-    ? rulesStore.logs
-    : rulesStore.logs.filter((log) => log.level === filter);
+    ? entries
+    : entries.filter(({ log }) => log.level === filter);
 
   return (
-    <ConsoleLogScroller scrollKey={`${filter}:${logs.length}`}>
-      {logs.map((log, i) => (
-        <div
-          className={classNames('consolePanel-log', {
-            'consolePanel-logWarn': log.level === 'warning',
-            'consolePanel-logError': log.level === 'error',
-            'consolePanel-logDebug': log.level === 'debug',
-          })}
-          tabIndex={0}
-          key={i + log.time}
-        >
-          <time
-            dateTime={new Date(log.time).toISOString()}
-            className="consolePanel-logDate"
-          >
-            {format(log.time, 'dd-MM-yyyy HH:mm:ss')}
-          </time>
-          <div>{log.payload}</div>
-        </div>
-      ))}
+    <ConsoleLogScroller scrollKey={`${filter}:${totalAppended}:${logs.length}`}>
+      {logs.map(({ seq, log }) => <RulesConsoleRow key={seq} log={log} />)}
     </ConsoleLogScroller>
   );
 });

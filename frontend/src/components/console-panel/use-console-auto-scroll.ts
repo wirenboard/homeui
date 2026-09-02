@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Keeps a scrollable log container pinned to the bottom as new entries arrive,
- * unless the user has scrolled up. `scrollKey` should change whenever the
- * rendered set of entries changes (typically its length).
+ * unless the user has scrolled up. `scrollKey` must change on every append:
+ * dropping an entry off the top of a capped buffer moves scrollTop (browser
+ * scroll anchoring), so the container drifts up by one row per entry on its own.
  */
 export const useConsoleAutoScroll = (scrollKey: number | string) => {
   const scrollRef = useRef<HTMLDivElement>(null);

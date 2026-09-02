@@ -1,8 +1,12 @@
 import { runInAction, makeAutoObservable } from 'mobx';
 import { mqttClient } from '@/services';
 
+export const MAX_MESSAGES = 2000;
+
 export class MonitorStore {
   public logs: string[] = [];
+  /** Counts every line ever appended, so it keeps growing once the buffer is capped. Row keys and the auto-scroll rely on that. */
+  public totalAppended: number = 0;
   public isEnabled: boolean = false;
   public isOnPause: boolean = false;
   public filterValues: string[] = [];
@@ -57,13 +61,13 @@ export class MonitorStore {
   }
 
   _subscribeToTopic() {
-    const MAX_MESSAGES = 2000;
     mqttClient.addStickySubscription(this.topic, ({ payload }) => {
       runInAction(() => {
         if (this.logs.length === MAX_MESSAGES) {
           this.logs.shift();
         }
         this.logs.push(payload.trim());
+        this.totalAppended += 1;
       });
     });
   }
