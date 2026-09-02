@@ -23,6 +23,19 @@ export class GroupStore extends BaseItemStore {
     });
   }
 
+  get parent(): BusStore | null {
+    return this.#parent;
+  }
+
+  /**
+   * The daemon publishes each group as a virtual device — "<bus>_group_NN" —
+   * whose controls act on every member at once. The formula mirrors
+   * wb-mqtt-dali's GroupVirtualDevice mqtt id and must stay in step with it.
+   */
+  get controlsMqttId(): string | null {
+    return this.#parent ? `${this.#parent.id}_group_${String(this.index).padStart(2, '0')}` : null;
+  }
+
   async load() {
     if (this.objectStore) {
       return;

@@ -1095,6 +1095,9 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "all-controls": "All controls",
+         "state-on": "on",
+         "state-off": "off",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

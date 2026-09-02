@@ -1124,6 +1124,9 @@
          "monitor-col-command": "Команда",
          "monitor-col-response": "Ответ",
          "monitor-foreign": "сторонний",
+         "all-controls": "Все элементы управления",
+         "state-on": "вкл",
+         "state-off": "выкл",
          "monitor-broadcast": "Широковещательные"
       },
       "buttons": {
