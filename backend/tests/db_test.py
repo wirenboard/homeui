@@ -72,7 +72,7 @@ class OpenDbTest(unittest.TestCase):
 
     def test_keeps_the_file_when_the_database_has_no_tables(self):
         """
-        A readable database is filled in place: the file keeps its inode and its rows.
+        A readable database without tables is filled in place, keeping its inode.
         """
         db_file = os.path.join(self.tmp_dir, "users.db")
         con = sqlite3.connect(db_file)
@@ -120,7 +120,8 @@ class OpenDbTest(unittest.TestCase):
         with open(nul_filled, "wb") as f:
             f.write(bytes(24576))
         empty = os.path.join(self.tmp_dir, "empty.db")
-        open(empty, "wb").close()
+        with open(empty, "wb"):
+            pass
 
         self.assertIs(check_db(nul_filled), DbState.NOT_A_DATABASE)
         self.assertIs(check_db(empty), DbState.NEEDS_SCHEMA)
