@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.249.5) stable; urgency=medium
+
+  * Recover from an unreadable users database on startup
+  * Regenerate wb-webui.conf and wb-homeui-backend.conf when their content is all NUL bytes
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 03 Sep 2026 14:32:23 +0000
+
 wb-mqtt-homeui (2.249.4) stable; urgency=medium
 
   * Fix switch styles
