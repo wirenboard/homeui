@@ -2,11 +2,14 @@
 import { render, screen, act } from '@testing-library/react';
 import { runInAction } from 'mobx';
 import { rulesStore } from '@/stores/rules/index';
+import { stubElementSizes } from '@/test/stub-element-size';
 import { RulesConsoleContent } from './rules-console-tab';
 
 vi.mock('@/services', () => import('@/test/mocks/services'));
 
 describe('RulesConsoleContent', () => {
+  stubElementSizes();
+
   beforeEach(() => {
     runInAction(() => {
       rulesStore.logs = [

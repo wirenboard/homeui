@@ -3,6 +3,9 @@ import { mqttClient } from '@/services';
 
 export const MAX_MESSAGES = 2000;
 
+/** Incoming lines land in the observable buffer at this rate, not per message. */
+export const FLUSH_INTERVAL_MS = 100;
+
 export class MonitorStore {
   public logs: string[] = [];
   /** Counts every line ever appended, so it keeps growing once the buffer is capped. Row keys and the auto-scroll rely on that. */
@@ -12,9 +15,15 @@ export class MonitorStore {
   public filterValues: string[] = [];
 
   private topic: string = '';
+  /** Lines received since the last flush. Plain (non-observable) on purpose. */
+  private _pending: string[] = [];
+  private _flushTimer: ReturnType<typeof setTimeout> = null;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable<MonitorStore, '_pending' | '_flushTimer'>(this, {
+      _pending: false,
+      _flushTimer: false,
+    });
   }
 
   enableMonitoring(busMqttId: string) {
@@ -53,6 +62,7 @@ export class MonitorStore {
   }
 
   clearLogs() {
+    this._dropPending();
     this.logs = [];
   }
 
@@ -62,17 +72,40 @@ export class MonitorStore {
 
   _subscribeToTopic() {
     mqttClient.addStickySubscription(this.topic, ({ payload }) => {
-      runInAction(() => {
-        if (this.logs.length === MAX_MESSAGES) {
-          this.logs.shift();
-        }
-        this.logs.push(payload.trim());
-        this.totalAppended += 1;
-      });
+      this._pending.push(payload.trim());
+      if (this._flushTimer === null) {
+        this._flushTimer = setTimeout(() => this._flush(), FLUSH_INTERVAL_MS);
+      }
     });
   }
 
   _unsubscribeFromTopic() {
+    this._dropPending();
     mqttClient.unsubscribe(this.topic);
+  }
+
+  /** Moves the whole batch into the observable buffer in one action, so the console renders once. */
+  private _flush() {
+    this._flushTimer = null;
+    const batch = this._pending.length > MAX_MESSAGES ? this._pending.slice(-MAX_MESSAGES) : this._pending;
+    const appended = this._pending.length;
+    this._pending = [];
+
+    runInAction(() => {
+      const overflow = this.logs.length + batch.length - MAX_MESSAGES;
+      if (overflow > 0) {
+        this.logs.splice(0, overflow);
+      }
+      this.logs.push(...batch);
+      this.totalAppended += appended;
+    });
+  }
+
+  private _dropPending() {
+    if (this._flushTimer !== null) {
+      clearTimeout(this._flushTimer);
+      this._flushTimer = null;
+    }
+    this._pending = [];
   }
 }

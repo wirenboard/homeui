@@ -80,8 +80,11 @@ export const RulesConsoleContent = observer(() => {
     : entries.filter(({ log }) => log.level === filter);
 
   return (
-    <ConsoleLogScroller scrollKey={`${filter}:${totalAppended}:${logs.length}`}>
-      {logs.map(({ seq, log }) => <RulesConsoleRow key={seq} log={log} />)}
-    </ConsoleLogScroller>
+    <ConsoleLogScroller
+      scrollKey={`${filter}:${totalAppended}:${logs.length}`}
+      items={logs}
+      estimateRowHeight={25}
+      renderRow={({ log }) => <RulesConsoleRow log={log} />}
+    />
   );
 });

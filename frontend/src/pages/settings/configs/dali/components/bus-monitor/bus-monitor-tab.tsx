@@ -21,6 +21,9 @@ import './styles.css';
 
 const ADDRESSES = Array.from({ length: 64 }, (_, i) => i);
 
+/** Estimated `.daliMonitor-row` height for the virtualizer; real row heights are measured. */
+const ROW_HEIGHT = 23;
+
 const FF16_ADDRESS_OPTIONS = ADDRESSES.map((a) => ({ label: `A${a}`, value: frameFilterValue('FF16', a) }));
 const FF24_ADDRESS_OPTIONS = ADDRESSES.map((a) => ({ label: `FF24.A${a}`, value: frameFilterValue('FF24', a) }));
 
@@ -139,9 +142,12 @@ export const DaliBusMonitorContent = observer(({ monitorStore }: { monitorStore:
     : frames;
 
   return (
-    <ConsoleLogScroller scrollKey={`${totalAppended}:${visible.length}`}>
-      <BusMonitorHeader />
-      {visible.map(({ seq, frame }) => <BusMonitorRow key={seq} frame={frame} />)}
-    </ConsoleLogScroller>
+    <ConsoleLogScroller
+      scrollKey={`${totalAppended}:${visible.length}`}
+      items={visible}
+      estimateRowHeight={ROW_HEIGHT}
+      header={<BusMonitorHeader />}
+      renderRow={({ frame }) => <BusMonitorRow frame={frame} />}
+    />
   );
 });
