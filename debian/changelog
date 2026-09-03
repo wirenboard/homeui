@@ -2,8 +2,10 @@ wb-mqtt-homeui (2.249.3) stable; urgency=medium
 
   * Fix the DALI bus monitor and the wb-rules log freezing and no longer
     following new lines once their message buffer is full
+  * Keep the lines in view in place while the DALI bus monitor or the wb-rules
+    log is scrolled up and its full buffer drops old lines
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 02 Sep 2026 10:36:25 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 03 Sep 2026 11:12:23 +0500
 
 wb-mqtt-homeui (2.249.2) stable; urgency=medium
 
