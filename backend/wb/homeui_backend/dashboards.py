@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 from .board import of_machine_match
+from .config_file import is_blank_file
 
 DEFAULT_CONFIG_PATH = "/etc/wb-webui.conf"
 DEFAULT_BOARD_CONFIG_DIR = "/usr/share/wb-mqtt-homeui"
@@ -333,7 +334,7 @@ class DashboardsStore:
             if board_config is None:
                 raise SeedConfigError(f"No board config for suffix '{board_suffix}'")
 
-            if not os.path.exists(self._config_path) or os.path.getsize(self._config_path) == 0:
+            if is_blank_file(self._config_path):
                 self._seed(board_config)
                 return
 

@@ -535,6 +535,17 @@ class SeedingTest(DashboardsStoreFixture):
 
         self.assertEqual(self.read_config(), board_config)
 
+    def test_seeds_from_board_config_when_filled_with_nul_bytes(self):
+        """A config of the right size but full of NUL bytes is treated as absent and seeded."""
+        board_config = make_config()
+        self.write_board_config("wb6", board_config)
+        with open(self.config_path, "wb") as f:
+            f.write(bytes(385612))
+
+        self.store.seed_and_reconcile("wb6")
+
+        self.assertEqual(self.read_config(), board_config)
+
     def test_missing_board_config_raises(self):
         """No board config file => seeding fails hard (no silent skip); config stays absent.
 

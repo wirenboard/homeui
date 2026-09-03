@@ -2,12 +2,23 @@
 
 import json
 import logging
-import os
 
 from .users_storage import UsersStorage
 
 CONFIG_FILE = "/etc/wb-homeui-backend.conf"
 ENABLE_HTTPS_TAG = "enable_https"
+CHUNK_SIZE = 64 * 1024
+
+
+def is_blank_file(path: str) -> bool:
+    try:
+        with open(path, "rb") as f:
+            while chunk := f.read(CHUNK_SIZE):
+                if chunk.strip(b"\x00"):
+                    return False
+    except FileNotFoundError:
+        return True
+    return True
 
 
 def load_https_flag() -> bool:
@@ -23,10 +34,10 @@ class Config:
 
     def __init__(self, users_storage: UsersStorage):
         self.enable_https = False
-        if os.path.exists(CONFIG_FILE) and os.path.getsize(CONFIG_FILE) > 0:
-            self._read_config(users_storage)
-        else:
+        if is_blank_file(CONFIG_FILE):
             self._create_config(users_storage)
+        else:
+            self._read_config(users_storage)
 
     def _create_config(self, users_storage: UsersStorage) -> None:
         logging.info("Creating config file")

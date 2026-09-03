@@ -76,6 +76,10 @@ def create_db(db_file: str) -> sqlite3.Connection:
 
 def open_db(db_file: str) -> sqlite3.Connection:
     if not check_db(db_file):
+        if os.path.exists(db_file):
+            db_real_path = os.path.realpath(db_file)
+            logging.error("Removing broken database %s", db_real_path)
+            os.remove(db_real_path)
         return create_db(db_file)
 
     con = sqlite3.connect(db_file)
@@ -94,15 +98,20 @@ def check_db(db_file: str) -> bool:
         return False
 
     con = sqlite3.connect(db_file)
+    try:
+        cursor = con.cursor()
+        cursor.execute("PRAGMA quick_check")
+        if cursor.fetchone()[0] != "ok":
+            logging.error("Database is broken. Recreating")
+            return False
 
-    cursor = con.cursor()
-    cursor.execute("PRAGMA quick_check")
-    if cursor.fetchone()[0] != "ok":
-        logging.error("Database is broken. Recreating")
+        cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
+        if cursor.fetchone()[0] < 1:
+            logging.error("Database has no tables. Recreating")
+            return False
+        return True
+    except sqlite3.DatabaseError as e:
+        logging.error("Database is not readable: %s", e)
         return False
-
-    cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
-    if cursor.fetchone()[0] < 1:
-        logging.error("Database has no tables. Recreating")
-        return False
-    return True
+    finally:
+        con.close()
