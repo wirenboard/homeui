@@ -1,8 +1,21 @@
+import enum
 import logging
 import os
 import sqlite3
 
 DB_SCHEMA_VERSION = 2
+
+
+class DbState(enum.Enum):
+    """What check_db found, and therefore what open_db has to do about it."""
+
+    USABLE = "usable"
+    # Missing, empty, without tables or with damage sqlite still reads through: create_db writes
+    # the schema into the very same file and existing rows survive.
+    NEEDS_SCHEMA = "needs_schema"
+    # Not a SQLite file at all (a power cut left it full of NUL bytes): nothing can be written
+    # into it, so the file itself has to go.
+    NOT_A_DATABASE = "not_a_database"
 
 
 def create_tables(con: sqlite3.Connection):
@@ -75,11 +88,14 @@ def create_db(db_file: str) -> sqlite3.Connection:
 
 
 def open_db(db_file: str) -> sqlite3.Connection:
-    if not check_db(db_file):
-        if os.path.exists(db_file):
-            db_real_path = os.path.realpath(db_file)
-            logging.error("Removing broken database %s", db_real_path)
-            os.remove(db_real_path)
+    state = check_db(db_file)
+    if state is DbState.NOT_A_DATABASE:
+        # users.db is a symlink into /mnt/data, so remove the target and keep the link.
+        db_real_path = os.path.realpath(db_file)
+        logging.error("Removing broken database %s", db_real_path)
+        os.remove(db_real_path)
+        return create_db(db_file)
+    if state is DbState.NEEDS_SCHEMA:
         return create_db(db_file)
 
     con = sqlite3.connect(db_file)
@@ -93,25 +109,29 @@ def open_db(db_file: str) -> sqlite3.Connection:
     return con
 
 
-def check_db(db_file: str) -> bool:
+def check_db(db_file: str) -> DbState:
     if not os.path.exists(db_file):
-        return False
+        return DbState.NEEDS_SCHEMA
 
     con = sqlite3.connect(db_file)
     try:
         cursor = con.cursor()
         cursor.execute("PRAGMA quick_check")
         if cursor.fetchone()[0] != "ok":
-            logging.error("Database is broken. Recreating")
-            return False
+            logging.error("Database is broken. Recreating tables")
+            return DbState.NEEDS_SCHEMA
 
         cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
         if cursor.fetchone()[0] < 1:
-            logging.error("Database has no tables. Recreating")
-            return False
-        return True
+            logging.error("Database has no tables. Recreating tables")
+            return DbState.NEEDS_SCHEMA
+        return DbState.USABLE
+    except sqlite3.OperationalError:
+        # A locked database, an I/O error or a read-only filesystem says nothing about the
+        # file's contents. Let it propagate: the service retries instead of destroying data.
+        raise
     except sqlite3.DatabaseError as e:
         logging.error("Database is not readable: %s", e)
-        return False
+        return DbState.NOT_A_DATABASE
     finally:
         con.close()
