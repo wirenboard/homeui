@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.248.1-wb100) stable; urgency=medium
+
+  * Fix switch styles
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 03 Sep 2026 15:58:00 +0300
+
 wb-mqtt-homeui (2.248.1) stable; urgency=medium
 
   * Rename factory reset buttons
