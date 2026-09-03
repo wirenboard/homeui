@@ -17,7 +17,7 @@ override_dh_auto_configure:
 	dh_auto_configure -Dfrontend -O--buildsystem=makefile
 
 override_dh_auto_build:
-	dh_auto_build -Dbackend -O--buildsystem=pybuild
+	DEB_VERSION=$$(dpkg-parsechangelog -S Version) dh_auto_build -Dbackend -O--buildsystem=pybuild
 	dh_auto_build -Dbackend -O--buildsystem=makefile
 	dh_auto_build -Dfrontend -O--buildsystem=makefile
 
