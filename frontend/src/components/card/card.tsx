@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useId } from 'react';
+import { memo, useId } from 'react';
 import type { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -95,7 +95,7 @@ const CardHeader = ({
   );
 };
 
-export const Card = ({
+export const Card = memo(({
   children, id, className, heading, actions, indicator, toggleBody,
   withError, isBodyVisible = true, variant = 'primary',
 }: PropsWithChildren<CardProps>) => {
@@ -164,4 +164,4 @@ export const Card = ({
       )}
     </article>
   );
-};
+});

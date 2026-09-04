@@ -1,9 +1,7 @@
-import { type LegacyRef } from 'react';
 import type { RequireAtLeastOne } from '@/utils/types';
 
 interface BaseInputProps {
   id?: string;
-  ref?: LegacyRef<HTMLInputElement>;
   type?: 'text' | 'number' | 'password' | 'date' | 'time' | 'datetime-local' | 'search';
   size?: 'default' | 'small' | 'large';
   value: string | number;
