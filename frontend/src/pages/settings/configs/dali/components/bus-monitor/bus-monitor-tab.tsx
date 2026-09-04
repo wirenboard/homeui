@@ -16,10 +16,13 @@ import type { ParsedBusMonitorLine } from '@/stores/dali/types';
 import { downloadFile } from '@/utils/download';
 import { BusMonitorHeader, BusMonitorRow } from './bus-monitor-row';
 import { ConsoleMenu } from './console-menu';
-import type { BusMonitorTabProps } from './types';
+import type { BusMonitorTabProps, SequencedBusMonitorFrame } from './types';
 import './styles.css';
 
 const ADDRESSES = Array.from({ length: 64 }, (_, i) => i);
+
+/** Estimated `.daliMonitor-row` height for the virtualizer; real row heights are measured. */
+const ROW_HEIGHT = 23;
 
 const FF16_ADDRESS_OPTIONS = ADDRESSES.map((a) => ({ label: `A${a}`, value: frameFilterValue('FF16', a) }));
 const FF24_ADDRESS_OPTIONS = ADDRESSES.map((a) => ({ label: `FF24.A${a}`, value: frameFilterValue('FF24', a) }));
@@ -115,7 +118,7 @@ export const DaliBusMonitorToolbar = observer(({ monitorStore, getLabel }: BusMo
 });
 
 export const DaliBusMonitorContent = observer(({ monitorStore }: { monitorStore: MonitorStore }) => {
-  const { filterValues, logs } = monitorStore;
+  const { filterValues, logs, totalAppended } = monitorStore;
 
   // Parse each line once and reuse the result for both filtering and rendering.
   // A line -> frame cache rebuilt every render keeps only the currently-shown
@@ -123,24 +126,28 @@ export const DaliBusMonitorContent = observer(({ monitorStore }: { monitorStore:
   const cacheRef = useRef<Map<string, ParsedBusMonitorLine>>(new Map());
   const prevCache = cacheRef.current;
   const cache = new Map<string, ParsedBusMonitorLine>();
-  const frames = logs.map((line) => {
+  const firstSeq = totalAppended - logs.length;
+  const frames: SequencedBusMonitorFrame[] = logs.map((line, i) => {
     const frame = cache.get(line) ?? prevCache.get(line) ?? parseBusMonitorLine(line);
     cache.set(line, frame);
-    return frame;
+    return { seq: firstSeq + i, frame };
   });
   cacheRef.current = cache;
 
   const visible = filterValues.length
-    ? frames.filter((frame) => {
+    ? frames.filter(({ frame }) => {
       const key = frameFilterKey(frame);
       return key !== null && filterValues.includes(key);
     })
     : frames;
 
   return (
-    <ConsoleLogScroller scrollKey={visible.length}>
-      <BusMonitorHeader />
-      {visible.map((frame, i) => <BusMonitorRow key={i} frame={frame} />)}
-    </ConsoleLogScroller>
+    <ConsoleLogScroller
+      scrollKey={`${totalAppended}:${visible.length}`}
+      items={visible}
+      estimateRowHeight={ROW_HEIGHT}
+      header={<BusMonitorHeader />}
+      renderRow={({ frame }) => <BusMonitorRow frame={frame} />}
+    />
   );
 });

@@ -3,6 +3,8 @@ import { editorProxy, mqttClient } from '@/services';
 import { generateNextId } from '@/utils/id';
 import type { Rule, RuleError, RuleLevel, RuleListItem, RuleLog } from './types';
 
+export const MAX_MESSAGES = 500;
+
 export default class RulesStore {
   public rule?: Rule = {
     name: '',
@@ -12,6 +14,8 @@ export default class RulesStore {
   public rules: RuleListItem[] = [];
   public isRuleDebugEnabled = false;
   public logs: RuleLog[] = [];
+  /** Counts every log ever appended, so it keeps growing once the buffer is capped. Row keys and the auto-scroll rely on that. */
+  public totalAppended = 0;
   public logLevelFilter = 'all';
 
   constructor() {
@@ -176,7 +180,6 @@ export default class RulesStore {
   }
 
   subscribeRulesLogs() {
-    const MAX_MESSAGES = 500;
     mqttClient.addStickySubscription('/wbrules/log/+', ({ topic, payload }) => {
       runInAction(() => {
         if (this.logs.length === MAX_MESSAGES) {
@@ -187,6 +190,7 @@ export default class RulesStore {
           payload: payload.trim(),
           time: new Date().getTime(),
         });
+        this.totalAppended += 1;
       });
     });
   }
