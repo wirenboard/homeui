@@ -25,6 +25,10 @@ export class ObjectParamStore {
       this.store.schema.options?.wb?.show_editor ||
       this.store.schema.options?.show_opt_in;
     this.disabled = !store.required && !store.schema.options?.wb?.show_editor && initialValue === undefined;
+    // Mirror onto the store: an enabled param (part of the object) must carry a
+    // value; a disabled one may be undefined. Set here too, because a param loaded
+    // with a value starts enabled without ever going through enable().
+    this.store.setForbidUndefined(!this.disabled);
 
     makeObservable(this, {
       disabled: observable,
@@ -41,6 +45,7 @@ export class ObjectParamStore {
     if (this.disabled) {
       this.store.setDefault();
       this.disabled = false;
+      this.store.setForbidUndefined(true);
     }
   }
 
@@ -48,6 +53,7 @@ export class ObjectParamStore {
     if (!this.disabled && !this.store.required && !this.store.schema.options?.wb?.show_editor) {
       this.disabled = true;
       this.store.setUndefined();
+      this.store.setForbidUndefined(false);
     }
   }
 }
@@ -145,6 +151,7 @@ export class ObjectStore implements PropertyStore {
 
   setUndefined() {
     this.isUndefined = true;
+    this.params.forEach((param) => param.store.setUndefined());
   }
 
   setDefault() {
@@ -190,6 +197,8 @@ export class ObjectStore implements PropertyStore {
       param.store.reset();
     });
   }
+
+  setForbidUndefined() {}
 
   getParamByKey(key: string): ObjectParamStore | undefined {
     return this._paramByKey[key];
