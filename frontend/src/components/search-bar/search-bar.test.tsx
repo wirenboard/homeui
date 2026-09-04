@@ -10,37 +10,37 @@ describe('SearchBar', () => {
 
   test('shows search icon when value is empty', () => {
     const { container } = render(<SearchBar value="" onChange={vi.fn()} />);
-    expect(container.querySelector('.search-bar-icon')).toBeTruthy();
+    expect(container.querySelector('.searchBar-icon')).toBeTruthy();
   });
 
   test('hides search icon when value is present', () => {
     const { container } = render(<SearchBar value="test" onChange={vi.fn()} />);
-    expect(container.querySelector('.search-bar-icon')).toBeNull();
+    expect(container.querySelector('.searchBar-icon')).toBeNull();
   });
 
   test('is collapsed by default when empty and unfocused', () => {
     const { container } = render(<SearchBar value="" onChange={vi.fn()} />);
-    expect(container.querySelector('.search-bar-expanded')).toBeNull();
+    expect(container.querySelector('.searchBar-expanded')).toBeNull();
   });
 
   test('expands on focus', () => {
     const { container } = render(<SearchBar value="" onChange={vi.fn()} />);
     fireEvent.focus(screen.getByRole('searchbox'));
-    expect(container.querySelector('.search-bar-expanded')).toBeTruthy();
+    expect(container.querySelector('.searchBar-expanded')).toBeTruthy();
   });
 
   test('expands when value is present', () => {
     const { container } = render(<SearchBar value="query" onChange={vi.fn()} />);
-    expect(container.querySelector('.search-bar-expanded')).toBeTruthy();
+    expect(container.querySelector('.searchBar-expanded')).toBeTruthy();
   });
 
   test('collapses on blur when value is empty', () => {
     const { container } = render(<SearchBar value="" onChange={vi.fn()} />);
     const input = screen.getByRole('searchbox');
     fireEvent.focus(input);
-    expect(container.querySelector('.search-bar-expanded')).toBeTruthy();
+    expect(container.querySelector('.searchBar-expanded')).toBeTruthy();
     fireEvent.blur(input);
-    expect(container.querySelector('.search-bar-expanded')).toBeNull();
+    expect(container.querySelector('.searchBar-expanded')).toBeNull();
   });
 
   test('calls onChange on typing', () => {
@@ -82,6 +82,6 @@ describe('SearchBar', () => {
 
   test('adds has-value class when value is present', () => {
     const { container } = render(<SearchBar value="test" onChange={vi.fn()} />);
-    expect(container.querySelector('.search-bar-input-has-value')).toBeTruthy();
+    expect(container.querySelector('.searchBar-input-has-value')).toBeTruthy();
   });
 });
