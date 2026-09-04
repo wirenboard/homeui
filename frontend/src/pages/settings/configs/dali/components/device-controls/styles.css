@@ -19,7 +19,16 @@
     border: 1px solid var(--border-color);
     border-radius: var(--container-border-radius);
     background: var(--container-background);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    /* The strip is a rounded card, so the wedges between its rounded corners
+       and its rectangular box stay transparent, and the form scrolling
+       underneath showed through them as flecks of moving text. The second
+       shadow is an opaque ring in the scroll container's own ground colour:
+       it fills those wedges, and being a shadow it paints behind the card
+       instead of over it (a z-index: -1 child would not — the sticky strip
+       is its own stacking context). */
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.06),
+        0 0 0 var(--container-border-radius, 8px) var(--background-accent-color-hover);
 }
 
 .daliDeviceControls-stripCell {
