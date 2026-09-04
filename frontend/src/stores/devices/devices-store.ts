@@ -3,8 +3,10 @@ import { type Option } from '@/components/dropdown';
 import { mqttClient } from '@/services';
 import Cell from './cell';
 import Device from './device';
-import { isTopicsAreEqual, splitTopic } from './helpers';
+import { splitTopic } from './helpers';
 import type { ValueType } from './types';
+
+const collator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
 export default class DevicesStore {
   public devices: Map<string, Device> = new Map();
@@ -12,27 +14,64 @@ export default class DevicesStore {
 
   #cellValueSubscribers: Set<(cellId: string, value: ValueType) => void> = new Set();
   #allDevicesTopics: Map<string, { deviceTopics: Set<string>; cellTopics: Set<string> }> = new Map();
+  #pendingCellValues: Map<string, string> = new Map();
+  #pendingMeta: { topic: string; payload: string }[] = [];
+  #flushId: number | null = null;
 
   constructor() {
-    // add subscription to all the topics of devices
     mqttClient.addStickySubscription('/devices/#', ({ topic, payload }: { topic: string; payload: string }) => {
       const { deviceId } = splitTopic(topic);
 
       const topics = this.#getOrCreateTopics(deviceId);
       if (topic.includes('/controls/')) {
         topics.cellTopics.add(topic);
+        const afterCtrl = topic.indexOf('/', topic.indexOf('/controls/') + 10);
+        if (afterCtrl === -1) {
+          this.#pendingCellValues.set(topic, payload);
+        } else {
+          this.#pendingMeta.push({ topic, payload });
+        }
       } else {
         topics.deviceTopics.add(topic);
+        this.#pendingMeta.push({ topic, payload });
       }
 
-      this.#getSubscriptionHandlers(topic, payload).forEach(({ handledTopic, handler }) => {
-        if (isTopicsAreEqual(topic, handledTopic)) {
-          handler(payload);
-        }
-      });
+      if (this.#flushId !== null) return;
+      if (typeof requestAnimationFrame === 'function') {
+        this.#flushId = requestAnimationFrame(() => this.#flushMessages());
+      } else {
+        this.#flushMessages();
+      }
     });
 
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  #flushMessages() {
+    this.#flushId = null;
+    const cellValues = this.#pendingCellValues;
+    const meta = this.#pendingMeta;
+    this.#pendingCellValues = new Map();
+    this.#pendingMeta = [];
+
+    runInAction(() => {
+      for (const { topic, payload } of meta) {
+        this.#dispatchMeta(topic, payload);
+      }
+      const hasSubscribers = this.#cellValueSubscribers.size > 0;
+      cellValues.forEach((payload, topic) => {
+        const parts = topic.split('/');
+        const cell = this.#getOrCreateCell(`${parts[2]}/${parts[4]}`);
+        const wasComplete = cell.isComplete;
+        cell.receiveValue(payload);
+        if (!wasComplete || !cell.isComplete) {
+          this.#updateCellCompleteness(cell);
+        }
+        if (hasSubscribers) {
+          this.#notifyCellValueChange(cell.id, cell.value);
+        }
+      });
+    });
   }
 
   get filteredDevices() {
@@ -44,7 +83,7 @@ export default class DevicesStore {
     return new Map(
       Array.from(this.devices.entries())
         .filter(([_, device]) => !device.isServiceDevice)
-        .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name)),
+        .sort(([_1, device1], [_2, device2]) => collator.compare(device1.name, device2.name)),
     );
   }
 
@@ -58,7 +97,7 @@ export default class DevicesStore {
   get filteredCells() {
     const showSystemDevices = localStorage.getItem('show-system-devices') === 'yes';
     let cells = Array.from(this.cells.values())
-      .sort((a, b) => a.id.localeCompare(b.id));
+      .sort((a, b) => collator.compare(a.id, b.id));
 
     if (!showSystemDevices) {
       cells = cells.filter((cell) => !cell.isSystem && !cell.hidden);
@@ -195,7 +234,7 @@ export default class DevicesStore {
   #getOrCreateDevice(id: string){
     if (!this.devices.has(id)) {
       runInAction(() => {
-        this.devices.set(id, new Device(id));
+        this.devices.set(id, new Device(id, (cellId) => this.cells.get(cellId)));
       });
     }
     return this.devices.get(id);
@@ -211,11 +250,6 @@ export default class DevicesStore {
     });
 
     return cell;
-  }
-
-  #getCellFromTopic(topic: string) {
-    const { cellId } = splitTopic(topic);
-    return this.#getOrCreateCell(cellId);
   }
 
   #addCellToDevice(cellId: string, deviceId: string){
@@ -256,143 +290,89 @@ export default class DevicesStore {
     }
   }
 
-  // define handler functions for each specific topic
-  #getSubscriptionHandlers(topic: string, payload: string) {
-    const { deviceId } = splitTopic(topic);
+  #dispatchMeta(topic: string, payload: string) {
+    const parts = topic.split('/');
+    const deviceId = parts[2];
 
-    const deviceTopicBase = '/devices/+';
-    const cellTopicBase = `${deviceTopicBase}/controls/+`;
-
-    return [
-      {
-        handledTopic: `${deviceTopicBase}/meta`,
-        handler: () => {
-          if (payload) {
-            const device = this.#getOrCreateDevice(deviceId);
-            device.setMeta(payload);
-            device.setExplicit(true);
-          } else if (this.devices.has(deviceId)) {
-            this.devices.get(deviceId).explicit = false;
-            this.#maybeRemoveDevice(deviceId);
-          }
-        },
-      },
-      {
-        handledTopic: `${deviceTopicBase}/meta/name`,
-        handler: () => {
-          if (payload) {
-            const device = this.#getOrCreateDevice(deviceId);
-            device.name = payload;
-            device.setExplicit(true);
-          } else if (this.devices.has(deviceId)) {
-            this.devices.get(deviceId).name = deviceId;
-            this.devices.get(deviceId).setExplicit(false);
-            this.#maybeRemoveDevice(deviceId);
-          }
-        },
-      },
-      {
-        handledTopic: `${deviceTopicBase}/meta/error`,
-        handler: (message: string) => {
+    if (parts[3] === 'meta') {
+      if (parts.length === 4) {
+        if (payload) {
           const device = this.#getOrCreateDevice(deviceId);
-          device.setError(message);
-        },
-      },
-      {
-        handledTopic: cellTopicBase,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.receiveValue(message);
-          this.#updateCellCompleteness(cell);
-          this.#notifyCellValueChange(cell.id, cell.value);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          if (message) {
-            cell.setMeta(message);
-            this.#updateCellCompleteness(cell);
-          } else {
-            this.#removeCellFromDevice(cell.id, cell.deviceId);
-          }
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/type`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setType(message);
-          this.#updateCellCompleteness(cell);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/name`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setName(message);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/units`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setUnits(message);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/readonly`,
-        handler: (message: string) => {
-          if (['', '0', '1'].includes(message)) {
-            const cell = this.#getCellFromTopic(topic);
-            cell.setReadOnly(message ? Boolean(Number(message)) : null);
-          } else {
-            console.warn(`${topic} payload is neither '0', '1' nor empty`);
-          }
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/writable`,
-        handler: () => {
-          console.warn(`${topic}: meta/writable is not supported anymore. Use meta/readonly=0`);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/error`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setError(message);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/min`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setMin(message);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/max`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setMax(message);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/precision`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setStep(message);
-        },
-      },
-      {
-        handledTopic: `${cellTopicBase}/meta/order`,
-        handler: (message: string) => {
-          const cell = this.#getCellFromTopic(topic);
-          cell.setOrder(message);
-        },
-      },
-    ];
+          device.setMeta(payload);
+          device.setExplicit(true);
+        } else if (this.devices.has(deviceId)) {
+          this.devices.get(deviceId).explicit = false;
+          this.#maybeRemoveDevice(deviceId);
+        }
+      } else if (parts[4] === 'name') {
+        if (payload) {
+          const device = this.#getOrCreateDevice(deviceId);
+          device.name = payload;
+          device.setExplicit(true);
+        } else if (this.devices.has(deviceId)) {
+          this.devices.get(deviceId).name = deviceId;
+          this.devices.get(deviceId).setExplicit(false);
+          this.#maybeRemoveDevice(deviceId);
+        }
+      } else if (parts[4] === 'error') {
+        const device = this.#getOrCreateDevice(deviceId);
+        device.setError(payload);
+      }
+      return;
+    }
+
+    if (parts[3] !== 'controls' || parts[5] !== 'meta') return;
+
+    const cellId = `${deviceId}/${parts[4]}`;
+    const cell = this.#getOrCreateCell(cellId);
+
+    if (parts.length === 6) {
+      if (payload) {
+        cell.setMeta(payload);
+        this.#updateCellCompleteness(cell);
+      } else {
+        this.#removeCellFromDevice(cell.id, cell.deviceId);
+      }
+      return;
+    }
+
+    switch (parts[6]) {
+      case 'type':
+        cell.setType(payload);
+        this.#updateCellCompleteness(cell);
+        break;
+      case 'name':
+        cell.setName(payload);
+        break;
+      case 'units':
+        cell.setUnits(payload);
+        break;
+      case 'readonly':
+        if (['', '0', '1'].includes(payload)) {
+          cell.setReadOnly(payload ? Boolean(Number(payload)) : null);
+        } else {
+          console.warn(`${topic} payload is neither '0', '1' nor empty`);
+        }
+        break;
+      case 'writable':
+        console.warn(`${topic}: meta/writable is not supported anymore. Use meta/readonly=0`);
+        break;
+      case 'error':
+        cell.setError(payload);
+        break;
+      case 'min':
+        cell.setMin(payload);
+        break;
+      case 'max':
+        cell.setMax(payload);
+        break;
+      case 'precision':
+        cell.setStep(payload);
+        break;
+      case 'order':
+        cell.setOrder(payload);
+        break;
+    }
   }
+
 }

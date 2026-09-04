@@ -3,10 +3,14 @@ export const splitTopic = (topic: string) => {
   return { deviceId: parts[1], cellId: `${parts[1]}/${parts[3]}` };
 };
 
-// method to comparing real topic ('/devices/deviceId/controls/controlId/meta/name')
-// and topicExpression - topic with characters '+' or '#' ('/devices/+/controls/#')
+const topicRegexCache = new Map<string, RegExp>();
+
 export const isTopicsAreEqual = (realTopic: string, topicExp: string) => {
-  const reg = new RegExp(`^${topicExp.replace(/\+/g, '[^/]+').replace(/#/g, '.*')}$`);
+  let reg = topicRegexCache.get(topicExp);
+  if (!reg) {
+    reg = new RegExp(`^${topicExp.replace(/\+/g, '[^/]+').replace(/#/g, '.*')}$`);
+    topicRegexCache.set(topicExp, reg);
+  }
   return reg.test(realTopic);
 };
 
