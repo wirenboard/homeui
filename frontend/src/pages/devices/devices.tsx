@@ -15,6 +15,7 @@ import { Cell } from '@/components/cell';
 import { ColumnsWrapper, useMaxColumns, MIN_COLUMN_WIDTH } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
+import { SearchBar } from '@/components/search-bar';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { ColumnsEditor } from '@/pages/dashboards/[slug]/components/columns-editor';
@@ -80,6 +81,7 @@ const DevicesPage = observer(() => {
   const { t } = useTranslation();
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [prefs, setPrefs] = useState<DevicesViewPrefs>(readPrefs);
   const [isEditLayout, setIsEditLayout] = useState(false);
   const [draftOrder, setDraftOrder] = useState<string[][] | null>(null);
@@ -159,10 +161,20 @@ const DevicesPage = observer(() => {
 
   const displayedIds = useMemo(() => {
     const devices = devicesStore.filteredDevices;
-    const ids = Array.from(devices.keys());
-    if (!typeFilter) return ids;
-    return ids.filter((id) => devices.get(id)?.type === typeFilterMap[typeFilter]);
-  }, [devicesStore.filteredDevices, typeFilter]);
+    let ids = Array.from(devices.keys());
+    if (typeFilter) {
+      ids = ids.filter((id) => devices.get(id)?.type === typeFilterMap[typeFilter]);
+    }
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      ids = ids.filter((id) => {
+        const device = devices.get(id);
+        return id.toLowerCase().includes(query)
+          || device?.name.toLowerCase().includes(query);
+      });
+    }
+    return ids;
+  }, [devicesStore.filteredDevices, typeFilter, searchQuery]);
 
   if (!localStorage.getItem('foldedDevices')) {
     localStorage.setItem('foldedDevices', JSON.stringify([]));
@@ -205,11 +217,11 @@ const DevicesPage = observer(() => {
   }, [devicesStore.filteredDevices, actions]);
 
   const viewColumnItems = useMemo(() => {
-    if (!prefs.order || typeFilter) return undefined;
+    if (!prefs.order || typeFilter || searchQuery) return undefined;
     return reconcileOrder(displayedIds, prefs.order).map((col) =>
       col.map((id) => <Fragment key={id}>{renderDevice(id)}</Fragment>),
     );
-  }, [displayedIds, prefs.order, typeFilter, renderDevice]);
+  }, [displayedIds, prefs.order, typeFilter, searchQuery, renderDevice]);
 
   return (
     <PageLayout
@@ -217,6 +229,14 @@ const DevicesPage = observer(() => {
       hasRights={authStore.hasRights(UserRole.Operator)}
       actions={
         <>
+          {!isEditLayout && (
+            <SearchBar
+              value={searchQuery}
+              placeholder={t('devices.labels.search')}
+              ariaLabel={t('devices.labels.search')}
+              onChange={setSearchQuery}
+            />
+          )}
           {!isEditLayout && typeOptions.length > 2 && (
             <Dropdown
               value={typeFilter}
