@@ -7,7 +7,7 @@ import { Cell as CellContent } from '@/components/cell';
 import { mqttClient } from '@/services/mqtt-client';
 import Cell from '@/stores/devices/cell';
 import { sendCellValueUpdate } from '@/stores/devices/send-cell-value';
-import type { DeviceControlsProps, StripEntry } from './types';
+import type { DeviceControlsProps, ReadbackSuffixProps, StripEntry, Translate } from './types';
 import './styles.css';
 
 /**
@@ -132,7 +132,29 @@ export function mergeReadbacks(featured: Cell[], all: Cell[]): StripEntry[] {
   return entries;
 }
 
-type Translate = (key: string) => string;
+/** The setpoints with an explicit quantity label; the rest fall back to the prefix strip. */
+const LABELLED_SETPOINTS = new Set(Object.values(SETPOINT_OF));
+const PRIMARY_SETPOINT = /^set_primary_n(\d+)$/;
+const WANTED_PREFIX = /^(?:wanted|желаем(?:ый|ая|ое|ые))\s+/i;
+
+/**
+ * What a strip slot is called. The daemon names the writable half of a pair
+ * for the write — "Wanted Level", «Желаемая яркость» — which reads as a
+ * different quantity from the live value printed right next to it, so the
+ * strip uses the quantity itself: by the wire control id where we know it
+ * (see `control_ids.py`), by dropping the daemon's prefix where we do not.
+ */
+export function stripLabel(cell: Cell, t: Translate): string {
+  const primary = PRIMARY_SETPOINT.exec(cell.controlId);
+  if (primary) {
+    return t('dali.labels.setpoint.set_primary_n', { n: primary[1] });
+  }
+  if (LABELLED_SETPOINTS.has(cell.controlId)) {
+    return t(`dali.labels.setpoint.${cell.controlId}`);
+  }
+  const plain = cell.name.replace(WANTED_PREFIX, '');
+  return plain === cell.name ? cell.name : plain.charAt(0).toUpperCase() + plain.slice(1);
+}
 
 const peekValue = (cell: Cell, t: Translate): string => {
   if (cell.type === 'switch' || typeof cell.value === 'boolean') {
@@ -146,20 +168,25 @@ const peekValue = (cell: Cell, t: Translate): string => {
 const asCssColour = (value: string) =>
   (value.startsWith('#') ? value : `rgb(${value.split(';').join(',')})`);
 
-/** The live reading, rendered small next to its setpoint control. */
-const ReadbackSuffix = observer(({ cell }: { cell: Cell }) => {
+/**
+ * The live reading, rendered small next to its setpoint control. Now that the
+ * slot is named for the quantity, the bracketed number no longer says what it
+ * is, so it carries the explanation as a tooltip.
+ */
+export const ReadbackSuffix = observer(({ cell }: ReadbackSuffixProps) => {
   const { t } = useTranslation();
+  const hint = t('dali.labels.readback-tooltip');
   if (cell.type === 'rgb' && typeof cell.value === 'string' && cell.value) {
     return (
       <span
         className="daliDeviceControls-readback daliDeviceControls-swatch"
-        title={`${cell.name}: ${cell.value}`}
+        title={`${hint}: ${cell.value}`}
         style={{ background: asCssColour(String(cell.value)) }}
       />
     );
   }
   return (
-    <span className="daliDeviceControls-readback" title={cell.name}>
+    <span className="daliDeviceControls-readback" title={hint}>
       ({peekValue(cell, t)})
     </span>
   );
@@ -247,7 +274,7 @@ export const DeviceControls = observer(({ mqttId }: DeviceControlsProps) => {
           <span className="daliDeviceControls-peekValues">
             {strip.filter(({ cell }) => cell.type !== 'pushbutton').map(({ cell, readback }) => (
               <span className="daliDeviceControls-peekItem" key={cell.id}>
-                {(readback ?? cell).name}: <b>{peekValue(readback ?? cell, t)}</b>
+                {stripLabel(cell, t)}: <b>{peekValue(readback ?? cell, t)}</b>
               </span>
             ))}
           </span>
@@ -273,7 +300,7 @@ export const DeviceControls = observer(({ mqttId }: DeviceControlsProps) => {
       <div className="daliDeviceControls-strip">
         {strip.map(({ cell, readback }) => (
           <div className="daliDeviceControls-stripCell" key={cell.id}>
-            <CellContent cell={cell} hideHistory={true} />
+            <CellContent cell={cell} name={stripLabel(cell, t)} hideHistory={true} />
             {readback && <ReadbackSuffix cell={readback} />}
           </div>
         ))}

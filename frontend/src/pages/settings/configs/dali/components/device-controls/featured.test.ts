@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
+import en from '@/i18n/locales/en.json';
+import ru from '@/i18n/locales/ru.json';
 import type Cell from '@/stores/devices/cell';
-import { FEATURED_LIMIT, mergeReadbacks, pickFeatured } from './device-controls';
+import { FEATURED_LIMIT, mergeReadbacks, pickFeatured, stripLabel } from './device-controls';
+import type { Translate } from './types';
 
 /** The slice of Cell the heuristics read. */
 const cell = (
@@ -89,5 +92,60 @@ describe('mergeReadbacks', () => {
     const lux = merged.find((entry) => entry.cell.controlId === 'illuminance1');
     expect(lux).toBeDefined();
     expect(lux?.readback).toBeUndefined();
+  });
+});
+
+/** i18next's lookup and interpolation, over the real locale files. */
+const translator = (locale: object): Translate => (key, options) => {
+  const value = key.split('.').reduce<any>((node, part) => node?.[part], locale);
+  if (typeof value !== 'string') {
+    return key;
+  }
+  return Object.entries(options ?? {}).reduce(
+    (text, [name, replacement]) => text.replace(`{{${name}}}`, String(replacement)),
+    value,
+  );
+};
+
+describe('stripLabel', () => {
+  const t = { en: translator(en), ru: translator(ru) };
+
+  it('names a setpoint slot by its quantity, not by the daemon\'s "wanted" title', () => {
+    expect(stripLabel(cell('wanted_level', 'Wanted Level', 'range'), t.en)).toBe('Brightness');
+    expect(stripLabel(cell('wanted_level', 'Желаемая яркость', 'range'), t.ru)).toBe('Яркость');
+    expect(stripLabel(cell('set_colour_temperature', 'Wanted Colour Temperature', 'range'), t.en))
+      .toBe('Colour temperature');
+    expect(stripLabel(cell('set_rgb', 'Желаемый RGB', 'rgb'), t.ru)).toBe('Цвет');
+  });
+
+  it('numbers a primary-colour slot from its control id', () => {
+    expect(stripLabel(cell('set_primary_n3', 'Wanted Primary N3', 'range'), t.en)).toBe('Primary N3');
+    expect(stripLabel(cell('set_primary_n3', 'Желаемый основной N3', 'range'), t.ru)).toBe('Основной N3');
+  });
+
+  it('drops the prefix from a setpoint it has no explicit label for', () => {
+    expect(stripLabel(cell('set_something', 'Wanted Power', 'range'), t.en)).toBe('Power');
+    expect(stripLabel(cell('set_something', 'Желаемая мощность', 'range'), t.ru)).toBe('Мощность');
+  });
+
+  it('leaves a control that is not a setpoint alone', () => {
+    expect(stripLabel(cell('off', 'Off', 'pushbutton'), t.en)).toBe('Off');
+    expect(stripLabel(cell('illuminance1', 'Освещённость 1', 'value'), t.ru)).toBe('Освещённость 1');
+  });
+
+  it('leaves no "желаемый" anywhere in the strip, whatever the daemon called the pair', () => {
+    const setpoints = [
+      cell('wanted_level', 'Желаемая яркость', 'range'),
+      cell('set_rgb', 'Желаемый RGB', 'rgb'),
+      cell('set_white', 'Желаемый W', 'range'),
+      cell('set_colour_temperature', 'Желаемая цветовая температура', 'range'),
+      cell('set_x_coordinate', 'Желаемая координата X', 'range'),
+      cell('set_y_coordinate', 'Желаемая координата Y', 'range'),
+      cell('set_primary_n0', 'Желаемый основной N0', 'range'),
+    ];
+    setpoints.forEach((setpoint) => {
+      expect(stripLabel(setpoint, t.ru).toLowerCase()).not.toContain('желаем');
+      expect(stripLabel(setpoint, t.ru)).not.toBe(setpoint.controlId);
+    });
   });
 });

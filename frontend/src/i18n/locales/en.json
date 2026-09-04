@@ -1095,6 +1095,16 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "setpoint": {
+                    "wanted_level": "Brightness",
+                    "set_rgb": "Colour",
+                    "set_white": "White",
+                    "set_colour_temperature": "Colour temperature",
+                    "set_x_coordinate": "X coordinate",
+                    "set_y_coordinate": "Y coordinate",
+                    "set_primary_n": "Primary N{{n}}"
+                  },
+                  "readback-tooltip": "Value read back from the device",
          "all-controls": "All controls",
          "state-on": "on",
          "state-off": "off",

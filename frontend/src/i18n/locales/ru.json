@@ -1124,6 +1124,16 @@
          "monitor-col-command": "Команда",
          "monitor-col-response": "Ответ",
          "monitor-foreign": "сторонний",
+         "setpoint": {
+                    "wanted_level": "Яркость",
+                    "set_rgb": "Цвет",
+                    "set_white": "Белый",
+                    "set_colour_temperature": "Цветовая температура",
+                    "set_x_coordinate": "Координата X",
+                    "set_y_coordinate": "Координата Y",
+                    "set_primary_n": "Основной N{{n}}"
+                  },
+                  "readback-tooltip": "Значение, прочитанное из устройства",
          "all-controls": "Все элементы управления",
          "state-on": "вкл",
          "state-off": "выкл",
