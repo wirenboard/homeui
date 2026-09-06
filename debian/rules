@@ -2,6 +2,7 @@
 
 export DH_VERBOSE=1
 export NO_COLOR=1
+export DEB_VERSION=$(shell dpkg-parsechangelog -S Version)
 
 %:
 	dh $@ --with python3 --with config-package
@@ -17,7 +18,7 @@ override_dh_auto_configure:
 	dh_auto_configure -Dfrontend -O--buildsystem=makefile
 
 override_dh_auto_build:
-	DEB_VERSION=$$(dpkg-parsechangelog -S Version) dh_auto_build -Dbackend -O--buildsystem=pybuild
+	dh_auto_build -Dbackend -O--buildsystem=pybuild
 	dh_auto_build -Dbackend -O--buildsystem=makefile
 	dh_auto_build -Dfrontend -O--buildsystem=makefile
 
