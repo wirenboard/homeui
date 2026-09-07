@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.252.0) stable; urgency=medium
+
+  * Show the description of a device template group by the device firmware version:
+    a group declared several times with the same id and different fw acts as its
+    newest declaration supported by the firmware, so a note about an option added
+    in a firmware is shown only for devices that have the option
+
+ -- Pavel Gasheev <pavel.gasheev@wirenboard.com>  Mon, 07 Sep 2026 21:30:00 +0300
+
 wb-mqtt-homeui (2.251.0) stable; urgency=medium
 
   * Search titles translations of device template groups and parameters by id

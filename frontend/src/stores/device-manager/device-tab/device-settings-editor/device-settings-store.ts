@@ -1,4 +1,5 @@
-import { makeObservable, computed } from 'mobx';
+import { makeObservable, computed, observable, action } from 'mobx';
+import { compareFirmware, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import {
   type JsonSchema,
   type JsonObject,
@@ -19,21 +20,50 @@ import { WbDeviceChannelEditor } from './channel-editor-store';
 import { Conditions } from './conditions';
 import { WbDeviceParameterEditor } from './parameter-editor-store';
 
-export class WbDeviceParameterEditorsGroup {
-  public properties: WbDeviceParametersGroup;
-  public subgroups: WbDeviceParameterEditorsGroup[] = [];
-  public parameters: WbDeviceParameterEditor[] = [];
-  public channels: WbDeviceChannelEditor[] = [];
+export class WbDeviceParameterEditorsGroupVariant {
+  public isSupportedByFirmware: boolean = true;
+  public readonly properties: WbDeviceParametersGroup;
 
   constructor(properties: WbDeviceParametersGroup) {
     this.properties = properties;
 
     makeObservable(this, {
+      isSupportedByFirmware: observable,
+      setFirmwareInDevice: action,
+    });
+  }
+
+  setFirmwareInDevice(fw: string) {
+    this.isSupportedByFirmware = firmwareIsNewerOrEqual(this.properties.fw, fw);
+  }
+}
+
+export class WbDeviceParameterEditorsGroup {
+  public subgroups: WbDeviceParameterEditorsGroup[] = [];
+  public parameters: WbDeviceParameterEditor[] = [];
+  public channels: WbDeviceChannelEditor[] = [];
+  // Declarations of the group with the same id and different fw (fw variants), oldest fw first
+  public variants: WbDeviceParameterEditorsGroupVariant[] = [];
+
+  constructor(properties: WbDeviceParametersGroup) {
+    this.addVariant(properties);
+
+    makeObservable(this, {
+      properties: computed,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
       hasBadValuesFromRegisters: computed,
+      addVariant: action,
+      setFirmwareInDevice: action,
     });
+  }
+
+  // The declaration with the highest fw supported by the device firmware, otherwise the oldest one.
+  // While the firmware is unknown every declaration counts as supported, so the newest one is shown
+  get properties(): WbDeviceParametersGroup {
+    const supported = this.variants.filter((variant) => variant.isSupportedByFirmware);
+    return (supported.at(-1) ?? this.variants[0]).properties;
   }
 
   get isEnabledByCondition() {
@@ -57,6 +87,15 @@ export class WbDeviceParameterEditorsGroup {
     return this.parameters.some((param) => param.isDirty)
       || this.subgroups.some((group) => group.isDirty)
       || this.channels.some((channel) => channel.isDirty);
+  }
+
+  addVariant(properties: WbDeviceParametersGroup) {
+    this.variants.push(new WbDeviceParameterEditorsGroupVariant(properties));
+    this.variants.sort((a, b) => compareFirmware(a.properties.fw, b.properties.fw));
+  }
+
+  setFirmwareInDevice(fw: string) {
+    this.variants.forEach((variant) => variant.setFirmwareInDevice(fw));
   }
 
   addSubgroup(group: WbDeviceParameterEditorsGroup) {
@@ -145,8 +184,12 @@ export class DeviceSettingsObjectStore {
     this.topLevelGroup = new WbDeviceParameterEditorsGroup({ id: 'topLevelGroup' });
 
     deviceTemplate.groups?.forEach((groupProps) => {
-      const group = new WbDeviceParameterEditorsGroup(groupProps);
-      this._groupsByName.set(groupProps.id, group);
+      const group = this._groupsByName.get(groupProps.id);
+      if (group) {
+        group.addVariant(groupProps);
+        return;
+      }
+      this._groupsByName.set(groupProps.id, new WbDeviceParameterEditorsGroup(groupProps));
     });
 
     this._groupsByName.forEach((group, _name) => {
@@ -309,6 +352,7 @@ export class DeviceSettingsObjectStore {
       }
     });
     this._groupsByName.forEach((group, _name) => {
+      group.setFirmwareInDevice(fw);
       group.channels.forEach((channel) => {
         channel.setFirmwareInDevice(fw);
       });

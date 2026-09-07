@@ -226,6 +226,10 @@ export interface WbDeviceParametersGroup {
   description?: string;
   group?: string;
   ui_options?: JsonEditorOptions;
+  // Minimal device firmware version of the declaration. A group may be declared several times
+  // with the same id and different fw (fw variants), so that a firmware which added an option
+  // brings its own description of the group
+  fw?: string;
 }
 
 export interface WbDeviceTemplate {
