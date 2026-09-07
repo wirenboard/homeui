@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.250.1) stable; urgency=medium
+
+  * Fix packaging, no fnctional changes
+  * Drop wb5 config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 04 Sep 2026 13:40:00 +0400
+
 wb-mqtt-homeui (2.250.0) stable; urgency=medium
 
   * Add search bar to Devices and MQTT Channels pages
