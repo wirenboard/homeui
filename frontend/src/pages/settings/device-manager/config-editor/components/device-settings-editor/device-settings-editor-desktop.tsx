@@ -19,7 +19,7 @@ import { type NumberStore, type Translator } from '@/stores/json-schema-editor';
 import { MakeEditors } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types';
 
-const DeviceSettingsSubGroup = (
+const DeviceSettingsSubGroup = observer((
   { group, translator, showChannels }:
   { group: WbDeviceParameterEditorsGroup; translator: Translator; showChannels: boolean },
 ) => {
@@ -43,7 +43,7 @@ const DeviceSettingsSubGroup = (
       <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} showChannels={showChannels} />
     </div>
   );
-};
+});
 
 const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
   const errorId = useId();

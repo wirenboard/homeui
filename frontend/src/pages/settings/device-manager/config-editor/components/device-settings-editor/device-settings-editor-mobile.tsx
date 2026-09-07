@@ -18,7 +18,7 @@ import { type NumberStore, type ArrayStore, type Translator } from '@/stores/jso
 import { MakeEditors, ParamSimpleLabel } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps } from './types';
 
-const DeviceSettingsSubGroup = (
+const DeviceSettingsSubGroup = observer((
   { group, translator }:
   { group: WbDeviceParameterEditorsGroup; translator: Translator },
 ) => {
@@ -35,7 +35,7 @@ const DeviceSettingsSubGroup = (
       <DeviceSettingsCardContent group={group} isTopLevel={false} translator={translator} />
     </div>
   );
-};
+});
 
 const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
   const errorId = useId();

@@ -49,7 +49,7 @@ export class WbDeviceParameterEditorsGroup {
     this.addVariant(properties);
 
     makeObservable(this, {
-      properties: computed,
+      properties: computed.struct,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
@@ -59,11 +59,17 @@ export class WbDeviceParameterEditorsGroup {
     });
   }
 
-  // The declaration with the highest fw supported by the device firmware, otherwise the oldest one.
-  // While the firmware is unknown every declaration counts as supported, so the newest one is shown
+  // The declaration with the highest fw supported by the device firmware extends the base one,
+  // so a declaration brought by a firmware needs to carry only what it changes. The base
+  // declaration acts before the device firmware is read, when a read reports no firmware
+  // (then no declaration with fw is supported) and when it is the only declaration left.
+  // The group tree is built once, before the firmware is known, so the id, the parent group
+  // and the order are taken from the base declaration and never follow the firmware
   get properties(): WbDeviceParametersGroup {
+    const base = this.variants[0].properties;
     const supported = this.variants.filter((variant) => variant.isSupportedByFirmware);
-    return (supported.at(-1) ?? this.variants[0]).properties;
+    const acting = (supported.at(-1) ?? this.variants[0]).properties;
+    return { ...base, ...acting, id: base.id, group: base.group, order: base.order };
   }
 
   get isEnabledByCondition() {
@@ -341,21 +347,22 @@ export class DeviceSettingsObjectStore {
   }
 
   setFromDeviceRegisters(value: unknown, fw: string, isForce?: boolean){
+    // The firmware version is a fact about the device, it is applied even when the read
+    // brought no values: the daemon reports a firmware without parameters when every
+    // parameter of the template is unsupported by the device firmware
+    this._parametersByName.forEach((param, _name) => param.setFirmwareInDevice(fw));
+    this._groupsByName.forEach((group, _name) => {
+      group.setFirmwareInDevice(fw);
+      group.channels.forEach((channel) => channel.setFirmwareInDevice(fw));
+    });
     const valueAsObject = value as Record<string, any>;
     if (!valueAsObject) {
       return;
     }
     this._parametersByName.forEach((param, _name) => {
-      param.setFirmwareInDevice(fw);
       if (Object.hasOwn(valueAsObject, param.id)) {
         param.setFromDeviceRegister(valueAsObject[param.id], isForce);
       }
-    });
-    this._groupsByName.forEach((group, _name) => {
-      group.setFirmwareInDevice(fw);
-      group.channels.forEach((channel) => {
-        channel.setFirmwareInDevice(fw);
-      });
     });
   }
 
