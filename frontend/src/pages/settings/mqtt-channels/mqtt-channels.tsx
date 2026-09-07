@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { documentation } from '@/common/links';
-import { Input } from '@/components/input';
+import { SearchBar } from '@/components/search-bar';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { PageLayout } from '@/layouts/page';
 import { type Cell, devicesStore } from '@/stores/devices';
@@ -86,15 +86,15 @@ const MqttChannelsPage = observer(() => {
     <PageLayout
       title={t('mqtt.title')}
       infoLink={documentation[i18n.language]?.mqtt}
+      actions={
+        <SearchBar
+          value={search}
+          placeholder={t('mqtt.labels.search')}
+          onChange={setSearch}
+        />
+      }
       hasRights
     >
-      <Input
-        value={search}
-        className="mqtt-search"
-        placeholder={t('mqtt.labels.search')}
-        autoFocus
-        onChange={(val: string) => setSearch(val)}
-      />
 
       <Table isFullWidth>
         <TableRow isHeading>
