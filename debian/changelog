@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.251.1) stable; urgency=medium
+
+  * Fix dropdown multiline options overlap in small size
+  * Fix dropdown scroll jump on hover after opening with a selected item
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 07 Sep 2026 17:25:00 +0300
+
 wb-mqtt-homeui (2.251.0) stable; urgency=medium
 
   * Search titles translations of device template groups and parameters by id
