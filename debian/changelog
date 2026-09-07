@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.248.1-wb101) stable; urgency=medium
+
+  * Fix python package version, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 04 Sep 2026 16:20:00 +0400
+
 wb-mqtt-homeui (2.248.1-wb100) stable; urgency=medium
 
   * Fix switch styles
