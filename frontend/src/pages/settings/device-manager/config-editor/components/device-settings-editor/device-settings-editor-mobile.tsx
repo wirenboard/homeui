@@ -30,7 +30,7 @@ const DeviceSettingsSubGroup = (
   return (
     <div className="deviceSettingsEditor-subGroup">
       <label>
-        {translator.find(group.properties.title, currentLanguage)}
+        {translator.findById(group.properties.id, group.properties.title, currentLanguage)}
       </label>
       <DeviceSettingsCardContent group={group} isTopLevel={false} translator={translator} />
     </div>
@@ -146,7 +146,7 @@ const DeviceSettingsCard = observer((
   return (
     <Card
       key={group.properties.id}
-      heading={translator.find(group.properties.title, currentLanguage)}
+      heading={translator.findById(group.properties.id, group.properties.title, currentLanguage)}
       id={group.properties.id}
       variant="secondary"
       withError={group.hasErrors}

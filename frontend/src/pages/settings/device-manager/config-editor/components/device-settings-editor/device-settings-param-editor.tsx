@@ -72,7 +72,7 @@ export const ParamEditor = observer((
     }
   }
   const description = descriptionLines.join('\n');
-  const title = translator.find(activeVariant.store.schema.title || param.id, currentLanguage);
+  const title = translator.findById(param.id, activeVariant.store.schema.title, currentLanguage);
   return (
     <div
       className={classNames('deviceSettingsEditor-parameter', {

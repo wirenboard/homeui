@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.251.0) stable; urgency=medium
+
+  * Search titles translations of device template groups and parameters by id
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Mon, 07 Sep 2026 13:20:00 +0300
+
 wb-mqtt-homeui (2.250.2) stable; urgency=medium
 
   * Fix the DALI bus monitor and the wb-rules log freezing and no longer

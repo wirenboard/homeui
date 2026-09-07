@@ -38,7 +38,7 @@ const DeviceSettingsSubGroup = (
   return (
     <div className="deviceSettingsEditor-subGroup">
       <label>
-        {translator.find(group.properties.title, currentLanguage)}
+        {translator.findById(group.properties.id, group.properties.title, currentLanguage)}
       </label>
       <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} showChannels={showChannels} />
     </div>
@@ -174,7 +174,7 @@ const DeviceSettingsTabs = observer((
         id: group.properties.id,
         label: (
           <span className={classNames(classNamesObj)}>
-            {translator.find(group.properties.title, i18n.language)}
+            {translator.findById(group.properties.id, group.properties.title, i18n.language)}
           </span>
         ),
       };
