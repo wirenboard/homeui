@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.251.2) stable; urgency=medium
+
+  * Always show a scrollbar in the config editor tab list when it overflows
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 08 Sep 2026 19:01:00 +0300
+
 wb-mqtt-homeui (2.251.1) stable; urgency=medium
 
   * Fix dropdown multiline options overlap in small size
