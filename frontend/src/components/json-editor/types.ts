@@ -8,3 +8,11 @@ export interface JsonEditorProps {
   cells?: Option<string>[];
   onChange: (_val: any, _errors: any[]) => void;
 }
+
+export interface TabListThumbDrag {
+  list: HTMLElement;
+  scrollbar: HTMLElement;
+  thumb: HTMLElement;
+  startY: number;
+  startScrollTop: number;
+}

@@ -11,6 +11,19 @@ export function makeWbBootstrap3Theme() {
       return el;
     }
 
+    getTabHolder(propertyName) {
+      const el = super.getTabHolder(propertyName);
+      // json-editor.tsx positions and shows it, the library indexes only children[0] and [1]
+      const scrollbar = document.createElement('div');
+      scrollbar.className = 'je-tablist-scrollbar';
+      scrollbar.hidden = true;
+      const thumb = document.createElement('div');
+      thumb.className = 'je-tablist-thumb';
+      scrollbar.appendChild(thumb);
+      el.appendChild(scrollbar);
+      return el;
+    }
+
     getTab(text, tabId) {
       const li = document.createElement('li');
       li.setAttribute('role', 'presentation');

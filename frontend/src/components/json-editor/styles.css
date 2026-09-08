@@ -166,6 +166,9 @@
   gap: 12px;
   /* don't stretch the content pane to the (taller) sticky tab list */
   align-items: flex-start;
+  /* anchors the tab list scrollbar placed by json-editor.tsx */
+  position: relative;
+  --tablist-scrollbar-width: 10px;
 
   @media (max-width: 991px) {
     flex-direction: column;
@@ -202,8 +205,41 @@
     align-self: flex-start;
     max-height: calc(100vh - 24px);
     overflow-y: auto;
-    scrollbar-width: thin;
+    /* the browser scrollbar is hidden, json-editor.tsx draws its own so it stays visible
+       where the browser one is overlay (Firefox on Windows 11, macOS, Edge) */
+    scrollbar-width: none;
+    /* rows end at the drawn scrollbar, as with a native one */
+    padding-right: var(--tablist-scrollbar-width);
   }
+}
+
+/* same for Safari before 18.2, which has no scrollbar-width */
+.json-editor ul.nav-stacked::-webkit-scrollbar {
+  @media (min-width: 992px) {
+    display: none;
+  }
+}
+
+.json-editor .je-tablist-scrollbar {
+  position: absolute;
+  width: var(--tablist-scrollbar-width);
+  background: var(--scrollbar-background);
+}
+
+/* an empty div, so the selector has to outrank the div:empty rule */
+.json-editor .je-tablist-scrollbar .je-tablist-thumb {
+  display: block;
+  position: absolute;
+  left: 2px;
+  width: 6px;
+  border-radius: 3px;
+  background: var(--scrollbar-color);
+  touch-action: none;
+}
+
+.json-editor .je-tablist-scrollbar .je-tablist-thumb:hover,
+.json-editor .je-tablist-scrollbar .je-tablist-thumb--active {
+  background: color-mix(in srgb, var(--scrollbar-color), var(--text-color) 35%);
 }
 
 .json-editor .nav li {
