@@ -4,7 +4,7 @@ import sqlite3
 import tempfile
 import unittest
 
-from wb.homeui_backend.db import DB_SCHEMA_VERSION, DbState, check_db, open_db
+from wb.homeui_backend.db import DB_SCHEMA_VERSION, check_db, open_db
 
 
 class OpenDbTest(unittest.TestCase):
@@ -70,9 +70,9 @@ class OpenDbTest(unittest.TestCase):
             [("id", "admin", "hash", "admin", 0)],
         )
 
-    def test_keeps_the_file_when_the_database_has_no_tables(self):
+    def test_recreates_database_when_it_has_no_tables(self):
         """
-        A readable database without tables is filled in place, keeping its inode.
+        A readable database without tables is removed and recreated.
         """
         db_file = os.path.join(self.tmp_dir, "users.db")
         con = sqlite3.connect(db_file)
@@ -82,17 +82,17 @@ class OpenDbTest(unittest.TestCase):
         con.execute("DROP TABLE leftovers")
         con.commit()
         con.close()
-        inode = os.stat(db_file).st_ino
 
-        con = open_db(db_file)
-        self.addCleanup(con.close)
+        with open(db_file, "rb") as old_db:
+            con = open_db(db_file)
+            self.addCleanup(con.close)
 
-        self.assertEqual(os.stat(db_file).st_ino, inode)
+            self.assertNotEqual(os.stat(db_file).st_ino, os.fstat(old_db.fileno()).st_ino)
         self.assertEqual(con.execute("PRAGMA user_version").fetchone()[0], DB_SCHEMA_VERSION)
 
-    def test_locked_database_is_not_removed(self):
+    def test_recreates_locked_database(self):
         """
-        A transient sqlite error (here: a locked database) propagates and leaves the file alone.
+        A database that cannot be checked because it is locked is removed and recreated.
         """
         db_file = os.path.join(self.tmp_dir, "users.db")
         con = open_db(db_file)
@@ -104,17 +104,15 @@ class OpenDbTest(unittest.TestCase):
         self.addCleanup(locker.close)
         locker.execute("BEGIN EXCLUSIVE")
 
-        with self.assertRaises(sqlite3.OperationalError):
-            open_db(db_file)
+        con = open_db(db_file)
+        self.addCleanup(con.close)
 
         locker.rollback()
-        con = sqlite3.connect(db_file)
-        self.addCleanup(con.close)
-        self.assertEqual(con.execute("SELECT login FROM users").fetchall(), [("admin",)])
+        self.assertEqual(con.execute("SELECT login FROM users").fetchall(), [])
 
-    def test_check_db_tells_a_nul_filled_file_from_one_needing_a_schema(self):
+    def test_check_db_rejects_files_that_need_recreation(self):
         """
-        Only a file that is not SQLite at all gets the state open_db deletes on.
+        Missing, blank and unreadable databases all need recreation.
         """
         nul_filled = os.path.join(self.tmp_dir, "nul.db")
         with open(nul_filled, "wb") as f:
@@ -123,6 +121,6 @@ class OpenDbTest(unittest.TestCase):
         with open(empty, "wb"):
             pass
 
-        self.assertIs(check_db(nul_filled), DbState.NOT_A_DATABASE)
-        self.assertIs(check_db(empty), DbState.NEEDS_SCHEMA)
-        self.assertIs(check_db(os.path.join(self.tmp_dir, "missing.db")), DbState.NEEDS_SCHEMA)
+        self.assertFalse(check_db(nul_filled))
+        self.assertFalse(check_db(empty))
+        self.assertFalse(check_db(os.path.join(self.tmp_dir, "missing.db")))

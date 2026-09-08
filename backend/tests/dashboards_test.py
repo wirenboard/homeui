@@ -478,7 +478,7 @@ class AtomicWriteTest(DashboardsStoreFixture):
         """If os.replace raises, the live config is untouched and no temp file remains."""
         self.write_config(make_config())
 
-        with patch("wb.homeui_backend.dashboards.os.replace", side_effect=OSError("boom")):
+        with patch("wb.homeui_backend.config_file.os.replace", side_effect=OSError("boom")):
             with self.assertRaises(OSError):
                 self.store.put_dashboard("dashboard2", make_svg_dashboard("dashboard2", "<svg>NEW</svg>"))
 
