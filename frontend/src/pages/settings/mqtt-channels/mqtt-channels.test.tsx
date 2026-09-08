@@ -12,14 +12,15 @@ vi.mock('@/stores/devices', () => ({
   devicesStore: devicesStoreMock,
 }));
 vi.mock('@/layouts/page', () => ({
-  PageLayout: ({ children, title }: any) => (
-    <div data-testid="page-layout"><h1>{title}</h1>{children}</div>
+  PageLayout: ({ children, title, actions }: any) => (
+    <div data-testid="page-layout"><h1>{title}</h1>{actions}{children}</div>
   ),
 }));
-vi.mock('@/components/input', () => ({
-  Input: ({ value, onChange, placeholder }: any) => (
+vi.mock('@/components/search-bar', () => ({
+  SearchBar: ({ value, onChange, placeholder }: any) => (
     <input
       data-testid="search-input"
+      type="search"
       value={value}
       placeholder={placeholder}
       onChange={(e: any) => onChange(e.target.value)}
