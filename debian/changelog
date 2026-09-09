@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.252.0) stable; urgency=medium
+
+  * Add "allow_clear" schema option to clear a value selected in a dropdown
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Wed, 09 Sep 2026 10:32:16 +0300
+
 wb-mqtt-homeui (2.251.0) stable; urgency=medium
 
   * Search titles translations of device template groups and parameters by id
