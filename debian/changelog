@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.253.0) stable; urgency=medium
+
+  * Devices page performance: Web Worker for MQTT, message batching via
+    requestAnimationFrame, direct topic dispatch, Intl.Collator sorting,
+    viewport-aware cell rendering with IntersectionObserver
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 13:10:00 +0300
+
 wb-mqtt-homeui (2.252.1) stable; urgency=medium
 
   * Fix prevent leave page hook

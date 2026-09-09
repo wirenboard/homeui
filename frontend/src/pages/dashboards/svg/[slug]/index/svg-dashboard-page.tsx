@@ -10,7 +10,6 @@ import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button, ButtonLink } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
-import { Loader } from '@/components/loader';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
@@ -105,7 +104,7 @@ export const SvgDashboardPage = observer(() => {
       <PageLayout
         title={store.getDashboard(params.id)?.name}
         infoLink={documentation[i18n.language]?.svgdashboard}
-        isLoading={store.loading}
+        isLoading={store.loading || store.isSvgLoading(params.id)}
         actions={
           <>
             {hasRights(UserRole.Operator) && !(isFullscreen || searchParams.has('fullscreen')) && (
@@ -155,8 +154,6 @@ export const SvgDashboardPage = observer(() => {
                   </div>
                 </Alert>
               );
-            } else if (store.isSvgLoading(dashboard.id)) {
-              content = <Loader />;
             } else {
               content = (
                 <SvgView
