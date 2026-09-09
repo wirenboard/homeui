@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.252.1) stable; urgency=medium
+
+  * Fix prevent leave page hook
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 12:51:00 +0300
+
 wb-mqtt-homeui (2.252.0) stable; urgency=medium
 
   * Add "not set" item to dropdowns of optional parameters with "allow_undefined" schema option
