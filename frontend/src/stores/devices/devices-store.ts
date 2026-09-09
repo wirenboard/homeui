@@ -107,24 +107,7 @@ export default class DevicesStore {
   }
 
   getDeviceCells(deviceId: string) {
-    const device = this.devices.get(deviceId);
-    if (!device) return [];
-
-    const result: Cell[] = [];
-
-    for (const cellId of device.cells) {
-      const cell = this.cells.get(cellId);
-      if (cell && !cell.hidden) {
-        result.push(cell);
-      }
-    }
-
-    result.sort((a, b) => {
-      if (b.order === null) return -1;
-      return (a.order ?? 1) - b.order;
-    });
-
-    return result;
+    return this.devices.get(deviceId)?.visibleCells ?? [];
   }
 
   deleteDevice(id: string) {
