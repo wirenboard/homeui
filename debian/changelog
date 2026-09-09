@@ -4,7 +4,13 @@ wb-mqtt-homeui (2.253.0) stable; urgency=medium
     requestAnimationFrame, direct topic dispatch, Intl.Collator sorting,
     viewport-aware cell rendering with IntersectionObserver
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 12:28:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 13:10:00 +0300
+
+wb-mqtt-homeui (2.252.1) stable; urgency=medium
+
+  * Fix prevent leave page hook
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 12:51:00 +0300
 
 wb-mqtt-homeui (2.252.0) stable; urgency=medium
 
