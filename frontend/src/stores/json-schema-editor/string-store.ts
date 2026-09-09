@@ -17,10 +17,12 @@ export class StringStore implements PropertyStore {
   private _initialValue: MistypedValue | string | undefined;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
+    this.schema = schema;
+    this.required = required;
     if (typeof initialValue === 'string') {
       this.value = initialValue;
     } else if (initialValue === undefined) {
-      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+      if (required || (schema.options?.wb?.show_editor && !this._allowsUndefined)) {
         this.value = getDefaultStringValue(schema) ?? '';
       } else {
         this.value = undefined;
@@ -29,8 +31,6 @@ export class StringStore implements PropertyStore {
       this.value = new MistypedValue(initialValue);
     }
     this._initialValue = this.value;
-    this.schema = schema;
-    this.required = required;
 
     this.enumOptions = this.schema.enum?.map((value, index) => ({
       label: this.schema.options?.enum_titles?.[index] ?? String(value),
@@ -52,13 +52,17 @@ export class StringStore implements PropertyStore {
     });
   }
 
+  private get _allowsUndefined(): boolean {
+    return !!(this.schema.options?.wb?.allow_undefined || this.schema.options?.wb?.allow_clear);
+  }
+
   _checkConstraints(): void {
     if (this.value instanceof MistypedValue) {
       this.error = { key: 'json-editor.errors.not-a-string' };
       return;
     }
     if (this.value === undefined) {
-      const forbidUndefined = (this.schema.options?.wb?.show_editor && !this.schema.options?.wb?.allow_undefined)
+      const forbidUndefined = (this.schema.options?.wb?.show_editor && !this._allowsUndefined)
         || this.required
         || this.schema.options?.show_opt_in;
       this.error = forbidUndefined ? { key: 'json-editor.errors.required' } : undefined;
@@ -105,7 +109,7 @@ export class StringStore implements PropertyStore {
   }
 
   setDefault(): void {
-    if (!this.required && this.schema.options?.wb?.show_editor && this.schema.options?.wb?.allow_undefined) {
+    if (!this.required && this.schema.options?.wb?.show_editor && this._allowsUndefined) {
       this.setUndefined();
       return;
     }
