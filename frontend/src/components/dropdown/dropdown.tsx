@@ -236,6 +236,10 @@ export const Dropdown = ({
     onMenuOpen: () => {
       setIsMenuOpen(true);
       requestAnimationFrame(() => {
+        const inst = select.current as any;
+        if (inst) {
+          inst.scrollToFocusedOptionOnUpdate = false;
+        }
         const menuList = (select.current as SelectInstance)?.menuListRef;
         if (!menuList) return;
         const selected = menuList.querySelector('[aria-selected="true"]');
