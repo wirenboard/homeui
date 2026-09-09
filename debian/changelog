@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.252.0) stable; urgency=medium
+
+  * Add "not set" item to dropdowns of optional parameters with "allow_undefined" schema option
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Wed, 09 Sep 2026 10:32:16 +0300
+
 wb-mqtt-homeui (2.251.1) stable; urgency=medium
 
   * Fix dropdown multiline options overlap in small size
