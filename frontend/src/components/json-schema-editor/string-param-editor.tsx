@@ -18,7 +18,7 @@ const StringEditor = observer(({
   const value = store.value;
   const valueToDisplay = typeof value === 'string' ? value : '';
   const isOptInEditor = store.schema.options?.wb?.show_editor || store.schema.options?.show_opt_in;
-  const allowClear = !store.required && !!store.schema.options?.wb?.allow_clear;
+  const allowUndefined = !store.required && !!store.schema.options?.wb?.allow_undefined;
   const notSetLabel = t('json-editor.labels.not-set');
   const enumOptions = useMemo(() => {
     if (!store.schema.enum) return [];
@@ -26,17 +26,17 @@ const StringEditor = observer(({
       value: option.value,
       label: translator.find(option.label, currentLanguage),
     }));
-    if (allowClear) {
+    if (allowUndefined) {
       options.unshift({ value: null, label: notSetLabel });
     }
     return options;
-  }, [store.enumOptions, translator, currentLanguage, allowClear, notSetLabel]);
+  }, [store.enumOptions, translator, currentLanguage, allowUndefined, notSetLabel]);
   const hasErrors = store.hasErrors && !hideError;
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
       options={enumOptions}
-      value={allowClear && value === undefined ? null : valueToDisplay}
+      value={allowUndefined && value === undefined ? null : valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
       isDisabled={store.schema.options?.wb?.read_only}

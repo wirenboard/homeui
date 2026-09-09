@@ -137,7 +137,6 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
     dest.wb.show_editor = !!source.wb.show_editor;
     dest.wb.omit_default = !!source.wb.omit_default;
     dest.wb.allow_undefined = !!source.wb.allow_undefined;
-    dest.wb.allow_clear = !!source.wb.allow_clear;
     dest.wb.read_only = !!source.wb.read_only;
     dest.wb.disable_title = !!source.wb.disable_title;
     dest.wb.new_row = !!source.wb.new_row;
