@@ -6,6 +6,7 @@ export interface CellProps {
   isCompact?: boolean;
   isReadOnly?: boolean;
   hideHistory?: boolean;
+  isVisible?: boolean;
   extra?: {
     invert?: boolean;
   };

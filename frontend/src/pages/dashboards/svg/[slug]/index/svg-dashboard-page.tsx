@@ -10,10 +10,10 @@ import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button, ButtonLink } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
-import { Loader } from '@/components/loader';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { fontsStore } from '@/stores/fonts';
 import { useToggleFullscreen } from '@/utils/full-screen';
 import { useStore } from '@/utils/use-store';
 import { DashboardCarousel } from './components/dashboard-carousel';
@@ -83,12 +83,28 @@ export const SvgDashboardPage = observer(() => {
     store.unsubscribeAll(isPageDestroy);
   }, []);
 
+  useEffect(() => {
+    const styleId = 'svg-dashboard-fonts';
+    fontsStore.loadFonts().then(() => {
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+      style.textContent = fontsStore.buildFontFaceCss();
+    });
+    return () => {
+      document.getElementById(styleId)?.remove();
+    };
+  }, []);
+
   return (
     <>
       <PageLayout
         title={store.getDashboard(params.id)?.name}
         infoLink={documentation[i18n.language]?.svgdashboard}
-        isLoading={store.loading}
+        isLoading={store.loading || store.isSvgLoading(params.id)}
         actions={
           <>
             {hasRights(UserRole.Operator) && !(isFullscreen || searchParams.has('fullscreen')) && (
@@ -138,8 +154,6 @@ export const SvgDashboardPage = observer(() => {
                   </div>
                 </Alert>
               );
-            } else if (store.isSvgLoading(dashboard.id)) {
-              content = <Loader />;
             } else {
               content = (
                 <SvgView

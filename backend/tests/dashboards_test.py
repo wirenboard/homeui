@@ -524,6 +524,17 @@ class SeedingTest(DashboardsStoreFixture):
         self.assertEqual(len(dashboards), 2)
         self.assertEqual(sorted(ids), ["dashboard1", "dashboard2"])
 
+    def test_seeds_from_board_config_when_empty(self):
+        """An existing but empty config file is treated as absent and seeded from defaults."""
+        board_config = make_config()
+        self.write_board_config("wb6", board_config)
+        with open(self.config_path, "w", encoding="utf-8"):
+            pass
+
+        self.store.seed_and_reconcile("wb6")
+
+        self.assertEqual(self.read_config(), board_config)
+
     def test_missing_board_config_raises(self):
         """No board config file => seeding fails hard (no silent skip); config stays absent.
 
@@ -872,7 +883,6 @@ class DetectBoardTest(unittest.TestCase):
             "wirenboard,wirenboard-74x": "wb74",
             "wirenboard,wirenboard-720": "wb7",
             "contactless,imx6ul-wirenboard60": "wb6",
-            "contactless,imx28-wirenboard50": "wb5",
         }
         for compatible, expected in cases.items():
             with self.subTest(compatible=compatible):

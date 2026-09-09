@@ -21,14 +21,17 @@ vi.mock('@/layouts/page', () => ({
     </div>
   ),
 }));
-vi.mock('./components/common-settings', () => ({
-  default: () => <div data-testid="common-settings" />,
+vi.mock('./components/common', () => ({
+  CommonSettings: () => <div data-testid="common-settings" />,
 }));
-vi.mock('./components/mqtt-settings', () => ({
-  default: () => <div data-testid="mqtt-settings" />,
+vi.mock('./components/mqtt', () => ({
+  MqttSettings: () => <div data-testid="mqtt-settings" />,
 }));
-vi.mock('./components/https-settings', () => ({
-  default: ({ onError }: any) => (
+vi.mock('./components/panels', () => ({
+  PanelsSettings: () => <div data-testid="panels-settings" />,
+}));
+vi.mock('./components/https', () => ({
+  HttpsSettings: ({ onError }: any) => (
     <div data-testid="https-settings">
       <button data-testid="trigger-error" onClick={() => onError('https err')} />
       <button data-testid="clear-error" onClick={() => onError('')} />
@@ -51,13 +54,15 @@ describe('WebUiSettingsPage', () => {
     render(<WebUiSettingsPage />);
     expect(screen.getByTestId('mqtt-settings')).toBeDefined();
     expect(screen.getByTestId('common-settings')).toBeDefined();
+    expect(screen.getByTestId('panels-settings')).toBeDefined();
     expect(screen.getByTestId('https-settings')).toBeDefined();
   });
 
-  test('hides mqtt settings when not operator', () => {
+  test('hides mqtt and panels settings when not operator', () => {
     (authMock.hasRights as any).mockImplementation((role: string) => role !== 'operator');
     render(<WebUiSettingsPage />);
     expect(screen.queryByTestId('mqtt-settings')).toBeNull();
+    expect(screen.queryByTestId('panels-settings')).toBeNull();
     expect(screen.getByTestId('common-settings')).toBeDefined();
   });
 

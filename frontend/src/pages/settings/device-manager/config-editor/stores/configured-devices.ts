@@ -1,6 +1,6 @@
 import { getIntAddress } from '@/stores/device-manager';
 import { type DeviceTypesStore } from '@/stores/device-manager';
-import { type ConfiguredDevice } from './types';
+import { type ConfiguredDevice, type ConfiguredDevicesByPort } from './types';
 
 /**
  * Generates a list of configured devices based on the given portTabChildren and deviceTypesStore.
@@ -14,7 +14,7 @@ function makeConfiguredDevicesList(portTabChildren, deviceTypesStore: DeviceType
     if (deviceTypesStore.isModbusDevice(deviceType)) {
       acc.push({
         address: deviceTab.slaveId,
-        sn: deviceTab.editedData.sn,
+        sn: String(deviceTab.editedData.sn ?? ''),
         deviceType: deviceType,
         signatures: deviceTypesStore.getDeviceSignatures(deviceType),
       });
@@ -23,7 +23,7 @@ function makeConfiguredDevicesList(portTabChildren, deviceTypesStore: DeviceType
   }, []);
 }
 
-function getConfiguredModbusDevices(portTabs, deviceTypesStore) {
+function getConfiguredModbusDevices(portTabs, deviceTypesStore): ConfiguredDevicesByPort {
   return portTabs.reduce((acc, portTab) => {
     acc[portTab.path] = {
       type: portTab.portType,
@@ -35,7 +35,7 @@ function getConfiguredModbusDevices(portTabs, deviceTypesStore) {
 }
 
 export class ConfiguredDevices {
-  configuredDevices = [];
+  configuredDevices: ConfiguredDevicesByPort = {};
 
   constructor(portTabs, deviceTypesStore) {
     this.configuredDevices = getConfiguredModbusDevices(portTabs, deviceTypesStore);
@@ -56,5 +56,20 @@ export class ConfiguredDevices {
       (acc, [path, port]) => acc.set(path, getAddressesSet(port.devices)),
       new Map(),
     );
+  }
+
+  /**
+   * @description Configured devices indexed by non-empty serial number, so a re-scan can both
+   * recognise a device by its sn and reuse the type it is configured with.
+   */
+  getConfiguredDevicesBySerialNumber(): Map<string, ConfiguredDevice> {
+    return Object.values(this.configuredDevices).reduce((acc, port) => {
+      port.devices.forEach((device) => {
+        if (device.sn) {
+          acc.set(device.sn, device);
+        }
+      });
+      return acc;
+    }, new Map<string, ConfiguredDevice>());
   }
 }

@@ -27,3 +27,19 @@ export interface CustomMenuItem {
   requiredRole?: UserRole;
   children?: CustomMenuItem[];
 }
+
+export enum HttpsSetupPhase {
+  // Deciding whether there is an HTTPS site to move to — normally a matter of milliseconds
+  Checking = 'checking',
+  // Waiting for a certificate to be issued for the device, which takes minutes
+  IssuingCertificate = 'issuing-certificate',
+  // Nothing left to wait for: we stay on this host, so the app can start
+  Done = 'done',
+}
+
+export enum Theme {
+  Light = 'light',
+  Dark = 'dark',
+  System = 'system',
+  Bootstrap = 'bootstrap',
+}

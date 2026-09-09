@@ -46,9 +46,10 @@ export const PageTabs = observer(
               <Tabs
                 activeTab={selectedIndex}
                 items={tabs
-                  .filter((tab) => !(tab as DeviceTabStore)?.hidden)
-                  .map((tab, i) => ({
-                    id: i,
+                  .map((tab, originalIndex) => ({ tab, originalIndex }))
+                  .filter(({ tab }) => !(tab as DeviceTabStore)?.hidden)
+                  .map(({ tab, originalIndex }) => ({
+                    id: originalIndex,
                     label: tab.type === TabType.Device
                       ? <DeviceTab tab={tab as DeviceTabStore} />
                       : tab.type === TabType.Port

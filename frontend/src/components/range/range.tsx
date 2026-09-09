@@ -7,16 +7,16 @@ export const Range = ({
   value, id, isDisabled, min, max, step, units, formatLabel, isInvalid, onChange, onLiveChange, ariaLabel,
   labelPosition = 'bottom',
 }: RangeProps) => {
-  const [proxyValue, setProxyValue] = useState(0);
+  const [proxyValue, setProxyValue] = useState(value);
   const input = useRef<HTMLInputElement>(null);
   const rangeBlockWidth = 70;
   const isRight = labelPosition === 'right';
   const showLabel = labelPosition !== 'none';
 
   const rangeValuePosition = useMemo(() => {
-    const range = max - min;
-    const relativeValue = proxyValue - min;
-    const percent = (relativeValue / range) * 100;
+    const range = (max ?? 100) - (min ?? 0);
+    const relativeValue = proxyValue - (min ?? 0);
+    const percent = range ? (relativeValue / range) * 100 : 0;
     const thumbWidth = 16;
     return `calc(${percent}% - ${(percent * thumbWidth) / 100}px - ${rangeBlockWidth / 2}px + ${thumbWidth / 2}px)`;
   }, [proxyValue, min, max]);

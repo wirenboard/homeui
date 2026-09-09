@@ -38,6 +38,8 @@ export interface WbOptions {
   // If true, the resulting value can be undefined.
   // This option is useful for string properties where empty string is not a valid value
   // and we want to allow user to not set the property at all.
+  // A dropdown gets a "not set" item at the top for this,
+  // the item is selected when the property has no value.
   // This option has effect only if show_editor is true
   allow_undefined?: boolean;
 

@@ -99,6 +99,10 @@
     flex-grow: 1;
 }
 
+.page-contentWrapperSticky {
+    min-height: 0;
+}
+
 .page-overlay {
     position: absolute;
     inset: 0;

@@ -2,6 +2,7 @@
     overflow: auto;
     display: flex;
     flex-direction: column-reverse;
+    flex-grow: 1;
     position: relative;
     background: var(--container-background);
     box-shadow: var(--container-box-shadow);

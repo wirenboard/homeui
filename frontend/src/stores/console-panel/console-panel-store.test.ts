@@ -13,6 +13,12 @@ Object.defineProperty(globalThis, 'localStorage', {
   value: { getItem: getItemMock, setItem: setItemMock },
 });
 
+const sessionGetMock = vi.fn();
+const sessionSetMock = vi.fn();
+Object.defineProperty(globalThis, 'sessionStorage', {
+  value: { getItem: sessionGetMock, setItem: sessionSetMock },
+});
+
 describe('ConsolePanelStore', () => {
   let store: ConsolePanelStore;
 
@@ -190,6 +196,68 @@ describe('ConsolePanelStore', () => {
       getItemMock.mockReturnValueOnce(null);
       const s = new ConsolePanelStore();
       expect(s.position).toBe('bottom');
+    });
+  });
+
+  describe('sessionStorage persistence', () => {
+    test('restores isVisible from sessionStorage', () => {
+      sessionGetMock.mockImplementation((key) => (key === 'console-panel-visible' ? 'true' : null));
+      const s = new ConsolePanelStore();
+      expect(s.isVisible).toBe(true);
+    });
+
+    test('defaults isVisible to false when not stored', () => {
+      sessionGetMock.mockReturnValue(null);
+      const s = new ConsolePanelStore();
+      expect(s.isVisible).toBe(false);
+    });
+
+    test('show persists visible state to sessionStorage', () => {
+      store.show();
+      expect(sessionSetMock).toHaveBeenCalledWith('console-panel-visible', 'true');
+    });
+
+    test('hide persists visible state to sessionStorage', () => {
+      store.show();
+      sessionSetMock.mockClear();
+      store.hide();
+      expect(sessionSetMock).toHaveBeenCalledWith('console-panel-visible', 'false');
+    });
+
+    test('toggleVisibility persists visible state to sessionStorage', () => {
+      store.toggleVisibility();
+      expect(sessionSetMock).toHaveBeenCalledWith('console-panel-visible', 'true');
+    });
+
+    test('setActiveTab persists active tab to sessionStorage', () => {
+      store.registerTab(makeTab('a'));
+      store.registerTab(makeTab('b'));
+      sessionSetMock.mockClear();
+      store.setActiveTab('b');
+      expect(sessionSetMock).toHaveBeenCalledWith('console-panel-active-tab', 'b');
+    });
+
+    test('unregisterTab persists new active tab to sessionStorage', () => {
+      store.registerTab(makeTab('a'));
+      store.registerTab(makeTab('b'));
+      sessionSetMock.mockClear();
+      store.unregisterTab('a');
+      expect(sessionSetMock).toHaveBeenCalledWith('console-panel-active-tab', 'b');
+    });
+
+    test('restores stored active tab when it registers', () => {
+      sessionGetMock.mockImplementation((key) => (key === 'console-panel-active-tab' ? 'b' : null));
+      store.registerTab(makeTab('a'));
+      expect(store.activeTabId).toBe('a');
+      store.registerTab(makeTab('b'));
+      expect(store.activeTabId).toBe('b');
+    });
+
+    test('keeps first tab active when stored tab never registers', () => {
+      sessionGetMock.mockImplementation((key) => (key === 'console-panel-active-tab' ? 'gone' : null));
+      store.registerTab(makeTab('a'));
+      store.registerTab(makeTab('b'));
+      expect(store.activeTabId).toBe('a');
     });
   });
 });

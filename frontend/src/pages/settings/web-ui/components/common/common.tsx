@@ -6,37 +6,30 @@ import { type Option } from '@/components/dropdown';
 import { BooleanField, FormButtonGroup, FormFieldGroup, OptionsField, StringField } from '@/components/form';
 import { authStore, UserRole } from '@/stores/auth';
 import { dashboardsStore } from '@/stores/dashboards';
-import { uiStore } from '@/stores/ui';
+import { Theme, uiStore } from '@/stores/ui';
 
-const CommonSettings = observer(() => {
+export const CommonSettings = observer(() => {
   const { t, i18n } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
   const [showPageInTitle, setShowPageInTitle] = useState(uiStore.showPageInTitle);
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
-  const [theme, setTheme] = useState(uiStore.theme);
-  const [defaultDashboardId, setDefaultDashboardId] = useState('');
+  const [theme, setTheme] = useState<Theme>(uiStore.theme);
   const [description, setDescription] = useState('');
-  const [isShowWidgetsPage, setIsShowWidgetsPage] = useState(false);
-  const options = dashboardsStore.dashboardsList
-    .filter((dashboard) => !dashboard.options.isHidden)
-    .map((dashboard) => ({ label: dashboard.name, value: dashboard.id }));
 
   useEffect(() => {
     setDescription(dashboardsStore.description ?? '');
-    setDefaultDashboardId(dashboardsStore.defaultDashboardId ?? '');
-    setIsShowWidgetsPage(dashboardsStore.isShowWidgetsPage ?? false);
-  }, [dashboardsStore.description, dashboardsStore.defaultDashboardId, dashboardsStore.isShowWidgetsPage]);
+  }, [dashboardsStore.description]);
 
   const languageOptions: Option<string>[] = [
     { label: 'English', value: 'en' },
     { label: 'Русский', value: 'ru' },
   ];
 
-  const themeOptions: Option<string>[] = [
-    { label: t('web-ui-settings.labels.theme-light'), value: 'light' },
-    { label: t('web-ui-settings.labels.theme-dark'), value: 'dark' },
-    { label: t('web-ui-settings.labels.theme-system'), value: 'system' },
-    { label: 'Bootstrap', value: 'bootstrap' },
+  const themeOptions: Option<Theme>[] = [
+    { label: t('web-ui-settings.labels.theme-light'), value: Theme.Light },
+    { label: t('web-ui-settings.labels.theme-dark'), value: Theme.Dark },
+    { label: t('web-ui-settings.labels.theme-system'), value: Theme.System },
+    { label: 'Bootstrap', value: Theme.Bootstrap },
   ];
 
   const applyHandler = async () => {
@@ -45,9 +38,7 @@ const CommonSettings = observer(() => {
     localStorage.setItem('language', language);
     await i18n.changeLanguage(language);
     uiStore.setTheme(theme);
-    dashboardsStore.setDefaultDashboardId(defaultDashboardId);
     dashboardsStore.setDescription(description);
-    dashboardsStore.setIsShowWidgetsPage(isShowWidgetsPage);
   };
 
   return (
@@ -75,24 +66,10 @@ const CommonSettings = observer(() => {
         />
       )}
 
-      <OptionsField
-        title={t('web-ui-settings.labels.default-dashboard')}
-        value={defaultDashboardId}
-        options={options}
-        isDisabled={dashboardsStore.isLoading}
-        onChange={setDefaultDashboardId}
-      />
-
       <BooleanField
         title={t('web-ui-settings.labels.show-page-in-title')}
         value={showPageInTitle}
         onChange={setShowPageInTitle}
-      />
-
-      <BooleanField
-        title={t('web-ui-settings.labels.show-widgets-page')}
-        value={isShowWidgetsPage}
-        onChange={setIsShowWidgetsPage}
       />
 
       <BooleanField
@@ -110,5 +87,3 @@ const CommonSettings = observer(() => {
     </FormFieldGroup>
   );
 });
-
-export default CommonSettings;

@@ -100,9 +100,14 @@ vi.mock('@/components/dropdown', () => ({
     </select>
   ),
 }));
+vi.mock('@/components/alert', () => ({
+  Alert: ({ variant, children }: any) => (
+    <div data-testid="alert" data-variant={variant}>{children}</div>
+  ),
+}));
 vi.mock('@/pages/settings/users/components/edit-user', () => ({
-  EditUserModal: ({ user, onSave, onCancel }: any) => (
-    <div data-testid="edit-modal">
+  EditUserModal: ({ user, isFirstUser, onSave, onCancel }: any) => (
+    <div data-testid="edit-modal" data-first-user={isFirstUser}>
       <span data-testid="edit-user-login">{user?.login || 'new'}</span>
       <button
         data-testid="modal-save"
@@ -163,8 +168,8 @@ describe('UsersPage', () => {
 
   test('renders user type labels', () => {
     render(<UsersPage />);
-    expect(screen.getByText('users.labels.admin')).toBeDefined();
-    expect(screen.getByText('users.labels.user')).toBeDefined();
+    expect(screen.getAllByText('users.labels.admin').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('users.labels.user').length).toBeGreaterThanOrEqual(1);
   });
 
   test('renders add button', () => {
@@ -268,5 +273,38 @@ describe('UsersPage', () => {
     storeMock.errors = [{ variant: 'danger', text: 'Some error' }];
     render(<UsersPage />);
     expect(screen.getByText('Some error')).toBeDefined();
+  });
+
+  test('shows empty list alert when no users', () => {
+    storeMock.users = [];
+    render(<UsersPage />);
+    const alert = screen.getByText('users.labels.empty-list').closest('[data-testid="alert"]');
+    expect(alert.getAttribute('data-variant')).toBe('info');
+  });
+
+  test('hides table and autologin when no users', () => {
+    storeMock.users = [];
+    render(<UsersPage />);
+    expect(screen.queryByText('users.labels.login')).toBeNull();
+    expect(screen.queryByTestId('autologin-dropdown')).toBeNull();
+  });
+
+  test('passes isFirstUser to EditUserModal when users not configured', async () => {
+    storeMock.users = [];
+    authMock.areUsersConfigured = false;
+    storeMock.confirmSetupHttps.mockResolvedValue(true);
+    render(<UsersPage />);
+    fireEvent.click(screen.getByText('users.buttons.add'));
+    await waitFor(() => {
+      const modal = screen.getByTestId('edit-modal');
+      expect(modal.getAttribute('data-first-user')).toBe('true');
+    });
+  });
+
+  test('does not pass isFirstUser when users already configured', () => {
+    render(<UsersPage />);
+    fireEvent.click(screen.getByText('users.buttons.add'));
+    const modal = screen.getByTestId('edit-modal');
+    expect(modal.getAttribute('data-first-user')).toBe('false');
   });
 });

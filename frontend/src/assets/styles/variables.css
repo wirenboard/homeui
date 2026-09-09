@@ -3,7 +3,7 @@
 @import 'themes/bootstrap.css';
 
 :root {
-    --font: 'Roboto', sans-serif;
+    --font: 'Roboto', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
     --font-size-small: 13px;
     --font-size-medium: 14px;
     --font-size-large: 15px;

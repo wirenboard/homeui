@@ -1,5 +1,5 @@
 import { makeObservable, computed, observable, action, runInAction } from 'mobx';
-import { firmwareIsNewerOrEqual } from '@/stores/device-manager';
+import { compareFirmware, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
 import { W1_ID_FORMAT } from '@/utils/one-wire-number';
 import type { WbDeviceTemplateParameter } from '../../types';
@@ -7,6 +7,9 @@ import { type Conditions } from './conditions';
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;
+  public readonly fw: string | undefined;
+  public readonly condition: string | undefined;
+  public isSupportedByFirmware: boolean = true;
 
   private _conditionFn?: Function;
   private _dependencies?: string[];
@@ -24,14 +27,22 @@ export class WbDeviceParameterEditorVariant {
     }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
+    this.fw = parameter.fw;
+    this.condition = parameter.condition;
     this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
     this._dependencies = parameter.dependencies;
     this._otherParameters = otherParameters;
 
     makeObservable(this, {
+      isSupportedByFirmware: observable,
       isEnabledByCondition: computed,
       hasDirtyDependency: computed,
+      setFirmwareInDevice: action,
     });
+  }
+
+  setFirmwareInDevice(fw: string) {
+    this.isSupportedByFirmware = firmwareIsNewerOrEqual(this.fw, fw);
   }
 
   get isEnabledByCondition() {
@@ -59,6 +70,8 @@ export class WbDeviceParameterEditorVariant {
   }
 }
 
+// Template declarations with the same id are variants of one parameter: condition variants are
+// mutually exclusive, fw variants share a condition and differ in fw and enum (the newer adds values)
 export class WbDeviceParameterEditor {
   public id: string;
   public order: number;
@@ -66,8 +79,8 @@ export class WbDeviceParameterEditor {
   public variants: WbDeviceParameterEditorVariant[] = [];
   public isSetInDeviceRegisters: boolean = false;
   public isSetInUserDefinedConfig: boolean = false;
-  public isSupportedByFirmware: boolean = true;
-  public supportedFirmware: string | undefined;
+
+  private _isUnsupportedByDevice: boolean = false;
 
   constructor(
     parameter: WbDeviceTemplateParameter,
@@ -79,18 +92,19 @@ export class WbDeviceParameterEditor {
     this.id = parameter.id;
     this.order = parameter.order ?? 0;
     this.required = this.variants[0].store.required;
-    this.supportedFirmware = parameter.fw;
 
-    makeObservable(this, {
-      isSupportedByFirmware: observable,
+    makeObservable<WbDeviceParameterEditor, '_isUnsupportedByDevice'>(this, {
+      _isUnsupportedByDevice: observable,
       isSetInDeviceRegisters: observable,
       activeVariantIndex: computed,
+      isSupportedByFirmware: computed,
+      supportedFirmware: computed,
       value: computed,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
       hasBadValueFromRegisters: computed,
-      hasSeveralVariants: computed,
+      hasConflictingVariants: computed,
       hasDirtyDependency: computed,
       shouldStoreInConfig: computed,
       addVariant: action,
@@ -103,6 +117,15 @@ export class WbDeviceParameterEditor {
 
   get isEnabledByCondition() {
     return this.variants.some((variant) => variant.isEnabledByCondition);
+  }
+
+  get isSupportedByFirmware() {
+    return !this._isUnsupportedByDevice
+      && this.variants.some((variant) => variant.isEnabledByCondition && variant.isSupportedByFirmware);
+  }
+
+  get supportedFirmware() {
+    return this._getEnabledVariantsOldestFirst()[0]?.fw;
   }
 
   get hasErrors() {
@@ -139,12 +162,20 @@ export class WbDeviceParameterEditor {
     return activeVariantIndex !== -1 ? this.variants[activeVariantIndex].store.isDirty : false;
   }
 
+  // The newest variant supported by the device firmware, otherwise the oldest one to show it disabled.
+  // indexOf(undefined) gives -1 when no variant is enabled
   get activeVariantIndex() {
-    return this.variants.findIndex((variant) => variant.isEnabledByCondition);
+    const enabled = this._getEnabledVariantsOldestFirst();
+    const supported = enabled.filter((variant) => variant.isSupportedByFirmware);
+    return this.variants.indexOf(supported.at(-1) ?? enabled[0]);
   }
 
-  get hasSeveralVariants() {
-    return this.variants.filter((variant) => variant.isEnabledByCondition).length > 1;
+  // Shown under the editor as a template error: several declarations match at once, the daemon
+  // rejects such a config as a duplicate parameter. A chain of fw variants shares one condition
+  get hasConflictingVariants() {
+    return new Set(
+      this.variants.filter((variant) => variant.isEnabledByCondition).map((variant) => variant.condition),
+    ).size > 1;
   }
 
   get hasDirtyDependency() {
@@ -194,7 +225,7 @@ export class WbDeviceParameterEditor {
   }
 
   setFromDeviceRegister(value: unknown, isForce?: boolean) {
-    if ((!this.isSetInUserDefinedConfig || isForce) && this.isSupportedByFirmware && typeof value === 'number') {
+    if ((!this.isSetInUserDefinedConfig || isForce) && typeof value === 'number') {
       this.variants.forEach((variant) => {
         variant.store.setValue(value);
         variant.store.commit();
@@ -212,12 +243,13 @@ export class WbDeviceParameterEditor {
         }
       });
     } else if (value === 'unsupported') {
-      this.isSupportedByFirmware = false;
+      this._isUnsupportedByDevice = true;
     }
   }
 
   setFirmwareInDevice(fw: string) {
-    this.isSupportedByFirmware = firmwareIsNewerOrEqual(this.supportedFirmware, fw);
+    this.variants.forEach((variant) => variant.setFirmwareInDevice(fw));
+    this._isUnsupportedByDevice = false;
   }
 
   /**
@@ -252,6 +284,12 @@ export class WbDeviceParameterEditor {
       variant.store.setValue(value);
       variant.store.commit();
     });
+  }
+
+  private _getEnabledVariantsOldestFirst() {
+    return this.variants
+      .filter((variant) => variant.isEnabledByCondition)
+      .sort((a, b) => compareFirmware(a.fw, b.fw));
   }
 }
 

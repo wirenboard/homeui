@@ -31,6 +31,7 @@ from .dashboards import (
     detect_board,
 )
 from .db import open_db
+from .fonts import FontsStore
 from .gates import CUSTOM_MENU_DIR, apply_gates
 from .http_response import (
     HttpResponse,
@@ -165,15 +166,16 @@ def validate_add_user_request(request: dict) -> None:
 
 
 def validate_update_user_request(request: dict) -> None:
-    if request.get("type") not in [e.value for e in UserType]:
+    new_type = request.get("type")
+    if new_type is not None and new_type not in [e.value for e in UserType]:
         raise TypeError("Invalid type field")
 
     new_password = request.get("password")
-    if new_password and not isinstance(new_password, str):
+    if new_password is not None and (not isinstance(new_password, str) or not new_password):
         raise TypeError("Invalid password field")
 
     new_login = request.get("login")
-    if new_login and not isinstance(new_login, str):
+    if new_login is not None and (not isinstance(new_login, str) or not new_login):
         raise TypeError("Invalid login field")
 
     new_autologin = request.get("autologin", False)
@@ -182,13 +184,14 @@ def validate_update_user_request(request: dict) -> None:
 
 
 @dataclass
-class WebRequestHandlerContext:
+class WebRequestHandlerContext:  # pylint: disable=too-many-instance-attributes
     sn: str
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
     certificate_thread: CertificateCheckingThread
     security_check_thread: SecurityCheckingThread
     dashboards_store: DashboardsStore
+    fonts_store: FontsStore
     session: Optional[Session] = None
 
 
@@ -342,6 +345,7 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
+        validate_update_user_request(form)
     except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
@@ -370,7 +374,9 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
                 return response_400("Can't change the last admin's type")
         user.type = UserType(new_type)
 
-    user.autologin = form.get("autologin", False)
+    # Absent means "unchanged": the users page patches single fields, so defaulting
+    # to False here would silently drop autologin on an unrelated edit.
+    user.autologin = form.get("autologin", user.autologin)
 
     if delete_user_sessions:
         context.sessions_storage.delete_sessions_by_user(user)
@@ -632,6 +638,83 @@ def delete_dashboard_handler(
     return response_204()
 
 
+def font_name_from_path(request: BaseHTTPRequestHandler) -> Optional[str]:
+    url = urlparse(request.path).path
+    parts = url.split("/")
+    return unquote(parts[3]) if len(parts) == 4 else None
+
+
+def get_fonts_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    fonts = context.fonts_store.list_fonts()
+    return response_200([["Content-type", "application/json"]], json.dumps(fonts))
+
+
+def _extract_boundary(content_type: str) -> Optional[str]:
+    if "multipart/form-data" not in content_type:
+        return None
+    for param in content_type.split(";"):
+        param = param.strip()
+        if param.startswith("boundary="):
+            return param[len("boundary=") :]
+    return None
+
+
+def _parse_multipart_file(request: BaseHTTPRequestHandler) -> Optional[tuple[str, bytes]]:
+    """Extract (filename, data) from a multipart/form-data upload, or None on failure."""
+    boundary = _extract_boundary(request.headers.get("Content-Type", ""))
+    if boundary is None:
+        return None
+
+    length = int(request.headers.get("Content-Length", 0))
+    body = request.rfile.read(length)
+    boundary_bytes = ("--" + boundary).encode("utf-8")
+    parts = body.split(boundary_bytes)
+
+    for part in parts:
+        part = part.strip(b"\r\n")
+        if not part or part == b"--":
+            continue
+        header_end = part.find(b"\r\n\r\n")
+        if header_end < 0:
+            continue
+        header_block = part[:header_end].decode("utf-8", errors="replace")
+        file_data = part[header_end + 4 :]
+        if file_data.endswith(b"\r\n"):
+            file_data = file_data[:-2]
+        for line in header_block.split("\r\n"):
+            if 'name="file"' not in line:
+                continue
+            filename = ""
+            for token in line.split(";"):
+                token = token.strip()
+                if token.startswith("filename="):
+                    filename = token[len("filename=") :].strip('"')
+            if filename:
+                return os.path.basename(filename), file_data
+    return None
+
+
+def upload_font_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    parsed = _parse_multipart_file(request)
+    if parsed is None:
+        return response_400("Expected multipart/form-data with a file field")
+    filename, data = parsed
+    try:
+        result = context.fonts_store.save_font(filename, data)
+    except ValueError as e:
+        return response_400(str(e))
+    return response_201([["Content-type", "application/json"]], json.dumps(result))
+
+
+def delete_font_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    font_name = font_name_from_path(request)
+    if font_name is None:
+        return response_404()
+    if not context.fonts_store.delete_font(font_name):
+        return response_404()
+    return response_204()
+
+
 @dataclass
 class RequestHandler:
     fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
@@ -744,6 +827,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     rate_limiter: RateLimiter
     config: Config
     dashboards_store: DashboardsStore
+    fonts_store: FontsStore
 
     def process_response(self, response: HttpResponse) -> None:
         if 200 <= response.status < 300 or response.status == 304:
@@ -784,6 +868,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 self.certificate_thread,
                 self.security_check_thread,
                 self.dashboards_store,
+                self.fonts_store,
                 session,
             ),
         )
@@ -799,7 +884,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.process_request(
             {
                 # Gates auth_request every request, hence 1000/min per client; nginx caps
-                # each IP at 900/min + burst 200 (nginx default.conf) — change only as a pair.
+                # each LAN IP at 900/min + burst 200 (nginx default.conf) — change only as a
+                # pair. Loopback (cloud tunnel) is exempt there and never reaches this handler.
                 "/auth/check": RequestHandler(
                     fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
                 ),
@@ -810,6 +896,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/api/https": RequestHandler(fn=get_https_handler),
                 "/api/dashboards": RequestHandler(fn=get_dashboards_handler),
                 "/api/dashboards/*/svg": RequestHandler(fn=get_dashboard_svg_handler),
+                "/api/fonts": RequestHandler(fn=get_fonts_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
             }
         )
@@ -821,6 +908,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
                 "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
+                "/api/fonts": RequestHandler(fn=upload_font_handler),
             }
         )
 
@@ -846,6 +934,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             {
                 "/users/*": RequestHandler(fn=delete_user_handler),
                 "/api/dashboards/*": RequestHandler(fn=delete_dashboard_handler),
+                "/api/fonts/*": RequestHandler(fn=delete_font_handler),
             }
         )
 
@@ -914,6 +1003,7 @@ def main():
     WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
     WebRequestHandler.dashboards_store = DashboardsStore()
+    WebRequestHandler.fonts_store = FontsStore()
 
     try:
         WebRequestHandler.dashboards_store.seed_and_reconcile(detect_board())

@@ -118,6 +118,12 @@ describe('Dropdown', () => {
     expect(await screen.findByText('Nothing here')).toBeDefined();
   });
 
+  test('shows the default empty-search message when noOptionsMessage is not given', async () => {
+    render(<Dropdown options={[]} value={null} isSearchable onChange={vi.fn()} />);
+    fireEvent.mouseDown(document.querySelector('.dropdown__control')!);
+    expect(await screen.findByText('common.labels.empty-search')).toBeDefined();
+  });
+
   test('uses placeholder as aria-label fallback', () => {
     render(<Dropdown options={options} value="a" placeholder="Select..." onChange={vi.fn()} />);
     const input = document.querySelector('[aria-label="Select..."]');

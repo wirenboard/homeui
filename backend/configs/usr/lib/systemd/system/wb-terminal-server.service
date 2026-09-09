@@ -1,0 +1,12 @@
+[Unit]
+Description=Wiren Board WebSocket Terminal Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/wb-terminal-server
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

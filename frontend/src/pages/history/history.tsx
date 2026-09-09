@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ru, enUS } from 'date-fns/locale';
+import { reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +15,7 @@ import { Table, TableCell, TableRow } from '@/components/table';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { dashboardsStore } from '@/stores/dashboards';
+import { devicesStore } from '@/stores/devices';
 import { HistoryStore } from '@/stores/history';
 import { downloadFile } from '@/utils/donwload-file';
 import { useStore } from '@/utils/use-store';
@@ -32,6 +34,14 @@ const HistoryPage = observer(() => {
       store.initialize(params.id);
     }
   }, [params.id, dashboardsStore.isLoading]);
+
+  useEffect(() => {
+    return reaction(
+      () => devicesStore.devices.size + devicesStore.cells.size,
+      () => store.rebuildControlsList(),
+      { delay: 300 },
+    );
+  }, []);
 
   const downloadHistoryTable = () => {
     const rows = document.querySelectorAll('#history-table tr');

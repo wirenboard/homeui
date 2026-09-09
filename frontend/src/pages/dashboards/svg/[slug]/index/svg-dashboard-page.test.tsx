@@ -47,7 +47,6 @@ vi.mock('./components/dashboard-carousel', () => ({
 vi.mock('./components/svg-view', () => ({
   SvgView: ({ id, className }: any) => <div data-testid={`svg-${id}`} className={className} />,
 }));
-vi.mock('@/components/loader', () => ({ Loader: () => <div data-testid="loader" /> }));
 vi.mock('@/utils/full-screen', () => ({
   useToggleFullscreen: () => [fullscreen.value, fullscreen.toggle],
 }));
@@ -58,6 +57,14 @@ vi.mock('./store', () => ({
   },
 }));
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
+vi.mock('@/stores/fonts', () => ({
+  fontsStore: {
+    fonts: [],
+    isLoading: false,
+    loadFonts: vi.fn().mockResolvedValue([]),
+    buildFontFaceCss: vi.fn().mockReturnValue(''),
+  },
+}));
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return { ...(actual as any), useNavigate: () => navigateMock };
@@ -148,13 +155,20 @@ describe('SvgDashboardPage', () => {
       expect(storeMock.reloadSvg).toHaveBeenCalledWith('svg1');
     });
 
-    test('renders a loader instead of the svg view while the markup is still loading', () => {
+    test('puts the page into loading state while the svg markup is still loading', () => {
       storeMock.isSvgLoading.mockReturnValue(true);
       storeMock.svgMarkup = new Map<string, string>();
       storeMock.svgErrors = new Map<string, boolean>();
       renderPage();
-      expect(screen.getByTestId('loader')).toBeDefined();
-      expect(screen.queryByTestId('svg-svg1')).toBeNull();
+      expect(storeMock.isSvgLoading).toHaveBeenCalledWith('svg1');
+      expect(screen.getByTestId('loading')).toBeDefined();
+    });
+
+    test('is not in loading state once the svg markup is loaded', () => {
+      storeMock.isSvgLoading.mockReturnValue(false);
+      renderPage();
+      expect(screen.queryByTestId('loading')).toBeNull();
+      expect(screen.getByTestId('svg-svg1')).toBeDefined();
     });
   });
 

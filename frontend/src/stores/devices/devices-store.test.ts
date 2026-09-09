@@ -215,6 +215,19 @@ describe('DevicesStore', () => {
       expect(store.devices.has('lamp')).toBe(false);
     });
 
+    test('device meta/error sets error on device', () => {
+      seedDevice(store, 'lamp', ['on']);
+      simulateMessage(store, '/devices/lamp/meta/error', 'device disconnected');
+      expect(store.devices.get('lamp').error).toBe('device disconnected');
+    });
+
+    test('device meta/error clears error with empty message', () => {
+      seedDevice(store, 'lamp', ['on']);
+      simulateMessage(store, '/devices/lamp/meta/error', 'some error');
+      simulateMessage(store, '/devices/lamp/meta/error', '');
+      expect(store.devices.get('lamp').error).toBe('');
+    });
+
     test('empty meta/name resets name to id', () => {
       seedDevice(store, 'lamp', ['on']);
       simulateMessage(store, '/devices/lamp/meta/name', '');

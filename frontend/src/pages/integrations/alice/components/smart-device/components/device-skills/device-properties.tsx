@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { observer } from 'mobx-react-lite';
 import { Fragment, useCallback, useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

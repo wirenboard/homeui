@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import i18n from '@/i18n/config';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
-import { type CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
+import { type CellError, CellComponent, cellType, type CellType, type CellTypeEntry } from './cell-type';
 import type { CellMeta, EnumTranslations, NameTranslations, SendValueUpdate, ValueType } from './types';
 
 export default class Cell {
@@ -17,6 +17,7 @@ export default class Cell {
   public hidden: boolean = false;
 
   private _value: ValueType = '';
+  private _fractionDigits: number = 0;
   private _readOnly: boolean | null = null;
   private _name: string;
   private _nameTranslations: NameTranslations = {};
@@ -40,6 +41,10 @@ export default class Cell {
 
   get value(): ValueType {
     return this._value;
+  }
+
+  get fractionDigits(): number {
+    return this._fractionDigits;
   }
 
   set value(newValue: ValueType) {
@@ -249,7 +254,7 @@ export default class Cell {
     const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
     switch (this.valueType) {
       case 'number':
-        if (this.type === 'unixtime') {
+        if (this.displayType === CellComponent.DateTime) {
           this._value = value || 0;
         } else if (!value || isNaN(value as number | null)) {
           this._value = 0;
@@ -257,6 +262,10 @@ export default class Cell {
           // to avoid rounding we will set value as string if value is greater than max safe integer
           this._value = value;
         } else {
+          if (typeof value === 'string') {
+            const dotIndex = value.indexOf('.');
+            this._fractionDigits = dotIndex !== -1 ? value.length - dotIndex - 1 : 0;
+          }
           this._value = Number(value);
         }
         break;

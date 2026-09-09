@@ -136,6 +136,30 @@ class RenderGateTest(unittest.TestCase):
         self.assertIn("listen 29000;", conf)
         self.assertNotIn("wb-gate-tls.inc", conf)
 
+    def test_https_mode_adds_plain_loopback_listener_for_cloud_tunnel(self):
+        """A cloud tunnel speaks plain HTTP from loopback, so ssl mode needs both listeners."""
+        conf = render_gate(self.gate, https_enabled=True)
+        self.assertIn("listen 127.0.0.1:29000;", conf)
+
+    def test_http_mode_has_no_extra_loopback_listener(self):
+        """The plain listener already covers loopback; a second one would overlap it."""
+        self.assertNotIn("listen 127.0.0.1:29000;", render_gate(self.gate, https_enabled=False))
+
+    def test_authorized_gate_lets_loopback_through_without_session(self):
+        conf = render_gate(self.gate, https_enabled=False)
+        self.assertIn("satisfy any;", conf)
+        self.assertIn("allow 127.0.0.1;", conf)
+        self.assertIn("deny all;", conf)
+
+    def test_gate_without_auth_has_no_loopback_exception(self):
+        """No auth means no access rules to relax — the gate is open to everyone anyway."""
+        conf = render_gate(
+            Gate(name="svc", external_port=29000, internal_port=9000, role=UserType.OPERATOR, auth=False),
+            https_enabled=False,
+        )
+        self.assertNotIn("satisfy any;", conf)
+        self.assertNotIn("deny all;", conf)
+
     def test_gate_renders_per_ip_request_limit(self):
         conf = render_gate(self.gate, https_enabled=False)
         self.assertIn("limit_req zone=wb_gate_perip burst=200 nodelay;", conf)

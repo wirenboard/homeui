@@ -88,7 +88,7 @@ export const CodeEditor = observer(({
   return (
     <CodeMirror
       ref={editor}
-      theme={uiStore.resolvedTheme}
+      theme={uiStore.resolvedTheme as 'dark' | 'light'}
       style={{ height: '100%' }}
       value={text}
       height="100%"

@@ -10,6 +10,10 @@ It is the successor to the legacy forked `@wirenboard/json-editor`
 the device-manager config editor, the fork still powers the generic confed configurator and
 network connections.
 
+A confed config can opt into this editor: set `configFile.editor` to `"wb-json-editor"`
+in its schema. Confed surfaces that as the `editor` field, and the configurator page
+(`pages/settings/configs`) renders the config with this editor.
+
 ## How it works
 
 The data flow is **raw schema + data → stores → component**:

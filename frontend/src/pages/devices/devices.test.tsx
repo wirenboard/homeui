@@ -6,6 +6,7 @@ import DevicesPage from './devices';
 const { deviceStoreMock } = vi.hoisted(() => {
   const mk = (id: string, name: string, type: string) => ({
     id, name, type, isVisible: true, toggleDeviceVisibility: vi.fn(),
+    visibleCells: [{ id: `${id}/c`, name: `Cell of ${id}` }],
   });
   const dev1 = mk('dev1', 'Temperature Sensor', 'virtual');
   const dev2 = mk('dev2', 'Light Switch', 'modbus');
@@ -31,6 +32,8 @@ vi.mock('@/assets/icons/trash.svg', () => ({ default: () => null }));
 vi.mock('@/components/tooltip', () => ({ Tooltip: ({ children }: any) => <div>{children}</div> }));
 vi.mock('@/components/columns-wrapper', () => ({
   ColumnsWrapper: ({ children }: any) => <div>{children}</div>,
+  useMaxColumns: () => 4,
+  MIN_COLUMN_WIDTH: 376,
 }));
 vi.mock('@/components/card', () => ({
   Card: ({ children, heading, actions, indicator, id }: any) => (
@@ -66,7 +69,14 @@ vi.mock('@/stores/devices', () => ({
 vi.mock('@/stores/auth', () => import('@/test/mocks/auth-store'));
 
 function makeDevice(id: string, name: string, type: string) {
-  return { id, name, type, isVisible: true, toggleDeviceVisibility: vi.fn() };
+  return {
+    id,
+    name,
+    type,
+    isVisible: true,
+    toggleDeviceVisibility: vi.fn(),
+    visibleCells: [{ id: `${id}/c`, name: `Cell of ${id}` }],
+  };
 }
 
 function resetDevices() {

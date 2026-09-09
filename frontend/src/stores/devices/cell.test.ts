@@ -262,8 +262,8 @@ describe('Cell', () => {
   });
 
   describe('_setCellValue branches', () => {
-    test('unixtime stores value or defaults to 0', () => {
-      cell.setType('unixtime');
+    test('local_time stores value or defaults to 0', () => {
+      cell.setType('local_time');
       cell.receiveValue('1700000000');
       expect(cell.value).toBe('1700000000');
       cell.receiveValue('');

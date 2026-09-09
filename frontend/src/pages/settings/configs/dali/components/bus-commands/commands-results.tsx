@@ -12,7 +12,11 @@ interface CommandsResultsProps {
 const formatResult = (row: ResultRow, t: (key: string) => string): string => {
   if (row.status === 'ok') {
     if (row.response) {
-      return `0x${row.response.raw.toString(16).toUpperCase()} (${row.response.value})`;
+      const { raw, value } = row.response;
+      if (raw === null || raw === undefined) {
+        return `${t('dali.labels.commands-no-response')} (${value})`;
+      }
+      return `0x${raw.toString(16).toUpperCase()} (${value})`;
     }
     return t('dali.labels.commands-sent');
   }

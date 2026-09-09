@@ -60,7 +60,7 @@ export const commonCellTypes = new Map<string, CellTypeEntry>([
     displayType: CellComponent.Button,
     readOnly: false,
   }],
-  ['unixtime', {
+  ['local_time', {
     valueType: 'number',
     displayType: CellComponent.DateTime,
     readOnly: false,

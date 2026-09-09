@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { useMediaQuery } from 'react-responsive';
 import WarnIcon from '@/assets/icons/warn.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -11,7 +10,6 @@ import { type PortTabProps } from './types';
 import './styles.css';
 
 export const PortTab = observer(({ tab }: PortTabProps) => {
-  const isMobile = useMediaQuery({ maxWidth: 991 });
   return (
     <div
       className={classNames('portTab', {
@@ -19,7 +17,7 @@ export const PortTab = observer(({ tab }: PortTabProps) => {
       })}
     >
       {tab.hasChildren && (
-        <CollapseButton state={tab.collapseButtonState} stopPropagation={isMobile} />
+        <CollapseButton state={tab.collapseButtonState} stopPropagation />
       )}
       <span className="portTab-title">{tab.name}</span>
       {tab.hasInvalidConfig && <WarnIcon className="portTab-icon" />}

@@ -174,21 +174,12 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
   return null;
 };
 
-export const JsonSchemaEditor = observer(({ store, translator, customEditorBuilder }: JsonSchemaEditorProps) => {
+export const JsonSchemaEditor = observer(({ store, translator }: JsonSchemaEditorProps) => {
   const errorId = useId();
-  const editorBuilderFunction = (props: EditorBuilderFunctionProps) => {
-    if (customEditorBuilder) {
-      const editor = customEditorBuilder(props);
-      if (editor) {
-        return editor;
-      }
-    }
-    return DefaultEditorBuilder(props);
-  };
   const isSimpleType = ['string', 'number', 'boolean', 'byte-array'].includes(store.storeType);
   return (
     <div className="wb-jsonEditor">
-      {editorBuilderFunction({ store, rootStore: store, translator, isTopLevel: true })}
+      {DefaultEditorBuilder({ store, rootStore: store, translator, isTopLevel: true })}
       {isSimpleType && store.hasErrors && (
         <ParamError
           id={errorId}

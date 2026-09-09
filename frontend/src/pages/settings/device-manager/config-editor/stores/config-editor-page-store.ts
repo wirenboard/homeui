@@ -1,3 +1,4 @@
+/* eslint max-lines: ["warn", 450] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
@@ -311,6 +312,9 @@ export class ConfigEditorPageStore {
     const jsonSchema = loadJsonSchema(await this.deviceTypesStore.getSchema(device.type));
     const deviceConfig = getDefaultValue(jsonSchema) ?? {};
     deviceConfig.slave_id = String(device.newAddress ? device.newAddress : device.address);
+    if (device.sn) {
+      deviceConfig.sn = device.sn;
+    }
     const deviceId = deviceConfig?.id || this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
     if (topics.has(deviceId)) {
       deviceConfig.id = deviceId + '_2';
@@ -387,10 +391,16 @@ export class ConfigEditorPageStore {
     }
   }
 
-  readRegisters(tab: DeviceTabStore, isForce: boolean = false) {
+  // A forced reread rebuilds the settings editor from the saved config and fills it with the values
+  // read from the device, so everything the user has typed but not saved yet is discarded
+  async readRegisters(tab: DeviceTabStore, isForce: boolean = false, showDiscardChangesModal: () => Promise<boolean>) {
     const portTab = this.tabs.selectedPortTab;
-    if (tab && portTab) {
-      tab.loadContent(portTab.baseConfig, isForce);
+    if (!tab || !portTab) {
+      return;
     }
+    if (isForce && tab.isDirty && !(await showDiscardChangesModal())) {
+      return;
+    }
+    await tab.loadContent(portTab.baseConfig, isForce);
   }
 }

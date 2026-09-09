@@ -149,7 +149,7 @@ export default class HistoryStore {
     };
   }
 
-  buildControls(id?: string) {
+  rebuildControlsList() {
     const widgetChannelsMsg = i18n.t('history.labels.widget_channels');
     const allChannelsMsg = i18n.t('history.labels.all_channels');
     const widgetControls = [...dashboardsStore.widgets.values()]
@@ -183,6 +183,10 @@ export default class HistoryStore {
       });
 
     this.controls = [...widgetControls, ...allControls];
+  }
+
+  buildControls(id?: string) {
+    this.rebuildControlsList();
 
     const selected: string[] = [];
     const controlsFromUrl: UrlControl[] = decode(id).c || [];

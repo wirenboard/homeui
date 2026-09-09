@@ -1,4 +1,4 @@
-import type { ParsedBusMonitorLine } from './types';
+import type { BusMonitorResponse, ParsedBusMonitorLine } from './types';
 
 /**
  * Closed set of gateway status texts that can appear in the response position.
@@ -19,6 +19,11 @@ const STATUS_TEXTS = [
 const TIME_RE = /^(\d{2}:\d{2}:\d{2}\.\d{3})\s+/;
 const DIR_RE = /^(>>|<<)\s*/;
 const HEX_RE = /^([0-9a-fA-F]+)\b\s*/;
+/** `{hex} {value}` of a backward packet ('00fe 254'); an answer with no frame has no hex half. */
+const RESPONSE_HEX_RE = /^([0-9a-fA-F]+)\s+(.+)$/;
+const NO_RESPONSE_TEXT = 'no response';
+/** A reply that arrived corrupt: python-dali reports it in the decode, not as a gateway status. */
+const FRAMING_ERROR_RE = /framing error/;
 const FROM_LUNATONE_RE = /\s*\(from lunatone\)\s*$/;
 const FC_RE = /\s*\(fc:\s*(\d+)\)\s*$/;
 
@@ -31,6 +36,17 @@ const trailingStatus = (text: string): string | null => {
     }
   }
   return found;
+};
+
+const parseResponse = (respText: string): BusMonitorResponse => {
+  if (STATUS_TEXTS.includes(respText) || respText === NO_RESPONSE_TEXT || FRAMING_ERROR_RE.test(respText)) {
+    return { kind: 'error', text: respText };
+  }
+  const withHex = respText.match(RESPONSE_HEX_RE);
+  if (withHex) {
+    return { kind: 'value', text: respText, hex: withHex[1], value: withHex[2].trim() };
+  }
+  return { kind: 'value', text: respText, value: respText };
 };
 
 /**
@@ -92,15 +108,7 @@ export const parseBusMonitorLine = (raw: string): ParsedBusMonitorLine => {
   const sepIdx = rest.indexOf(' - ');
   if (sepIdx !== -1) {
     result.command = rest.slice(0, sepIdx).trim();
-    const respText = rest.slice(sepIdx + 3).trim();
-    if (STATUS_TEXTS.includes(respText)) {
-      result.response = { kind: 'error', text: respText };
-    } else {
-      const sp = respText.indexOf(' ');
-      result.response = sp === -1
-        ? { kind: 'value', text: respText, value: respText }
-        : { kind: 'value', text: respText, hex: respText.slice(0, sp), value: respText.slice(sp + 1).trim() };
-    }
+    result.response = parseResponse(rest.slice(sepIdx + 3).trim());
     return result;
   }
 

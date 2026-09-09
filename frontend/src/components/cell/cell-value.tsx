@@ -24,29 +24,21 @@ export const CellValue = observer(({ cell, isReadOnly, hideHistory }: CellValueP
       return transformNumber(cell.value as number);
     }
     if (typeof cell.value === 'number') {
-      return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits })
+      const digits = Math.max(minimumFractionDigits, cell.fractionDigits);
+      return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits: digits })
         .format(cell.value)
         .replace(/\s/g, '<span class="deviceCell-space"></span>')
         .replace(',', '.');
     }
     return cell.value;
-  }, [cell.value, minimumFractionDigits]);
+  }, [cell.value, cell.fractionDigits, minimumFractionDigits]);
 
-  // to avoid a jumping interface, we keep the number of decimal
+  // to avoid a jumping interface, we keep the highest observed fraction digits
   useEffect(() => {
-    const countDecimals = (num: number) => {
-      if (!Number.isFinite(num)) return 0;
-      const str = num.toString();
-      if (str.includes('.')) {
-        return str.split('.')[1].length;
-      }
-      return 0;
-    };
-
-    if (countDecimals(cell.value as number) > minimumFractionDigits) {
-      setMinimumFractionDigits(countDecimals(cell.value as number));
+    if (cell.fractionDigits > minimumFractionDigits) {
+      setMinimumFractionDigits(cell.fractionDigits);
     }
-  }, [cell.value, minimumFractionDigits]);
+  }, [cell.fractionDigits, minimumFractionDigits]);
 
   return (
     <>

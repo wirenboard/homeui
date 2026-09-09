@@ -1,4 +1,4 @@
-import { firmwareIsNewer, firmwareIsNewerOrEqual } from './firmware';
+import { compareFirmware, firmwareIsNewer, firmwareIsNewerOrEqual } from './firmware';
 
 describe('Firmware version comparison', () => {
   describe.each([
@@ -36,6 +36,21 @@ describe('Firmware version comparison', () => {
   ])('firmwareIsNewerOrEqual($fw1, $fw2)', ({ fw1, fw2, expected }) => {
     test(`returns ${expected}`, () => {
       expect(firmwareIsNewerOrEqual(fw1, fw2)).toBe(expected);
+    });
+  });
+
+  describe.each([
+    { fw1: '1.2.3', fw2: '1.2.3', expected: 0 },
+    { fw1: '1.2.3', fw2: '1.2.4', expected: -1 },
+    { fw1: '1.2.4', fw2: '1.2.3', expected: 1 },
+    { fw1: '1.2.3-rc1', fw2: '1.2.3', expected: -1 },
+    { fw1: '1.2.3+wb1', fw2: '1.2.3', expected: 1 },
+    { fw1: undefined, fw2: undefined, expected: 0 },
+    { fw1: undefined, fw2: '1.2.3', expected: -1 },
+    { fw1: '1.2.3', fw2: undefined, expected: 1 },
+  ])('compareFirmware($fw1, $fw2)', ({ fw1, fw2, expected }) => {
+    test(`returns ${expected}`, () => {
+      expect(Math.sign(compareFirmware(fw1, fw2))).toBe(expected);
     });
   });
 });

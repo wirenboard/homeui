@@ -8,7 +8,3 @@
         flex-direction: column;
     }
 }
-
-.web-ui-settings-pageContent > :last-child {
-    grid-column: 1 / -1;
-}

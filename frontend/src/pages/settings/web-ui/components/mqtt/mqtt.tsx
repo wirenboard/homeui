@@ -91,5 +91,3 @@ export const MqttSettings = () => {
     </FormFieldGroup>
   );
 };
-
-export default MqttSettings;

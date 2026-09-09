@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import HttpsSettings from './https-settings';
+import { HttpsSettings } from './https';
 
 const { httpsMock } = vi.hoisted(() => ({
   httpsMock: {

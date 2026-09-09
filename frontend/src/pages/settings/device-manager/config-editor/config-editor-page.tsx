@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { documentation } from '@/common/links';
-import { useConfirm } from '@/components/confirm';
+import { Confirm, useConfirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { AddDeviceModal } from './components/add-device-modal';
@@ -20,6 +20,12 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
   const [ showAddDeviceModal, isAddDeviceOpened, handleAddDevice, handleAddDeviceClose ] = useConfirm<any>();
   const [ showAddPortModal, isAddPortOpened, handleAddPort, handleAddPortClose ] = useConfirm<any>();
   const [ showDeleteModal, isDeleteModalOpened, handleDelete, handleDeleteClose ] = useConfirm<any>();
+  const [
+    showRereadConfigModal,
+    isRereadConfigOpened,
+    handleRereadConfig,
+    handleRereadConfigClose,
+  ] = useConfirm<any>();
 
   return (
     <>
@@ -62,7 +68,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
               onUpdateFirmware={() => pageStore.updateFirmware()}
               onUpdateBootloader={() => pageStore.updateBootloader()}
               onUpdateComponents={() => pageStore.updateComponents()}
-              onReadRegisters={(tab, isForce) => pageStore.readRegisters(tab, isForce)}
+              onReadRegisters={(tab, isForce) => pageStore.readRegisters(tab, isForce, showRereadConfigModal)}
             />
           )}
         </div>
@@ -93,6 +99,19 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
           onSave={handleAddDevice}
           onClose={handleAddDeviceClose}
         />
+      )}
+      {isRereadConfigOpened && (
+        <Confirm
+          isOpened={isRereadConfigOpened}
+          variant="danger"
+          width={600}
+          heading={t('device-manager.labels.reread-config-title')}
+          acceptLabel={t('device-manager.buttons.reread-config')}
+          confirmCallback={() => handleRereadConfig(true)}
+          closeCallback={() => handleRereadConfigClose()}
+        >
+          {t('device-manager.labels.uncommitted-settings')}
+        </Confirm>
       )}
       {isAddPortOpened && (
         <AddPortModal

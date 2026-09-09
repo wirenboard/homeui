@@ -4,15 +4,24 @@ import i18n from '@/i18n/config';
 import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import type { DeviceTypesStore } from '@/stores/device-manager';
 import { type ScannedDevice } from '@/stores/device-manager/types';
+import { type ConfiguredDevices } from '../../config-editor/stores/configured-devices';
+import { type ConfiguredDevice } from '../../config-editor/stores/types';
 import { GlobalErrorStore } from './global-error-store';
 import { ScanningProgressStore } from './scanning-progress-store';
 import { SingleDeviceStore } from './single-device-store';
-import { type FullScannedDevice, type SelectableConfiguredDevice, SelectionPolicy, ScanState } from './types';
+import {
+  type DevicesStoreInitOptions,
+  type FullScannedDevice,
+  type SelectableConfiguredDevice,
+  type StartScanningOptions,
+  SelectionPolicy,
+  ScanState,
+} from './types';
 
 class DevicesStore {
   public newDevices: SingleDeviceStore[] = [];
   public alreadyConfiguredDevices: SingleDeviceStore[] = [];
-  public configuredDevices = {};
+  public configuredDevicesBySn: Map<string, ConfiguredDevice> = new Map();
   public deviceTypesStore: DeviceTypesStore;
   public selectionPolicy: SelectionPolicy = SelectionPolicy.Multiple;
   public allowToSelectDevicesInBootloader = false;
@@ -34,6 +43,17 @@ class DevicesStore {
       scannedDevice,
       [this.deviceTypesStore.getName(scannedDevice.configured_device_type)],
       [scannedDevice.configured_device_type],
+      false,
+    );
+  }
+
+  // A device the backend has not matched (no configured_device_type) but that is already in the
+  // unsaved in-memory config, recognised by serial number: its type comes from that config entry.
+  makeSerialNumberMatchedDeviceStore(scannedDevice: FullScannedDevice, configuredDevice: ConfiguredDevice) {
+    return new SingleDeviceStore(
+      scannedDevice,
+      [this.deviceTypesStore.getName(configuredDevice.deviceType)],
+      [configuredDevice.deviceType],
       false,
     );
   }
@@ -86,6 +106,12 @@ class DevicesStore {
       // be selectable, otherwise the user can't re-apply connection settings (e.g. baud rate) to it.
       if (scannedDevice.configured_device_type && !this.isSearchedDevice(scannedDevice)) {
         this.alreadyConfiguredDevices.push(this.makeConfiguredDeviceStore(scannedDevice));
+        return;
+      }
+      // Not matched by the backend: recognise it by serial number in the unsaved in-memory config
+      const configuredMatch = this.configuredDevicesBySn.get(String(scannedDevice.sn ?? ''));
+      if (configuredMatch) {
+        this.alreadyConfiguredDevices.push(this.makeSerialNumberMatchedDeviceStore(scannedDevice, configuredMatch));
       } else {
         this.newDevices.push(this.makeNewDeviceStore(scannedDevice));
       }
@@ -100,13 +126,18 @@ class DevicesStore {
 
   }
 
-  init(
-    selectionPolicy: SelectionPolicy,
-    configuredDevices,
-    allowToSelectDevicesInBootloader: boolean,
-    selectableConfiguredDevice: SelectableConfiguredDevice = null,
-  ) {
-    this.configuredDevices = configuredDevices;
+  init(selectionPolicy: SelectionPolicy, configuredDevices: ConfiguredDevices, options: DevicesStoreInitOptions = {}) {
+    const {
+      allowToSelectDevicesInBootloader,
+      selectableConfiguredDevice = null,
+      matchConfiguredBySerialNumber = false,
+    } = options;
+    // configured_device_type covers only the saved config on disk; indexing the in-memory config by
+    // serial number lets a re-scan also recognise devices added but not yet saved. Only the new-devices
+    // flow opts in, and the index is built once here since the config does not change during a scan.
+    this.configuredDevicesBySn = matchConfiguredBySerialNumber
+      ? (configuredDevices?.getConfiguredDevicesBySerialNumber() ?? new Map<string, ConfiguredDevice>())
+      : new Map<string, ConfiguredDevice>();
     this.allowToSelectDevicesInBootloader = !!allowToSelectDevicesInBootloader;
     this.selectableConfiguredDevice = selectableConfiguredDevice;
     this.newDevices.forEach((device) => device.disposer?.());
@@ -268,33 +299,21 @@ export class CommonScanStore {
    * Starts the scanning process.
    *
    * @param {SelectionPolicy} selectionPolicy - The selection policy for scanning.
-   * @param {Array} configuredDevices - The list of configured devices.
-   * @param {string} portPath - The path of the port.
-   * @param {boolean} useModbusTcp - Whether to use Modbus TCP protocol.
-   * @param {Array} outOfOrderSlaveIds - The list of out-of-order slave IDs.
-   * @param {boolean} allowToSelectDevicesInBootloader - The flag to allow to select devices in bootloader.
-   * @param {SelectableConfiguredDevice} selectableConfiguredDevice - An already configured device
-   *   (port + slave_id) that must stay selectable, used when searching for a disconnected device.
+   * @param {ConfiguredDevices} configuredDevices - The current (saved or unsaved) config.
+   * @param {StartScanningOptions} options - Per-flow scan knobs (port, protocol, out-of-order slave
+   *   ids, bootloader selection, searched device, serial-number de-duplication). All optional; the
+   *   new-devices flow only sets `matchConfiguredBySerialNumber`.
    * @returns {void}
    */
   startScanning(
     selectionPolicy: SelectionPolicy,
-    configuredDevices,
-    portPath?: string,
-    useModbusTcp?: boolean,
-    outOfOrderSlaveIds?: string[],
-    allowToSelectDevicesInBootloader?: boolean,
-    selectableConfiguredDevice?: SelectableConfiguredDevice,
+    configuredDevices: ConfiguredDevices,
+    options: StartScanningOptions = {},
   ): void {
-    this.devicesStore.init(
-      selectionPolicy,
-      configuredDevices,
-      allowToSelectDevicesInBootloader,
-      selectableConfiguredDevice,
-    );
-    this.portPath = portPath;
-    this.useModbusTcp = useModbusTcp;
-    this.outOfOrderSlaveIds = outOfOrderSlaveIds;
+    this.devicesStore.init(selectionPolicy, configuredDevices, options);
+    this.portPath = options.portPath;
+    this.useModbusTcp = options.useModbusTcp;
+    this.outOfOrderSlaveIds = options.outOfOrderSlaveIds;
     this.startExtendedScanning();
   }
 

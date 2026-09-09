@@ -159,12 +159,6 @@ describe('FirmwareUpdate', () => {
       expect(screen.getByText('system.factory_reset.title')).toBeDefined();
     });
 
-    test('renders warnings', () => {
-      render(<FirmwareUpdate store={createStore() as any} mode="reset" />);
-      expect(screen.getByText('system.factory_reset.warning1')).toBeDefined();
-      expect(screen.getByText('system.factory_reset.warning2')).toBeDefined();
-    });
-
     test('renders select_and_reset button', () => {
       render(<FirmwareUpdate store={createStore() as any} mode="reset" />);
       const btns = screen.getAllByTestId('btn-danger');
@@ -182,14 +176,6 @@ describe('FirmwareUpdate', () => {
       });
       render(<FirmwareUpdate store={store as any} mode="reset" />);
       expect(screen.queryByText('system.buttons.reset')).toBeNull();
-    });
-
-    test('hides warning2 when canDoFactoryReset false', () => {
-      const store = createStore({
-        factoryResetFitsState: { canDoFactoryReset: false },
-      });
-      render(<FirmwareUpdate store={store as any} mode="reset" />);
-      expect(screen.queryByText('system.factory_reset.warning2')).toBeNull();
     });
 
     test('shows unavailable when no first status', () => {

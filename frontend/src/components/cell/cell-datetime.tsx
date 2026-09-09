@@ -8,8 +8,8 @@ import { CellHistory } from './cell-history';
 import { type CellDateTimeProps } from './types';
 import './styles.css';
 
-const unixToUtcDate = (unix: number): Date => {
-  const d = new Date(unix * 1000);
+const localTimeToDate = (localTime: number): Date => {
+  const d = new Date(localTime * 1000);
   return new Date(
     d.getUTCFullYear(),
     d.getUTCMonth(),
@@ -20,7 +20,7 @@ const unixToUtcDate = (unix: number): Date => {
   );
 };
 
-const utcDateToUnix = (date: Date): number =>
+const dateToLocalTime = (date: Date): number =>
   Math.floor(Date.UTC(
     date.getFullYear(),
     date.getMonth(),
@@ -46,20 +46,20 @@ export const CellDateTime = observer(({ cell, isReadOnly }: CellDateTimeProps) =
             trigger="click"
           >
             <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
-              {format(unixToUtcDate(cell.value as number || 0), dateFormat)}
+              {format(localTimeToDate(cell.value as number || 0), dateFormat)}
             </div>
           </Tooltip>
         )
         : (
           <DateTimePicker
             size="small"
-            value={unixToUtcDate(cell.value as number)}
+            value={localTimeToDate(cell.value as number)}
             disabled={cell.readOnly || isReadOnly}
             isInvalid={!!cell.error}
             ariaLabel={cell.name}
             withSeconds
             onChange={(value: Date) => {
-              cell.value = value ? utcDateToUnix(value) : 0;
+              cell.value = value ? dateToLocalTime(value) : 0;
             }}
           />
         )}

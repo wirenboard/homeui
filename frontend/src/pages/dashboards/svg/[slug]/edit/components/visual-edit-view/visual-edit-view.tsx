@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
+import { Link, useParams } from 'react-router-dom';
 import { useFilePicker } from 'use-file-picker';
 import DownloadIcon from '@/assets/icons/download.svg';
 import { Alert } from '@/components/alert';
@@ -151,6 +151,15 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
             </div>
           </Card>
         </fieldset>
+
+        {store.svgStore.hasFontStyles && (
+          <Alert variant="info" size="small">
+            <Trans
+              i18nKey="edit-svg-dashboard.labels.font-hint"
+              components={[<Link to="/settings/ui" />]}
+            />
+          </Alert>
+        )}
       </div>
     </div>
   );

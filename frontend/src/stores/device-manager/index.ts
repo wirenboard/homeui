@@ -22,6 +22,7 @@ export {
 } from './utils/common';
 
 export {
+  compareFirmware,
   firmwareIsNewer,
   firmwareIsNewerOrEqual
 } from './utils/firmware';

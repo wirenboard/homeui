@@ -8,12 +8,12 @@ import { UserRole } from '@/stores/auth';
 import type { EditUserModalProps } from './types';
 import './styles.css';
 
-export const EditUserModal = ({ onSave, user, isLoading, onCancel }: EditUserModalProps) => {
+export const EditUserModal = ({ onSave, user, isLoading, isFirstUser, onCancel }: EditUserModalProps) => {
   const { t } = useTranslation();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
-  const [type, setType] = useState<UserRole>(UserRole.User);
+  const [type, setType] = useState<UserRole>(isFirstUser ? UserRole.Admin : UserRole.User);
   const [isReadOnlyAdmin, setIsReadOnlyAdmin] = useState(false);
 
   const options = [
@@ -25,9 +25,9 @@ export const EditUserModal = ({ onSave, user, isLoading, onCancel }: EditUserMod
   useEffect(() => {
     if (user) {
       setLogin(user.login || '');
-      setType(user.readOnly ? UserRole.Admin : (user.type || type));
+      setType(isFirstUser ? UserRole.Admin : (user.readOnly ? UserRole.Admin : (user.type || type)));
 
-      if (user.readOnly) {
+      if (user.readOnly || isFirstUser) {
         setIsReadOnlyAdmin(true);
       }
     }

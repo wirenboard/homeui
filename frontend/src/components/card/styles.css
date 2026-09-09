@@ -2,7 +2,6 @@
     border-radius: var(--container-border-radius);
     box-shadow: var(--container-box-shadow);
     margin-bottom: var(--content-gap);
-    max-width: 450px;
     width: 100%;
     transition: background ease 300ms, border ease 300ms, border-radius ease 300ms;
     display: inline-block;
@@ -146,4 +145,18 @@ button:not(:disabled).card-action:focus {
 
 button:disabled.card-action svg {
     color: var(--light-gray-color);
+}
+
+[data-theme='bootstrap'] {
+    .card-primary:has(.card-titleWithError) {
+        border: 1px solid var(--danger-color);
+    }
+
+    .card-primary .card-header:has(.card-titleWithError) {
+        background: var(--danger-color);
+    }
+
+    .card-primary .card-header:has(.card-titleWithError) .card-titleWithError {
+        color: #fff;
+    }
 }
