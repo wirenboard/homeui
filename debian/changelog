@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.253.1) stable; urgency=medium
+
+  * Fix json-editor silently dropping an enabled optional parameter when its
+    value is cleared: show a "required" error instead
+  * Fix json-editor form staying dirty after an optional object parameter is
+    enabled and then disabled again
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 09 Sep 2026 16:35:02 +0500
+
 wb-mqtt-homeui (2.253.0) stable; urgency=medium
 
   * Devices page performance: Web Worker for MQTT, message batching via
