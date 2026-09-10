@@ -704,7 +704,7 @@ class ReconciliationTest(DashboardsStoreFixture):
 
         The baseline matches both the poisoned-hash check and the live-content check, but it
         already equals today's default hash, so the "already current" skip should still block
-        the write. Checked via inode, not content: _atomic_write_json replaces the file on
+        the write. Checked via inode, not content: atomic_write_json replaces the file on
         every write, so even a same-content rewrite bumps the inode, while content equality
         wouldn't catch that.
         """

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 from .board import of_machine_match
-from .config_file import _atomic_write_json, is_blank_file
+from .config_file import atomic_write_json, is_blank_file
 
 DEFAULT_CONFIG_PATH = "/etc/wb-webui.conf"
 DEFAULT_BOARD_CONFIG_DIR = "/usr/share/wb-mqtt-homeui"
@@ -330,7 +330,7 @@ class DashboardsStore:
         return copy.deepcopy(self._cached_config)
 
     def _write_config(self, config: dict) -> None:
-        _atomic_write_json(self._config_path, config)
+        atomic_write_json(self._config_path, config)
         # Invalidate; the next read re-parses the file bytes.
         self._cached_config = None
         self._cached_digest = None
@@ -359,7 +359,7 @@ class DashboardsStore:
             return BaselineState(hashes={})
 
     def _write_baseline_state(self, state: BaselineState) -> None:
-        _atomic_write_json(self._baseline_state_path, state.to_dict())
+        atomic_write_json(self._baseline_state_path, state.to_dict())
 
     def _seed(self, board_config: dict) -> None:
         logging.info("Seeding %s from board config", self._config_path)

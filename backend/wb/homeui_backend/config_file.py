@@ -13,7 +13,7 @@ ENABLE_HTTPS_TAG = "enable_https"
 CHUNK_SIZE = 64 * 1024
 
 
-def _atomic_write_json(path: str, data: Any) -> None:
+def atomic_write_json(path: str, data: Any) -> None:
     """Write JSON to path atomically (temp file in the same dir + os.replace).
 
     Resolves symlinks first: WB config files can point at /mnt/data, and os.replace onto a
@@ -72,7 +72,7 @@ class Config:
         # it is a transition from previous package versions.
         # Enable HTTPS, as it was always enabled in previous versions
         self.enable_https = users_storage.has_users()
-        _atomic_write_json(CONFIG_FILE, {ENABLE_HTTPS_TAG: self.enable_https})
+        atomic_write_json(CONFIG_FILE, {ENABLE_HTTPS_TAG: self.enable_https})
 
     def _read_config(self, users_storage: UsersStorage) -> None:
         try:
@@ -100,4 +100,4 @@ class Config:
 
     def set_https_enabled(self, enabled: bool) -> None:
         self.enable_https = enabled
-        _atomic_write_json(CONFIG_FILE, {ENABLE_HTTPS_TAG: self.enable_https})
+        atomic_write_json(CONFIG_FILE, {ENABLE_HTTPS_TAG: self.enable_https})
