@@ -30,13 +30,13 @@ const dateToLocalTime = (date: Date): number =>
     date.getSeconds(),
   ) / 1000);
 
-export const CellDateTime = observer(({ cell, isReadOnly }: CellDateTimeProps) => {
+export const CellDateTime = observer(({ cell, isReadOnly, hideHistory }: CellDateTimeProps) => {
   const { t, i18n } = useTranslation();
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
 
   return (
     <div className="deviceCell-textWrapper">
-      <CellHistory cell={cell} />
+      {!hideHistory && <CellHistory cell={cell} />}
 
       {cell.readOnly
         ? (

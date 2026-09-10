@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.255.1) stable; urgency=medium
+
+  * Hide the chart link in text and date-time cells when history is disabled
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 10 Sep 2026 21:20:00 +0300
+
 wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
   * Add slider editor for numeric config parameters with range format
