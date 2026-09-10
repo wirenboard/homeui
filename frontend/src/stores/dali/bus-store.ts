@@ -24,7 +24,6 @@ export class BusStore extends BaseItemStore {
   public gatewayName: string;
   public index: number;
 
-  public pollingInterval: number = 5;
   public busMonitorSyslogEnabled: boolean = false;
   public broadcastSettingsVisible: boolean = false;
 
@@ -55,7 +54,6 @@ export class BusStore extends BaseItemStore {
       scan: action,
       stopScan: action,
       saveParam: action,
-      setPollingInterval: action,
       setBusMonitorSyslogEnabled: action,
       applyCommissioningState: action,
       syncGroupChildren: action,
@@ -70,7 +68,6 @@ export class BusStore extends BaseItemStore {
       label: observable,
       gatewayName: observable,
       children: observable.shallow,
-      pollingInterval: observable,
       busMonitorSyslogEnabled: observable,
       broadcastSettingsVisible: observable,
     });
@@ -82,18 +79,6 @@ export class BusStore extends BaseItemStore {
   get isScanning(): boolean {
     return !['idle', 'completed', 'failed', 'cancelled'].includes(this.commissioningState.status)
       || this.scanStartRequested;
-  }
-
-  async setPollingInterval(value: number) {
-    try {
-      await daliProxy.SetBus({ busId: this.id, config: { polling_interval: value } });
-      runInAction(() => {
-        this.pollingInterval = value;
-        this.setError(null);
-      });
-    } catch (error) {
-      this.setError(error);
-    }
   }
 
   /**
@@ -287,7 +272,6 @@ export class BusStore extends BaseItemStore {
   }
 
   private _applyConfig(config: Record<string, any>) {
-    this.pollingInterval = config.polling_interval ?? 5;
     this.busMonitorSyslogEnabled = config.bus_monitor_syslog_enabled ?? false;
   }
 

@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.254.0) stable; urgency=medium
+
+  * Remove the obsolete DALI bus polling interval field: wb-mqtt-dali no longer
+    carries a polling_interval setting
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:25:00 +0500
+
 wb-mqtt-homeui (2.253.1) stable; urgency=medium
 
   * Fix json-editor silently dropping an enabled optional parameter when its

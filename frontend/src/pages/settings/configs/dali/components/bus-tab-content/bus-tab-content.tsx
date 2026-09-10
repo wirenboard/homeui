@@ -14,7 +14,6 @@ import { BusCommands } from '../bus-commands';
 import { BusToggle } from '../bus-toggle';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
-import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -142,7 +141,6 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
               onClick={() => store.scan()}
             />
           </FormButtonGroup>
-          <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
           <BusCommands store={store.commands} />
         </>
