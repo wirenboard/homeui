@@ -22,12 +22,23 @@ const buildStore = (level: number, levelSchema: object = {}) =>
 const renderStore = (store: ObjectStore) =>
   render(<JsonSchemaEditor store={store} translator={new Translator()} />);
 
+// The editor arrives through React.lazy, and on a loaded builder that import
+// alone outlasts the 1s findBy* window.
+const findSlider = async () =>
+  (await screen.findByRole('slider', {}, { timeout: 4000 })) as HTMLInputElement;
+
 describe('number field with range format', () => {
+  // Warm the module cache, so the Suspense promise resolves from it and the
+  // import cost is paid in the hook instead of inside a test.
+  beforeAll(async () => {
+    await import('./range-slider-param-editor');
+  });
+
   test('renders a slider bound to the schema bounds, not a text input', async () => {
     const store = buildStore(40);
     renderStore(store);
 
-    const slider = (await screen.findByRole('slider')) as HTMLInputElement;
+    const slider = await findSlider();
     expect(slider.value).toBe('40');
     expect(slider.min).toBe('1');
     expect(slider.max).toBe('100');
@@ -40,7 +51,7 @@ describe('number field with range format', () => {
     const store = buildStore(40);
     renderStore(store);
 
-    const slider = (await screen.findByRole('slider')) as HTMLInputElement;
+    const slider = await findSlider();
     // Range tracks the drag through onInput and commits on mouseUp, so a handler
     // wired to the wrong event would leave the parameter silently unsaved.
     fireEvent.input(slider, { target: { value: '70' } });
@@ -54,7 +65,7 @@ describe('number field with range format', () => {
     const store = buildStore(40, { options: { wb: { read_only: true } } });
     renderStore(store);
 
-    const slider = (await screen.findByRole('slider')) as HTMLInputElement;
+    const slider = await findSlider();
     expect(slider.disabled).toBe(true);
   });
 
@@ -62,7 +73,7 @@ describe('number field with range format', () => {
     const store = buildStore(40, { minimum: undefined, maximum: undefined });
     renderStore(store);
 
-    const slider = (await screen.findByRole('slider')) as HTMLInputElement;
+    const slider = await findSlider();
     expect(slider.min).toBe('0');
     expect(slider.max).toBe('100');
   });
