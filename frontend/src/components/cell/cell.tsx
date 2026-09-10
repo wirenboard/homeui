@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { CellAlert } from '@/components/cell/cell-alert';
 import { CellButton } from '@/components/cell/cell-button';
 import { CellColorpicker } from '@/components/cell/cell-colorpicker';
-import { CellDateTime } from '@/components/cell/cell-datetime';
 import { CellHistory } from '@/components/cell/cell-history';
 import { CellRange } from '@/components/cell/cell-range';
 import { CellSwitch } from '@/components/cell/cell-switch';
@@ -19,6 +18,8 @@ import { type CellProps } from './types';
 import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
+const CellDateTime = lazy(() => import('@/components/cell/cell-datetime')
+  .then((module) => ({ default: module.CellDateTime })));
 
 export const CellContent = observer((
   { cell, name, isCompact, isReadOnly, extra, hideHistory, isVisible = true }: CellProps,
@@ -40,7 +41,11 @@ export const CellContent = observer((
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.DateTime:
-        return <CellDateTime cell={cell} isReadOnly={isReadOnly} />;
+        return (
+          <Suspense>
+            <CellDateTime cell={cell} isReadOnly={isReadOnly} />
+          </Suspense>
+        );
       case CellComponent.Value:
         return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       default:

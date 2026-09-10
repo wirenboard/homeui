@@ -79,9 +79,9 @@ describe('CellContent', () => {
     expect(screen.getByTestId('cell-colorpicker')).toBeDefined();
   });
 
-  test('renders CellDateTime for DateTime type', () => {
+  test('renders CellDateTime for DateTime type', async () => {
     render(<CellContent cell={makeCell(CellComponent.DateTime)} />);
-    expect(screen.getByTestId('cell-datetime')).toBeDefined();
+    expect(await screen.findByTestId('cell-datetime')).toBeDefined();
   });
 
   test('renders CellValue for Value type', () => {
