@@ -38,6 +38,8 @@ export interface WbOptions {
   // If true, the resulting value can be undefined.
   // This option is useful for string properties where empty string is not a valid value
   // and we want to allow user to not set the property at all.
+  // A dropdown gets a "not set" item at the top for this,
+  // the item is selected when the property has no value.
   // This option has effect only if show_editor is true
   allow_undefined?: boolean;
 
@@ -148,4 +150,9 @@ export interface PropertyStore {
   setValue(value: unknown): void;
   commit(): void;
   reset(): void;
+
+  // Set by ObjectParamStore to mirror whether the param is part of the object.
+  // When true, an undefined value is an error (unless the schema allows undefined);
+  // composite stores that have no scalar undefined-error implement this as a no-op.
+  setForbidUndefined(value: boolean): void;
 }

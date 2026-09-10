@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.252.0) stable; urgency=medium
+wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
   * Show the description of a device template group by the device firmware version:
     a group declared several times with the same id and different fw (fw variants,
@@ -11,6 +11,56 @@ wb-mqtt-homeui (2.252.0) stable; urgency=medium
     none of them and before the firmware is read
 
  -- Pavel Gasheev <pavel.gasheev@wirenboard.com>  Mon, 07 Sep 2026 21:30:00 +0300
+
+wb-mqtt-homeui (2.254.0) stable; urgency=medium
+
+  * Remove the obsolete DALI bus polling interval field: wb-mqtt-dali no longer
+    carries a polling_interval setting
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:25:00 +0500
+
+wb-mqtt-homeui (2.253.3) stable; urgency=medium
+
+  * Fix DALI RGB colour picker producing the reserved MASK value (255) on a
+    channel, so a pure red no longer reads as "do not change"
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:15:00 +0500
+
+wb-mqtt-homeui (2.253.2) stable; urgency=medium
+
+  * Recover from an unreadable users database on startup
+  * Regenerate wb-webui.conf and wb-homeui-backend.conf when their content is all NUL bytes
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 03 Sep 2026 14:32:23 +0000
+
+wb-mqtt-homeui (2.253.1) stable; urgency=medium
+
+  * Fix json-editor silently dropping an enabled optional parameter when its
+    value is cleared: show a "required" error instead
+  * Fix json-editor form staying dirty after an optional object parameter is
+    enabled and then disabled again
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 09 Sep 2026 16:35:02 +0500
+
+wb-mqtt-homeui (2.253.0) stable; urgency=medium
+
+  * Devices page performance: Web Worker for MQTT, message batching via
+    requestAnimationFrame, direct topic dispatch, Intl.Collator sorting,
+    viewport-aware cell rendering with IntersectionObserver
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 13:10:00 +0300
+
+wb-mqtt-homeui (2.252.1) stable; urgency=medium
+
+  * Fix prevent leave page hook
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 09 Sep 2026 12:51:00 +0300
+
+wb-mqtt-homeui (2.252.0) stable; urgency=medium
+
+  * Add "not set" item to dropdowns of optional parameters with "allow_undefined" schema option
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Wed, 09 Sep 2026 10:32:16 +0300
 
 wb-mqtt-homeui (2.251.1) stable; urgency=medium
 
