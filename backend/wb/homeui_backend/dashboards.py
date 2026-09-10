@@ -6,12 +6,12 @@ import hashlib
 import json
 import logging
 import os
-import tempfile
 import threading
 from dataclasses import dataclass
 from typing import Any, Optional
 
 from .board import of_machine_match
+from .config_file import atomic_write_json, is_blank_file
 
 DEFAULT_CONFIG_PATH = "/etc/wb-webui.conf"
 DEFAULT_BOARD_CONFIG_DIR = "/usr/share/wb-mqtt-homeui"
@@ -95,30 +95,6 @@ class BaselineState:
 
     def to_dict(self) -> dict:
         return {"hashes": self.hashes}
-
-
-def _atomic_write_json(path: str, data: Any) -> None:
-    """Write JSON to path atomically (temp file in the same dir + os.replace).
-
-    Resolves symlinks first: WB points /etc/wb-webui.conf at /mnt/data, and os.replace onto a
-    symlink would replace the link itself rather than its target.
-    """
-    real_path = os.path.realpath(path)
-    directory = os.path.dirname(real_path) or "."
-    os.makedirs(directory, exist_ok=True)
-    tmp_fd, tmp_path = tempfile.mkstemp(dir=directory, prefix=".wb-homeui-", suffix=".tmp")
-    try:
-        # 0644 (mkstemp creates 0600) so confed can still read wb-webui.conf.
-        os.fchmod(tmp_fd, 0o644)
-        with os.fdopen(tmp_fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-        os.replace(tmp_path, real_path)
-    except Exception:
-        try:
-            os.remove(tmp_path)
-        except OSError:
-            pass
-        raise
 
 
 def _strip_svg_current(config: dict) -> dict:
@@ -332,7 +308,7 @@ class DashboardsStore:
             if board_config is None:
                 raise SeedConfigError(f"No board config for suffix '{board_suffix}'")
 
-            if not os.path.exists(self._config_path) or os.path.getsize(self._config_path) == 0:
+            if is_blank_file(self._config_path):
                 self._seed(board_config)
                 return
 
@@ -354,7 +330,7 @@ class DashboardsStore:
         return copy.deepcopy(self._cached_config)
 
     def _write_config(self, config: dict) -> None:
-        _atomic_write_json(self._config_path, config)
+        atomic_write_json(self._config_path, config)
         # Invalidate; the next read re-parses the file bytes.
         self._cached_config = None
         self._cached_digest = None
@@ -383,7 +359,7 @@ class DashboardsStore:
             return BaselineState(hashes={})
 
     def _write_baseline_state(self, state: BaselineState) -> None:
-        _atomic_write_json(self._baseline_state_path, state.to_dict())
+        atomic_write_json(self._baseline_state_path, state.to_dict())
 
     def _seed(self, board_config: dict) -> None:
         logging.info("Seeding %s from board config", self._config_path)
