@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.255.0) stable; urgency=medium
+
+  * Add slider editor for numeric config parameters with range format
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 11:20:00 +0500
+
 wb-mqtt-homeui (2.254.0) stable; urgency=medium
 
   * Remove the obsolete DALI bus polling interval field: wb-mqtt-dali no longer

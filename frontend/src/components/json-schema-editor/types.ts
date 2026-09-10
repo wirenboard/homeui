@@ -56,6 +56,11 @@ export interface DaliLevelSliderEditorProps {
   inputId?: string;
 }
 
+export interface RangeSliderEditorProps {
+  store: NumberStore;
+  inputId?: string;
+}
+
 export interface DaliColorTemperatureSliderEditorProps {
   store: NumberStore;
   rootStore?: PropertyStore;
