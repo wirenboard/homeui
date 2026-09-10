@@ -98,26 +98,6 @@ describe('BusStore', () => {
     });
   });
 
-  describe('setPollingInterval', () => {
-    test('saves and updates value', async () => {
-      daliProxyMock.SetBus.mockResolvedValue(undefined);
-
-      await store.setPollingInterval(10);
-
-      expect(store.pollingInterval).toBe(10);
-      expect(daliProxyMock.SetBus).toHaveBeenCalledWith({
-        busId: 'bus1',
-        config: { polling_interval: 10 },
-      });
-    });
-
-    test('sets error on failure', async () => {
-      daliProxyMock.SetBus.mockRejectedValue(new Error('fail'));
-      await store.setPollingInterval(10);
-      expect(store.error).toBe('fail');
-    });
-  });
-
   describe('setBusMonitorSyslogEnabled', () => {
     test('persists the syslog flag', async () => {
       daliProxyMock.SetBus.mockResolvedValue(undefined);
@@ -144,7 +124,7 @@ describe('BusStore', () => {
   describe('load', () => {
     test('fetches bus data on first load', async () => {
       daliProxyMock.GetBus.mockResolvedValue({
-        config: { polling_interval: 10, bus_monitor_enabled: true },
+        config: { bus_monitor_enabled: true },
         schema: {},
         name: 'Bus Updated',
       });
@@ -152,7 +132,6 @@ describe('BusStore', () => {
       await store.load();
 
       expect(daliProxyMock.GetBus).toHaveBeenCalledWith({ busId: 'bus1' });
-      expect(store.pollingInterval).toBe(10);
       expect(store.label).toBe('Bus Updated');
       expect(store.objectStore).toBeDefined();
       expect(store.isLoading).toBe(false);
