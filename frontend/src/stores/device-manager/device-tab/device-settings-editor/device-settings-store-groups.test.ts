@@ -4,7 +4,7 @@ import type { JsonSchema } from '@/stores/json-schema-editor';
 import type { WbDeviceParametersGroup, WbDeviceTemplateParameter } from '../../types';
 import { DeviceSettingsObjectStore } from './device-settings-store';
 
-// A group declared twice: the base declaration and the one brought by the firmware which added
+// A group declared twice: the plain declaration and the one brought by the firmware which added
 // an option to the parameter of the group, carrying a description of that option
 const groupFwChain: WbDeviceParametersGroup[] = [
   { id: 'g1', title: 'G1' },
@@ -27,7 +27,7 @@ const makeStore = (groups: WbDeviceParametersGroup[], parameters = groupParamete
   );
 
 const getGroup = (store: DeviceSettingsObjectStore, id: string) =>
-  store.topLevelGroup.subgroups.find((group) => group.properties.id === id);
+  store.topLevelGroup.subgroups.find((group) => group.id === id);
 
 describe('DeviceSettingsObjectStore with fw variants of a group (base + fw 2.2.0)', () => {
   it('keeps one group with both declarations as variants instead of showing the group twice', () => {
@@ -38,7 +38,7 @@ describe('DeviceSettingsObjectStore with fw variants of a group (base + fw 2.2.0
     expect(getGroup(store, 'g1').parameters.map((param) => param.id)).toEqual(['p1']);
   });
 
-  it('shows the description of the newest declaration before the device firmware is read', () => {
+  it('shows the description of the newest variant before the device firmware is read', () => {
     const store = makeStore(groupFwChain);
 
     expect(getGroup(store, 'g1').properties.description).toBe('the option added in 2.2.0');
@@ -96,7 +96,7 @@ describe('DeviceSettingsObjectStore with fw variants of a group (base + fw 2.2.0
     expect(getGroup(store, 'g1').properties.description).toBeUndefined();
   });
 
-  it('acts as the base declaration when the read reported no firmware version', () => {
+  it('acts as the oldest declaration when the read reported no firmware version', () => {
     const store = makeStore(groupFwChain);
 
     store.setFromDeviceRegisters({ p1: 0 }, undefined);
@@ -105,12 +105,12 @@ describe('DeviceSettingsObjectStore with fw variants of a group (base + fw 2.2.0
   });
 });
 
-describe('DeviceSettingsObjectStore with an fw variant of a group carrying only its own fields', () => {
-  // The declaration brought by a firmware extends the base one, so it repeats nothing
+describe('DeviceSettingsObjectStore with fw variants of a group nested in another group', () => {
+  // Every variant carries its own display fields, the place in the tree comes from the first declaration
   const nestedGroups: WbDeviceParametersGroup[] = [
     { id: 'parent', title: 'Parent' },
     { id: 'child', title: 'Child', group: 'parent', order: 5 },
-    { id: 'child', description: 'the option added in 2.2.0', fw: '2.2.0' },
+    { id: 'child', title: 'Child', group: 'parent', order: 5, description: 'the option added in 2.2.0', fw: '2.2.0' },
   ];
 
   const nestedParameters: WbDeviceTemplateParameter[] = [
@@ -119,29 +119,37 @@ describe('DeviceSettingsObjectStore with an fw variant of a group carrying only 
 
   const childOf = (store: DeviceSettingsObjectStore) => getGroup(store, 'parent').subgroups[0];
 
-  it('keeps the group nested in its parent instead of moving it to the top level', () => {
-    const store = makeStore(nestedGroups, nestedParameters);
-
-    expect(store.topLevelGroup.subgroups.map((group) => group.properties.id)).toEqual(['parent']);
-    expect(childOf(store).properties.id).toBe('child');
-  });
-
-  it('extends the base declaration with the description and keeps its title, parent and order', () => {
+  it('keeps the group in its parent and follows the firmware with the description', () => {
     const store = makeStore(nestedGroups, nestedParameters);
     const child = childOf(store);
 
-    expect(child.properties).toMatchObject({
-      id: 'child',
-      title: 'Child',
-      group: 'parent',
-      order: 5,
-      description: 'the option added in 2.2.0',
-    });
+    expect(store.topLevelGroup.subgroups.map((group) => group.id)).toEqual(['parent']);
+    expect(child.id).toBe('child');
+    expect(child.properties.description).toBe('the option added in 2.2.0');
 
     store.setFromDeviceRegisters({ p1: 0 }, '2.1.0');
 
     expect(child.properties.description).toBeUndefined();
-    expect(child.properties).toMatchObject({ title: 'Child', group: 'parent', order: 5 });
+    expect(child.properties.title).toBe('Child');
+    expect(getGroup(store, 'parent').subgroups.map((group) => group.id)).toEqual(['child']);
+  });
+
+  it('keeps the tree and the order of an incomplete declaration, only its title is lost', () => {
+    // A variant has to declare the display fields it needs, this one declares none of them
+    const store = makeStore(
+      [nestedGroups[0], nestedGroups[1], { id: 'child', description: 'incomplete', fw: '2.2.0' }],
+      nestedParameters,
+    );
+    const child = childOf(store);
+
+    expect(child.id).toBe('child');
+    expect(child.parentId).toBe('parent');
+    expect(child.order).toBe(5);
+    expect(child.properties.title).toBeUndefined();
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.1.0');
+
+    expect(child.properties.title).toBe('Child');
   });
 });
 

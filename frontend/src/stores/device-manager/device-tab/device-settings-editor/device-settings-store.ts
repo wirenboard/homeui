@@ -39,6 +39,9 @@ export class WbDeviceParameterEditorsGroupVariant {
 }
 
 export class WbDeviceParameterEditorsGroup {
+  public id: string;
+  public parentId?: string;
+  public order: number;
   public subgroups: WbDeviceParameterEditorsGroup[] = [];
   public parameters: WbDeviceParameterEditor[] = [];
   public channels: WbDeviceChannelEditor[] = [];
@@ -47,9 +50,12 @@ export class WbDeviceParameterEditorsGroup {
 
   constructor(properties: WbDeviceParametersGroup) {
     this.addVariant(properties);
+    this.id = properties.id;
+    this.parentId = properties.group;
+    this.order = properties.order ?? 0;
 
     makeObservable(this, {
-      properties: computed.struct,
+      properties: computed,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
@@ -59,17 +65,14 @@ export class WbDeviceParameterEditorsGroup {
     });
   }
 
-  // The declaration with the highest fw supported by the device firmware extends the base one,
-  // so a declaration brought by a firmware needs to carry only what it changes. The base
-  // declaration acts before the device firmware is read, when a read reports no firmware
-  // (then no declaration with fw is supported) and when it is the only declaration left.
-  // The group tree is built once, before the firmware is known, so the id, the parent group
-  // and the order are taken from the base declaration and never follow the firmware
+  // The variant with the highest fw supported by the device firmware, the oldest one while
+  // no variant is supported and before the device firmware is read. Its title, description and
+  // ui_options are what the group shows, every variant declares them on its own.
+  // The place of the group in the tree does not depend on the firmware, so the id, the parent
+  // group and the order are taken from the first declaration, like WbDeviceParameterEditor does
   get properties(): WbDeviceParametersGroup {
-    const base = this.variants[0].properties;
     const supported = this.variants.filter((variant) => variant.isSupportedByFirmware);
-    const acting = (supported.at(-1) ?? this.variants[0]).properties;
-    return { ...base, ...acting, id: base.id, group: base.group, order: base.order };
+    return (supported.at(-1) ?? this.variants[0]).properties;
   }
 
   get isEnabledByCondition() {
@@ -199,8 +202,8 @@ export class DeviceSettingsObjectStore {
     });
 
     this._groupsByName.forEach((group, _name) => {
-      if (group.properties.group) {
-        const parentGroup = this._groupsByName.get(group.properties.group);
+      if (group.parentId) {
+        const parentGroup = this._groupsByName.get(group.parentId);
         if (parentGroup) {
           parentGroup.addSubgroup(group);
           return;
@@ -209,12 +212,10 @@ export class DeviceSettingsObjectStore {
       this.topLevelGroup.addSubgroup(group);
     });
 
-    this._groupsByName.set(this.topLevelGroup.properties.id, this.topLevelGroup);
+    this._groupsByName.set(this.topLevelGroup.id, this.topLevelGroup);
 
     this._groupsByName.forEach((group, _name) => {
-      group.subgroups.sort((a, b) => {
-        return (a.properties.order ?? 0) - (b.properties.order ?? 0);
-      });
+      group.subgroups.sort((a, b) => a.order - b.order);
     });
   }
 

@@ -227,10 +227,11 @@ export interface WbDeviceParametersGroup {
   group?: string;
   ui_options?: JsonEditorOptions;
   // Minimal device firmware version of the declaration. A group may be declared several times
-  // with the same id and different fw (fw variants), so that a firmware which added an option
-  // brings its own description of the group. The declaration with the highest fw supported by
-  // the device firmware extends the base one, so it carries only the fields it changes;
-  // id, group and order always come from the base declaration
+  // with the same id and different fw (fw variants), like a parameter, so that a firmware which
+  // added an option brings its own description of the group. The variant with the highest fw
+  // supported by the device firmware acts, and it acts whole: every declaration carries its own
+  // title, description and ui_options. The variants may differ only in those, the id, the parent
+  // group and the order are taken from the first declaration
   fw?: string;
 }
 

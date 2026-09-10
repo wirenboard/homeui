@@ -1,12 +1,14 @@
 wb-mqtt-homeui (2.252.0) stable; urgency=medium
 
   * Show the description of a device template group by the device firmware version:
-    a group declared several times with the same id and different fw acts as its
-    newest declaration supported by the firmware, extending the base declaration,
-    so a note about an option added in a firmware is shown only for devices whose
-    firmware has the option. The id, the parent group and the order always come
-    from the base declaration, and it acts as well when the firmware supports no
-    declaration or is not read yet
+    a group declared several times with the same id and different fw (fw variants,
+    like a parameter) acts as the variant with the highest fw supported by the
+    device firmware, so a note about an option added in a firmware is shown only
+    for devices whose firmware has the option. The acting variant is used whole,
+    so every declaration carries its own title, description and ui_options; the
+    id, the parent group and the order come from the first declaration and never
+    follow the firmware. The oldest declaration acts while the firmware supports
+    none of them and before the firmware is read
 
  -- Pavel Gasheev <pavel.gasheev@wirenboard.com>  Mon, 07 Sep 2026 21:30:00 +0300
 
