@@ -4,6 +4,13 @@ wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 11:20:00 +0500
 
+wb-mqtt-homeui (2.253.3) stable; urgency=medium
+
+  * Fix DALI RGB colour picker producing the reserved MASK value (255) on a
+    channel, so a pure red no longer reads as "do not change"
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:15:00 +0500
+
 wb-mqtt-homeui (2.253.2) stable; urgency=medium
 
   * Recover from an unreadable users database on startup
