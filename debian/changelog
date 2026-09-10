@@ -4,6 +4,13 @@ wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 11:20:00 +0500
 
+wb-mqtt-homeui (2.254.0) stable; urgency=medium
+
+  * Remove the obsolete DALI bus polling interval field: wb-mqtt-dali no longer
+    carries a polling_interval setting
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:25:00 +0500
+
 wb-mqtt-homeui (2.253.3) stable; urgency=medium
 
   * Fix DALI RGB colour picker producing the reserved MASK value (255) on a
