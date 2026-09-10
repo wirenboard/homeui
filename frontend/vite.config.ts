@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
+import legacy from '@vitejs/plugin-legacy';
 import react from '@vitejs/plugin-react';
 import { parse } from 'dotenv';
 import { type ConfigEnv, loadEnv } from 'vite';
@@ -14,6 +15,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
     plugins: [
       react(),
       svgr({ include: '**/*.svg' }),
+      legacy({ modernPolyfills: true }),
     ] as any[],
     build: {
       sourcemap: true,
@@ -24,19 +26,14 @@ export default defineConfig(({ mode }: ConfigEnv) => {
           codeSplitting: {
             groups: [
               {
-                name: 'plotly',
-                test: /[\\/]node_modules[\\/](plotly\.js-basic-dist-min|plotly\.js-locales|react-plotly\.js)[\\/]/,
-                priority: 25,
+                name: 'react',
+                test: /[\\/]node_modules[\\/](react|react-dom|mobx|mobx-react-lite)[\\/]/,
+                priority: 30,
               },
               {
                 name: 'react-ui-libs',
-                test: /[\\/]node_modules[\\/](react-select|react-responsive|react-responsive-carousel)[\\/]/,
+                test: /[\\/]node_modules[\\/](react-select|react-responsive)[\\/]/,
                 priority: 20,
-              },
-              {
-                name: 'react',
-                test: /[\\/]node_modules[\\/](react|react-dom|mobx|mobx-react-lite)[\\/]/,
-                priority: 15,
               },
               {
                 name: 'codemirror',

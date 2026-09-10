@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.255.1) stable; urgency=medium
+
+  * Support old Safari/iOS (down to Safari 10 / iOS 10.1) via a legacy build fallback
+  * Improve treeshaking
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 10 Sep 2026 17:21:00 +0300
+
 wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
   * Add slider editor for numeric config parameters with range format
