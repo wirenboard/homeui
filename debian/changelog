@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.248.1+wb100) stable; urgency=medium
+wb-mqtt-homeui (2.248.1-wb103) stable; urgency=medium
 
   * Recover from an unreadable users database on startup
   * Regenerate wb-webui.conf and wb-homeui-backend.conf when their content is
