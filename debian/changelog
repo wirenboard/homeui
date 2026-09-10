@@ -1,8 +1,9 @@
 wb-mqtt-homeui (2.253.2) stable; urgency=medium
 
   * Always show a scrollbar in the config editor tab list when it overflows
+  * Fit the config editor tab list and pane into the window so they scroll instead of the page
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 09 Sep 2026 16:59:02 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 10 Sep 2026 15:25:02 +0300
 
 wb-mqtt-homeui (2.253.1) stable; urgency=medium
 

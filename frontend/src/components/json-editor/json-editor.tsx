@@ -7,42 +7,60 @@ import { createJSONEditor } from './extensions/wb-json-editor';
 import { type JsonEditorProps, type TabListThumbDrag } from './types';
 import './styles.css';
 
-// The sticky vertical tab list is capped so it scrolls on its own instead of running off-screen.
-// Its scrollbar is drawn here, the native one is hidden in styles.css.
+// Top-level tabs are capped at the window bottom, so the list and the pane scroll instead of the page.
+// Tabs starting too low (a long form above) get a sticky list capped by the window instead.
+// The list scrollbar is drawn here, the native one is hidden in styles.css.
 const TAB_LIST_SELECTOR = 'ul.nav-stacked';
+const TAB_PANE_SELECTOR = '.tab-content';
 const SCROLLBAR_SELECTOR = '.je-tablist-scrollbar';
 const THUMB_SELECTOR = '.je-tablist-thumb';
 const THUMB_ACTIVE_CLASS = 'je-tablist-thumb--active';
+const FIT_CLASS = 'je-tabs-fit';
+const STICKY_CLASS = 'je-tabs-sticky';
 const DESKTOP_QUERY = '(min-width: 992px)';
 const VIEWPORT_GAP = 12;
-// floor for a short form, not a multiple of the row height so the next row peeks out
-const MIN_TAB_LIST_HEIGHT = 390;
+// below this the list sticks to the scrolling page instead
+const MIN_FIT_HEIGHT = 240;
 const MIN_THUMB_HEIGHT = 24;
 
-const syncTabList = (list: HTMLElement, isDesktop: boolean) => {
+// top as if nothing were scrolled, so the cap does not depend on the scroll position
+const unscrolledTop = (el: HTMLElement) => {
+  let top = el.getBoundingClientRect().top;
+  for (let node = el.parentElement; node; node = node.parentElement) {
+    top += node.scrollTop;
+  }
+  return top;
+};
+
+const syncTabList = (root: HTMLElement, list: HTMLElement, isDesktop: boolean) => {
   const holder = list.parentElement;
+  const pane = holder?.querySelector<HTMLElement>(`:scope > ${TAB_PANE_SELECTOR}`);
   const scrollbar = holder?.querySelector<HTMLElement>(`:scope > ${SCROLLBAR_SELECTOR}`);
-  if (!isDesktop) {
-    list.style.maxHeight = '';
-    if (scrollbar) {
-      scrollbar.hidden = true;
-    }
+  if (!holder || !pane || !scrollbar) {
     return;
   }
-  // clamp the top to the pinned position, else a list scrolled above the fold un-caps
-  const top = Math.max(list.getBoundingClientRect().top, VIEWPORT_GAP);
-  const viewportAvailable = window.innerHeight - top - VIEWPORT_GAP;
-  // follow the content pane (no towering over a short form), floored by MIN and capped by the viewport
-  const sibling = Array.from(holder?.children ?? []).find((el) => el !== list);
-  const contentHeight = sibling ? sibling.getBoundingClientRect().height : viewportAvailable;
-  const available = Math.min(viewportAvailable, Math.max(contentHeight, MIN_TAB_LIST_HEIGHT));
-  list.style.maxHeight = available > 0 ? `${available}px` : '';
+  // nested holders flow inside the top-level pane, an empty list is not rendered
+  const isTopLevel = isDesktop && !root.contains(holder.closest(TAB_PANE_SELECTOR)) && list.getClientRects().length > 0;
+  if (!isTopLevel) {
+    holder.classList.remove(FIT_CLASS, STICKY_CLASS);
+    list.style.maxHeight = '';
+    pane.style.maxHeight = '';
+    scrollbar.hidden = true;
+    return;
+  }
+  // what follows the holder (margins, trailing fields) has to fit under it
+  const trailing = root.getBoundingClientRect().bottom - holder.getBoundingClientRect().bottom;
+  const available = window.innerHeight - unscrolledTop(holder) - VIEWPORT_GAP - trailing;
+  const isFit = available >= MIN_FIT_HEIGHT;
+  holder.classList.toggle(FIT_CLASS, isFit);
+  holder.classList.toggle(STICKY_CLASS, !isFit);
+  // a sticky list is as tall as the window allows once pinned
+  const listCap = isFit ? available : window.innerHeight - 2 * VIEWPORT_GAP - trailing;
+  list.style.maxHeight = listCap > 0 ? `${listCap}px` : '';
+  pane.style.maxHeight = isFit ? `${available}px` : '';
 
   const { clientHeight, scrollHeight, scrollTop } = list;
   const canScroll = scrollHeight > clientHeight;
-  if (!scrollbar) {
-    return;
-  }
   scrollbar.hidden = !canScroll;
   if (!canScroll) {
     return;
@@ -67,7 +85,7 @@ const syncTabLists = (root: HTMLElement | null) => {
     return;
   }
   const isDesktop = window.matchMedia(DESKTOP_QUERY).matches;
-  root.querySelectorAll<HTMLElement>(TAB_LIST_SELECTOR).forEach((list) => syncTabList(list, isDesktop));
+  root.querySelectorAll<HTMLElement>(TAB_LIST_SELECTOR).forEach((list) => syncTabList(root, list, isDesktop));
 };
 
 export const JsonEditor = observer((props: JsonEditorProps) => {
@@ -131,13 +149,13 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
       frame = requestAnimationFrame(() => syncTabLists(root));
     };
     schedule();
-    // capture phase to catch the inner page container scroll and the tab list scroll, not just window
+    // capture phase, the page container and the tab list scroll, not the window
     window.addEventListener('scroll', schedule, true);
     window.addEventListener('resize', schedule);
     // recompute when content resizes the layout
     const resizeObserver = new ResizeObserver(schedule);
     resizeObserver.observe(root);
-    // and when tabs are added or removed, a capped list keeps its size while its content grows
+    // a capped list does not grow with new tabs, so the root does not resize either
     const mutationObserver = new MutationObserver(schedule);
     mutationObserver.observe(root, { childList: true, subtree: true });
 

@@ -164,7 +164,7 @@
 .json-editor div:has(> ul.nav-pills) {
   display: flex;
   gap: 12px;
-  /* don't stretch the content pane to the (taller) sticky tab list */
+  /* don't stretch the content pane to a taller tab list */
   align-items: flex-start;
   /* anchors the tab list scrollbar placed by json-editor.tsx */
   position: relative;
@@ -197,27 +197,32 @@
   border: 1px solid var(--border-color) !important;
 }
 
-.json-editor ul.nav-tabs.nav-stacked,
-.json-editor ul.nav-pills.nav-stacked {
-  @media (min-width: 992px) {
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    max-height: calc(100vh - 24px);
-    overflow-y: auto;
-    /* the browser scrollbar is hidden, json-editor.tsx draws its own so it stays visible
-       where the browser one is overlay (Firefox on Windows 11, macOS, Edge) */
-    scrollbar-width: none;
-    /* rows end at the drawn scrollbar, as with a native one */
-    padding-right: var(--tablist-scrollbar-width);
-  }
+/* top-level tabs capped at the window bottom by json-editor.tsx, the list and the pane scroll inside */
+.json-editor .je-tabs-fit > .tab-content {
+  overflow-y: auto;
+  /* the cap reaches the window bottom, the margin would push the page past it */
+  margin-bottom: 0;
+}
+
+/* tabs starting too low for that, the list sticks to the top of the scrolling page */
+.json-editor .je-tabs-sticky > ul.nav-stacked {
+  position: sticky;
+  top: 0;
+}
+
+.json-editor .je-tabs-fit > ul.nav-stacked,
+.json-editor .je-tabs-sticky > ul.nav-stacked {
+  overflow-y: auto;
+  /* json-editor.tsx draws the scrollbar, the browser one is overlay on Firefox for Windows 11, macOS and Edge */
+  scrollbar-width: none;
+  /* rows end at the drawn scrollbar, as with a native one */
+  padding-right: var(--tablist-scrollbar-width);
 }
 
 /* same for Safari before 18.2, which has no scrollbar-width */
-.json-editor ul.nav-stacked::-webkit-scrollbar {
-  @media (min-width: 992px) {
-    display: none;
-  }
+.json-editor .je-tabs-fit > ul.nav-stacked::-webkit-scrollbar,
+.json-editor .je-tabs-sticky > ul.nav-stacked::-webkit-scrollbar {
+  display: none;
 }
 
 .json-editor .je-tablist-scrollbar {
