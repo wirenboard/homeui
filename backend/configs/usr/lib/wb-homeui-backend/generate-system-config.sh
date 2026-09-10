@@ -2,7 +2,21 @@
 
 CONFFILE="/etc/wb-webui.conf"
 
-[ -s "$CONFFILE" ] && exit 0
+config_is_blank() {
+    if [ ! -s "$1" ]; then
+        return 0
+    fi
+
+    if [ "$(tr -d '\0' < "$1" | wc -c)" -eq 0 ]; then
+        return 0
+    fi
+
+    return 1
+}
+
+if ! config_is_blank "$CONFFILE"; then
+    exit 0
+fi
 
 . /usr/lib/wb-utils/wb_env.sh
 

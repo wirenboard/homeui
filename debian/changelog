@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.208.1+wb100) stable; urgency=medium
+
+  * Recover from an unreadable users database on startup
+  * Regenerate wb-webui.conf and wb-homeui-backend.conf when their content is
+    all NUL bytes
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 10 Sep 2026 09:42:08 +0000
+
 wb-mqtt-homeui (2.208.1-wb102) stable; urgency=medium
 
   * Recreate configs on startup if the existing file is empty
