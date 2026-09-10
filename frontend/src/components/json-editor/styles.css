@@ -166,9 +166,8 @@
   gap: 12px;
   /* don't stretch the content pane to a taller tab list */
   align-items: flex-start;
-  /* anchors the tab list scrollbar placed by json-editor.tsx */
+  /* anchors the tab list scrollbar placed by tab-list-layout */
   position: relative;
-  --tablist-scrollbar-width: 10px;
 
   @media (max-width: 991px) {
     flex-direction: column;
@@ -197,42 +196,45 @@
   border: 1px solid var(--border-color) !important;
 }
 
-/* top-level tabs capped at the window bottom by json-editor.tsx, the list and the pane scroll inside */
-.json-editor .je-tabs-fit > .tab-content {
+/* top-level tabs capped by tab-list-layout, the list and the pane scroll inside */
+.json-editor .wb-jsonEditor-tabsFit > .tab-content {
   overflow-y: auto;
-  /* the cap reaches the window bottom, the margin would push the page past it */
+  /* the cap reaches the area bottom, a margin would push the page past it */
   margin-bottom: 0;
 }
 
 /* tabs starting too low for that, the list sticks to the top of the scrolling page */
-.json-editor .je-tabs-sticky > ul.nav-stacked {
+.json-editor .wb-jsonEditor-tabsSticky > ul.nav-stacked {
   position: sticky;
   top: 0;
 }
 
-.json-editor .je-tabs-fit > ul.nav-stacked,
-.json-editor .je-tabs-sticky > ul.nav-stacked {
+.json-editor .wb-jsonEditor-tabsFit > ul.nav-stacked,
+.json-editor .wb-jsonEditor-tabsSticky > ul.nav-stacked {
   overflow-y: auto;
-  /* json-editor.tsx draws the scrollbar, the browser one is overlay on Firefox for Windows 11, macOS and Edge */
+  /* tab-list-layout draws it, the browser one is overlay on Firefox for Windows 11, macOS and Edge */
   scrollbar-width: none;
-  /* rows end at the drawn scrollbar, as with a native one */
-  padding-right: var(--tablist-scrollbar-width);
 }
 
 /* same for Safari before 18.2, which has no scrollbar-width */
-.json-editor .je-tabs-fit > ul.nav-stacked::-webkit-scrollbar,
-.json-editor .je-tabs-sticky > ul.nav-stacked::-webkit-scrollbar {
+.json-editor .wb-jsonEditor-tabsFit > ul.nav-stacked::-webkit-scrollbar,
+.json-editor .wb-jsonEditor-tabsSticky > ul.nav-stacked::-webkit-scrollbar {
   display: none;
 }
 
-.json-editor .je-tablist-scrollbar {
+/* set while the list overflows, so rows end at the drawn scrollbar as with a native one */
+.json-editor .wb-jsonEditor-tabListGutter {
+  padding-right: 10px;
+}
+
+.json-editor .wb-jsonEditor-tabListScrollbar {
   position: absolute;
-  width: var(--tablist-scrollbar-width);
+  width: 10px;
   background: var(--scrollbar-background);
 }
 
 /* an empty div, so the selector has to outrank the div:empty rule */
-.json-editor .je-tablist-scrollbar .je-tablist-thumb {
+.json-editor .wb-jsonEditor-tabListScrollbar .wb-jsonEditor-tabListThumb {
   display: block;
   position: absolute;
   left: 2px;
@@ -242,9 +244,16 @@
   touch-action: none;
 }
 
-.json-editor .je-tablist-scrollbar .je-tablist-thumb:hover,
-.json-editor .je-tablist-scrollbar .je-tablist-thumb--active {
+.json-editor .wb-jsonEditor-tabListScrollbar .wb-jsonEditor-tabListThumb:hover,
+.json-editor .wb-jsonEditor-tabListScrollbar .wb-jsonEditor-tabListThumbActive {
   background: color-mix(in srgb, var(--scrollbar-color), var(--text-color) 35%);
+}
+
+/* forced colours paint the thumb like the list behind it, a system colour stays visible */
+@media (forced-colors: active) {
+  .json-editor .wb-jsonEditor-tabListScrollbar .wb-jsonEditor-tabListThumb {
+    background: CanvasText;
+  }
 }
 
 .json-editor .nav li {

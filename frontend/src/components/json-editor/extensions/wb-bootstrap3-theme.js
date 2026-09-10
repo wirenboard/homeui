@@ -1,4 +1,5 @@
 import { JSONEditor } from '@wirenboard/json-editor';
+import { TAB_LIST_SCROLLBAR_CLASS, TAB_LIST_THUMB_CLASS } from '../tab-list-layout';
 import '@/components/textarea/styles.css';
 
 export function makeWbBootstrap3Theme() {
@@ -13,12 +14,12 @@ export function makeWbBootstrap3Theme() {
 
     getTabHolder(propertyName) {
       const el = super.getTabHolder(propertyName);
-      // json-editor.tsx positions and shows it, the library indexes only children[0] and [1]
+      // tab-list-layout places and shows it, the library indexes only children[0] and [1]
       const scrollbar = document.createElement('div');
-      scrollbar.className = 'je-tablist-scrollbar';
+      scrollbar.className = TAB_LIST_SCROLLBAR_CLASS;
       scrollbar.hidden = true;
       const thumb = document.createElement('div');
-      thumb.className = 'je-tablist-thumb';
+      thumb.className = TAB_LIST_THUMB_CLASS;
       scrollbar.appendChild(thumb);
       el.appendChild(scrollbar);
       return el;

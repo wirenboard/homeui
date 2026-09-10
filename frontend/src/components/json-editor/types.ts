@@ -1,5 +1,12 @@
 import { type Option } from '@/components/dropdown';
 
+export interface TabListThumbDrag {
+  list: HTMLElement;
+  thumb: HTMLElement;
+  startY: number;
+  startScrollTop: number;
+}
+
 export interface JsonEditorProps {
   schema: any;
   data: any;
@@ -7,12 +14,4 @@ export interface JsonEditorProps {
   className?: string;
   cells?: Option<string>[];
   onChange: (_val: any, _errors: any[]) => void;
-}
-
-export interface TabListThumbDrag {
-  list: HTMLElement;
-  scrollbar: HTMLElement;
-  thumb: HTMLElement;
-  startY: number;
-  startScrollTop: number;
 }
