@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.255.1) stable; urgency=medium
+
+  * Fix session cookie parsing when foreign cookies are present
+  * Clear autologin when a user's type changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 12:10:00 +0500
+
 wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
   * Add slider editor for numeric config parameters with range format
