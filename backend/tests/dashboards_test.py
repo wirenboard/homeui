@@ -478,7 +478,7 @@ class AtomicWriteTest(DashboardsStoreFixture):
         """If os.replace raises, the live config is untouched and no temp file remains."""
         self.write_config(make_config())
 
-        with patch("wb.homeui_backend.dashboards.os.replace", side_effect=OSError("boom")):
+        with patch("wb.homeui_backend.config_file.os.replace", side_effect=OSError("boom")):
             with self.assertRaises(OSError):
                 self.store.put_dashboard("dashboard2", make_svg_dashboard("dashboard2", "<svg>NEW</svg>"))
 
@@ -530,6 +530,17 @@ class SeedingTest(DashboardsStoreFixture):
         self.write_board_config("wb6", board_config)
         with open(self.config_path, "w", encoding="utf-8"):
             pass
+
+        self.store.seed_and_reconcile("wb6")
+
+        self.assertEqual(self.read_config(), board_config)
+
+    def test_seeds_from_board_config_when_filled_with_nul_bytes(self):
+        """A config of the right size but full of NUL bytes is treated as absent and seeded."""
+        board_config = make_config()
+        self.write_board_config("wb6", board_config)
+        with open(self.config_path, "wb") as f:
+            f.write(bytes(385612))
 
         self.store.seed_and_reconcile("wb6")
 
@@ -693,7 +704,7 @@ class ReconciliationTest(DashboardsStoreFixture):
 
         The baseline matches both the poisoned-hash check and the live-content check, but it
         already equals today's default hash, so the "already current" skip should still block
-        the write. Checked via inode, not content: _atomic_write_json replaces the file on
+        the write. Checked via inode, not content: atomic_write_json replaces the file on
         every write, so even a same-content rewrite bumps the inode, while content equality
         wouldn't catch that.
         """

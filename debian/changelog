@@ -4,6 +4,13 @@ wb-mqtt-homeui (2.255.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 11:20:00 +0500
 
+wb-mqtt-homeui (2.253.2) stable; urgency=medium
+
+  * Recover from an unreadable users database on startup
+  * Regenerate wb-webui.conf and wb-homeui-backend.conf when their content is all NUL bytes
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 03 Sep 2026 14:32:23 +0000
+
 wb-mqtt-homeui (2.253.1) stable; urgency=medium
 
   * Fix json-editor silently dropping an enabled optional parameter when its
