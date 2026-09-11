@@ -77,6 +77,22 @@ export interface DaliWhiteEditorProps {
   inputId?: string;
 }
 
+export enum DaliOnOffActionMode {
+  Scene = 'scene',
+  LastActiveLevel = 'last_active_level',
+  Level = 'level',
+  Dapc = 'dapc',
+  Off = 'off',
+}
+
+export interface DaliOnOffEditorProps {
+  store: ObjectStore;
+  rootStore: PropertyStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
+  isTopLevel?: boolean;
+}
+
 export interface StringEditorProps {
   store: StringStore;
   inputId?: string;

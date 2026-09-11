@@ -11,13 +11,7 @@ import { useAsyncAction } from '@/utils/async-action';
 import { ResetConfirm } from './reset-confirm';
 import type { ResetMode } from './types';
 
-export const DeviceTabContent = observer(({
-  store,
-  onDeviceRemoved,
-}: {
-  store: DeviceStore;
-  onDeviceRemoved: (device: DeviceStore) => void;
-}) => {
+export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => {
   const { t } = useTranslation();
   const [identify, isIdentifying] = useAsyncAction(async () => {
     await store.identify();
@@ -32,7 +26,6 @@ export const DeviceTabContent = observer(({
     } else {
       await store.reset();
       setIsResetDialogOpen(false);
-      onDeviceRemoved(store);
     }
   });
 

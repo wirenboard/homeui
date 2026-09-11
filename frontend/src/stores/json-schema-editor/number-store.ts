@@ -216,6 +216,8 @@ export class NumberStore implements PropertyStore {
 
   reset(): void {
     this.value = this._initialValue;
+    // The editors render from editString, so it has to follow the restored value.
+    this.editString = typeof this.value === 'number' ? formatEditString(this.schema, this.value) : '';
     this.isDirty = false;
     this._checkConstraints();
     if (this._doNotShowInvalidValue && this.hasErrors) {
