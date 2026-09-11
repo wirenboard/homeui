@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
-import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { JsonSchemaEditor, ParamDescription } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
@@ -14,7 +14,6 @@ import { BusCommands } from '../bus-commands';
 import { BusToggle } from '../bus-toggle';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
-import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -142,18 +141,20 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
               onClick={() => store.scan()}
             />
           </FormButtonGroup>
-          <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
           <BusCommands store={store.commands} />
         </>
       )}
-      <BusToggle
-        label={t('dali.labels.bus-monitor')}
-        value={daliGlobalStore.isMonitorEnabled(store.id)}
-        onToggle={(v) => daliGlobalStore
-          .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
-          .then(() => store.setError(null), (e) => store.setError(e))}
-      />
+      <div className="wb-jsonEditor-objectProperty">
+        <BusToggle
+          label={t('dali.labels.bus-monitor')}
+          value={daliGlobalStore.isMonitorEnabled(store.id)}
+          onToggle={(v) => daliGlobalStore
+            .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
+            .then(() => store.setError(null), (e) => store.setError(e))}
+        />
+        <ParamDescription description={t('dali.labels.bus-monitor-description')} />
+      </div>
       <BusToggle
         label={t('dali.labels.bus-monitor-syslog')}
         value={store.busMonitorSyslogEnabled}

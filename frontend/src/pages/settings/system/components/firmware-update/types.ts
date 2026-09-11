@@ -27,3 +27,9 @@ export interface UploadWidgetProps {
   mode: 'reset' | 'update';
   onSetMode: (mode: ModalMode) => void;
 }
+
+/** A log line with its position as `seq`: the update log is append-only, so the index is stable. */
+export interface SequencedFirmwareLogLine {
+  seq: number;
+  line: string;
+}

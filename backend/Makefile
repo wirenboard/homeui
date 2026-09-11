@@ -12,12 +12,14 @@ all:
 	done
 
 install:
-	install -d -m 0777 $(DESTDIR)$(PREFIX)/share/wb-mqtt-homeui/nginx/includes
+	install -dm0755 $(DESTDIR)$(PREFIX)/share/wb-mqtt-homeui/custom-menu
+	install -dm0755 $(DESTDIR)$(PREFIX)/share/wb-mqtt-homeui/gates.d
+	install -dm0755 $(DESTDIR)$(PREFIX)/share/wb-mqtt-homeui/nginx/includes
+	install -dm0755 $(DESTDIR)/etc/wb-homeui/custom-menu
+	install -dm0755 $(DESTDIR)/etc/wb-homeui/gates.d
+	install -dm0755 $(DESTDIR)/var/lib/wb-homeui/custom-menu
+	install -dm0755 $(DESTDIR)/var/lib/wb-homeui/nginx-gates
 	install -Dm0644 webui-configs/*.json -t $(DESTDIR)$(PREFIX)/share/wb-mqtt-homeui
-	install -Dm0755 wb-homeui-backend -t $(DESTDIR)$(PREFIX)/bin
-	install -Dm0755 wb-homeui-users -t $(DESTDIR)$(PREFIX)/bin
-	install -Dm0755 wb-homeui-gates -t $(DESTDIR)$(PREFIX)/bin
-	install -Dm0755 wb-terminal-server -t $(DESTDIR)$(PREFIX)/bin
 	install -Dm0644 21wb-homeui-backend -t $(DESTDIR)/etc/wb-configs.d
 	install -Dm0644 completions/*.bash -t $(DESTDIR)$(PREFIX)/share/bash-completion/completions
 	cp -a -R configs/* $(DESTDIR)

@@ -20,7 +20,9 @@ import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra, hideHistory }: CellProps) => {
+export const CellContent = observer((
+  { cell, name, isCompact, isReadOnly, extra, hideHistory, isVisible = true }: CellProps,
+) => {
   const { t } = useTranslation();
 
   const renderCellContent = () => {
@@ -38,7 +40,7 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.DateTime:
-        return <CellDateTime cell={cell} isReadOnly={isReadOnly} />;
+        return <CellDateTime cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.Value:
         return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       default:
@@ -90,7 +92,7 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
       {isCompact && !hideHistory && cell.displayType === CellComponent.Range && (
         <CellHistory cell={cell} />
       )}
-      {renderCellContent()}
+      {isVisible && renderCellContent()}
     </div>
   );
 });
