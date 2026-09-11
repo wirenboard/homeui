@@ -1,6 +1,6 @@
 import { type TFunction } from 'i18next';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
@@ -25,13 +25,7 @@ import { GatewayTabContent } from './components/gateway-tab-content';
 import { GroupTabContent } from './components/group-tab-content';
 import './styles.css';
 
-const TabContent = ({
-  store,
-  onDeviceRemoved,
-}: {
-  store: ItemStore;
-  onDeviceRemoved: (device: DeviceStore) => void;
-}) => {
+const TabContent = ({ store }: { store: ItemStore }) => {
   if (store?.type === 'bus') {
     return <BusTabContent store={store as BusStore} />;
   }
@@ -39,12 +33,7 @@ const TabContent = ({
     return <GroupTabContent store={store as GroupStore} />;
   }
   if (store?.type === 'device') {
-    return (
-      <DeviceTabContent
-        store={store as DeviceStore}
-        onDeviceRemoved={onDeviceRemoved}
-      />
-    );
+    return <DeviceTabContent store={store as DeviceStore} />;
   }
   if (store?.type === 'gateway') {
     return <GatewayTabContent store={store} />;
@@ -79,7 +68,7 @@ const DaliPage = observer(() => {
   const store = useStore(() => new DaliPageStore(daliGlobalStore));
   const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
-  const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
+  const selectedItem = store.selectedItem;
 
   const itemStoreMap = new Map<string, ItemStore>();
   const data = buildTreeItems(store.gateways, itemStoreMap, t);
@@ -88,11 +77,7 @@ const DaliPage = observer(() => {
     const fetchData = async () => {
       await store.load();
       if (!isMobile) {
-        const firstGateway = store.gateways.at(0);
-        if (firstGateway) {
-          setSelectedItem(firstGateway);
-          firstGateway.load();
-        }
+        store.selectItem(store.gateways.at(0) ?? null);
       }
     };
     fetchData();
@@ -100,19 +85,7 @@ const DaliPage = observer(() => {
   }, []);
 
   const onItemClick = (treeItem: TreeItem) => {
-    const item = itemStoreMap.get(treeItem.id) ?? null;
-    setSelectedItem(item);
-    item?.load();
-  };
-
-  const onDeviceRemoved = (device: DeviceStore) => {
-    const parentBus = device.parent;
-    if (parentBus) {
-      setSelectedItem(parentBus);
-      parentBus.load();
-    } else {
-      setSelectedItem(null);
-    }
+    store.selectItem(itemStoreMap.get(treeItem.id) ?? null);
   };
 
   return (
@@ -125,7 +98,7 @@ const DaliPage = observer(() => {
       actions={
         <>
           {isMobile && selectedItem && (
-            <Button label={t('dali.buttons.return')} variant="secondary" onClick={() => setSelectedItem(null)} />
+            <Button label={t('dali.buttons.return')} variant="secondary" onClick={() => store.selectItem(null)} />
           )}
         </>
       }
@@ -155,10 +128,7 @@ const DaliPage = observer(() => {
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>
               )}
-              <TabContent
-                store={selectedItem}
-                onDeviceRemoved={onDeviceRemoved}
-              />
+              <TabContent store={selectedItem} />
             </section>
           )}
         </div>
