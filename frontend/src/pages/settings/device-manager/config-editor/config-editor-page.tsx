@@ -6,6 +6,7 @@ import { documentation } from '@/common/links';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { formatError } from '@/utils/format-error';
 import { AddDeviceModal } from './components/add-device-modal';
 import { AddPortModal } from './components/add-port-modal';
 import { CopyDeviceModal } from './components/copy-device-modal';
@@ -17,6 +18,9 @@ import './styles.css';
 
 const isTemplateInUseError = (err: unknown): boolean =>
   typeof err === 'object' && err !== null && (err as any).data === 'template-in-use';
+
+const formatTemplateOperationError = (actionLabel: string, err: unknown): string =>
+  `${actionLabel}: ${formatError(err)}`;
 
 const ConfigEditorPage = observer((
   { pageStore, serialTemplatesProxy, onAddWbDevice, onSearchDisconnectedDevice }: ConfigEditorPageProps,
@@ -63,7 +67,13 @@ const ConfigEditorPage = observer((
     pageStore.startTemplateOperation();
     try {
       const content = await file.text();
-      JSON.parse(content);
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(content);
+      } catch {
+        pageStore.endTemplateOperation(t('device-manager.labels.upload-template-invalid-json'));
+        return;
+      }
       const filename = file.name;
 
       let result;
@@ -77,7 +87,7 @@ const ConfigEditorPage = observer((
         if (!isTemplateInUseError(uploadErr)) {
           throw uploadErr;
         }
-        const deviceType = filename.replace(/\.json$/, '');
+        const deviceType = parsedContent?.device_type || filename.replace(/\.json$/, '');
         const confirmed = await showTemplateInUseModal({
           action: 'upload',
           templateName:
@@ -97,14 +107,21 @@ const ConfigEditorPage = observer((
       pageStore.deviceTypesStore.mergeDeviceTypes(result.types);
       const affectedTypes = new Set<string>(result.types.flatMap((g) => g.types.map((t) => t.type)));
       await pageStore.refreshDeviceTypeSchemas(affectedTypes);
-      await pageStore.save();
-      pageStore.endTemplateOperation();
+      pageStore.setTemplateHint(t('device-manager.labels.upload-template-sync-hint'));
+      if (pageStore.tabs.hasInvalidConfig) {
+        pageStore.endTemplateOperation(t('device-manager.labels.upload-template-invalid-config'));
+      } else {
+        await pageStore.save();
+        pageStore.endTemplateOperation();
+      }
     } catch (err) {
-      pageStore.endTemplateOperation(err);
+      pageStore.endTemplateOperation(
+        formatTemplateOperationError(t('device-manager.buttons.upload-template'), err),
+      );
     } finally {
       fileInput.value = '';
     }
-  }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal]);
+  }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal, t]);
 
   const handleDeleteTemplate = useCallback(async (deviceType: string) => {
     pageStore.startTemplateOperation();
@@ -146,9 +163,11 @@ const ConfigEditorPage = observer((
       await pageStore.refreshDeviceTypeSchemas(new Set<string>([deviceType]));
       pageStore.endTemplateOperation();
     } catch (err) {
-      pageStore.endTemplateOperation(err);
+      pageStore.endTemplateOperation(
+        formatTemplateOperationError(t('device-manager.buttons.delete-template'), err),
+      );
     }
-  }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal]);
+  }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal, t]);
 
   return (
     <>
@@ -198,6 +217,7 @@ const ConfigEditorPage = observer((
               }
               templateOperationPending={pageStore.templateOperationPending}
               templateError={pageStore.templateError}
+              templateHint={pageStore.templateHint}
               onSelect={(index) => pageStore.tabs.onSelectTab(index)}
               onDeleteTab={() => pageStore.deleteTab(showDeleteModal)}
               onDeletePortDevices={() =>
@@ -220,6 +240,7 @@ const ConfigEditorPage = observer((
                 )
               }
               onClearTemplateError={() => pageStore.clearTemplateError()}
+              onClearTemplateHint={() => pageStore.clearTemplateHint()}
               onDeleteTemplate={handleDeleteTemplate}
               onUploadTemplate={handleUploadTemplate}
             />

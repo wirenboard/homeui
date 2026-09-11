@@ -94,6 +94,8 @@ export const DeviceTabContent = observer(
     templateOperationPending,
     templateError,
     onClearTemplateError,
+    templateHint,
+    onClearTemplateHint,
   }: DeviceTabContentProps) => {
     const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
@@ -116,6 +118,12 @@ export const DeviceTabContent = observer(
         )}
         {tab.error && (
           <Alert variant="danger">{tab.error}</Alert>
+        )}
+        {!!templateError && (
+          <Alert variant="danger" size="small" onClose={onClearTemplateError}>{templateError}</Alert>
+        )}
+        {!!templateHint && (
+          <Alert variant="warn" size="small" onClose={onClearTemplateHint}>{templateHint}</Alert>
         )}
         {tab.withSubdevices && (
           <SubdevicesWarning />
@@ -237,9 +245,6 @@ export const DeviceTabContent = observer(
             </Tooltip>
           </div>
         </div>
-        {!!templateError && (
-          <Alert variant="danger" size="small" onClose={onClearTemplateError}>{templateError}</Alert>
-        )}
         {tab.schemaStore && tab.readRegistersState.allowEditSettings && (
           <DeviceSettingsEditor store={tab.schemaStore} translator={tab.schemaStore.schemaTranslator} />
         )}

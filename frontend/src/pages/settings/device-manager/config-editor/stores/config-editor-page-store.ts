@@ -41,6 +41,7 @@ export class ConfigEditorPageStore {
   public error = '';
   public templateOperationPending: boolean = false;
   public templateError: string = '';
+  public templateHint: string = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -75,9 +76,12 @@ export class ConfigEditorPageStore {
       saving: observable,
       templateOperationPending: observable,
       templateError: observable,
+      templateHint: observable,
       startTemplateOperation: action,
       endTemplateOperation: action,
       clearTemplateError: action,
+      setTemplateHint: action,
+      clearTemplateHint: action,
       addDevices: action,
     });
   }
@@ -173,6 +177,7 @@ export class ConfigEditorPageStore {
   startTemplateOperation() {
     this.templateOperationPending = true;
     this.templateError = '';
+    this.templateHint = '';
   }
 
   endTemplateOperation(error?: unknown) {
@@ -184,6 +189,14 @@ export class ConfigEditorPageStore {
 
   clearTemplateError() {
     this.templateError = '';
+  }
+
+  setTemplateHint(hint: string) {
+    this.templateHint = hint;
+  }
+
+  clearTemplateHint() {
+    this.templateHint = '';
   }
 
   async refreshDeviceTypeSchemas(deviceTypes: Set<string>) {

@@ -37,6 +37,8 @@ export const PageTabs = observer(
     templateOperationPending,
     templateError,
     onClearTemplateError,
+    templateHint,
+    onClearTemplateHint,
   }: PageTabsProps) => {
     const { t } = useTranslation();
 
@@ -105,7 +107,9 @@ export const PageTabs = observer(
                   isUserDefinedType={isUserDefinedTypeFn?.((tab as DeviceTabStore).deviceType)}
                   templateOperationPending={templateOperationPending}
                   templateError={templateError}
+                  templateHint={templateHint}
                   onClearTemplateError={onClearTemplateError}
+                  onClearTemplateHint={onClearTemplateHint}
                   onDeleteTab={onDeleteTab}
                   onCopyTab={onCopyTab}
                   onDeviceTypeChange={onDeviceTypeChange}

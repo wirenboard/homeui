@@ -19,6 +19,8 @@ export interface DeviceTabContentProps {
   templateOperationPending?: boolean;
   templateError?: string;
   onClearTemplateError?: () => void;
+  templateHint?: string;
+  onClearTemplateHint?: () => void;
 }
 
 export interface ReadRegistersResultAlertProps {

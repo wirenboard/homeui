@@ -27,4 +27,6 @@ export interface PageTabsProps {
   templateOperationPending?: boolean;
   templateError?: string;
   onClearTemplateError?: () => void;
+  templateHint?: string;
+  onClearTemplateHint?: () => void;
 }
