@@ -8,7 +8,7 @@ import { CellHistory } from './cell-history';
 import { type CellAlertProps } from './types';
 import './styles.css';
 
-export const CellAlert = observer(({ cell, name, hideHistory }: CellAlertProps) => {
+export const CellAlert = observer(({ cell, name, hideHistory, hideCopy }: CellAlertProps) => {
   const { t } = useTranslation();
 
   const variant = cell.error?.includes(CellError.Read)
@@ -17,20 +17,30 @@ export const CellAlert = observer(({ cell, name, hideHistory }: CellAlertProps) 
 
   return (
     <>
-      <Tooltip
-        text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
-        placement="top-start"
-        trigger="click"
-      >
+      {hideCopy ? (
         <Alert
           size="small"
           variant={variant}
-          className="deviceCell-alert"
-          onClick={() => copyToClipboard(cell.id)}
+          className="deviceCell-alert deviceCell-noClick"
         >
           {name || cell.name}
         </Alert>
-      </Tooltip>
+      ) : (
+        <Tooltip
+          text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
+          placement="top-start"
+          trigger="click"
+        >
+          <Alert
+            size="small"
+            variant={variant}
+            className="deviceCell-alert"
+            onClick={() => copyToClipboard(cell.id)}
+          >
+            {name || cell.name}
+          </Alert>
+        </Tooltip>
+      )}
 
       {!hideHistory && <CellHistory cell={cell} />}
     </>

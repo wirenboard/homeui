@@ -85,6 +85,11 @@
     justify-content: flex-end;
 }
 
+/* Non-compact only: pin the (fixed-size) history icon + value to the row's right edge. */
+.deviceCell-textWrapper:not(.deviceCell-isCompact) {
+    justify-content: flex-end;
+}
+
 .deviceCell-withSelect {
     max-width: 50%;
     display: flex;
@@ -111,6 +116,16 @@
     cursor: pointer;
 }
 
+/*
+ * The copy-to-clipboard (Tooltip) variant of a read-only text value is wrapped in an extra
+ * container div, which isn't a flex item and so doesn't grow — the value hugs the history
+ * icon. This variant (no Tooltip, e.g. below Operator rights) renders .deviceCell-text
+ * directly as a flex child instead, so it must opt out of flex-grow itself to match.
+ */
+.deviceCell-textStatic {
+    flex-grow: 0;
+}
+
 .deviceCell-text::-webkit-scrollbar {
     height: 8px;
 }
@@ -133,6 +148,7 @@
 
 .deviceCell-value {
     justify-items: end;
+    flex-grow: 0;
     flex-shrink: 0;
     cursor: pointer;
 }
@@ -167,4 +183,9 @@
 .deviceCell:hover .deviceCell-historyLink,
 .deviceCell:focus-within .deviceCell-historyLink {
     min-width: 18px;
+}
+
+/* Below Operator rights there's no click-to-copy, so the pointer cursor would be misleading. */
+.deviceCell-noClick {
+    cursor: default;
 }
