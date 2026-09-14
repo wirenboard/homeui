@@ -1,10 +1,14 @@
 import { type Option } from '@/components/dropdown';
 
-export interface TabListThumbDrag {
-  list: HTMLElement;
-  thumb: HTMLElement;
-  startY: number;
-  startScrollTop: number;
+/** A json-editor editor that draws tabs, as the library builds it */
+export interface TabbedEditor {
+  tabs_holder?: HTMLElement;
+  parent?: TabbedEditor;
+}
+
+/** The part of a json-editor instance the tab layout reads */
+export interface TabbedEditorRegistry {
+  editors?: Record<string, TabbedEditor>;
 }
 
 export interface JsonEditorProps {

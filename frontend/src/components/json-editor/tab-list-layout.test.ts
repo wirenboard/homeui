@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { attachTabListLayout, TAB_LIST_SCROLLBAR_CLASS, TAB_LIST_THUMB_CLASS } from './tab-list-layout';
+import { attachTabListLayout, TAB_HOLDER_CLASS, TAB_LIST_CLASS, TAB_PANE_CLASS } from './tab-list-layout';
 
 const GAP = 12;
 const ROW_HEIGHT = 45;
@@ -15,6 +15,10 @@ interface Geometry {
   nested?: boolean;
   /** in the DOM but not rendered, as a KNX device list with no devices is */
   empty?: boolean;
+  /** tabs on top, a row of them instead of a list beside the pane */
+  topTabs?: boolean;
+  /** built by an object editor that lays its fields out in rows, so it never reaches the form */
+  detached?: boolean;
   desktop?: boolean;
 }
 
@@ -26,8 +30,21 @@ const stubRect = (el: HTMLElement, top: number, bottom: number) => {
   vi.spyOn(el, 'getBoundingClientRect').mockReturnValue(rect(top, bottom));
 };
 
+const buildHolder = (rows: number) => {
+  const holder = document.createElement('div');
+  holder.className = TAB_HOLDER_CLASS;
+  const list = document.createElement('ul');
+  list.className = TAB_LIST_CLASS;
+  Array.from({ length: rows }, () => list.appendChild(document.createElement('li')));
+  const pane = document.createElement('div');
+  pane.className = TAB_PANE_CLASS;
+  holder.append(list, pane);
+  return { holder, list, pane };
+};
+
 const buildEditor = ({
-  rows = 4, holderTop = 100, scrollerBottom = 900 - GAP, trailing = 0, nested = false, empty = false, desktop = true,
+  rows = 4, holderTop = 100, scrollerBottom = 900 - GAP, trailing = 0, nested = false, empty = false,
+  topTabs = false, detached = false, desktop = true,
 }: Geometry = {}) => {
   vi.stubGlobal('innerHeight', 900);
   vi.stubGlobal('matchMedia', () => ({ matches: desktop }));
@@ -40,55 +57,39 @@ const buildEditor = ({
     observe() {}
     disconnect() {}
   });
-  vi.stubGlobal('MutationObserver', class {
-    observe() {}
-    disconnect() {}
-  });
 
   const scroller = document.createElement('div');
   scroller.style.overflowY = 'auto';
   const root = document.createElement('div');
   root.className = 'json-editor';
-  const outerPane = document.createElement('div');
-  outerPane.className = 'tab-content';
-  const holder = document.createElement('div');
-  const list = document.createElement('ul');
-  list.className = 'nav nav-pills nav-stacked';
-  const pane = document.createElement('div');
-  pane.className = 'tab-content';
-  const scrollbar = document.createElement('div');
-  scrollbar.className = TAB_LIST_SCROLLBAR_CLASS;
-  scrollbar.hidden = true;
-  const thumb = document.createElement('div');
-  thumb.className = TAB_LIST_THUMB_CLASS;
+  const { holder, list, pane } = buildHolder(empty ? 0 : rows);
+  const outer = buildHolder(2);
+  if (topTabs) {
+    holder.classList.remove(TAB_HOLDER_CLASS);
+  }
 
-  scrollbar.appendChild(thumb);
-  holder.append(list, pane, scrollbar);
+  // the root object editor builds a holder of its own and lays its fields out in rows instead
+  const rootEditor = { tabs_holder: buildHolder(3).holder, parent: undefined };
+  const outerEditor = { tabs_holder: outer.holder, parent: rootEditor };
+  const editor = { tabs_holder: holder, parent: nested ? outerEditor : rootEditor };
+
   if (nested) {
-    outerPane.appendChild(holder);
-    root.appendChild(outerPane);
-  } else {
+    outer.pane.appendChild(holder);
+    root.appendChild(outer.holder);
+  } else if (!detached) {
     root.appendChild(holder);
   }
   scroller.appendChild(root);
   document.body.appendChild(scroller);
 
-  const scrollHeight = rows * ROW_HEIGHT;
-  Object.defineProperty(list, 'scrollHeight', { get: () => scrollHeight, configurable: true });
-  Object.defineProperty(list, 'clientHeight', {
-    get: () => Math.min(scrollHeight, parseFloat(list.style.maxHeight) || scrollHeight),
-    configurable: true,
-  });
-  vi.spyOn(list, 'getClientRects').mockReturnValue(
-    (empty ? [] : [rect(holderTop, holderTop + scrollHeight)]) as unknown as DOMRectList,
-  );
-
+  const listHeight = (empty ? 0 : rows) * ROW_HEIGHT;
   stubRect(scroller, GAP, scrollerBottom);
-  stubRect(holder, holderTop, holderTop + scrollHeight);
-  stubRect(root, holderTop, holderTop + scrollHeight + trailing);
-  stubRect(list, holderTop, holderTop + scrollHeight);
+  stubRect(holder, holderTop, holderTop + listHeight);
+  stubRect(root, holderTop, holderTop + listHeight + trailing);
+  stubRect(list, holderTop, holderTop + listHeight);
 
-  return { root, holder, list, pane, scrollbar, dispose: attachTabListLayout(root) };
+  const jsonEditor = { editors: { 'root.channels': editor, 'root.channels.0.items': outerEditor } };
+  return { root, holder, list, pane, ...attachTabListLayout(root, () => jsonEditor) };
 };
 
 afterEach(() => {
@@ -124,51 +125,31 @@ describe('attachTabListLayout, a top-level tab list', () => {
     expect(pane.style.maxHeight).toBe('');
   });
 
+  test('is recomputed on demand, as the editor reshapes the form without resizing the root', () => {
+    const { root, holder, list, sync } = buildEditor({ rows: 20 });
+    expect(list.style.maxHeight).toBe('788px');
+
+    // a field above the tabs unfolds and pushes them 200px down
+    stubRect(holder, 300, 1200);
+    stubRect(root, 300, 1200);
+    sync();
+
+    expect(list.style.maxHeight).toBe('588px');
+  });
+
   test.each([
     { name: 'a nested list, which scrolls with the pane around it', geometry: { nested: true } },
     { name: 'an empty list, which is not rendered at all', geometry: { empty: true } },
+    { name: 'tabs drawn on top, which the theme does not mark', geometry: { topTabs: true } },
+    { name: 'a holder its editor left out of the form', geometry: { detached: true } },
     { name: 'any list below the desktop width', geometry: { desktop: false } },
   ])('leaves $name alone', ({ geometry }) => {
-    const { holder, list, pane, scrollbar } = buildEditor({ rows: 20, ...geometry });
+    const { holder, list, pane } = buildEditor({ rows: 20, ...geometry });
 
-    expect(holder.className).toBe('');
+    expect(holder.classList.contains('wb-jsonEditor-tabsFit')).toBe(false);
+    expect(holder.classList.contains('wb-jsonEditor-tabsSticky')).toBe(false);
     expect(list.style.maxHeight).toBe('');
     expect(pane.style.maxHeight).toBe('');
-    expect(scrollbar.hidden).toBe(true);
-  });
-});
-
-describe('attachTabListLayout, the drawn scrollbar', () => {
-  test('appears with the row gutter only while the list overflows its cap', () => {
-    const overflowing = buildEditor({ rows: 20 });
-
-    expect(overflowing.scrollbar.hidden).toBe(false);
-    expect(overflowing.list.classList.contains('wb-jsonEditor-tabListGutter')).toBe(true);
-
-    overflowing.dispose();
-    document.body.innerHTML = '';
-    const short = buildEditor({ rows: 4 });
-
-    expect(short.scrollbar.hidden).toBe(true);
-    // no gutter, so rows and the selected-row marker reach the border
-    expect(short.list.classList.contains('wb-jsonEditor-tabListGutter')).toBe(false);
-  });
-
-  test('drags the list by the thumb', () => {
-    const { list, scrollbar } = buildEditor({ rows: 20 });
-    const thumb = scrollbar.querySelector<HTMLElement>(`.${TAB_LIST_THUMB_CLASS}`)!;
-    Object.defineProperty(thumb, 'offsetHeight', { value: 100, configurable: true });
-    thumb.setPointerCapture = vi.fn();
-
-    thumb.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientY: 0 }));
-    thumb.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientY: 50 }));
-
-    // 50px of a (788 - 100) travel over a (900 - 788) scrollable range
-    expect(Math.round(list.scrollTop)).toBe(8);
-    expect(thumb.classList.contains('wb-jsonEditor-tabListThumbActive')).toBe(true);
-
-    thumb.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientY: 50 }));
-    expect(thumb.classList.contains('wb-jsonEditor-tabListThumbActive')).toBe(false);
   });
 });
 
