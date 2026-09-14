@@ -1,9 +1,48 @@
-wb-mqtt-homeui (2.253.2) stable; urgency=medium
+wb-mqtt-homeui (2.255.3) stable; urgency=medium
 
   * Always show a scrollbar in the config editor tab list when it overflows
   * Fit the config editor tab list and pane into the window so they scroll instead of the page
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 10 Sep 2026 15:25:02 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Mon, 14 Sep 2026 10:40:02 +0300
+
+wb-mqtt-homeui (2.255.2) stable; urgency=medium
+
+  * Reject uploaded custom-font files whose content does not match their extension
+
+ -- Nikolay Korotkiy <sikmir@disroot.org>  Mon, 14 Sep 2026 10:24:33 +0400
+
+wb-mqtt-homeui (2.255.1) stable; urgency=medium
+
+  * Hide the chart link in text and date-time cells when history is disabled
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 10 Sep 2026 21:20:00 +0300
+
+wb-mqtt-homeui (2.255.0) stable; urgency=medium
+
+  * Add slider editor for numeric config parameters with range format
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 11:20:00 +0500
+
+wb-mqtt-homeui (2.254.0) stable; urgency=medium
+
+  * Remove the obsolete DALI bus polling interval field: wb-mqtt-dali no longer
+    carries a polling_interval setting
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:25:00 +0500
+
+wb-mqtt-homeui (2.253.3) stable; urgency=medium
+
+  * Fix DALI RGB colour picker producing the reserved MASK value (255) on a
+    channel, so a pure red no longer reads as "do not change"
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 10:15:00 +0500
+
+wb-mqtt-homeui (2.253.2) stable; urgency=medium
+
+  * Recover from an unreadable users database on startup
+  * Regenerate wb-webui.conf and wb-homeui-backend.conf when their content is all NUL bytes
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 03 Sep 2026 14:32:23 +0000
 
 wb-mqtt-homeui (2.253.1) stable; urgency=medium
 

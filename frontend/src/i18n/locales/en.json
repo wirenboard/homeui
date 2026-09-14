@@ -1065,8 +1065,6 @@
          "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
          "websocket-port": "WebSocket port",
          "websocket-port-error": "Port must be an integer between 1 and 65535",
-         "polling-interval": "Polling Interval (s)",
-         "polling-interval-error": "Interval must be a positive integer",
          "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices",
          "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>.",
          "scan-error": "Scan failed at {{when}}: {{error}}",

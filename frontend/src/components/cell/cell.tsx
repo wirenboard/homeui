@@ -40,7 +40,7 @@ export const CellContent = observer((
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.DateTime:
-        return <CellDateTime cell={cell} isReadOnly={isReadOnly} />;
+        return <CellDateTime cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.Value:
         return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       default:
