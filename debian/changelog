@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.256.0) stable; urgency=medium
+
+  [ Evgeny Boger ]
+  * DALI: a DALI-2 device whose instances use an event addressing scheme that cannot
+    name the sender gets a warning with a one-click "Set recommended scheme" — such
+    events decode in the bus monitor but could never update the controls
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 14 Sep 2026 19:45:13 +0500
+
 wb-mqtt-homeui (2.255.2) stable; urgency=medium
 
   * Reject uploaded custom-font files whose content does not match their extension
