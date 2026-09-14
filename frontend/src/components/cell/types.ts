@@ -6,6 +6,7 @@ export interface CellProps {
   isCompact?: boolean;
   isReadOnly?: boolean;
   hideHistory?: boolean;
+  isVisible?: boolean;
   extra?: {
     invert?: boolean;
   };
@@ -58,6 +59,7 @@ export interface CellRangeProps {
 export interface CellDateTimeProps {
   cell: Cell;
   isReadOnly?: boolean;
+  hideHistory?: boolean;
 }
 
 export interface CellHistoryProps{

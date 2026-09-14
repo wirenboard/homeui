@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { type ChangeEvent, type KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, forwardRef, type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { type InputProps } from './types';
 import './styles.css';
 
-export const Input = ({
+export const Input = forwardRef<HTMLInputElement, InputProps>(({
   value,
   className,
   isDisabled,
@@ -21,7 +21,7 @@ export const Input = ({
   ariaInvalid,
   ariaErrorMessage,
   ...rest
-}: InputProps) => {
+}, ref) => {
   const defaultValue = type === 'number' ? 0 : '';
   const [internalValue, setInternalValue] = useState(value ?? defaultValue);
   const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
@@ -61,6 +61,7 @@ export const Input = ({
 
   return (
     <input
+      ref={ref}
       type={type}
       className={classNames('input', className, {
         'input-l': size === 'large',
@@ -91,4 +92,4 @@ export const Input = ({
       {...rest}
     />
   );
-};
+});

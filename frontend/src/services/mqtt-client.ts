@@ -2,77 +2,22 @@ import mqtt from 'mqtt';
 import type { IPublishPacket } from 'mqtt';
 import { authStore } from '@/stores/auth';
 import { uiStore } from '@/stores/ui';
+import { decodeMqttPayload, topicMatches, type MqttCallback, type MqttMessage } from './mqtt-helpers';
 
-export interface MqttMessage {
-  topic: string;
-  payload: string;
-  qos: number;
-  retained: boolean;
-}
-
-export type MqttCallback = (message: MqttMessage) => void;
-
-function topicMatches(pattern: string, topic: string): boolean {
-  function match(patternParts: string[], topicParts: string[]): boolean {
-    if (!patternParts.length) return !topicParts.length;
-    if (patternParts[0] === '#') {
-      if (patternParts.length !== 1) throw new Error('invalid pattern');
-      return true;
-    }
-    if (!topicParts.length) return false;
-    if (patternParts[0] !== '+' && topicParts[0] !== patternParts[0]) return false;
-    return match(patternParts.slice(1), topicParts.slice(1));
-  }
-  return match(pattern.split('/'), topic.split('/'));
-}
+export type { MqttMessage, MqttCallback } from './mqtt-helpers';
 
 interface CancellablePromise extends Promise<void> {
   _cancel: () => void;
 }
 
-const textDecoder = new TextDecoder();
-
-// Duktape (wbrules engine) encodes characters outside BMP as CESU-8 surrogate
-// pairs instead of proper 4-byte UTF-8. Detect and convert before decoding.
-function decodeMqttPayload(buf: Uint8Array): string {
-  let needsConversion = false;
-  for (let i = 0; i < buf.length - 1; i++) {
-    if (buf[i] === 0xED && buf[i + 1] >= 0xA0) {
-      needsConversion = true;
-      break;
-    }
-  }
-
-  if (!needsConversion) {
-    return textDecoder.decode(buf);
-  }
-
-  const out: number[] = [];
-  for (let i = 0; i < buf.length; ) {
-    if (
-      i + 5 < buf.length
-      && buf[i] === 0xED && (buf[i + 1] & 0xF0) === 0xA0
-      && buf[i + 3] === 0xED && (buf[i + 4] & 0xF0) === 0xB0
-    ) {
-      const hi = ((buf[i] & 0x0F) << 12) | ((buf[i + 1] & 0x3F) << 6) | (buf[i + 2] & 0x3F);
-      const lo = ((buf[i + 3] & 0x0F) << 12) | ((buf[i + 4] & 0x3F) << 6) | (buf[i + 5] & 0x3F);
-      const cp = 0x10000 + ((hi - 0xD800) << 10) + (lo - 0xDC00);
-      out.push(0xF0 | (cp >> 18), 0x80 | ((cp >> 12) & 0x3F), 0x80 | ((cp >> 6) & 0x3F), 0x80 | (cp & 0x3F));
-      i += 6;
-    } else {
-      out.push(buf[i]);
-      i++;
-    }
-  }
-  return textDecoder.decode(new Uint8Array(out));
-}
-
 class MqttClient {
   #client: ReturnType<typeof mqtt.connect> | null = null;
+  #worker: Worker | null = null;
   #id = '';
   #globalPrefix = '';
   #connected = false;
   #callbackMap: Record<string, MqttCallback[]> = Object.create(null);
+  #sortedPatterns: string[] = [];
   #stickySubscriptions: Array<{ topic: string; callback: MqttCallback }> = [];
   #connectListeners: Array<() => void> = [];
   #retainReadyResolve: (() => void) | null = null;
@@ -87,8 +32,13 @@ class MqttClient {
   }
 
   connect(url: string, clientId: string, user?: string, password?: string): void {
+    if (this.#worker) {
+      this.#worker.terminate();
+      this.#worker = null;
+    }
     if (this.#client) {
       this.#client.end(true);
+      this.#client = null;
     }
 
     this.#id = clientId;
@@ -107,8 +57,38 @@ class MqttClient {
     }
     keysToRemove.forEach((key) => localStorage.removeItem(key));
 
-    const wsUrl = url.replace(/^http(s?):\/\//, 'ws$1://');
+    if (typeof window !== 'undefined' && typeof Worker === 'function') {
+      try {
+        const worker = new Worker(
+          new URL('./mqtt-worker.ts', import.meta.url),
+          { type: 'module' },
+        );
+        worker.onmessage = (e) => this.#onWorkerMessage(e.data);
+        worker.onerror = (err) => {
+          console.warn('MQTT Worker failed, using direct connection:', err.message);
+          worker.terminate();
+          this.#worker = null;
+          this.#connectDirect(url, clientId, user, password);
+        };
+        this.#worker = worker;
+        worker.postMessage({
+          type: 'connect',
+          url,
+          clientId,
+          user,
+          password,
+          globalPrefix: this.#globalPrefix,
+        });
+        return;
+      } catch {
+        // Worker creation failed, fall through to direct connection
+      }
+    }
+    this.#connectDirect(url, clientId, user, password);
+  }
 
+  #connectDirect(url: string, clientId: string, user?: string, password?: string): void {
+    const wsUrl = url.replace(/^http(s?):\/\//, 'ws$1://');
     const options: Parameters<typeof mqtt.connect>[1] = {
       clientId,
       reconnectPeriod: 15000,
@@ -119,7 +99,6 @@ class MqttClient {
       options.username = user;
       options.password = password;
     }
-
     this.#client = mqtt.connect(wsUrl, options);
     this.#client.on('connect', () => this.#onConnect());
     this.#client.on('message', (topic: string, payload: Buffer, packet: IPublishPacket) =>
@@ -129,13 +108,58 @@ class MqttClient {
     this.#client.on('reconnect', () => this.#checkAuth());
   }
 
+  #onWorkerMessage(msg: any): void {
+    switch (msg.type) {
+      case 'connected':
+        this.#onConnect();
+        break;
+      case 'connectionLost':
+        this.#onConnectionLost();
+        break;
+      case 'reconnecting':
+        this.#checkAuth();
+        break;
+      case 'retainReady':
+        if (!this.#retainIsDone) {
+          this.#retainIsDone = true;
+          this.#retainReadyResolve?.();
+        }
+        break;
+      case 'messages':
+        this.#onWorkerBatch(msg.batch);
+        break;
+    }
+  }
+
+  #onWorkerBatch(batch: [string, string, number, number][]): void {
+    for (const [topic, payload, qos, retained] of batch) {
+      const data: MqttMessage = { topic, payload, qos, retained: retained === 1 };
+      for (const pattern of this.#sortedPatterns) {
+        if (!topicMatches(pattern, topic)) continue;
+        try {
+          const callbacks = this.#callbackMap[pattern];
+          for (let i = 0; i < callbacks.length; i++) {
+            callbacks[i](data);
+          }
+        } catch (err) {
+          console.error('malformed data in MQTT topic %s: %s', topic, String(err));
+        }
+      }
+    }
+  }
+
   subscribe(topic: string, callback: MqttCallback): void {
     if (!this.#connected) {
       console.error('can\'t subscribe(): disconnected');
       return;
     }
-    this.#client!.subscribe(this.#globalPrefix + topic);
+    if (this.#worker) {
+      this.#worker.postMessage({ type: 'subscribe', topic });
+    } else {
+      this.#client!.subscribe(this.#globalPrefix + topic);
+    }
     this.#callbackMap[topic] = (this.#callbackMap[topic] || []).concat([callback]);
+    this.#sortedPatterns = Object.keys(this.#callbackMap).sort();
   }
 
   addStickySubscription(topic: string, callback: MqttCallback): void {
@@ -146,11 +170,16 @@ class MqttClient {
   unsubscribe(topic: string): void {
     this.#stickySubscriptions = this.#stickySubscriptions.filter((item) => item.topic !== topic);
     delete this.#callbackMap[topic];
+    this.#sortedPatterns = Object.keys(this.#callbackMap).sort();
     if (this.#connected) {
-      try {
-        this.#client!.unsubscribe(this.#globalPrefix + topic);
-      } catch (err) {
-        console.warn('Unsubscribe failed for ' + topic + ':', err);
+      if (this.#worker) {
+        this.#worker.postMessage({ type: 'unsubscribe', topic });
+      } else {
+        try {
+          this.#client!.unsubscribe(this.#globalPrefix + topic);
+        } catch (err) {
+          console.warn('Unsubscribe failed for ' + topic + ':', err);
+        }
       }
     }
   }
@@ -160,11 +189,21 @@ class MqttClient {
       console.error('can\'t send(): disconnected');
       return;
     }
-    const topic = this.#globalPrefix + destination;
-    this.#client!.publish(topic, payload ?? '', {
-      qos: qos ?? 1,
-      retain: retained ?? true,
-    });
+    if (this.#worker) {
+      this.#worker.postMessage({
+        type: 'send',
+        topic: destination,
+        payload: payload ?? '',
+        retained: retained ?? true,
+        qos: qos ?? 1,
+      });
+    } else {
+      const topic = this.#globalPrefix + destination;
+      this.#client!.publish(topic, payload ?? '', {
+        qos: qos ?? 1,
+        retain: retained ?? true,
+      });
+    }
   }
 
   reconnect(url: string, user?: string, password?: string): void {
@@ -176,7 +215,13 @@ class MqttClient {
 
   disconnect(): void {
     this.#callbackMap = Object.create(null);
+    this.#sortedPatterns = [];
     this.#connected = false;
+    if (this.#worker) {
+      this.#worker.postMessage({ type: 'disconnect' });
+      this.#worker.terminate();
+      this.#worker = null;
+    }
     if (this.#client) {
       this.#client.end(true);
       this.#client = null;
@@ -245,12 +290,13 @@ class MqttClient {
       this.subscribe(topic, callback);
     });
 
-    // Retain hack: publish to a temp topic with QoS 2.
-    // The broker delivers all retained messages before this one,
-    // so its arrival signals that all retained messages have been received.
-    const hackTopic = this.#globalPrefix + this.#retainHackTopic;
-    this.#client!.subscribe(hackTopic, { qos: 2 });
-    this.#client!.publish(hackTopic, '1', { qos: 2 });
+    if (this.#worker) {
+      this.#worker.postMessage({ type: 'subscribeRetainHack' });
+    } else {
+      const hackTopic = this.#globalPrefix + this.#retainHackTopic;
+      this.#client!.subscribe(hackTopic, { qos: 2 });
+      this.#client!.publish(hackTopic, '1', { qos: 2 });
+    }
 
     const listeners = this.#connectListeners;
     this.#connectListeners = [];
@@ -261,6 +307,7 @@ class MqttClient {
     if (!this.#connected) return;
     this.#connected = false;
     this.#callbackMap = Object.create(null);
+    this.#sortedPatterns = [];
     console.warn('Server connection lost');
     this.isConnected();
   }
@@ -268,6 +315,11 @@ class MqttClient {
   #checkAuth(): void {
     authStore.checkAuth().catch(() => {
       if (!authStore.isAuthenticated) {
+        if (this.#worker) {
+          this.#worker.postMessage({ type: 'disconnect' });
+          this.#worker.terminate();
+          this.#worker = null;
+        }
         this.#client?.end();
         location.reload();
       }
@@ -287,22 +339,24 @@ class MqttClient {
       outputTopic = outputTopic.substring(this.#globalPrefix.length);
     }
 
-    Object.keys(this.#callbackMap)
-      .sort()
-      .forEach((pattern) => {
-        if (!topicMatches(pattern, outputTopic)) return;
-        try {
-          const data: MqttMessage = {
-            topic: outputTopic,
-            payload: payloadString,
-            qos: packet.qos,
-            retained: packet.retain,
-          };
-          this.#callbackMap[pattern].forEach((callback) => callback(data));
-        } catch (err) {
-          console.error('malformed data in MQTT topic %s: %s', outputTopic, String(err));
+    const data: MqttMessage = {
+      topic: outputTopic,
+      payload: payloadString,
+      qos: packet.qos,
+      retained: packet.retain,
+    };
+
+    for (const pattern of this.#sortedPatterns) {
+      if (!topicMatches(pattern, outputTopic)) continue;
+      try {
+        const callbacks = this.#callbackMap[pattern];
+        for (let i = 0; i < callbacks.length; i++) {
+          callbacks[i](data);
         }
-      });
+      } catch (err) {
+        console.error('malformed data in MQTT topic %s: %s', outputTopic, String(err));
+      }
+    }
   }
 }
 
