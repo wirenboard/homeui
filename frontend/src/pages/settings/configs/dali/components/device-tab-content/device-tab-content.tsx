@@ -12,12 +12,8 @@ import { useAsyncAction } from '@/utils/async-action';
 import { ResetConfirm } from './reset-confirm';
 import type { InstanceConfig, ResetMode } from './types';
 
-// IEC 62386-103 Table 8: only the "device short and instance number" scheme
-// puts both the sender's short address and the instance number into an event
-// frame — the only combination the daemon can attribute to a device. A sensor
-// left in another scheme (the factory default is "instance type and number")
-// sends events that decode fine in the monitor yet update nothing, an
-// invisible misconfiguration worth a visible warning.
+// Events sent under any other scheme carry no sender address (IEC 62386-103
+// Table 8), so the daemon cannot tell whose controls to update.
 export const ATTRIBUTABLE_EVENT_SCHEME = 2;
 
 export const wrongSchemeInstances = (config: object | undefined): string[] =>
@@ -101,6 +97,7 @@ export const DeviceTabContent = observer(({
             <span>{t('dali.labels.event-scheme-warning')}</span>
             <Button
               label={t('dali.buttons.fix-event-schemes')}
+              variant="warn"
               isLoading={isFixingSchemes}
               onClick={fixEventSchemes}
             />
