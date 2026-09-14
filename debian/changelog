@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.255.2) stable; urgency=medium
+
+  * Reject uploaded custom-font files whose content does not match their extension
+
+ -- Nikolay Korotkiy <sikmir@disroot.org>  Mon, 14 Sep 2026 10:24:33 +0400
+
 wb-mqtt-homeui (2.255.1) stable; urgency=medium
 
   * Hide the chart link in text and date-time cells when history is disabled
