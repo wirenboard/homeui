@@ -64,3 +64,84 @@ describe('DeviceTabStore.setDeviceType', () => {
     expect(tab.slaveId).toBe('7');
   });
 });
+
+describe('DeviceTabStore.reloadSchema', () => {
+  it('rebuilds schemaStore while preserving edited data', async () => {
+    const deviceTypesStore = makeDeviceTypesStore(commonParamsSchema());
+    const tab = new DeviceTabStore(
+      { name: 'Kitchen light', slave_id: '10' },
+      'wb-template',
+      deviceTypesStore,
+    );
+    await tab.loadContent();
+    const schemaStoreBefore = tab.schemaStore;
+
+    await tab.reloadSchema();
+
+    expect(tab.schemaStore).not.toBe(schemaStoreBefore);
+    expect(tab.editedData.name).toBe('Kitchen light');
+    expect(tab.slaveId).toBe('10');
+  });
+
+  it('returns early without rebuilding schemaStore when device type is unknown', async () => {
+    const unknownDeviceTypesStore = {
+      isUnknown: () => true,
+      isDeprecated: () => false,
+      withSubdevices: () => false,
+      isModbusDevice: () => false,
+      isWbDevice: () => false,
+      getName: () => 'Device',
+      getDefaultId: (type: string, slaveId: string) => `${type}_${slaveId}`,
+      getSchema: vi.fn(async () => commonParamsSchema()),
+    } as unknown as DeviceTypesStore;
+    const tab = new DeviceTabStore(
+      { slave_id: '1' },
+      'nonexistent-type',
+      unknownDeviceTypesStore,
+    );
+
+    await tab.reloadSchema();
+
+    expect(unknownDeviceTypesStore.getSchema).not.toHaveBeenCalled();
+    expect(tab.schemaStore).toBeUndefined();
+  });
+
+  it('clears loading state after completion', async () => {
+    const deviceTypesStore = makeDeviceTypesStore(commonParamsSchema());
+    const tab = new DeviceTabStore(
+      { slave_id: '5' },
+      'wb-template',
+      deviceTypesStore,
+    );
+    await tab.loadContent();
+
+    await tab.reloadSchema();
+
+    expect(tab.isLoading).toBe(false);
+  });
+
+  it('sets error and clears loading when getSchema fails', async () => {
+    const failingStore = {
+      isUnknown: () => false,
+      isDeprecated: () => false,
+      withSubdevices: () => false,
+      isModbusDevice: () => false,
+      isWbDevice: () => false,
+      getName: () => 'Device',
+      getDefaultId: (type: string, slaveId: string) => `${type}_${slaveId}`,
+      getSchema: async () => {
+        throw new Error('schema load failed');
+      },
+    } as unknown as DeviceTypesStore;
+    const tab = new DeviceTabStore(
+      { slave_id: '5' },
+      'wb-template',
+      failingStore,
+    );
+
+    await tab.reloadSchema();
+
+    expect(tab.isLoading).toBe(false);
+    expect(tab.error).toContain('schema load failed');
+  });
+});

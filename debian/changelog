@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.256.0) stable; urgency=medium
+
+  * Add custom device template management
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 11 Sep 2026 16:25:00 +0300
+
 wb-mqtt-homeui (2.255.1) stable; urgency=medium
 
   * Hide the chart link in text and date-time cells when history is disabled

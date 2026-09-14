@@ -1,3 +1,4 @@
+import { makeObservable, observable, action } from 'mobx';
 import i18n from '@/i18n/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
@@ -44,15 +45,63 @@ export class DeviceTypesStore {
   public deviceTypeDropdownOptions: DeviceTypeDropdownOptionGroup[];
   private _loadDeviceSchemaFn: (deviceType: string) => Promise<any>;
   private _deviceTypesMap: Map<string, DeviceTypeDescription>;
+  private _groups: DeviceTypeDescriptionGroup[];
 
   constructor(loadDeviceSchemaFn: (deviceType: string) => Promise<any>) {
     this._loadDeviceSchemaFn = loadDeviceSchemaFn;
     this._deviceTypesMap = new Map<string, DeviceTypeDescription>();
+    this._groups = [];
     this.deviceTypeDropdownOptions = [];
+
+    makeObservable(this, {
+      deviceTypeDropdownOptions: observable,
+      setDeviceTypeGroups: action,
+      mergeDeviceTypes: action,
+      removeDeviceType: action,
+    });
   }
 
   setDeviceTypeGroups(deviceTypeGroups: DeviceTypeDescriptionGroup[]) {
-    this.deviceTypeDropdownOptions = deviceTypeGroups.map((deviceTypeGroup) => {
+    this._groups = deviceTypeGroups;
+    this._rebuildFromGroups();
+  }
+
+  mergeDeviceTypes(responseGroups: DeviceTypeDescriptionGroup[]) {
+    const responseTypes = new Set<string>();
+    for (const group of responseGroups) {
+      for (const type of group.types) {
+        responseTypes.add(type.type);
+      }
+    }
+
+    for (const group of this._groups) {
+      group.types = group.types.filter((t) => !responseTypes.has(t.type));
+    }
+
+    for (const responseGroup of responseGroups) {
+      let existingGroup = this._groups.find((g) => g.name === responseGroup.name);
+      if (!existingGroup) {
+        existingGroup = { name: responseGroup.name, types: [] };
+        this._groups.push(existingGroup);
+      }
+      existingGroup.types.push(...responseGroup.types);
+      existingGroup.types.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    this._groups = this._groups.filter((g) => g.types.length > 0);
+    this._rebuildFromGroups();
+  }
+
+  removeDeviceType(deviceType: string) {
+    for (const group of this._groups) {
+      group.types = group.types.filter((t) => t.type !== deviceType);
+    }
+    this._groups = this._groups.filter((g) => g.types.length > 0);
+    this._rebuildFromGroups();
+  }
+
+  private _rebuildFromGroups() {
+    this.deviceTypeDropdownOptions = this._groups.map((deviceTypeGroup) => {
       return {
         label: deviceTypeGroup.name,
         options: deviceTypeGroup.types.map((deviceType) => {
@@ -65,7 +114,7 @@ export class DeviceTypesStore {
         }),
       };
     });
-    this._deviceTypesMap = deviceTypeGroups.reduce((groupsAcc, deviceTypeGroup) => {
+    this._deviceTypesMap = this._groups.reduce((groupsAcc, deviceTypeGroup) => {
       return deviceTypeGroup.types.reduce((typesAcc, deviceType) => {
         typesAcc.set(deviceType.type, deviceType);
         return typesAcc;
@@ -163,5 +212,9 @@ export class DeviceTypesStore {
 
   withSubdevices(deviceType: string) {
     return !!this._deviceTypesMap.get(deviceType)?.['with-subdevices'];
+  }
+
+  isUserDefined(deviceType: string) {
+    return !!this._deviceTypesMap.get(deviceType)?.['user-defined'];
   }
 }
