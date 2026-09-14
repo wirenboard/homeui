@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.256.0) stable; urgency=medium
+wb-mqtt-homeui (2.250.0) stable; urgency=medium
 
   * DALI: a DALI-2 device whose instances use an event addressing scheme that cannot
     name the sender gets a warning with a one-click "Set recommended scheme" — such
