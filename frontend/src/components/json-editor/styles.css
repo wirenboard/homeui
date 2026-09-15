@@ -164,10 +164,13 @@
 .json-editor div:has(> ul.nav-pills) {
   display: flex;
   gap: 12px;
+  /* don't stretch the content pane to the (taller) tab list */
+  align-items: flex-start;
 
   @media (max-width: 991px) {
     flex-direction: column;
     gap: 0;
+    align-items: stretch;
   }
 }
 
@@ -191,23 +194,33 @@
   border: 1px solid var(--border-color) !important;
 }
 
-/* tab-list-layout caps the tabs that opted in, so the list and the pane scroll inside the page area */
-.json-editor .wb-jsonEditor-tabsFit > .wb-jsonEditor-tabPane {
-  overflow-y: auto;
-  /* the cap ends at the bottom of the area, a margin below would push the page past it */
-  margin-bottom: 0;
-}
+/* A tab holder marked by the fit-tabs editor fills the page area the form is given and scrolls
+   inside itself, so every box between the form and the holder has to pass its height down instead
+   of growing with its content. The page hands that area over with PageLayout's stickyHeader. */
+@media (min-width: 992px) {
+  .json-editor:has(.je-fitTabs),
+  .json-editor div:has(.je-fitTabs) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
 
-/* too little room left under the tabs for a cap, so the list is pinned while the page scrolls */
-.json-editor .wb-jsonEditor-tabsSticky > .wb-jsonEditor-tabList {
-  position: sticky;
-  top: 0;
-}
+  /* the list and the pane are stretched to the height of the holder.
+     Spelled out like the rule that lays every tab holder out, to outweigh its align-items */
+  .json-editor div.je-fitTabs:has(> ul.nav-pills) {
+    align-items: stretch;
+    min-height: 0;
+  }
 
-.json-editor .wb-jsonEditor-tabsFit > .wb-jsonEditor-tabList,
-.json-editor .wb-jsonEditor-tabsSticky > .wb-jsonEditor-tabList {
-  overflow-y: auto;
-  scrollbar-width: thin;
+  .json-editor .je-fitTabs > ul.nav-stacked,
+  .json-editor .je-fitTabs > .tab-content {
+    /* the list is fit-content tall by default, which would ignore the height it is given */
+    height: auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
 }
 
 .json-editor .nav li {

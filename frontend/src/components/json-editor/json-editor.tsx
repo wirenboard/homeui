@@ -1,17 +1,15 @@
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import i18n from '@/i18n/config';
 import { createJSONEditor } from './extensions/wb-json-editor';
-import { attachTabListLayout } from './tab-list-layout';
 import { type JsonEditorProps } from './types';
 import './styles.css';
 
 export const JsonEditor = observer((props: JsonEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
   let jse = useRef(null);
-  const syncTabList = useRef<() => void>(null);
   const stateRef = useRef(null);
   const [schema, setSchema] = useState(undefined);
   const [firstStart, setFirstStart] = useState(true);
@@ -30,8 +28,6 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
       props.cells,
     );
     editor.on('change', () => {
-      // a changed value can fold fields in or out and move the tabs
-      syncTabList.current?.();
       if (props.onChange) {
         props.onChange(editor.getValue(), editor.validate(), stateRef.current);
       }
@@ -39,8 +35,6 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
         setFirstStart(false);
       }
     });
-    // the form is new, its tabs have no caps yet
-    syncTabList.current?.();
     // json-editor can modify an internal schema object,
     // so store original one to recreate editor only on real schema change
     setSchema(props.schema);
@@ -62,15 +56,6 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
       }
     }
   });
-
-  useEffect(() => {
-    if (!container.current) {
-      return undefined;
-    }
-    const { sync, dispose } = attachTabListLayout(container.current, () => jse.current);
-    syncTabList.current = sync;
-    return dispose;
-  }, []);
 
   return <div ref={container} className={classNames('json-editor', props.className)} />;
 });

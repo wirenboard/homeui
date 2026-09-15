@@ -83,6 +83,7 @@ const ConfigPage = observer(() => {
       title={title || configsStore.config?.configPath}
       infoLink={documentation[i18n.language]?.[configsStore?.config?.configPath]}
       hasRights={authStore.hasRights(UserRole.Admin)}
+      stickyHeader={!!configsStore.config?.schema?.options?.wb?.sticky_header}
       isLoading={isLoading}
       errors={errors}
       actions={
