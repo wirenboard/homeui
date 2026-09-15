@@ -18,7 +18,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       legacy({ modernPolyfills: true }),
     ] as any[],
     build: {
-      sourcemap: true,
+      sourcemap: false,
       chunkSizeWarningLimit: 1100,
       minify: 'oxc' as const,
       rolldownOptions: {
