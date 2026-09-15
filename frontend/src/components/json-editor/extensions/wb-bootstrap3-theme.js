@@ -1,5 +1,4 @@
 import { JSONEditor } from '@wirenboard/json-editor';
-import { TAB_HOLDER_CLASS, TAB_LIST_CLASS, TAB_PANE_CLASS } from '../tab-list-layout';
 import '@/components/textarea/styles.css';
 
 export function makeWbBootstrap3Theme() {
@@ -9,15 +8,6 @@ export function makeWbBootstrap3Theme() {
       el.style = el.style || {};
       el.style.color = '#b94a48';
       el.appendChild(document.createTextNode(text));
-      return el;
-    }
-
-    getTabHolder(propertyName) {
-      const el = super.getTabHolder(propertyName);
-      // tab-list-layout and styles.css address the tabs by these instead of the Bootstrap names
-      el.classList.add(TAB_HOLDER_CLASS);
-      el.children[0].classList.add(TAB_LIST_CLASS);
-      el.children[1].classList.add(TAB_PANE_CLASS);
       return el;
     }
 

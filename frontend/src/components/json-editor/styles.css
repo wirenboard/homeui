@@ -164,13 +164,10 @@
 .json-editor div:has(> ul.nav-pills) {
   display: flex;
   gap: 12px;
-  /* don't stretch the content pane to a taller tab list */
-  align-items: flex-start;
 
   @media (max-width: 991px) {
     flex-direction: column;
     gap: 0;
-    align-items: stretch;
   }
 }
 
@@ -194,7 +191,7 @@
   border: 1px solid var(--border-color) !important;
 }
 
-/* tab-list-layout caps the top-level tabs, so the list and the pane scroll inside the page area */
+/* tab-list-layout caps the tabs that opted in, so the list and the pane scroll inside the page area */
 .json-editor .wb-jsonEditor-tabsFit > .wb-jsonEditor-tabPane {
   overflow-y: auto;
   /* the cap ends at the bottom of the area, a margin below would push the page past it */
