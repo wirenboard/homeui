@@ -194,9 +194,9 @@
   border: 1px solid var(--border-color) !important;
 }
 
-/* A tab holder marked by the fit-tabs editor fills the page area the form is given and scrolls
-   inside itself, so every box between the form and the holder has to pass its height down instead
-   of growing with its content. The page hands that area over with PageLayout's stickyHeader. */
+/* A tab holder marked by the fit-tabs editor fills the page area the form is given by the sticky
+   header layout and scrolls inside itself, so every box between the form and the holder has to
+   pass its height down instead of growing with its content. */
 @media (min-width: 992px) {
   .json-editor:has(.je-fitTabs),
   .json-editor div:has(.je-fitTabs) {
