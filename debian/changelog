@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.256.0) stable; urgency=medium
+wb-mqtt-homeui (2.258.0) stable; urgency=medium
 
   * Add a "Show history" toggle to dashboard settings, hiding the history/graph
     link for every cell on that dashboard; drop the column-count dropdown from
@@ -6,7 +6,29 @@ wb-mqtt-homeui (2.256.0) stable; urgency=medium
   * Hide the click-to-copy interaction (and its pointer cursor) on dashboard
     cell values and names for users without Operator rights
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 14 Sep 2026 14:32:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 18:22:00 +0300
+
+wb-mqtt-homeui (2.257.1) stable; urgency=medium
+
+  * Ask for confirmation before deleting a custom font for SVG dashboards
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 12:03:00 +0300
+
+wb-mqtt-homeui (2.257.0) stable; urgency=medium
+
+  * Remove the groups editor of json-editor, unused since the wb-mqtt-serial config
+    got its own editor in 2.150.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Sep 2026 13:20:18 +0500
+
+wb-mqtt-homeui (2.256.0) stable; urgency=medium
+
+  [ Evgeny Boger ]
+  * DALI: a DALI-2 device whose instances use an event addressing scheme that cannot
+    name the sender gets a warning with a one-click "Set recommended scheme" — such
+    events decode in the bus monitor but could never update the controls
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 14 Sep 2026 19:45:13 +0500
 
 wb-mqtt-homeui (2.255.2) stable; urgency=medium
 
