@@ -1,9 +1,43 @@
-wb-mqtt-homeui (2.255.1) stable; urgency=medium
+wb-mqtt-homeui (2.258.0) stable; urgency=medium
 
   * Support old Safari/iOS (down to Safari 10 / iOS 10.1) via a legacy build fallback
   * Improve treeshaking
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 10 Sep 2026 17:21:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 15:05:00 +0300
+
+wb-mqtt-homeui (2.257.1) stable; urgency=medium
+
+  * Ask for confirmation before deleting a custom font for SVG dashboards
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 12:03:00 +0300
+
+wb-mqtt-homeui (2.257.0) stable; urgency=medium
+
+  * Remove the groups editor of json-editor, unused since the wb-mqtt-serial config
+    got its own editor in 2.150.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Sep 2026 13:20:18 +0500
+
+wb-mqtt-homeui (2.256.0) stable; urgency=medium
+
+  [ Evgeny Boger ]
+  * DALI: a DALI-2 device whose instances use an event addressing scheme that cannot
+    name the sender gets a warning with a one-click "Set recommended scheme" — such
+    events decode in the bus monitor but could never update the controls
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 14 Sep 2026 19:45:13 +0500
+
+wb-mqtt-homeui (2.255.2) stable; urgency=medium
+
+  * Reject uploaded custom-font files whose content does not match their extension
+
+ -- Nikolay Korotkiy <sikmir@disroot.org>  Mon, 14 Sep 2026 10:24:33 +0400
+
+wb-mqtt-homeui (2.255.1) stable; urgency=medium
+
+  * Hide the chart link in text and date-time cells when history is disabled
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 10 Sep 2026 21:20:00 +0300
 
 wb-mqtt-homeui (2.255.0) stable; urgency=medium
 

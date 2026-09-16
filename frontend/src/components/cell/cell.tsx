@@ -43,7 +43,7 @@ export const CellContent = observer((
       case CellComponent.DateTime:
         return (
           <Suspense>
-            <CellDateTime cell={cell} isReadOnly={isReadOnly} />
+            <CellDateTime cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />
           </Suspense>
         );
       case CellComponent.Value:

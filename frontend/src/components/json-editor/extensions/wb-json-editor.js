@@ -1,6 +1,5 @@
 import { JSONEditor } from '@wirenboard/json-editor';
 import DOMPurify from 'dompurify';
-import merge from 'lodash/merge';
 import { makeAutocompleteEditor } from './autocomplete';
 import { makeCollapsibleArrayEditor } from './collapsible-array-editor';
 import { makeCollapsibleMultipleEditor } from './collapsible-multiple-editor';
@@ -9,7 +8,6 @@ import { compileTemplate } from './dumbtemplate';
 import { makeDynamicTypeEditor } from './dynamic-type-editor';
 import { makeEditWithDropdownEditor } from './edit-with-dropdown';
 import { makeFirstOneOfEditor } from './first-oneof-editor';
-import { makeGroupsEditor } from './group-editor';
 import { makeIntegerEditorWithSpecialValue } from './integer-editor-with-special-value';
 import { JsonEditorRussianTranslation } from './json-editor-ru';
 import { makeLazyTabsArrayEditor } from './lazy-tabs-array-editor';
@@ -87,35 +85,6 @@ export function createJSONEditor(element, schema, value, locale, root, data) {
   return new JSONEditor(element, options);
 }
 
-function conditionalOneOfValidator(schema, value, path) {
-  if (
-    schema.options &&
-    schema.options.wb &&
-    schema.options.wb.groups &&
-    schema.format !== 'wb-multiple'
-  ) {
-    const editor = this.jsoneditor.getEditor(path);
-    const paramValues = editor?.conditions?.makeParamValues(value);
-    Object.entries(schema.properties).forEach(([_key, subSchema]) => {
-      if (subSchema.hasOwnProperty('oneOf')) {
-        subSchema.oneOf.forEach((item) => {
-          if (item.condition && !editor?.conditions?.check(item.condition, paramValues)) {
-            if (!item.hasOwnProperty('options')) {
-              item.options = {};
-            }
-            merge(item.options, { wb: { error: 'disabled' } });
-          } else {
-            if (item.options && item.options.wb) {
-              delete item.options.wb.error;
-            }
-          }
-        });
-      }
-    });
-  }
-  return [];
-}
-
 function overrideJSONEditor(data) {
   // json-editor reads window.DOMPurify to render HTML in descriptions. Set it here
   // so it applies only when a json-editor is actually created.
@@ -140,8 +109,6 @@ function overrideJSONEditor(data) {
     }
     return errors;
   });
-
-  JSONEditor.defaults.custom_validators.push(conditionalOneOfValidator);
 
   JSONEditor.defaults.custom_validators.push((schema, value, path) => {
     const errors = [];
@@ -199,9 +166,6 @@ function overrideJSONEditor(data) {
     (schema) => schema.type === 'object' && schema.format === 'wb-object' && 'wb-object',
   );
   JSONEditor.defaults.resolvers.unshift(
-    (schema) => schema.type === 'object' && schema.format === 'groups' && 'groups',
-  );
-  JSONEditor.defaults.resolvers.unshift(
     (schema) => schema.format === 'unknown-device' && 'unknown-device',
   );
   JSONEditor.defaults.resolvers.unshift((schema) => schema.format === 'wb-optional' && 'wb-optional');
@@ -235,7 +199,6 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['collapsible-list'] = makeCollapsibleArrayEditor();
   JSONEditor.defaults.editors['wb-multiple'] = makeCollapsibleMultipleEditor();
   JSONEditor.defaults.editors['wb-object'] = makeObjectEditorWithButtonsOnTop();
-  JSONEditor.defaults.editors['groups'] = makeGroupsEditor();
   JSONEditor.defaults.editors['wb-optional'] = makeOptionalEditorWithDropDown();
   JSONEditor.defaults.editors['wb-array'] = makeWbArrayEditor();
   JSONEditor.defaults.editors['wb-first-oneof'] = makeFirstOneOfEditor();

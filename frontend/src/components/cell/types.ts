@@ -59,6 +59,7 @@ export interface CellRangeProps {
 export interface CellDateTimeProps {
   cell: Cell;
   isReadOnly?: boolean;
+  hideHistory?: boolean;
 }
 
 export interface CellHistoryProps{
