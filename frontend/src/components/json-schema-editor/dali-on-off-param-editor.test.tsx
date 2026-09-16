@@ -86,6 +86,7 @@ const enableBlock = async (store: ObjectStore) => {
 const onActionStore = (store: ObjectStore) => store.getParamByKey('on_action')!.store as ObjectStore;
 
 describe('DaliOnOffEditor', () => {
+  beforeAll(() => import('./dali-on-off-param-editor')); // warm React.lazy: a cold import outlasts waitFor's 1s
   describe('enabled checkbox gating and visibility', () => {
     test('a disabled block hides both actions, saves as { enabled: false }, and loads clean', async () => {
       const store = buildStore();
