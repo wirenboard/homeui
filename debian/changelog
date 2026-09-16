@@ -1,8 +1,15 @@
-wb-mqtt-homeui (2.256.1) stable; urgency=medium
+wb-mqtt-homeui (2.257.1) stable; urgency=medium
 
   * Ask for confirmation before deleting a custom font for SVG dashboards
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 15 Sep 2026 12:47:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 12:03:00 +0300
+
+wb-mqtt-homeui (2.257.0) stable; urgency=medium
+
+  * Remove the groups editor of json-editor, unused since the wb-mqtt-serial config
+    got its own editor in 2.150.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Sep 2026 13:20:18 +0500
 
 wb-mqtt-homeui (2.256.0) stable; urgency=medium
 
