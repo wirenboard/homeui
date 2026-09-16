@@ -8,7 +8,13 @@ import { UserRole } from '@/stores/auth';
 import type { EditUserModalProps } from './types';
 import './styles.css';
 
-export const EditUserModal = ({ onSave, user, isLoading, isFirstUser, onCancel }: EditUserModalProps) => {
+export const EditUserModal = ({
+  onSave,
+  user,
+  isLoading,
+  isFirstUser,
+  onCancel,
+}: EditUserModalProps) => {
   const { t } = useTranslation();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');

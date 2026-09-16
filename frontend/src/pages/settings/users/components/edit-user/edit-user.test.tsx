@@ -7,9 +7,9 @@ vi.mock('@/stores/auth', () => ({
 }));
 vi.mock('@/components/confirm', () => ({
   Confirm: ({
-    heading, isDisabled, confirmCallback, closeCallback, children,
+    heading, width, isDisabled, confirmCallback, closeCallback, children,
   }: any) => (
-    <div data-testid="modal">
+    <div data-testid="modal" data-width={width}>
       <div data-testid="heading">{heading}</div>
       {children}
       <button
@@ -212,6 +212,12 @@ describe('EditUserModal', () => {
     const typeSelect = screen.getByTestId('type-select') as HTMLSelectElement;
     expect(typeSelect.value).toBe('admin');
     expect(typeSelect.disabled).toBe(true);
+  });
+
+  test('always uses the narrow modal width (passkeys moved to their own dialog)', () => {
+    const user = { id: 'user-42', login: 'bob', type: 'operator' } as any;
+    render(<EditUserModal {...defaultProps} user={user} />);
+    expect(screen.getByTestId('modal').getAttribute('data-width')).toBe('450');
   });
 
   test('isFirstUser saves with admin type', () => {

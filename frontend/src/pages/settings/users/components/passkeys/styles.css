@@ -1,0 +1,36 @@
+.passkeys {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.passkeys-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 6px;
+}
+
+.passkeys-label {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.passkeys-input {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.passkeys-register {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.passkeys-hint {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  color: var(--gray-color);
+  font-size: var(--font-size-small);
+  line-height: 1.35;
+}

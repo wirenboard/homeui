@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.257.0) stable; urgency=medium
+
+  * Add WebAuthn passkey authentication: usernameless (discoverable-credential) login,
+    and admin-managed passkeys for any account from Settings → Users
+
+    Co-authored-by: Anton Akinin <anton@akinin.su>
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 14:04:00 +0300
+
 wb-mqtt-homeui (2.256.0) stable; urgency=medium
 
   [ Evgeny Boger ]
