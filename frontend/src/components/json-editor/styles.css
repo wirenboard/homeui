@@ -194,28 +194,30 @@
   border: 1px solid var(--border-color) !important;
 }
 
-/* A tab holder marked by the fit-tabs editor fills the page area the form is given by the sticky
-   header layout and scrolls inside itself, so every box between the form and the holder has to
-   pass its height down instead of growing with its content. */
+/* An array marked by the fit-tabs editor fills the visible part of the page - the tab list and the
+   pane scroll inside it, the page itself does not scroll. */
 @media (min-width: 992px) {
+  /* the height comes from the page, so every box down to the holder passes it on instead of growing
+     with its content. A hidden tab pane is skipped, it has to keep its display: none */
+  .page-contentWrapper:has(.je-fitTabs),
   .json-editor:has(.je-fitTabs),
-  .json-editor div:has(.je-fitTabs) {
+  .json-editor div:has(.je-fitTabs):not(.je-fitTabs):not(.tab-pane:not(.active)) {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
   }
 
-  /* the list and the pane are stretched to the height of the holder.
-     Spelled out like the rule that lays every tab holder out, to outweigh its align-items */
+  /* stretch outweighs the align-items: flex-start of the rule that lays out every tab holder */
   .json-editor div.je-fitTabs:has(> ul.nav-pills) {
     align-items: stretch;
-    min-height: 0;
+    /* a quarter of the window, eight rows of the list at least - under that the page scrolls */
+    min-height: max(25vh, 360px);
   }
 
   .json-editor .je-fitTabs > ul.nav-stacked,
   .json-editor .je-fitTabs > .tab-content {
-    /* the list is fit-content tall by default, which would ignore the height it is given */
+    /* the list is fit-content tall by default and would ignore the height it is given */
     height: auto;
     min-height: 0;
     overflow-y: auto;

@@ -1,8 +1,7 @@
 import { JSONEditor } from '@wirenboard/json-editor';
 
-// Array editor for a vertical tab list that fits the page area instead of running past the bottom
-// of the window, asked for by the schema with "options": { "wb": { "fit_tabs": true } } next to its
-// tabs format. Only the marker goes on here, the height comes from flexbox in styles.css.
+// Editor for an array that asked for "options": { "wb": { "fit_tabs": true } } next to its tabs
+// format. The class is only a hook, the layout itself is in styles.css.
 
 const FIT_TABS_CLASS = 'je-fitTabs';
 
