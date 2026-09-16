@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.257.2) stable; urgency=medium
+
+  * Run the frontend lint, type and test checks in the CI pipeline instead of the
+    package build, and install the npm dependencies once per build
+
+ -- Maksim Volobuev <maksim.volobuev@wirenboard.com>  Wed, 16 Sep 2026 16:30:10 +0500
+
 wb-mqtt-homeui (2.257.1) stable; urgency=medium
 
   * Ask for confirmation before deleting a custom font for SVG dashboards
