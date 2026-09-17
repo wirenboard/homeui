@@ -64,6 +64,7 @@ export class BusStore extends BaseItemStore {
       isScanning: computed,
       error: observable,
       label: observable,
+      objectStore: observable.ref,
       gatewayName: observable,
       children: observable.shallow,
       busMonitorSyslogEnabled: observable,
@@ -122,7 +123,9 @@ export class BusStore extends BaseItemStore {
       if (schema) {
         relativizeTcLimitPaths(schema);
         this.translator.addTranslations(schema.translations);
-        this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
+        runInAction(() => {
+          this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
+        });
       }
       this.setError(null);
       runInAction(() => {

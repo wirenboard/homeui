@@ -36,6 +36,7 @@ export class GroupStore extends BaseItemStore {
       saveParam: action,
       isLoading: observable,
       error: observable,
+      objectStore: observable.ref,
     });
   }
 
@@ -56,11 +57,13 @@ export class GroupStore extends BaseItemStore {
       if (schema) {
         relativizeTcLimitPaths(schema);
         this.translator.addTranslations(schema.translations);
-        this.objectStore = new ObjectStore(schema, wrapped ? reply.config : {}, false, new StoreBuilder());
-        if (!wrapped) {
-          // the bare-schema reply carries no config, so seed the schema defaults
-          this.objectStore.setDefault();
-        }
+        runInAction(() => {
+          this.objectStore = new ObjectStore(schema, wrapped ? reply.config : {}, false, new StoreBuilder());
+          if (!wrapped) {
+            // the bare-schema reply carries no config, so seed the schema defaults
+            this.objectStore.setDefault();
+          }
+        });
       }
       this.setError(null);
     } catch (error) {

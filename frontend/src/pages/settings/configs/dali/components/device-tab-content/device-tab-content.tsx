@@ -29,13 +29,8 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     }
   });
 
-  if (!store.objectStore) {
-    return (
-      <div className="dali-contentLoader">
-        <Loader />
-      </div>
-    );
-  }
+  const isBusy = store.isLoading || isIdentifying || isResetting;
+
   return (
     <>
       <div className="dali-deviceToolbar">
@@ -44,21 +39,24 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
             <Button
               label={t('dali.buttons.identify')}
               isLoading={isIdentifying}
+              disabled={isBusy}
               onClick={identify}
             />
           </Tooltip>
           <Button
             label={t('dali.buttons.reload')}
+            disabled={isBusy}
             onClick={() => store.load(true)}
           />
           <Button
             label={t('dali.buttons.reset')}
             variant="danger"
+            disabled={isBusy}
             onClick={() => setIsResetDialogOpen(true)}
           />
           <Button
             label={t('common.buttons.save')}
-            disabled={!store.objectStore.isDirty || store.objectStore.hasErrors}
+            disabled={isBusy || !store.objectStore?.isDirty || store.objectStore.hasErrors}
             onClick={() => store.save()}
           />
         </FormButtonGroup>
@@ -67,7 +65,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
         <div className="dali-contentLoader">
           <Loader />
         </div>
-      ) : (
+      ) : store.objectStore && (
         <JsonSchemaEditor
           store={store.objectStore}
           translator={store.translator}
@@ -76,7 +74,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
       <ResetConfirm
         isOpened={isResetDialogOpen}
         isLoading={isResetting}
-        isDirty={store.objectStore.isDirty}
+        isDirty={!!store.objectStore?.isDirty}
         closeCallback={() => setIsResetDialogOpen(false)}
         onConfirm={runReset}
       />
