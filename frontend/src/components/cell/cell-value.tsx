@@ -12,7 +12,7 @@ import { CellHistory } from './cell-history';
 import { type CellValueProps } from './types';
 import './styles.css';
 
-export const CellValue = observer(({ cell, isReadOnly, hideHistory }: CellValueProps) => {
+export const CellValue = observer(({ cell, isReadOnly, hideHistory, hideCopy }: CellValueProps) => {
   const { t } = useTranslation();
   const [capturedValue, setCapturedValue] = useState<string>(null);
   const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
@@ -84,25 +84,8 @@ export const CellValue = observer(({ cell, isReadOnly, hideHistory }: CellValueP
         <>
           {!hideHistory && <CellHistory cell={cell} />}
 
-          <div
-            className={classNames('deviceCell-value', 'deviceCell-text')}
-            onClick={() => {
-              let value = cell.value;
-              if (cell.isEnum) {
-                value = cell.enumValues.find((item) => item.value === cell.value).name;
-              } else if (cell.type === CellFormat.OneWireId) {
-                value = transformNumber(cell.value as number);
-              }
-              setCapturedValue(value as string);
-              copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
-            }
-            }
-          >
-            <Tooltip
-              text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widget.labels.copy')}</span>}
-              placement="top"
-              trigger="click"
-            >
+          {hideCopy ? (
+            <div className={classNames('deviceCell-value', 'deviceCell-text', 'deviceCell-noClick')}>
               {cell.isEnum
                 ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
                 : (
@@ -112,8 +95,39 @@ export const CellValue = observer(({ cell, isReadOnly, hideHistory }: CellValueP
                     )}
                   </div>
                 )}
-            </Tooltip>
-          </div>
+            </div>
+          ) : (
+            <div
+              className={classNames('deviceCell-value', 'deviceCell-text')}
+              onClick={() => {
+                let value = cell.value;
+                if (cell.isEnum) {
+                  value = cell.enumValues.find((item) => item.value === cell.value).name;
+                } else if (cell.type === CellFormat.OneWireId) {
+                  value = transformNumber(cell.value as number);
+                }
+                setCapturedValue(value as string);
+                copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
+              }
+              }
+            >
+              <Tooltip
+                text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widget.labels.copy')}</span>}
+                placement="top"
+                trigger="click"
+              >
+                {cell.isEnum
+                  ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+                  : (
+                    <div>
+                      <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                        <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+                      )}
+                    </div>
+                  )}
+              </Tooltip>
+            </div>
+          )}
         </>
       )}
     </>
