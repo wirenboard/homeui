@@ -1004,7 +1004,9 @@
          "upload-font": "Upload font",
          "delete-font": "Delete",
          "no-fonts": "No fonts uploaded",
-         "fonts": "Fonts for SVG dashboards"
+         "fonts": "Fonts for SVG dashboards",
+         "confirm-delete-font-heading": "Delete font",
+         "confirm-delete-font": "Are you sure you want to delete font <0>{{name}}</0>?"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
@@ -1095,9 +1097,11 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {
+         "fix-event-schemes": "Set recommended scheme",
          "rescan": "Rescan",
          "stop-scan": "Stop",
          "return": "To devices list",
