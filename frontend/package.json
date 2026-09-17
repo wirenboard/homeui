@@ -96,10 +96,5 @@
     "vite": "8.0.13",
     "vite-plugin-svgr": "5.2.0",
     "vitest": "4.1.7"
-  },
-  "browserslist": [
-    "defaults",
-    "iOS >= 10",
-    "Safari >= 10"
-  ]
+  }
 }
