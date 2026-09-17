@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.258.0) stable; urgency=medium
+wb-mqtt-homeui (2.260.0) stable; urgency=medium
 
   * Add a "Show history" toggle to dashboard settings, hiding the history/graph
     link for every cell on that dashboard; drop the column-count dropdown from
@@ -6,7 +6,21 @@ wb-mqtt-homeui (2.258.0) stable; urgency=medium
   * Hide the click-to-copy interaction (and its pointer cursor) on dashboard
     cell values and names for users without Operator rights
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 18:22:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 11:39:00 +0400
+
+wb-mqtt-homeui (2.259.0) stable; urgency=medium
+
+  * Device settings editor: a template group declared several times with different fw
+    shows the description of the declaration that matches the device firmware
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 15:10:00 +0500
+
+wb-mqtt-homeui (2.258.0) stable; urgency=medium
+
+  * Add DALI on/off control settings editor for devices and groups
+  * Keep the DALI device toolbar available when its settings fail to load
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 10:30:00 +0500
 
 wb-mqtt-homeui (2.257.1) stable; urgency=medium
 

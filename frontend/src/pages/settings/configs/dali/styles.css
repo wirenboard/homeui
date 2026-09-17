@@ -1,7 +1,14 @@
+/* The shared wrapper is a flex item with min-height: auto, so it grows to its content
+   and the inner scroll containers never engage. Scoped to leave other pages alone. */
+.page-contentWrapper:has(.dali) {
+    min-height: 0;
+}
+
 .dali {
     display: flex;
     gap: 12px;
     height: 100%;
+    min-height: 0;
     overflow: auto;
     flex-grow: 1;
 }
@@ -13,6 +20,7 @@
 
 .dali-list {
     width: 100%;
+    min-height: 0;
     overflow-y: auto;
 
     @media (min-width: 991px) {
@@ -24,6 +32,7 @@
     border: 1px solid var(--border-color);
     padding: 12px;
     width: 100%;
+    min-height: 0;
     border-radius: var(--container-border-radius);
     background: var(--background-accent-color-hover);
     display: flex;
