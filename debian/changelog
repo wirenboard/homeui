@@ -1,7 +1,8 @@
 wb-mqtt-homeui (2.257.2) stable; urgency=medium
 
-  * Run the frontend lint, type and test checks in the CI pipeline instead of the
-    package build, and install the npm dependencies once per build
+  * Run the frontend lint, type and test checks as CI stages of their own, and skip
+    them in the package build when CI has already run them
+  * Install the npm dependencies once per build instead of once per make target
 
  -- Maksim Volobuev <maksim.volobuev@wirenboard.com>  Wed, 16 Sep 2026 16:30:10 +0500
 

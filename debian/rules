@@ -22,11 +22,17 @@ override_dh_auto_build:
 	dh_auto_build -Dbackend -O--buildsystem=makefile
 	dh_auto_build -Dfrontend -O--buildsystem=makefile
 
-# The frontend checks - npm run lint, check:types and test - are not run here: Jenkins runs them
-# in its own 'Frontend checks' stage (buildDebSbuild, RUN_FRONTEND_CHECKS), where each of them gets
-# a stage of its own instead of hiding behind a failed package build.
+# Jenkins runs the frontend checks in a 'Frontend checks' stage of its own (buildDebSbuild,
+# RUN_FRONTEND_CHECKS), where each of them gets a stage instead of hiding behind a failed package
+# build, and that stage passes nofrontendcheck so the build does not run them a second time. A build
+# that did not run it - a local dpkg-buildpackage - runs them here, as nocheck alone would suggest.
 override_dh_auto_test:
 	dh_auto_test -Dbackend -O--buildsystem=pybuild
+ifeq (,$(filter nocheck nofrontendcheck,$(DEB_BUILD_OPTIONS) $(DEB_BUILD_PROFILES)))
+	dh_auto_test -Dfrontend -O--buildsystem=makefile
+	cd frontend && npm run check:types
+	cd frontend && npm run lint
+endif
 
 override_dh_auto_install:
 	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild
