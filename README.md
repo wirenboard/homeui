@@ -8,16 +8,12 @@ See into [conventions](https://github.com/wirenboard/conventions/blob/main/READM
 
 ## Supported browsers
 
-The frontend build targets the browsers configured via `browserslist` in `frontend/package.json`:
-
-- Browserslist [`defaults`](https://browsersl.ist/#q=defaults) — current versions of major
-  desktop and mobile browsers with meaningful usage share, plus Firefox ESR
-- iOS Safari ≥ 10
-- Safari (desktop) ≥ 10
+The frontend build targets the browsers configured in `frontend/.browserslistrc` — an explicit,
+pinned version floor per browser family, not browserslist's [`defaults`](https://browsersl.ist/#q=defaults)
+query (which drifts with `caniuse-lite` usage-share updates and can silently drop a browser).
 
 This drives the JS/CSS transpilation target (Vite/Babel/PostCSS/autoprefixer). Run
-`npx browserslist` from `frontend/` to see the exact resolved list of browser versions for the
-currently installed `caniuse-lite` data.
+`npx browserslist` from `frontend/` to see the exact resolved list of browser versions.
 
 ## NGINX configuration
 
