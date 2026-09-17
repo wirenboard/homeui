@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.261.0) stable; urgency=medium
+
+  * Support old Safari/iOS (down to Safari 10 / iOS 10.1) via a legacy build fallback
+  * Improve treeshaking
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 14:07:00 +0400
+
 wb-mqtt-homeui (2.260.1) stable; urgency=medium
 
   * config editor: revert the tab list scroll
