@@ -82,6 +82,7 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed",
+         "invalid-id-chars": "Id contains invalid characters",
          "load": "Failed to load dashboards",
          "svg-load": "Failed to load the dashboard image",
          "save": "Config saving failed"
