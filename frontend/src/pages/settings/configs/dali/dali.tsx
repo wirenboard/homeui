@@ -128,7 +128,7 @@ const DaliPage = observer(() => {
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>
               )}
-              <TabContent store={selectedItem} />
+              <TabContent key={selectedItem?.id} store={selectedItem} />
             </section>
           )}
         </div>
