@@ -1,9 +1,9 @@
 wb-mqtt-homeui (2.255.3) stable; urgency=medium
 
   * config editor: revert the tab list scroll
-  * config editor: add the wb.fit_tabs schema option
+  * config editor: add the wb.fit_tabs_to_window schema option
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 16 Sep 2026 13:47:02 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 17 Sep 2026 12:36:02 +0300
 
 wb-mqtt-homeui (2.255.2) stable; urgency=medium
 
