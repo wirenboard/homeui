@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.260.1) stable; urgency=medium
+
+  * config editor: revert the tab list scroll
+  * config editor: add the wb.fit_tabs_to_window schema option
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 17 Sep 2026 12:36:02 +0300
+
 wb-mqtt-homeui (2.260.0) stable; urgency=medium
 
   * Add a "Show history" toggle to dashboard settings, hiding the history/graph

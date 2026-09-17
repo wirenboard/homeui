@@ -164,7 +164,7 @@
 .json-editor div:has(> ul.nav-pills) {
   display: flex;
   gap: 12px;
-  /* don't stretch the content pane to the (taller) sticky tab list */
+  /* don't stretch the content pane to the (taller) tab list */
   align-items: flex-start;
 
   @media (max-width: 991px) {
@@ -194,13 +194,32 @@
   border: 1px solid var(--border-color) !important;
 }
 
-.json-editor ul.nav-tabs.nav-stacked,
-.json-editor ul.nav-pills.nav-stacked {
-  @media (min-width: 992px) {
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    max-height: calc(100vh - 24px);
+/* An array marked by the fit-tabs-to-window editor fills the visible part of the page - the tab
+   list and the pane scroll inside it, the page itself does not scroll. */
+@media (min-width: 992px) {
+  /* the height comes from the page, so every box down to the holder passes it on instead of growing
+     with its content. A hidden tab pane is skipped, it has to keep its display: none */
+  .page-contentWrapper:has(.je-fitTabsToWindow),
+  .json-editor:has(.je-fitTabsToWindow),
+  .json-editor div:has(.je-fitTabsToWindow):not(.je-fitTabsToWindow):not(.tab-pane:not(.active)) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* stretch outweighs the align-items: flex-start of the rule that lays out every tab holder */
+  .json-editor div.je-fitTabsToWindow:has(> ul.nav-pills) {
+    align-items: stretch;
+    /* a quarter of the window, eight rows of the list at least - under that the page scrolls */
+    min-height: max(25vh, 360px);
+  }
+
+  .json-editor .je-fitTabsToWindow > ul.nav-stacked,
+  .json-editor .je-fitTabsToWindow > .tab-content {
+    /* the list is fit-content tall by default and would ignore the height it is given */
+    height: auto;
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
   }
