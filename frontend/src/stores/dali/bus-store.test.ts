@@ -14,7 +14,7 @@ describe('BusStore', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    store = new BusStore('bus1', 'Bus 1', 1, 'GW');
+    store = new BusStore({ id: 'bus1', name: 'Bus 1', devices: [] }, 1, 'GW');
   });
 
   describe('constructor', () => {
@@ -30,7 +30,7 @@ describe('BusStore', () => {
 
     test('accepts initial commissioning state', () => {
       const state = { status: 'binary_search' as const, progress: 50, error: null, device_count: 0, devices: null, finished_at: null };
-      const s = new BusStore('bus2', 'Bus 2', 2, 'GW', state);
+      const s = new BusStore({ id: 'bus2', name: 'Bus 2', devices: [], commissioning: state }, 2, 'GW');
       expect(s.commissioningState.status).toBe('binary_search');
     });
   });
@@ -298,6 +298,18 @@ describe('BusStore', () => {
       expect(groupIndexes).toEqual([1]);
     });
 
+    test('keeps a group the backend reported even when no device belongs to it', () => {
+      const bus = new BusStore(
+        { id: 'bus1', name: 'Bus 1', devices: [{ id: 'd1', name: 'D1', groups: [1] }], groups: [{ id: 'bus1_g5', number: 5 }] },
+        1,
+        'GW',
+      );
+
+      const groups = bus.children.filter((c): c is GroupStore => c.type === ItemType.Group);
+      expect(groups.map((g) => g.index)).toEqual([1, 5]);
+      expect(groups.map((g) => g.id)).toEqual(['bus1_g1', 'bus1_g5']);
+    });
+
     test('sorts devices before groups, groups by index', () => {
       store.children = [
         new DeviceStore('d1', 'D1', [2, 0], store),
@@ -308,6 +320,22 @@ describe('BusStore', () => {
       const types = store.children.map((c) => c.type);
       expect(types[0]).toBe(ItemType.Device);
       expect(types.slice(1).every((t) => t === 'group')).toBe(true);
+    });
+  });
+
+  describe('removeGroup', () => {
+    test('drops the group and keeps the reported list from bringing it back', () => {
+      const bus = new BusStore(
+        { id: 'bus1', name: 'Bus 1', devices: [], groups: [{ id: 'bus1_g5', number: 5 }] },
+        1,
+        'GW',
+      );
+      const group = bus.children.find((c): c is GroupStore => c.type === ItemType.Group);
+
+      bus.removeGroup(group!);
+      bus.syncGroupChildren();
+
+      expect(bus.children.filter((c) => c.type === ItemType.Group)).toEqual([]);
     });
   });
 

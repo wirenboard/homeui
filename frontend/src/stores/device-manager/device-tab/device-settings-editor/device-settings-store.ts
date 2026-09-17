@@ -272,8 +272,11 @@ export class DeviceSettingsObjectStore {
   }
 
   setSlaveId(id: string | undefined) {
-    const store = this.commonParams.getParamByKey('slave_id').store as StringStore;
-    store?.setValue(id);
+    const param = this.commonParams.getParamByKey('slave_id');
+    if (id !== undefined) {
+      param?.enable();
+    }
+    (param?.store as StringStore)?.setValue(id);
   }
 
   // When switching to another template the params store is rebuilt from scratch, so the
