@@ -1,9 +1,29 @@
-wb-mqtt-homeui (2.257.0) stable; urgency=medium
+wb-mqtt-homeui (2.259.0) stable; urgency=medium
 
   * Device settings editor: a template group declared several times with different fw
     shows the description of the declaration that matches the device firmware
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Sep 2026 13:03:01 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 15:10:00 +0500
+
+wb-mqtt-homeui (2.258.0) stable; urgency=medium
+
+  * Add DALI on/off control settings editor for devices and groups
+  * Keep the DALI device toolbar available when its settings fail to load
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 10:30:00 +0500
+
+wb-mqtt-homeui (2.257.1) stable; urgency=medium
+
+  * Ask for confirmation before deleting a custom font for SVG dashboards
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 12:03:00 +0300
+
+wb-mqtt-homeui (2.257.0) stable; urgency=medium
+
+  * Remove the groups editor of json-editor, unused since the wb-mqtt-serial config
+    got its own editor in 2.150.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Sep 2026 13:20:18 +0500
 
 wb-mqtt-homeui (2.256.0) stable; urgency=medium
 

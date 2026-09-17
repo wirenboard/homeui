@@ -1033,7 +1033,9 @@
          "upload-font": "Загрузить шрифт",
          "delete-font": "Удалить",
          "no-fonts": "Шрифты не загружены",
-         "fonts": "Шрифты для SVG панелей"
+         "fonts": "Шрифты для SVG панелей",
+         "confirm-delete-font-heading": "Удаление шрифта",
+         "confirm-delete-font": "Вы действительно хотите удалить шрифт <0>{{name}}</0>?"
       },
       "errors": {
          "setup-https": "Не удалось настроить HTTPS: {{error}}",
