@@ -110,7 +110,7 @@ const DeviceSettingsCardContent = observer((
   { group, isTopLevel, translator }:
   { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator },
 ) => {
-  const showDescription = !!group.properties.description;
+  const showDescription = !!group.description;
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   return (
@@ -123,7 +123,7 @@ const DeviceSettingsCardContent = observer((
       })}
     >
       {showDescription && (
-        <ParamDescription description={translator.find(group.properties.description, currentLanguage)} />
+        <ParamDescription description={translator.find(group.description, currentLanguage)} />
       )}
       {MakeEditors(group.parameters, translator)}
       <ChannelsList channels={group.channels} translator={translator} />

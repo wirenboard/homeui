@@ -6,6 +6,7 @@ export interface CellProps {
   isCompact?: boolean;
   isReadOnly?: boolean;
   hideHistory?: boolean;
+  hideCopy?: boolean;
   isVisible?: boolean;
   extra?: {
     invert?: boolean;
@@ -15,12 +16,14 @@ export interface CellProps {
 export interface CellValueProps {
   cell: Cell;
   hideHistory: boolean;
+  hideCopy?: boolean;
   isReadOnly?: boolean;
 }
 
 export interface CellTextProps {
   cell: Cell;
   hideHistory: boolean;
+  hideCopy?: boolean;
   isCompact: boolean;
   isReadOnly?: boolean;
 }
@@ -35,6 +38,7 @@ export interface CellAlertProps {
   cell: Cell;
   name?: string;
   hideHistory: boolean;
+  hideCopy?: boolean;
 }
 
 export interface CellSwitchProps {
@@ -58,8 +62,9 @@ export interface CellRangeProps {
 
 export interface CellDateTimeProps {
   cell: Cell;
-  isReadOnly?: boolean;
   hideHistory?: boolean;
+  hideCopy?: boolean;
+  isReadOnly?: boolean;
 }
 
 export interface CellHistoryProps{
