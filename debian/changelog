@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.259.0) stable; urgency=medium
+
+  * Device settings editor: a template group declared several times with different fw
+    shows the description of the declaration that matches the device firmware
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 15:10:00 +0500
+
 wb-mqtt-homeui (2.258.0) stable; urgency=medium
 
   * Add DALI on/off control settings editor for devices and groups
