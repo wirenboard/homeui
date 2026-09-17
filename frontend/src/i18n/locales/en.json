@@ -61,7 +61,8 @@
          "create": "Add panel",
          "svg-flag": "SVG panel type",
          "text-flag": "Text panel type",
-         "text-dashboard": "Text"
+         "text-dashboard": "Text",
+         "show-history": "Show history buttons"
       },
       "buttons": {
          "add": "Add",
@@ -671,6 +672,7 @@
          "add-widget": "Add widget",
          "edit-widget": "Edit widget",
          "remove-widget": "Remove from this dashboard",
+         "edit-dashboard": "Dashboard settings",
          "fullscreen": "Enter fullscreen mode",
          "fullscreen-exit": "Exit fullscreen mode"
       },

@@ -28,6 +28,7 @@ export interface TextDashboard {
   options?: {
     isHidden?: boolean;
     columns?: number;
+    showHistory?: boolean;
   };
 }
 

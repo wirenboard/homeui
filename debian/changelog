@@ -1,3 +1,13 @@
+wb-mqtt-homeui (2.260.0) stable; urgency=medium
+
+  * Add a "Show history" toggle to dashboard settings, hiding the history/graph
+    link for every cell on that dashboard; drop the column-count dropdown from
+    the same dialog now that it's redundant with the dashboard layout editor
+  * Hide the click-to-copy interaction (and its pointer cursor) on dashboard
+    cell values and names for users without Operator rights
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 11:39:00 +0400
+
 wb-mqtt-homeui (2.259.0) stable; urgency=medium
 
   * Device settings editor: a template group declared several times with different fw
