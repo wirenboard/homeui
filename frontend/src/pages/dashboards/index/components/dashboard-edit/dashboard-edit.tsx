@@ -17,6 +17,7 @@ export const DashboardEdit = ({ dashboard, dashboards, isOpened, onSave, onClose
   const isUniqueId = useMemo(() => !dashboards
     .filter((item) => item.id !== dashboard?.id)
     .some((dashboard) => dashboard?.id === id), [dashboards, id]);
+  const isValidIdChars = useMemo(() => !/[#/]/.test(id), [id]);
 
   useEffect(() => {
     const dashboardId = isNew
@@ -35,7 +36,7 @@ export const DashboardEdit = ({ dashboard, dashboards, isOpened, onSave, onClose
         `${t('dashboards.labels.edit', { name: dashboard.name })}`
         : t('dashboards.labels.create')}
       closeCallback={onClose}
-      isDisabled={!name || !id || !isUniqueId}
+      isDisabled={!name || !id || !isUniqueId || !isValidIdChars}
       acceptLabel={t('dashboards.buttons.save')}
       confirmCallback={() => {
         onSave({
@@ -75,7 +76,10 @@ export const DashboardEdit = ({ dashboard, dashboards, isOpened, onSave, onClose
             onChange={(value: string) => setId(value)}
           />
 
-          {!isUniqueId && (
+          {!isValidIdChars && (
+            <p className="dashboardEdit-error">{t('dashboards.errors.invalid-id-chars')}</p>
+          )}
+          {isValidIdChars && !isUniqueId && (
             <p className="dashboardEdit-error">{t('dashboards.errors.duplicate')}</p>
           )}
         </label>
