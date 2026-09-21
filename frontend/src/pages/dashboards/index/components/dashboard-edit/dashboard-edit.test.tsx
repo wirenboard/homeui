@@ -68,6 +68,40 @@ describe('DashboardEdit', () => {
     expect(screen.getByText('dashboards.errors.duplicate')).toBeDefined();
   });
 
+  test('shows invalid-id-chars error and disables save for an id containing "#"', () => {
+    render(
+      <DashboardEdit
+        dashboard={null as any}
+        dashboards={dashboards}
+        isOpened={true}
+        onSave={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+    const idInput = document.querySelectorAll('input')[1] as HTMLInputElement;
+    fireEvent.change(idInput, { target: { value: 'my#dashboard' } });
+    fireEvent.blur(idInput);
+    expect(screen.getByText('dashboards.errors.invalid-id-chars')).toBeDefined();
+    expect(screen.getByText('dashboards.buttons.save').closest('button')).toBeDisabled();
+  });
+
+  test('shows invalid-id-chars error and disables save for an id containing "/"', () => {
+    render(
+      <DashboardEdit
+        dashboard={null as any}
+        dashboards={dashboards}
+        isOpened={true}
+        onSave={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+    const idInput = document.querySelectorAll('input')[1] as HTMLInputElement;
+    fireEvent.change(idInput, { target: { value: 'my/dashboard' } });
+    fireEvent.blur(idInput);
+    expect(screen.getByText('dashboards.errors.invalid-id-chars')).toBeDefined();
+    expect(screen.getByText('dashboards.buttons.save').closest('button')).toBeDisabled();
+  });
+
   test('calls onClose when cancel clicked', () => {
     const onClose = vi.fn();
     render(

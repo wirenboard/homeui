@@ -1,8 +1,17 @@
-wb-mqtt-homeui (2.261.2) stable; urgency=medium
+wb-mqtt-homeui (2.261.3) stable; urgency=medium
 
   * Use restricted wb-configs helpers for system backup downloads
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Sep 2026 16:35:19 +0400
+
+wb-mqtt-homeui (2.261.2) stable; urgency=medium
+
+  * Dashboards: reject invalid characters that would break the app's hash-router
+    navigation and its use as a CSS id selector
+  * SVG dashboard editor: use checkboxes instead of switches for the visible/click/
+    read/style/swipe binding toggles
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 16:10:00 +0400
 
 wb-mqtt-homeui (2.261.1) stable; urgency=medium
 
