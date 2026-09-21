@@ -26,6 +26,7 @@ export class DeviceStore extends BaseItemStore {
       isLoading: observable,
       error: observable,
       label: observable,
+      objectStore: observable.ref,
       groups: observable.shallow,
     });
   }
@@ -48,9 +49,9 @@ export class DeviceStore extends BaseItemStore {
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations);
-      this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
       runInAction(() => {
+        this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
         this.label = data.name || this.label;
         this.updateGroups((data.config as any).groups);
         this.#parent?.syncGroupChildren();

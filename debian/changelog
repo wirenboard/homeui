@@ -1,10 +1,75 @@
-wb-mqtt-homeui (2.257.2) stable; urgency=medium
+wb-mqtt-homeui (2.262.1) stable; urgency=medium
 
   * Run the frontend lint, type and test checks as CI stages of their own, and skip
     them in the package build when CI has already run them
   * Install the npm dependencies once per build instead of once per make target
 
  -- Maksim Volobuev <maksim.volobuev@wirenboard.com>  Wed, 16 Sep 2026 16:30:10 +0500
+
+wb-mqtt-homeui (2.262.0) stable; urgency=medium
+
+  * Logs filters moved to popup in compact resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 21 Sep 2026 17:22:00 +0400
+
+wb-mqtt-homeui (2.261.3) stable; urgency=medium
+
+  * Use restricted wb-configs helpers for system backup downloads
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Sep 2026 16:35:19 +0400
+
+wb-mqtt-homeui (2.261.2) stable; urgency=medium
+
+  * Dashboards: reject invalid characters that would break the app's hash-router
+    navigation and its use as a CSS id selector
+  * SVG dashboard editor: use checkboxes instead of switches for the visible/click/
+    read/style/swipe binding toggles
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 16:10:00 +0400
+
+wb-mqtt-homeui (2.261.1) stable; urgency=medium
+
+  * Fix svg dashboard image borders
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 14:31:00 +0400
+
+wb-mqtt-homeui (2.261.0) stable; urgency=medium
+
+  * Support old Safari/iOS (down to Safari 10 / iOS 10.1) via a legacy build fallback
+  * Improve treeshaking
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 14:07:00 +0400
+
+wb-mqtt-homeui (2.260.1) stable; urgency=medium
+
+  * config editor: revert the tab list scroll
+  * config editor: add the wb.fit_tabs_to_window schema option
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 17 Sep 2026 12:36:02 +0300
+
+wb-mqtt-homeui (2.260.0) stable; urgency=medium
+
+  * Add a "Show history" toggle to dashboard settings, hiding the history/graph
+    link for every cell on that dashboard; drop the column-count dropdown from
+    the same dialog now that it's redundant with the dashboard layout editor
+  * Hide the click-to-copy interaction (and its pointer cursor) on dashboard
+    cell values and names for users without Operator rights
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 11:39:00 +0400
+
+wb-mqtt-homeui (2.259.0) stable; urgency=medium
+
+  * Device settings editor: a template group declared several times with different fw
+    shows the description of the declaration that matches the device firmware
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 15:10:00 +0500
+
+wb-mqtt-homeui (2.258.0) stable; urgency=medium
+
+  * Add DALI on/off control settings editor for devices and groups
+  * Keep the DALI device toolbar available when its settings fail to load
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 10:30:00 +0500
 
 wb-mqtt-homeui (2.257.1) stable; urgency=medium
 
@@ -32,7 +97,7 @@ wb-mqtt-homeui (2.255.2) stable; urgency=medium
 
   * Reject uploaded custom-font files whose content does not match their extension
 
- -- Nikolay Korotkiy <sikmir@disroot.org>  Mon, 14 Sep 2026 10:24:33 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 14 Sep 2026 10:24:33 +0400
 
 wb-mqtt-homeui (2.255.1) stable; urgency=medium
 

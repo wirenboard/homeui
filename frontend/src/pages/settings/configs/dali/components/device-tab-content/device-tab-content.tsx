@@ -23,13 +23,7 @@ export const wrongSchemeInstances = (config: object | undefined): string[] =>
       && (value as InstanceConfig).event_scheme !== ATTRIBUTABLE_EVENT_SCHEME)
     .map(([key]) => key);
 
-export const DeviceTabContent = observer(({
-  store,
-  onDeviceRemoved,
-}: {
-  store: DeviceStore;
-  onDeviceRemoved: (device: DeviceStore) => void;
-}) => {
+export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => {
   const { t } = useTranslation();
   const [identify, isIdentifying] = useAsyncAction(async () => {
     await store.identify();
@@ -53,17 +47,11 @@ export const DeviceTabContent = observer(({
     } else {
       await store.reset();
       setIsResetDialogOpen(false);
-      onDeviceRemoved(store);
     }
   });
 
-  if (!store.objectStore) {
-    return (
-      <div className="dali-contentLoader">
-        <Loader />
-      </div>
-    );
-  }
+  const isBusy = store.isLoading || isIdentifying || isResetting;
+
   return (
     <>
       <div className="dali-deviceToolbar">
@@ -72,26 +60,29 @@ export const DeviceTabContent = observer(({
             <Button
               label={t('dali.buttons.identify')}
               isLoading={isIdentifying}
+              disabled={isBusy}
               onClick={identify}
             />
           </Tooltip>
           <Button
             label={t('dali.buttons.reload')}
+            disabled={isBusy}
             onClick={() => store.load(true)}
           />
           <Button
             label={t('dali.buttons.reset')}
             variant="danger"
+            disabled={isBusy}
             onClick={() => setIsResetDialogOpen(true)}
           />
           <Button
             label={t('common.buttons.save')}
-            disabled={!store.objectStore.isDirty || store.objectStore.hasErrors}
+            disabled={isBusy || !store.objectStore?.isDirty || store.objectStore.hasErrors}
             onClick={() => store.save()}
           />
         </FormButtonGroup>
       </div>
-      {!store.isLoading && wrongSchemeInstances(store.objectStore.value).length > 0 && (
+      {!store.isLoading && wrongSchemeInstances(store.objectStore?.value).length > 0 && (
         <Alert variant="warn">
           <div className="dali-schemeWarning">
             <span>{t('dali.labels.event-scheme-warning')}</span>
@@ -108,7 +99,7 @@ export const DeviceTabContent = observer(({
         <div className="dali-contentLoader">
           <Loader />
         </div>
-      ) : (
+      ) : store.objectStore && (
         <JsonSchemaEditor
           store={store.objectStore}
           translator={store.translator}
@@ -117,7 +108,7 @@ export const DeviceTabContent = observer(({
       <ResetConfirm
         isOpened={isResetDialogOpen}
         isLoading={isResetting}
-        isDirty={store.objectStore.isDirty}
+        isDirty={!!store.objectStore?.isDirty}
         closeCallback={() => setIsResetDialogOpen(false)}
         onConfirm={runReset}
       />

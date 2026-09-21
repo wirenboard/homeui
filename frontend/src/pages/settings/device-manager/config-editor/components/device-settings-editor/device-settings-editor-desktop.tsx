@@ -125,7 +125,7 @@ const DeviceSettingsTabContent = observer((
   { group, isTopLevel, translator, showChannels }:
   { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator; showChannels: boolean },
 ) => {
-  const showDescription = !!group.properties.description;
+  const showDescription = !!group.description;
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   return (
@@ -138,7 +138,7 @@ const DeviceSettingsTabContent = observer((
       })}
     >
       {showDescription && (
-        <ParamDescription description={translator.find(group.properties.description, currentLanguage)} />
+        <ParamDescription description={translator.find(group.description, currentLanguage)} />
       )}
       {MakeEditors(group.parameters, translator)}
       {showChannels && <ChannelsTable channels={group.channels} translator={translator} />}

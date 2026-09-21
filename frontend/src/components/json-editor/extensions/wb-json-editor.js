@@ -7,6 +7,7 @@ import { makeDisabledEditorWrapper } from './disabled-editor-wrapper';
 import { compileTemplate } from './dumbtemplate';
 import { makeDynamicTypeEditor } from './dynamic-type-editor';
 import { makeEditWithDropdownEditor } from './edit-with-dropdown';
+import { makeFitTabsToWindowArrayEditor } from './fit-tabs-to-window-array-editor';
 import { makeFirstOneOfEditor } from './first-oneof-editor';
 import { makeIntegerEditorWithSpecialValue } from './integer-editor-with-special-value';
 import { JsonEditorRussianTranslation } from './json-editor-ru';
@@ -148,6 +149,13 @@ function overrideJSONEditor(data) {
     (schema) => schema.type === 'array' && schema.format === 'lazy-tabs' && 'lazy-tabs',
   );
   JSONEditor.defaults.resolvers.unshift(
+    (schema) =>
+      schema.type === 'array' &&
+      schema.format === 'tabs' &&
+      schema.options?.wb?.fit_tabs_to_window &&
+      'fit-tabs-to-window',
+  );
+  JSONEditor.defaults.resolvers.unshift(
     (schema) => schema.type === 'array' && schema.format === 'collapsible-list' && 'collapsible-list',
   );
   JSONEditor.defaults.resolvers.unshift(
@@ -192,6 +200,7 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['info'] = makeTranslatedInfoEditor();
   JSONEditor.defaults.editors['siWb'] = makeIntegerEditorWithSpecialValue();
   JSONEditor.defaults.editors['lazy-tabs'] = makeLazyTabsArrayEditor();
+  JSONEditor.defaults.editors['fit-tabs-to-window'] = makeFitTabsToWindowArrayEditor();
   JSONEditor.defaults.editors['roMultiple'] = makeReadonlyOneOfEditor();
   JSONEditor.defaults.editors['merge-default'] = makeMergedDefaultValuesEditor();
   JSONEditor.defaults.editors['edWb'] = makeEditWithDropdownEditor();

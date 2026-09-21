@@ -61,7 +61,8 @@
          "create": "Add panel",
          "svg-flag": "SVG panel type",
          "text-flag": "Text panel type",
-         "text-dashboard": "Text"
+         "text-dashboard": "Text",
+         "show-history": "Show history buttons"
       },
       "buttons": {
          "add": "Add",
@@ -81,6 +82,7 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed",
+         "invalid-id-chars": "Id contains invalid characters",
          "load": "Failed to load dashboards",
          "svg-load": "Failed to load the dashboard image",
          "save": "Config saving failed"
@@ -671,6 +673,7 @@
          "add-widget": "Add widget",
          "edit-widget": "Edit widget",
          "remove-widget": "Remove from this dashboard",
+         "edit-dashboard": "Dashboard settings",
          "fullscreen": "Enter fullscreen mode",
          "fullscreen-exit": "Exit fullscreen mode"
       },
@@ -787,7 +790,8 @@
          "save": "Save loaded log to file",
          "case": "Match case",
          "regex": "Regular expression",
-         "live-update": "Live update"
+         "live-update": "Live update",
+         "filters": "Filters"
       },
       "errors": {
          "unavailable": "wb-mqtt-logs service is unavailable",
