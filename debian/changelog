@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.261.3) stable; urgency=medium
+
+  * Use restricted wb-configs helpers for system backup downloads
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Sep 2026 16:35:19 +0400
+
 wb-mqtt-homeui (2.261.2) stable; urgency=medium
 
   * Dashboards: reject invalid characters that would break the app's hash-router
@@ -77,7 +83,7 @@ wb-mqtt-homeui (2.255.2) stable; urgency=medium
 
   * Reject uploaded custom-font files whose content does not match their extension
 
- -- Nikolay Korotkiy <sikmir@disroot.org>  Mon, 14 Sep 2026 10:24:33 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 14 Sep 2026 10:24:33 +0400
 
 wb-mqtt-homeui (2.255.1) stable; urgency=medium
 
