@@ -13,14 +13,7 @@ run_pigz() {
 }
 
 case "${WB_BACKUP_TYPE:-}" in
-    rootfs)
-        export_helper=/usr/lib/wb-configs/wb-export-rootfs
-        ;;
-    configs)
-        export_helper=/usr/lib/wb-configs/wb-export-configs
-        ;;
-    everything)
-        export_helper=/usr/lib/wb-configs/wb-export-everything
+    rootfs|configs|everything)
         ;;
     *)
         echo "Status: 400"
@@ -38,4 +31,4 @@ echo "Status: 200"
 echo "Content-Disposition: attachment; filename=\"${WB_BACKUP_TYPE}_${SERIAL}_${date}.tar.gz\""
 echo "Content-Type: application/octet-stream"
 echo ""
-sudo "$export_helper" | run_pigz
+sudo /usr/lib/wb-configs/wb_export.sh "$WB_BACKUP_TYPE" | run_pigz
