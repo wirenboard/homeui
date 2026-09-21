@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.262.0) stable; urgency=medium
+
+  * Logs filters moved to popup in compact resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 21 Sep 2026 17:22:00 +0400
+
 wb-mqtt-homeui (2.261.3) stable; urgency=medium
 
   * Use restricted wb-configs helpers for system backup downloads
