@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import type * as ReactRouterDom from 'react-router-dom';
 import { HttpsSetupPhase, uiStore } from '@/stores/ui';
 import { App } from './app';
@@ -34,7 +34,11 @@ describe('App', () => {
     const { rerender } = render(<App router={router} />);
     expect(screen.queryByTestId('router')).toBeNull();
 
-    uiStore.setHttpsSetupPhase(HttpsSetupPhase.Done);
+    // setHttpsSetupPhase mutates a mobx observable directly, outside any RTL-wrapped event, so the
+    // observer's resulting re-render must be wrapped by hand or React warns about it.
+    act(() => {
+      uiStore.setHttpsSetupPhase(HttpsSetupPhase.Done);
+    });
     rerender(<App />);
     expect(screen.queryByTestId('router')).toBeNull();
 
