@@ -50,6 +50,14 @@ describe('createRpcProxy', () => {
     expect(typeof parsed.id).toBe('number');
   });
 
+  test('method sends a 64-bit parameter value without losing its low bits', () => {
+    const proxy = createRpcProxy('svc', ['Save']);
+    proxy.Save({ content: { bus2_sens1_id: 0x731a151e64ff_28 } });
+
+    const raw = mqttMock.send.mock.calls[0][1];
+    expect(raw).toContain('"bus2_sens1_id":32398300328296232');
+  });
+
   test('method sends empty params when none provided', () => {
     const proxy = createRpcProxy('svc', ['NoArgs']);
     proxy.NoArgs();
