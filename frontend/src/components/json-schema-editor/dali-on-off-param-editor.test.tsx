@@ -109,7 +109,7 @@ describe('DaliOnOffEditor', () => {
       const checkbox = await enableBlock(store);
 
       // an out-of-range field makes the enabled block invalid
-      onActionStore(store).getParamByKey('scene')!.store.setValue(20);
+      act(() => onActionStore(store).getParamByKey('scene')!.store.setValue(20));
       await waitFor(() => expect(store.hasErrors).toBe(true));
 
       // turning the block off drops the actions from validation entirely
@@ -270,7 +270,7 @@ describe('DaliOnOffEditor', () => {
       fireEvent.click(screen.getByRole('button', { name: mode as string }));
       await waitFor(() => expect((store.value as any).on_action).toEqual(seeded));
 
-      onActionStore(store).getParamByKey(field as string)!.store.setValue(value);
+      act(() => onActionStore(store).getParamByKey(field as string)!.store.setValue(value as number));
       await waitFor(() => expect(store.hasErrors).toBe(true));
     });
   });
