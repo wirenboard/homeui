@@ -5,6 +5,8 @@ export interface CellProps {
   name?: string;
   isCompact?: boolean;
   isReadOnly?: boolean;
+  // isReadOnly prints the value as text, this keeps the editor and only blocks it.
+  isDisabled?: boolean;
   hideHistory?: boolean;
   hideCopy?: boolean;
   isVisible?: boolean;
@@ -18,6 +20,7 @@ export interface CellValueProps {
   hideHistory: boolean;
   hideCopy?: boolean;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellTextProps {
@@ -26,12 +29,14 @@ export interface CellTextProps {
   hideCopy?: boolean;
   isCompact: boolean;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellColorpickerProps {
   cell: Cell;
   hideHistory: boolean;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellAlertProps {
@@ -46,6 +51,7 @@ export interface CellSwitchProps {
   inverted?: boolean;
   hideHistory: boolean;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellButtonProps {
@@ -53,11 +59,13 @@ export interface CellButtonProps {
   name?: string;
   hideHistory: boolean;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellRangeProps {
   cell: Cell;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellDateTimeProps {
@@ -65,6 +73,7 @@ export interface CellDateTimeProps {
   hideHistory?: boolean;
   hideCopy?: boolean;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface CellHistoryProps{

@@ -1,61 +1,135 @@
-/* Wide screens: the featured cells ride in a slim strip that stays pinned
-   under the (already sticky) toolbar while the form scrolls beneath it. */
-.daliDeviceControls-strip {
-    position: sticky;
-    /* The toolbar above is sticky at top: -12px, so the height it keeps on
-       screen is its own height minus those 12px — and that height moves when
-       the title or the buttons wrap, which is why the toolbar publishes it
-       (see TabToolbar). Parking the strip exactly there keeps it flush: any
-       higher clips the strip's first line, any lower opens a gap that
-       scrolled form rows show through. */
-    top: calc(var(--dali-toolbar-height, 58px) - 12px);
-    z-index: 100;
+/* Flush with the toolbar above and the settings header below, the three read as one header. */
+.daliDeviceControls-pinnedControls {
+    /* Holds the absolute chevron. */
+    position: relative;
+    flex-shrink: 0;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 24px;
-    padding: 6px 12px;
-    margin-bottom: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--container-border-radius);
-    background: var(--container-background);
-    /* The strip is a rounded card, so the wedges between its rounded corners
-       and its rectangular box stay transparent, and the form scrolling
-       underneath showed through them as flecks of moving text. The second
-       shadow is an opaque ring in the scroll container's own ground colour:
-       it fills those wedges, and being a shadow it paints behind the card
-       instead of over it (a z-index: -1 child would not — the sticky strip
-       is its own stacking context). */
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.06),
-        0 0 0 var(--container-border-radius, 8px) var(--background-accent-color-hover);
+    align-items: flex-start;
+    /* A Button's height, the slider track and the colour swatch align to it. */
+    --dali-control-line: 30px;
+    --dali-track-offset: calc((var(--dali-control-line) - 8px) / 2);
+    gap: 14px 24px;
+    /* Cancels the gap of `.dali-content`. */
+    margin: -10px calc(-1 * var(--dali-inset)) 0;
+    padding: 8px calc(22px + var(--dali-inset)) 8px var(--dali-inset);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--dali-surface);
 }
 
-.daliDeviceControls-stripCell {
-    display: flex;
+.daliDeviceControls-pinnedControlsColumns {
+    display: grid;
+}
+
+/* At the column's right edge the control sat nearer the next instance's name than its own. */
+.daliDeviceControls-pinnedControlsColumns .daliDeviceControls-pinnedControlsCell {
+    flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    min-height: var(--dali-control-line);
+}
+
+.daliDeviceControls-pinnedControlsColumns .daliDeviceControls-pinnedControlsLabel {
+    flex: 0 1 auto;
     min-width: 0;
 }
 
-/* Sliders need real width to be grabbable; readings can shrink. */
-.daliDeviceControls-stripCell:has(input[type='range']) {
+.daliDeviceControls-pinnedControlsColumns .daliDeviceControls-pinnedControlsCellBody {
+    flex: 0 0 auto;
+    align-items: center;
+}
+
+.daliDeviceControls-instanceColumn .deviceCell {
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.daliDeviceControls-instanceColumn .deviceCell-name {
+    flex-grow: 0;
+}
+
+
+.daliDeviceControls-instanceGrid {
+    display: grid;
+    column-gap: 24px;
+}
+
+.daliDeviceControls-instanceColumn {
+    min-width: 0;
+}
+
+.daliDeviceControls-pinnedControlsCell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.daliDeviceControls-pinnedControlsCell:has(input[type='range']) {
     flex: 1 1 220px;
     max-width: 340px;
 }
 
+/* The first thing in `.dali-tabBody`: cancels its top padding, the list continues the pinned controls. */
 .daliDeviceControls {
-    border: 1px solid var(--border-color);
-    border-radius: var(--container-border-radius);
-    background: var(--container-background);
-    padding: 6px 12px 10px;
-    margin-bottom: 12px;
+    margin: -10px calc(-1 * var(--dali-inset)) 0;
+    padding: 8px var(--dali-inset);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--dali-surface);
 }
 
+.daliDeviceControls-instances {
+    padding-right: calc(22px + var(--dali-inset));
+}
+
+/* Not a grid: a grid fills row by row and would spread one instance across columns.
+   290px leaves room for the longest label with its input, «Прямое управление яркостью». */
 .daliDeviceControls-grid {
-    margin-top: 6px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 6px 20px;
+    columns: 290px;
+    column-gap: 20px;
+}
+
+/* The gear list: fields on top, then the commands on their own rows. */
+.daliDeviceControls-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Hidden when empty, so the gap does not leave a blank row. */
+.daliDeviceControls-flow:empty {
+    display: none;
+}
+
+/* Rows of their own, columns left most of their width empty under the short commands. */
+.daliDeviceControls-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+}
+
+.daliDeviceControls-flow .daliDeviceControls-cell {
+    margin-bottom: 0;
+}
+
+.daliDeviceControls-sheetBody .daliDeviceControls-cell:last-child {
+    margin-bottom: 0;
+}
+
+/* The label inside is absolutely positioned, so an auto height collapses. */
+.daliDeviceControls-pinnedControlsCellBody .range-value {
+    margin-top: 5px;
+    height: 21px;
+}
+
+.daliDeviceControls-pinnedControlsCellBody .range-container {
+    padding-top: var(--dali-track-offset);
+}
+
+.daliDeviceControls-pinnedControlsCellBody input[type='color'] {
+    height: var(--dali-control-line);
 }
 
 .daliDeviceControls-cell {
@@ -63,27 +137,93 @@
     align-items: center;
     min-height: 32px;
     min-width: 0;
+    margin-bottom: 6px;
+    break-inside: avoid;
 }
 
-/* The cell widget brings its own name label; just let it fill the column. */
-.daliDeviceControls-cell > *,
-.daliDeviceControls-stripCell > * {
+.daliDeviceControls-pinnedControlsLabel {
+    min-height: 18px;
+    line-height: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.daliDeviceControls-pinnedControlsCellBody {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+}
+
+.daliDeviceControls-pinnedControlsCellBody > .deviceCell {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.daliDeviceControls-pinnedControlsCell .deviceCell-name {
+    display: none;
+}
+
+.daliDeviceControls-cell .deviceCell-columns {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* A slider's value label hangs below the track: the name lines up with the track, not with the pair. */
+.daliDeviceControls-sheetBody .deviceCell:has(input[type='range']) {
+    align-items: flex-start;
+}
+
+.daliDeviceControls-sheetBody .deviceCell:has(input[type='range']) .range-container {
+    padding-top: var(--dali-sheet-track-offset);
+}
+
+.daliDeviceControls-cell .deviceCell-columns .deviceCell-name {
+    flex: 0 0 auto;
+}
+
+.daliDeviceControls-cell > * {
     flex: 1;
     min-width: 0;
 }
 
-/* Phones: the same featured set as a bottom sheet. Closed, it is a one-line
-   peek bar with live values in thumb reach; open, the full control set
-   scrolls inside 60vh while the form keeps the whole screen. */
+/* The history icon is hidden, so the dropdown alone would sit at the left of the stretched wrapper. */
+.daliDeviceControls-cell .deviceCell-withSelect {
+    justify-content: flex-end;
+}
+
+/* The containing block of the open body, which overlays the page up to the top bar. */
+.defaultLayout-container:has(> .daliDeviceControls-sheet) {
+    position: relative;
+}
+
+/* The page alone gives way to the peek line, the mobile top bar keeps its height.
+   Its own stacking context keeps the sticky settings header under the open body.
+   The scrolling content runs right into the peek line. */
+.defaultLayout-container:has(> .daliDeviceControls-sheet) > .defaultLayout-pageWrapper {
+    flex: 1 1 0;
+    z-index: 0;
+    padding-bottom: 0;
+}
+
+/* Only the peek line takes space in the flow. */
 .daliDeviceControls-sheet {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 150;
+    --dali-peek-height: 44px;
+    flex-shrink: 0;
+    /* A flex item stacks without being positioned: the shadow falls over the page,
+       while the open body keeps the layout container as its containing block. */
+    z-index: 1;
     background: var(--container-background);
     border-top: 1px solid var(--border-color);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+    /* The console's shadow. */
+    box-shadow: 2px 0 6px rgb(136, 136, 136, 1);
+}
+
+/* The console's shadow falls upwards onto the sheet, which would otherwise cover it. */
+.defaultLayout:has(.daliDeviceControls-sheet) > .consolePanel {
+    z-index: 2;
 }
 
 .daliDeviceControls-peek {
@@ -92,7 +232,7 @@
     justify-content: space-between;
     gap: 8px;
     width: 100%;
-    min-height: 44px;
+    height: var(--dali-peek-height);
     padding: 6px 14px;
     border: 0;
     background: none;
@@ -118,66 +258,93 @@
     color: var(--text-color);
 }
 
+.daliDeviceControls-peekSwatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+}
+
 .daliDeviceControls-peekChevron {
     flex-shrink: 0;
+    width: 16px;
+    height: 16px;
     color: var(--text-secondary-color);
 }
 
 .daliDeviceControls-sheetBody {
-    max-height: 60vh;
+    /* Centres the 8px track on the first line of the name. */
+    --dali-sheet-track-offset: 9px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--dali-peek-height);
+    z-index: 150;
+    /* Of the layout container: keeps the 54px mobile top bar in view. */
+    max-height: calc(100% - var(--dali-peek-height) - 54px);
     overflow-y: auto;
-    padding: 4px 14px 14px;
-    border-top: 1px solid var(--border-color);
-}
-
-/* Let the last form rows scroll clear of the closed peek bar. */
-@media (max-width: 767px) {
-    .dali-content {
-        padding-bottom: 60px;
-    }
-}
-
-.daliDeviceControls-showAll {
-    margin-left: auto;
-    flex-shrink: 0;
-    padding: 4px 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--input-border-radius, 6px);
+    padding: 8px 14px;
     background: var(--container-background);
-    color: var(--text-color);
-    font-size: 13px;
-    cursor: pointer;
-    white-space: nowrap;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.daliDeviceControls-showAll:hover {
-    background: var(--background-accent-color-hover);
-}
-
-/* Setpoint cells carry their live readback in brackets; readings get their
-   value emphasized and a colon after the name, so "Illuminance 1" followed by
-   "537" stops reading as the single number 1537. */
-.daliDeviceControls-readback {
-    flex: 0 0 auto !important;
-    margin-left: 4px;
-    color: var(--text-secondary-color);
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.daliDeviceControls-swatch {
+/* Absolute, so it keeps the corner above the list it opens however the pinned controls wrap. */
+.daliDeviceControls-showAll {
+    all: unset;
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    display: block;
     width: 16px;
     height: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-secondary-color);
 }
 
-.daliDeviceControls-stripCell .deviceCell:not(.deviceCell-columns) .deviceCell-nameText::after,
-.daliDeviceControls-cell .deviceCell:not(.deviceCell-columns) .deviceCell-nameText::after {
-    content: ':';
+.daliDeviceControls-showAll svg {
+    display: block;
+    width: 16px;
+    height: 16px;
 }
 
-.daliDeviceControls-stripCell .deviceCell-value,
+.daliDeviceControls-showAll:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.daliDeviceControls-showAll:focus-visible {
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+}
+
+.daliDeviceControls-pinnedControlsCell .deviceCell-value,
 .daliDeviceControls-cell .deviceCell-value {
     font-weight: 600;
+}
+
+.daliGearErrorStatus {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+/* The shared Alert is 38px tall, taller than the toolbar buttons. */
+.daliGearErrorStatus .deviceCell-alert {
+    height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.daliGearErrorStatus .alertMessage-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.daliGearErrorStatus .deviceCell {
+    margin-bottom: 0;
 }

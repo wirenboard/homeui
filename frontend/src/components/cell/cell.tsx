@@ -22,7 +22,7 @@ const CellDateTime = lazy(() => import('@/components/cell/cell-datetime')
   .then((module) => ({ default: module.CellDateTime })));
 
 export const CellContent = observer((
-  { cell, name, isCompact, isReadOnly, extra, hideHistory, hideCopy, isVisible = true }: CellProps,
+  { cell, name, isCompact, isReadOnly, isDisabled, extra, hideHistory, hideCopy, isVisible = true }: CellProps,
 ) => {
   const { t } = useTranslation();
 
@@ -34,6 +34,7 @@ export const CellContent = observer((
             cell={cell}
             isCompact={isCompact}
             isReadOnly={isReadOnly}
+            isDisabled={isDisabled}
             hideHistory={hideHistory}
             hideCopy={hideCopy}
           />
@@ -41,22 +42,54 @@ export const CellContent = observer((
       case CellComponent.Alert:
         return <CellAlert cell={cell} name={name} hideHistory={hideHistory} hideCopy={hideCopy} />;
       case CellComponent.Switch:
-        return <CellSwitch cell={cell} inverted={extra?.invert} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
+        return (
+          <CellSwitch
+            cell={cell}
+            inverted={extra?.invert}
+            isReadOnly={isReadOnly}
+            isDisabled={isDisabled}
+            hideHistory={hideHistory}
+          />
+        );
       case CellComponent.Button:
-        return <CellButton cell={cell} name={name} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
+        return (
+          <CellButton
+            cell={cell}
+            name={name}
+            isReadOnly={isReadOnly}
+            isDisabled={isDisabled}
+            hideHistory={hideHistory}
+          />
+        );
       case CellComponent.Range:
-        return <CellRange cell={cell} isReadOnly={isReadOnly} />;
+        return <CellRange cell={cell} isReadOnly={isReadOnly} isDisabled={isDisabled} />;
       case CellComponent.Colorpicker:
-        return <CellColorpicker cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
+        return (
+          <CellColorpicker cell={cell} isReadOnly={isReadOnly} isDisabled={isDisabled} hideHistory={hideHistory} />
+        );
       case CellComponent.DateTime:
         return (
           <Suspense>
-            <CellDateTime cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} hideCopy={hideCopy} />
+            <CellDateTime
+              cell={cell}
+              isReadOnly={isReadOnly}
+              isDisabled={isDisabled}
+              hideHistory={hideHistory}
+              hideCopy={hideCopy}
+            />
           </Suspense>
         );
 
       case CellComponent.Value:
-        return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} hideCopy={hideCopy} />;
+        return (
+          <CellValue
+            cell={cell}
+            isReadOnly={isReadOnly}
+            isDisabled={isDisabled}
+            hideHistory={hideHistory}
+            hideCopy={hideCopy}
+          />
+        );
       default:
         return null;
     }

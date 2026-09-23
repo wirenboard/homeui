@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties, type ReactNode } from 'react';
+import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
@@ -12,8 +14,7 @@ import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store'
 import { useAsyncAction } from '@/utils/async-action';
 import { BusCommands } from '../bus-commands';
 import { BusToggle } from '../bus-toggle';
-import { DeviceControls } from '../device-controls';
-import { TabToolbar } from '../tab-toolbar';
+import { DeviceControlsDesktop, DeviceControlsMobile } from '../device-controls';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
 import './styles.css';
@@ -119,8 +120,9 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
   );
 });
 
-export const BusTabContent = observer(({ store, title }: { store: BusStore; title?: ReactNode }) => {
+export const BusTabContent = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
 
   if (store.isLoading) {
     return (
@@ -130,25 +132,13 @@ export const BusTabContent = observer(({ store, title }: { store: BusStore; titl
     );
   }
 
-  return (
+  const body = (
     <>
       {store.isScanning ? (
         <CommissioningProgress store={store} />
       ) : (
         <>
           <CommissioningErrorBanner store={store} />
-          <TabToolbar title={title}>
-            <FormButtonGroup>
-              <Button
-                label={t('dali.buttons.rescan')}
-                onClick={() => store.scan()}
-              />
-            </FormButtonGroup>
-          </TabToolbar>
-          {/* The daemon publishes the bus's broadcast commands as a virtual
-              device of their own — every lamp at once, which is what one
-              wants to try first after a scan. */}
-          <DeviceControls mqttId={`${store.id}_broadcast`} />
           <BusParamsTabContent store={store} />
           <BusCommands store={store.commands} />
         </>
@@ -168,6 +158,35 @@ export const BusTabContent = observer(({ store, title }: { store: BusStore; titl
         value={store.busMonitorSyslogEnabled}
         onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
       />
+    </>
+  );
+
+  if (store.isScanning) {
+    return <div className="dali-tabBody">{body}</div>;
+  }
+
+  return (
+    <>
+      <div className="dali-tabToolbar">
+        <h2 className="dali-contentTitle">{t('dali.labels.bus', { num: store.index })}</h2>
+        <div className="dali-tabToolbar-actions">
+          <FormButtonGroup>
+            <Button
+              label={t('dali.buttons.rescan')}
+              onClick={() => store.scan()}
+            />
+          </FormButtonGroup>
+        </div>
+      </div>
+      {isMobile ? (
+        <>
+          <div className="dali-tabBody">{body}</div>
+          {/* Broadcast controls only send, there is no state to peek at. */}
+          <DeviceControlsMobile mqttId={`${store.id}_broadcast`} peekTitle={t('dali.labels.broadcast-commands')} />
+        </>
+      ) : (
+        <DeviceControlsDesktop mqttId={`${store.id}_broadcast`}>{body}</DeviceControlsDesktop>
+      )}
     </>
   );
 });

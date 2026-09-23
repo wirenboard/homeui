@@ -12,7 +12,7 @@ import { CellHistory } from './cell-history';
 import { type CellValueProps } from './types';
 import './styles.css';
 
-export const CellValue = observer(({ cell, isReadOnly, hideHistory, hideCopy }: CellValueProps) => {
+export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, hideCopy }: CellValueProps) => {
   const { t } = useTranslation();
   const [capturedValue, setCapturedValue] = useState<string>(null);
   const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
@@ -52,6 +52,7 @@ export const CellValue = observer(({ cell, isReadOnly, hideHistory, hideCopy }: 
               options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
               value={cell.value as string | number}
               ariaLabel={cell.name}
+              isDisabled={isDisabled}
               onChange={(option: Option<string>) => cell.value = option.value}
             />
           </div>
@@ -65,7 +66,7 @@ export const CellValue = observer(({ cell, isReadOnly, hideHistory, hideCopy }: 
               isInvalid={!!cell.error}
               className="deviceCell-text"
               value={cell.value as number}
-              isDisabled={cell.readOnly || isReadOnly}
+              isDisabled={cell.readOnly || isReadOnly || isDisabled}
               min={cell.min}
               max={cell.max}
               step={cell.step}

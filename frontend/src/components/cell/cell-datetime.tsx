@@ -30,7 +30,7 @@ const dateToLocalTime = (date: Date): number =>
     date.getSeconds(),
   ) / 1000);
 
-export const CellDateTime = observer(({ cell, isReadOnly, hideHistory, hideCopy }: CellDateTimeProps) => {
+export const CellDateTime = observer(({ cell, isReadOnly, isDisabled, hideHistory, hideCopy }: CellDateTimeProps) => {
   const { t, i18n } = useTranslation();
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
 
@@ -60,7 +60,7 @@ export const CellDateTime = observer(({ cell, isReadOnly, hideHistory, hideCopy 
           <DateTimePicker
             size="small"
             value={localTimeToDate(cell.value as number)}
-            disabled={cell.readOnly || isReadOnly}
+            disabled={cell.readOnly || isReadOnly || isDisabled}
             isInvalid={!!cell.error}
             ariaLabel={cell.name}
             withSeconds

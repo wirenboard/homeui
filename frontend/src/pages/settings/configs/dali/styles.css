@@ -29,16 +29,28 @@
 }
 
 .dali-content {
+    /* The rows below run edge to edge: they cancel the padding and repaint the background through these. */
+    --dali-inset: 12px;
+    --dali-surface: var(--background-accent-color-hover);
     border: 1px solid var(--border-color);
-    padding: 12px;
+    padding: var(--dali-inset);
     width: 100%;
     min-height: 0;
     border-radius: var(--container-border-radius);
-    background: var(--background-accent-color-hover);
+    background: var(--dali-surface);
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow-y: scroll;
+    /* Only for a tab without `.dali-tabBody`, which takes the scroll otherwise. */
+    overflow-y: auto;
+
+    /* Alone on the screen once the tree is hidden, so there is nothing to frame it off from. */
+    @media (max-width: 991px) {
+        --dali-inset: 0px;
+        --dali-surface: var(--background-color);
+        border: 0;
+        border-radius: 0;
+    }
 }
 
 .dali-contentLoader {
@@ -48,21 +60,56 @@
     justify-content: center;
 }
 
-.dali-deviceToolbar {
+
+/* The part of the tab under the toolbar and the pinned controls, the only one that scrolls.
+   Cancels the gap above and runs to the card's edges, so its scrollbar sits there. */
+.dali-tabBody {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    overflow-y: auto;
+    margin: -10px calc(-1 * var(--dali-inset)) calc(-1 * var(--dali-inset));
+    padding: 10px var(--dali-inset) var(--dali-inset);
+}
+
+/* Sticks to the top of `.dali-tabBody`, right under the pinned controls, once the list above scrolls away.
+   Cancels the body's top padding when it comes first. */
+.dali-settingsHeader {
     position: sticky;
-    top: -12px;
+    top: -10px;
+    /* Above the form's own layers: switches (1) and a focused dropdown (100). */
     z-index: 101;
-    margin: -12px -12px 0;
-    padding: 12px;
-    background: var(--background-accent-color-hover);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: -10px calc(-1 * var(--dali-inset)) 0;
+    padding: 8px var(--dali-inset);
+    background: var(--dali-surface);
     border-bottom: 1px solid var(--border-color);
+}
+
+.dali-settingsTitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.dali-settingsHeader .form-buttonGroup {
+    flex-wrap: wrap;
+    margin-left: auto;
 }
 
 .dali-resetWarning {
     margin-top: 12px;
 }
 
-.dali .dropdown__control--is-disabled .dropdown__indicator {
+/* Read-only settings fields. A device control disabled while settings are read stays a dropdown. */
+.dali .dropdown__control--is-disabled:not(:is(.daliDeviceControls-pinnedControls, .daliDeviceControls, .daliDeviceControls-sheet) *)
+.dropdown__indicator {
     display: none;
 }
 
@@ -77,6 +124,12 @@
 }
 
 .dali-tabToolbar {
+    flex-shrink: 0;
+    margin: calc(-1 * var(--dali-inset)) calc(-1 * var(--dali-inset)) 0;
+    /* Without the card the page header's own margin is space enough above. */
+    padding: var(--dali-inset) var(--dali-inset) 12px;
+    background: var(--dali-surface);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -88,8 +141,6 @@
     margin-left: auto;
 }
 
-/* On phone widths the four device actions cannot share one line; the shared
-   button group does not wrap, which stacked the buttons on top of each other. */
 .dali-tabToolbar-actions .form-buttonGroup {
     flex-wrap: wrap;
     justify-content: flex-start;

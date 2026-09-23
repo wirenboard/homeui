@@ -1,15 +1,16 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties, type ReactNode } from 'react';
+import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import type { GroupStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor';
 import { useAsyncAction } from '@/utils/async-action';
-import { DeviceControls } from '../device-controls';
-import { TabToolbar } from '../tab-toolbar';
+import { DeviceControlsDesktop, DeviceControlsMobile } from '../device-controls';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -52,7 +53,10 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
   );
 });
 
-export const GroupTabContent = observer(({ store, title }: { store: GroupStore; title?: ReactNode }) => {
+export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
+  const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -85,24 +89,34 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
     rows.push(currentRow);
   }
 
+  const paramRows = rows.map((rowParams) => {
+    const rowKey = rowParams.map((p) => p.key).join('-');
+    const items = rowParams.map((param) => (
+      <GroupParam key={param.key} store={store} param={param} />
+    ));
+    if (rowParams.length === 1) {
+      return items[0];
+    }
+    return (
+      <div key={rowKey} className="wb-jsonEditor-objectEditorRow">
+        {items}
+      </div>
+    );
+  });
+
   return (
     <>
-      <TabToolbar title={title} />
-      {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
-      {rows.map((rowParams) => {
-        const rowKey = rowParams.map((p) => p.key).join('-');
-        const items = rowParams.map((param) => (
-          <GroupParam key={param.key} store={store} param={param} />
-        ));
-        if (rowParams.length === 1) {
-          return items[0];
-        }
-        return (
-          <div key={rowKey} className="wb-jsonEditor-objectEditorRow">
-            {items}
-          </div>
-        );
-      })}
+      <div className="dali-tabToolbar">
+        <h2 className="dali-contentTitle">{t('dali.labels.group', { name: store.label })}</h2>
+      </div>
+      {isMobile ? (
+        <>
+          <div className="dali-tabBody">{paramRows}</div>
+          <DeviceControlsMobile mqttId={store.controlsMqttId} />
+        </>
+      ) : (
+        <DeviceControlsDesktop mqttId={store.controlsMqttId}>{paramRows}</DeviceControlsDesktop>
+      )}
     </>
   );
 });

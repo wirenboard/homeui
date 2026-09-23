@@ -37,6 +37,11 @@
     align-items: flex-start;
 }
 
+/* Without it a slider's caption sits 3px above the neighbouring rows. */
+.deviceCell-columns .deviceCell-name {
+    min-height: 26px;
+}
+
 .deviceCell-name {
     display: flex;
     flex-grow: 1;

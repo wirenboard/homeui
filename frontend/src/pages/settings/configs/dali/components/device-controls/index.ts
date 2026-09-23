@@ -1,2 +1,3 @@
-export { DeviceControls } from './device-controls';
-export type { StripEntry } from './types';
+export { DeviceControlsDesktop } from './device-controls-desktop';
+export { DeviceControlsMobile } from './device-controls-mobile';
+export { GearErrorStatus } from './gear-error-status';

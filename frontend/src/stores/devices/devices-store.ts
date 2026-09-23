@@ -4,7 +4,6 @@ import { mqttClient } from '@/services';
 import Cell from './cell';
 import Device from './device';
 import { splitTopic } from './helpers';
-import { sendCellValueUpdate } from './send-cell-value';
 import type { ValueType } from './types';
 
 const collator = new Intl.Collator(undefined, { sensitivity: 'base' });
@@ -191,7 +190,8 @@ export default class DevicesStore {
   }
 
   async sendCellValueUpdate(deviceId: string, controlId: string, value: string) {
-    await sendCellValueUpdate(deviceId, controlId, value);
+    const topic = `/devices/${deviceId}/controls/${controlId}/on`;
+    await mqttClient.send(topic, value, false);
   }
 
   #getOrCreateTopics(deviceId: string) {

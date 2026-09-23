@@ -79,7 +79,10 @@ export interface BusDetailed {
 }
 
 export interface DeviceDetailed {
-  config: object;
+  config: {
+    mqtt_id?: string;
+    groups?: boolean[];
+  };
   schema: JsonSchema;
   name: string;
   groups: boolean[];

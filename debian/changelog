@@ -1,13 +1,12 @@
-wb-mqtt-homeui (2.262.4) stable; urgency=medium
+wb-mqtt-homeui (2.263.0) stable; urgency=medium
 
-  * DALI: live device controls on device, group and bus pages — a featured strip
-    of the controls one reaches for (level, colour, temperature, on/off), each
-    named by its quantity, with the rest behind "All controls"; a device's alarm
-    rides in the page toolbar next to the title, which names what is open, the
-    hidden tree no longer does so on mobile, and the toolbar buttons wrap on
-    phones
+  [ Evgeny Boger ]
+  * DALI: live device controls on device, group and bus pages
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 22 Sep 2026 11:30:00 +0500
+  [ Petr Krasnoshchekov ]
+  * Remove the oversized padding around the page header
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 24 Sep 2026 15:00:00 +0500
 
 wb-mqtt-homeui (2.262.3) stable; urgency=medium
 
