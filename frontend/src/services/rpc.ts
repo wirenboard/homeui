@@ -1,4 +1,5 @@
 import { mqttClient } from '@/services';
+import { stringifyExact } from '@/utils/exact-json';
 
 const RPC_TIMEOUT = 60000;
 const METHOD_AVAILABLE_TIMEOUT = 3000;
@@ -122,7 +123,7 @@ function rpcCall(prefix: string, method: string, params?: Record<string, any>): 
     try {
       mqttClient.send(
         topic,
-        JSON.stringify({
+        stringifyExact({
           id: callId,
           params: params || {},
         }),
