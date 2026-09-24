@@ -292,32 +292,10 @@
 }
 
 /* Absolute, so it keeps the corner above the list it opens however the pinned controls wrap. */
-.daliDeviceControls-showAll {
-    all: unset;
+.button.daliDeviceControls-showAll {
     position: absolute;
-    bottom: 8px;
-    right: 10px;
-    display: block;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    color: var(--text-secondary-color);
-}
-
-.daliDeviceControls-showAll svg {
-    display: block;
-    width: 16px;
-    height: 16px;
-}
-
-.daliDeviceControls-showAll:disabled {
-    opacity: 0.4;
-    cursor: default;
-}
-
-.daliDeviceControls-showAll:focus-visible {
-    outline: var(--form-element-outline);
-    outline-offset: var(--form-element-outline-offset);
+    bottom: 0;
+    right: 6px;
 }
 
 .daliDeviceControls-pinnedControlsCell .deviceCell-value,
