@@ -30,7 +30,7 @@ const DeviceSettingsSubGroup = (
   return (
     <div className="deviceSettingsEditor-subGroup">
       <label>
-        {translator.find(group.properties.title, currentLanguage)}
+        {translator.find(group.properties.title || group.properties.id, currentLanguage)}
       </label>
       <DeviceSettingsCardContent group={group} isTopLevel={false} translator={translator} />
     </div>
@@ -110,7 +110,7 @@ const DeviceSettingsCardContent = observer((
   { group, isTopLevel, translator }:
   { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator },
 ) => {
-  const showDescription = !!group.properties.description;
+  const showDescription = !!group.description;
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   return (
@@ -123,7 +123,7 @@ const DeviceSettingsCardContent = observer((
       })}
     >
       {showDescription && (
-        <ParamDescription description={translator.find(group.properties.description, currentLanguage)} />
+        <ParamDescription description={translator.find(group.description, currentLanguage)} />
       )}
       {MakeEditors(group.parameters, translator)}
       <ChannelsList channels={group.channels} translator={translator} />
@@ -146,7 +146,7 @@ const DeviceSettingsCard = observer((
   return (
     <Card
       key={group.properties.id}
-      heading={translator.find(group.properties.title, currentLanguage)}
+      heading={translator.find(group.properties.title || group.properties.id, currentLanguage)}
       id={group.properties.id}
       variant="secondary"
       withError={group.hasErrors}

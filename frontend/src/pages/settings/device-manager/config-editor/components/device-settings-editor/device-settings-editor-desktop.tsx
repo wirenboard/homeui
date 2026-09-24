@@ -38,7 +38,7 @@ const DeviceSettingsSubGroup = (
   return (
     <div className="deviceSettingsEditor-subGroup">
       <label>
-        {translator.find(group.properties.title, currentLanguage)}
+        {translator.find(group.properties.title || group.properties.id, currentLanguage)}
       </label>
       <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} showChannels={showChannels} />
     </div>
@@ -125,7 +125,7 @@ const DeviceSettingsTabContent = observer((
   { group, isTopLevel, translator, showChannels }:
   { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator; showChannels: boolean },
 ) => {
-  const showDescription = !!group.properties.description;
+  const showDescription = !!group.description;
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   return (
@@ -138,7 +138,7 @@ const DeviceSettingsTabContent = observer((
       })}
     >
       {showDescription && (
-        <ParamDescription description={translator.find(group.properties.description, currentLanguage)} />
+        <ParamDescription description={translator.find(group.description, currentLanguage)} />
       )}
       {MakeEditors(group.parameters, translator)}
       {showChannels && <ChannelsTable channels={group.channels} translator={translator} />}
@@ -174,7 +174,7 @@ const DeviceSettingsTabs = observer((
         id: group.properties.id,
         label: (
           <span className={classNames(classNamesObj)}>
-            {translator.find(group.properties.title, i18n.language)}
+            {translator.find(group.properties.title || group.properties.id, i18n.language)}
           </span>
         ),
       };

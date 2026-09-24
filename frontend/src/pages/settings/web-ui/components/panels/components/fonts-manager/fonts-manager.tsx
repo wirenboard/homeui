@@ -1,12 +1,14 @@
 import Uploady, { useUploady, useItemFinishListener, useItemErrorListener } from '@rpldy/uploady';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Confirm } from '@/components/confirm';
 import { Loader } from '@/components/loader';
 import { fontsStore } from '@/stores/fonts';
+import { useAsyncAction } from '@/utils/async-action';
 import './styles.css';
 
 function formatSize(bytes: number): string {
@@ -23,6 +25,12 @@ const FontsList = observer(() => {
   const { t } = useTranslation();
   const uploady = useUploady();
   const [error, setError] = useState('');
+  const [deletedFontName, setDeletedFontName] = useState('');
+
+  const [deleteFont, isDeleting] = useAsyncAction(async (name: string) => {
+    await fontsStore.deleteFont(name);
+    setDeletedFontName('');
+  });
 
   useEffect(() => {
     fontsStore.loadFonts();
@@ -63,7 +71,8 @@ const FontsList = observer(() => {
                 variant="danger"
                 icon={<TrashIcon />}
                 aria-label={t('web-ui-settings.labels.delete-font')}
-                onClick={() => fontsStore.deleteFont(font.name)}
+                aria-haspopup="dialog"
+                onClick={() => setDeletedFontName(font.name)}
               />
             </li>
           ))}
@@ -76,6 +85,25 @@ const FontsList = observer(() => {
         size="small"
         onClick={() => uploady.showFileUpload()}
       />
+
+      {deletedFontName && (
+        <Confirm
+          isOpened={!!deletedFontName}
+          heading={t('web-ui-settings.labels.confirm-delete-font-heading')}
+          variant="danger"
+          isLoading={isDeleting}
+          acceptLabel={t('web-ui-settings.labels.delete-font')}
+          closeCallback={() => setDeletedFontName('')}
+          confirmCallback={() => deleteFont(deletedFontName)}
+        >
+          <Trans
+            i18nKey="web-ui-settings.labels.confirm-delete-font"
+            values={{ name: deletedFontName }}
+            components={[<b key="font-name" />]}
+            shouldUnescape
+          />
+        </Confirm>
+      )}
     </div>
   );
 });

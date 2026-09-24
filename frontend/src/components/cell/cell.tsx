@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { CellAlert } from '@/components/cell/cell-alert';
 import { CellButton } from '@/components/cell/cell-button';
 import { CellColorpicker } from '@/components/cell/cell-colorpicker';
-import { CellDateTime } from '@/components/cell/cell-datetime';
 import { CellHistory } from '@/components/cell/cell-history';
 import { CellRange } from '@/components/cell/cell-range';
 import { CellSwitch } from '@/components/cell/cell-switch';
@@ -19,16 +18,28 @@ import { type CellProps } from './types';
 import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
+const CellDateTime = lazy(() => import('@/components/cell/cell-datetime')
+  .then((module) => ({ default: module.CellDateTime })));
 
-export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra, hideHistory }: CellProps) => {
+export const CellContent = observer((
+  { cell, name, isCompact, isReadOnly, extra, hideHistory, hideCopy, isVisible = true }: CellProps,
+) => {
   const { t } = useTranslation();
 
   const renderCellContent = () => {
     switch (cell.displayType) {
       case CellComponent.Text:
-        return <CellText cell={cell} isCompact={isCompact} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
+        return (
+          <CellText
+            cell={cell}
+            isCompact={isCompact}
+            isReadOnly={isReadOnly}
+            hideHistory={hideHistory}
+            hideCopy={hideCopy}
+          />
+        );
       case CellComponent.Alert:
-        return <CellAlert cell={cell} name={name} hideHistory={hideHistory} />;
+        return <CellAlert cell={cell} name={name} hideHistory={hideHistory} hideCopy={hideCopy} />;
       case CellComponent.Switch:
         return <CellSwitch cell={cell} inverted={extra?.invert} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.Button:
@@ -38,9 +49,14 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
       case CellComponent.DateTime:
-        return <CellDateTime cell={cell} isReadOnly={isReadOnly} />;
+        return (
+          <Suspense>
+            <CellDateTime cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} hideCopy={hideCopy} />
+          </Suspense>
+        );
+
       case CellComponent.Value:
-        return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} />;
+        return <CellValue cell={cell} isReadOnly={isReadOnly} hideHistory={hideHistory} hideCopy={hideCopy} />;
       default:
         return null;
     }
@@ -60,15 +76,8 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
       )}
     >
       {!isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (
-        <Tooltip
-          text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
-          placement="top-start"
-          trigger="click"
-        >
-          <div
-            className="deviceCell-name"
-            onClick={() => copyToClipboard(cell.id)}
-          >
+        hideCopy ? (
+          <div className="deviceCell-name deviceCell-noClick">
             {cell.error?.includes(CellError.Period) && (
               <Suspense>
                 <Tooltip
@@ -85,12 +94,39 @@ export const CellContent = observer(({ cell, name, isCompact, isReadOnly, extra,
               <CellHistory cell={cell} />
             )}
           </div>
-        </Tooltip>
+        ) : (
+          <Tooltip
+            text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
+            placement="top-start"
+            trigger="click"
+          >
+            <div
+              className="deviceCell-name"
+              onClick={() => copyToClipboard(cell.id)}
+            >
+              {cell.error?.includes(CellError.Period) && (
+                <Suspense>
+                  <Tooltip
+                    text={t('widget.errors.poll')}
+                    placement="top-start"
+                  >
+                    <DangerIcon className="deviceCell-periodErrorIcon" />
+                  </Tooltip>
+                </Suspense>
+              )}
+              <span className="deviceCell-nameText">{name || cell.name}</span>
+
+              {cell.displayType === CellComponent.Range && !hideHistory && (
+                <CellHistory cell={cell} />
+              )}
+            </div>
+          </Tooltip>
+        )
       )}
       {isCompact && !hideHistory && cell.displayType === CellComponent.Range && (
         <CellHistory cell={cell} />
       )}
-      {renderCellContent()}
+      {isVisible && renderCellContent()}
     </div>
   );
 });

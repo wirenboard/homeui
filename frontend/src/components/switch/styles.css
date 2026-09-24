@@ -2,7 +2,7 @@
 .toggle-switchy > input + .toggle > .switch {background:#fff;transition:background 200ms linear, width 200ms linear, height 200ms linear, right 200ms linear;}
 .toggle-switchy > input:checked + .toggle {background:var(--primary-color);}
 .toggle-switchy > input + .toggle {transition:background 300ms ease;}
-.toggle-switchy > input:not(:checked) + .toggle {outline: 2px solid var(--primary-color);outline-offset:-2px;}
+.toggle-switchy > input:not(:checked) + .toggle {box-shadow: inset 0 0 0 2px var(--primary-color);}
 .toggle-switchy > input:not(:checked) + .toggle > .switch {background:var(--primary-color);}
 .toggle-switchy > input:focus + .toggle,
 .toggle-switchy > input:active + .toggle {
@@ -19,7 +19,11 @@
 .toggle-switchy > input {position:absolute; opacity:0;}
 .toggle-switchy > input + .toggle {align-items:center; position:relative; cursor:pointer;}
 .toggle-switchy > input + .toggle {overflow:hidden; position:relative; flex-shrink:0;}
-.toggle-switchy > input[disabled] + .toggle {opacity:0.5;background: var(--light-gray-color);}
+.toggle-switchy > input[disabled] + .toggle {opacity:0.85;background: var(--light-gray-color);}
+.toggle-switchy-invalid > input[disabled] + .toggle {opacity:0.5;}
+.toggle-switchy > input[disabled]:not(:checked) + .toggle {box-shadow:inset 0 0 0 2px var(--light-gray-color);}
+.toggle-switchy > input[disabled]:not(:checked) + .toggle > .switch {background:#fff;}
+.toggle-switchy > input[disabled] + .toggle > .switch .switch-icon {color:var(--light-gray-color);}
 .toggle-switchy > input[disabled] + .toggle:hover {cursor:not-allowed;}
 .toggle-switchy > input + .toggle {width:100%; height:100%; margin:0; cursor:pointer;}
 .toggle-switchy > input + .toggle > .switch {display:block; height:100%; position:absolute; right:0; box-sizing:border-box;}
@@ -37,7 +41,7 @@
 .toggle-switchy > input + .toggle:after {transition:all 200ms linear;}
 
 .toggle-switchy > input + .toggle {width:34px; height:18px;}
-.toggle-switchy > input + .toggle > .switch {width:10px;height:10px;margin:4px}
+.toggle-switchy > input + .toggle > .switch {width:12px;height:12px;margin:3px;display:flex;align-items:center;justify-content:center;}
 .toggle-switchy > input + .toggle:before,
 .toggle-switchy > input + .toggle:after {font-size:0.5rem;}
 .toggle-switchy > input:not(:checked) + .toggle > .switch {right:calc(100% - 18px);}
@@ -47,13 +51,21 @@
 .toggle-switchy > input + .toggle:before {right:50%; font-size: var(--font-size-small);}
 .toggle-switchy > input + .toggle:after {left:50%; font-size: var(--font-size-small);}
 
+.toggle-switchy > input + .toggle > .switch .switch-icon {width:12px;height:12px;}
+.toggle-switchy > input:checked:not([disabled]) + .toggle > .switch .switch-icon {color:var(--primary-color);}
+.toggle-switchy > input:not(:checked):not([disabled]) + .toggle > .switch .switch-icon {color:#fff;}
+
 .toggle-switchy-invalid .toggle {
     background: var(--danger-color) !important;
-    outline: 2px solid var(--danger-color) !important;
-    outline-offset:-2px !important;
+    box-shadow: inset 0 0 0 2px var(--danger-color) !important;
 }
 
 .toggle-switchy-invalid > input + .toggle > .switch {
     background: #fff !important;
 }
+
+.toggle-switchy-invalid > input + .toggle > .switch .switch-icon {
+    color: var(--danger-color) !important;
+}
+
 

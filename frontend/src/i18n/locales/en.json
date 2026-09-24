@@ -61,7 +61,8 @@
          "create": "Add panel",
          "svg-flag": "SVG panel type",
          "text-flag": "Text panel type",
-         "text-dashboard": "Text"
+         "text-dashboard": "Text",
+         "show-history": "Show history buttons"
       },
       "buttons": {
          "add": "Add",
@@ -81,6 +82,7 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed",
+         "invalid-id-chars": "Id contains invalid characters",
          "load": "Failed to load dashboards",
          "svg-load": "Failed to load the dashboard image",
          "save": "Config saving failed"
@@ -671,6 +673,7 @@
          "add-widget": "Add widget",
          "edit-widget": "Edit widget",
          "remove-widget": "Remove from this dashboard",
+         "edit-dashboard": "Dashboard settings",
          "fullscreen": "Enter fullscreen mode",
          "fullscreen-exit": "Exit fullscreen mode"
       },
@@ -695,7 +698,8 @@
          "type-virtual": "Virtual",
          "type-modbus": "Modbus",
          "type-zigbee": "Zigbee",
-         "type-dali": "DALI"
+         "type-dali": "DALI",
+         "search": "Search devices"
       },
       "prompt": {
          "delete-title": "Delete device",
@@ -786,7 +790,8 @@
          "save": "Save loaded log to file",
          "case": "Match case",
          "regex": "Regular expression",
-         "live-update": "Live update"
+         "live-update": "Live update",
+         "filters": "Filters"
       },
       "errors": {
          "unavailable": "wb-mqtt-logs service is unavailable",
@@ -1003,7 +1008,9 @@
          "upload-font": "Upload font",
          "delete-font": "Delete",
          "no-fonts": "No fonts uploaded",
-         "fonts": "Fonts for SVG dashboards"
+         "fonts": "Fonts for SVG dashboards",
+         "confirm-delete-font-heading": "Delete font",
+         "confirm-delete-font": "Are you sure you want to delete font <0>{{name}}</0>?"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
@@ -1043,6 +1050,7 @@
       },
       "labels": {
          "select-params": "Add or remove parameters",
+         "not-set": "Not set",
          "dali-mask": "MASK (do not change)",
          "dali-mask-tc-limit-not-set": "MASK (not set)"
       }
@@ -1063,8 +1071,6 @@
          "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
          "websocket-port": "WebSocket port",
          "websocket-port-error": "Port must be an integer between 1 and 65535",
-         "polling-interval": "Polling Interval (s)",
-         "polling-interval-error": "Interval must be a positive integer",
          "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices",
          "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>.",
          "scan-error": "Scan failed at {{when}}: {{error}}",
@@ -1108,9 +1114,11 @@
          "all-controls": "All controls",
          "state-on": "on",
          "state-off": "off",
+         "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {
+         "fix-event-schemes": "Set recommended scheme",
          "rescan": "Rescan",
          "stop-scan": "Stop",
          "return": "To devices list",

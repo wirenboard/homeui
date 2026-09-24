@@ -100,7 +100,11 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
             title={t('edit-svg-dashboard.labels.common-parameters-id')}
             value={store.commonParameters['id']}
             required={true}
-            error={!store.isIdUnique || store.idConflictError ? t('dashboards.errors.duplicate') : undefined}
+            error={
+              !store.isIdCharsValid
+                ? t('dashboards.errors.invalid-id-chars')
+                : (!store.isIdUnique || store.idConflictError ? t('dashboards.errors.duplicate') : undefined)
+            }
             autoFocus
             onChange={(val: string) => store.setCommonParam('id', val)}
           />
@@ -125,6 +129,7 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
               <BooleanField
                 title={t('edit-svg-dashboard.labels.swipe-enable')}
                 value={store.swipeParameters.enable}
+                view="checkbox"
                 onChange={(val) => store.setSwipeParameters('enable', val)}
               />
             }

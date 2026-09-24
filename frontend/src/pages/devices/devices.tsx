@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CodeIcon from '@/assets/icons/code.svg';
 import CollapseIcon from '@/assets/icons/collapse.svg';
@@ -15,20 +15,17 @@ import { Cell } from '@/components/cell';
 import { ColumnsWrapper, useMaxColumns, MIN_COLUMN_WIDTH } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
+import { SearchBar } from '@/components/search-bar';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { ColumnsEditor } from '@/pages/dashboards/[slug]/components/columns-editor';
 import { authStore, UserRole } from '@/stores/auth';
 import { devicesStore, DeviceType } from '@/stores/devices';
 import { readViewPreferences, writeViewPreferences } from '@/utils/view-preferences';
+import { type DeviceCardProps, type DevicesViewPrefs } from './types';
 import './styles.css';
 
 const VIEW_KEY = 'devices';
-
-interface DevicesViewPrefs {
-  columns: number | null;
-  order: string[][] | null;
-}
 
 const DEFAULTS: DevicesViewPrefs = { columns: null, order: null };
 
@@ -76,10 +73,64 @@ function reconcileOrder(deviceIds: string[], savedOrder: string[][]): string[][]
   return columns;
 }
 
+const DeviceCard = observer(({ deviceId, actions }: DeviceCardProps) => {
+  const device = devicesStore.devices.get(deviceId);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [inViewport, setInViewport] = useState(false);
+  const lastHeight = useRef<number>(undefined);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting && bodyRef.current) {
+          lastHeight.current = bodyRef.current.offsetHeight;
+        }
+        setInViewport(entry.isIntersecting);
+      },
+      { rootMargin: '200px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  if (!device) return null;
+
+  return (
+    <div ref={cardRef}>
+      <Card
+        heading={device.name}
+        indicator={
+          <>
+            {device.type === DeviceType.Virtual && <CodeIcon className="devices-icon" />}
+            {device.type === DeviceType.System && <SystemDeviceIcon className="devices-icon" />}
+            {device.type === DeviceType.Modbus && <ModbusIcon className="devices-icon" />}
+            {device.type === DeviceType.Zigbee && <ZigbeeIcon className="devices-icon" />}
+          </>
+        }
+        id={deviceId}
+        actions={actions}
+        toggleBody={device.toggleDeviceVisibility}
+        isBodyVisible={device.isVisible}
+        withError={!!device.error}
+      >
+        <div ref={bodyRef} style={!inViewport && lastHeight.current ? { minHeight: lastHeight.current } : undefined}>
+          {device.visibleCells.map((cell) => (
+            <Cell cell={cell} key={cell.id} isVisible={inViewport} />
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+});
+
 const DevicesPage = observer(() => {
   const { t } = useTranslation();
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [prefs, setPrefs] = useState<DevicesViewPrefs>(readPrefs);
   const [isEditLayout, setIsEditLayout] = useState(false);
   const [draftOrder, setDraftOrder] = useState<string[][] | null>(null);
@@ -147,76 +198,79 @@ const DevicesPage = observer(() => {
     dali: 'devices.labels.type-dali',
   };
 
-  const presentTypes = new Set(
-    Array.from(devicesStore.filteredDevices.values()).map((device) => device.type),
-  );
-  const typeOptions = [
-    { value: null, label: t('devices.labels.all-devices') },
-    ...Object.entries(typeFilterMap)
-      .filter(([_, type]) => presentTypes.has(type))
-      .map(([key]) => ({ value: key, label: t(typeLabelKeys[key]) })),
-  ];
+  const typeOptions = useMemo(() => {
+    const presentTypes = new Set(
+      Array.from(devicesStore.filteredDevices.values()).map((device) => device.type),
+    );
+    return [
+      { value: null, label: t('devices.labels.all-devices') },
+      ...Object.entries(typeFilterMap)
+        .filter(([_, type]) => presentTypes.has(type))
+        .map(([key]) => ({ value: key, label: t(typeLabelKeys[key]) })),
+    ];
+  }, [devicesStore.filteredDevices, t]);
 
   const displayedIds = useMemo(() => {
     const devices = devicesStore.filteredDevices;
-    const ids = Array.from(devices.keys());
-    if (!typeFilter) return ids;
-    return ids.filter((id) => devices.get(id)?.type === typeFilterMap[typeFilter]);
-  }, [devicesStore.filteredDevices, typeFilter]);
+    let ids = Array.from(devices.keys());
+    if (typeFilter) {
+      ids = ids.filter((id) => devices.get(id)?.type === typeFilterMap[typeFilter]);
+    }
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      ids = ids.filter((id) => {
+        const device = devices.get(id);
+        return id.toLowerCase().includes(query)
+          || device?.name.toLowerCase().includes(query);
+      });
+    }
+    return ids;
+  }, [devicesStore.filteredDevices, typeFilter, searchQuery]);
+
+  const deferredIds = useDeferredValue(displayedIds);
 
   if (!localStorage.getItem('foldedDevices')) {
     localStorage.setItem('foldedDevices', JSON.stringify([]));
   }
 
-  const actions = isEditLayout ? [] : [
+  const actions = useMemo(() => isEditLayout ? [] : [
     {
       title: t('devices.labels.delete'),
       action: (id: string) => setDeletedDeviceId(id),
       icon: TrashIcon,
       isPopupAction: true,
     },
-  ];
+  ], [isEditLayout, t]);
 
-  const renderDevice = useCallback((deviceId: string) => {
-    const device = devicesStore.filteredDevices.get(deviceId);
-    if (!device) return null;
-    return (
-      <Card
-        heading={device.name}
-        indicator={
-          <>
-            {device.type === DeviceType.Virtual && <CodeIcon className="devices-icon" />}
-            {device.type === DeviceType.System && <SystemDeviceIcon className="devices-icon" />}
-            {device.type === DeviceType.Modbus && <ModbusIcon className="devices-icon" />}
-            {device.type === DeviceType.Zigbee && <ZigbeeIcon className="devices-icon" />}
-          </>
-        }
-        id={deviceId}
-        actions={actions}
-        toggleBody={device.toggleDeviceVisibility}
-        isBodyVisible={device.isVisible}
-        withError={!!device.error}
-      >
-        {devicesStore.getDeviceCells(device.id).map((cell) => (
-          <Cell cell={cell} key={cell.id} />
-        ))}
-      </Card>
-    );
-  }, [devicesStore.filteredDevices, actions]);
+  const renderDevice = useCallback((deviceId: string) => (
+    <DeviceCard deviceId={deviceId} actions={actions} />
+  ), [actions]);
 
   const viewColumnItems = useMemo(() => {
-    if (!prefs.order || typeFilter) return undefined;
-    return reconcileOrder(displayedIds, prefs.order).map((col) =>
+    if (!prefs.order || typeFilter || searchQuery) return undefined;
+    return reconcileOrder(deferredIds, prefs.order).map((col) =>
       col.map((id) => <Fragment key={id}>{renderDevice(id)}</Fragment>),
     );
-  }, [displayedIds, prefs.order, typeFilter, renderDevice]);
-
+  }, [deferredIds, prefs.order, typeFilter, searchQuery, renderDevice]);
+  const deviceElements = useMemo(() =>
+    deferredIds.map((id) => (
+      <Fragment key={id}>{renderDevice(id)}</Fragment>
+    )),
+  [deferredIds, renderDevice]);
   return (
     <PageLayout
       title={t('devices.title')}
       hasRights={authStore.hasRights(UserRole.Operator)}
       actions={
         <>
+          {!isEditLayout && (
+            <SearchBar
+              value={searchQuery}
+              placeholder={t('devices.labels.search')}
+              ariaLabel={t('devices.labels.search')}
+              onChange={setSearchQuery}
+            />
+          )}
           {!isEditLayout && typeOptions.length > 2 && (
             <Dropdown
               value={typeFilter}
@@ -279,11 +333,7 @@ const DevicesPage = observer(() => {
                 columnCount={effectiveColumns ?? undefined}
                 columnItems={viewColumnItems}
               >
-                {!viewColumnItems && displayedIds.map((id) => (
-                  <Fragment key={id}>
-                    {renderDevice(id)}
-                  </Fragment>
-                ))}
+                {!viewColumnItems && deviceElements}
               </ColumnsWrapper>
             )}
           </>

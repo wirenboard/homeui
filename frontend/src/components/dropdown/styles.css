@@ -54,6 +54,7 @@
 
 .dropdown__option {
   display: block;
+  line-height: 1.2em;
 }
 
 .dropdown__placeholder {
@@ -106,8 +107,12 @@
 .dropdown-s .dropdown__control,
 .dropdown-s .dropdown__option,
 .dropdown-s .dropdown__group-heading {
-  height: 28px;
+  min-height: 28px;
   padding: 3px 8px;
+}
+
+.dropdown-s .dropdown__control,
+.dropdown-s .dropdown__group-heading {
   max-height: 30px;
 }
 

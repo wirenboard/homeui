@@ -27,6 +27,7 @@ export class DeviceStore extends BaseItemStore {
       error: observable,
       label: observable,
       mqttId: observable,
+      objectStore: observable.ref,
       groups: observable.shallow,
     });
   }
@@ -51,9 +52,9 @@ export class DeviceStore extends BaseItemStore {
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations);
-      this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
       runInAction(() => {
+        this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
         this.label = data.name || this.label;
         this.mqttId = (data.config as any).mqtt_id ?? null;
         this.updateGroups((data.config as any).groups);

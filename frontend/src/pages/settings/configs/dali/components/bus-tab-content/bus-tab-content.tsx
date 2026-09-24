@@ -16,7 +16,6 @@ import { DeviceControls } from '../device-controls';
 import { TabToolbar } from '../tab-toolbar';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
-import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -150,7 +149,6 @@ export const BusTabContent = observer(({ store, title }: { store: BusStore; titl
               device of their own — every lamp at once, which is what one
               wants to try first after a scan. */}
           <DeviceControls mqttId={`${store.id}_broadcast`} />
-          <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
           <BusCommands store={store.commands} />
         </>

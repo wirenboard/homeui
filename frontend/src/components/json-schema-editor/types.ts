@@ -56,6 +56,11 @@ export interface DaliLevelSliderEditorProps {
   inputId?: string;
 }
 
+export interface RangeSliderEditorProps {
+  store: NumberStore;
+  inputId?: string;
+}
+
 export interface DaliColorTemperatureSliderEditorProps {
   store: NumberStore;
   rootStore?: PropertyStore;
@@ -70,6 +75,22 @@ export interface DaliRGBEditorProps {
 export interface DaliWhiteEditorProps {
   store: NumberStore;
   inputId?: string;
+}
+
+export enum DaliOnOffActionMode {
+  Scene = 'scene',
+  LastActiveLevel = 'last_active_level',
+  Level = 'level',
+  Dapc = 'dapc',
+  Off = 'off',
+}
+
+export interface DaliOnOffEditorProps {
+  store: ObjectStore;
+  rootStore: PropertyStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
+  isTopLevel?: boolean;
 }
 
 export interface StringEditorProps {
