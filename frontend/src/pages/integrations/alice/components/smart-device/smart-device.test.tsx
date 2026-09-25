@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SmartDevice } from './smart-device';
 
 const { aliceMock } = vi.hoisted(() => ({
@@ -122,16 +122,18 @@ describe('SmartDevice', () => {
       expect(screen.getByText('alice.buttons.save')).toBeDefined();
     });
 
-    test('clicking edit shows name input', () => {
+    test('clicking edit shows name input', async () => {
       render(<SmartDevice {...defaultProps} />);
       fireEvent.click(screen.getByLabelText('alice.buttons.edit-device-name'));
       expect(screen.getByPlaceholderText('alice.labels.device-name')).toBeDefined();
+      await waitFor(() => {});
     });
 
-    test('clicking copy calls copyDevice', () => {
+    test('clicking copy calls copyDevice', async () => {
       render(<SmartDevice {...defaultProps} />);
       fireEvent.click(screen.getByLabelText('alice.buttons.copy-device'));
       expect(aliceMock.copyDevice).toHaveBeenCalled();
+      await waitFor(() => {});
     });
   });
 
@@ -152,33 +154,37 @@ describe('SmartDevice', () => {
       expect(screen.queryByLabelText('alice.buttons.copy-device')).toBeNull();
     });
 
-    test('delete for unsaved device calls onDelete directly', () => {
+    test('delete for unsaved device calls onDelete directly', async () => {
       render(<SmartDevice {...defaultProps} id={undefined} />);
       fireEvent.click(screen.getByLabelText('alice.buttons.delete-device'));
       expect(defaultProps.onDelete).toHaveBeenCalled();
+      await waitFor(() => {});
     });
   });
 
   describe('delete device', () => {
-    test('clicking delete opens confirm dialog', () => {
+    test('clicking delete opens confirm dialog', async () => {
       render(<SmartDevice {...defaultProps} />);
       fireEvent.click(screen.getByLabelText('alice.buttons.delete-device'));
       expect(screen.getByTestId('confirm-dialog')).toBeDefined();
       expect(screen.getByText('alice.prompt.delete-device-title')).toBeDefined();
+      await waitFor(() => {});
     });
 
-    test('confirming delete calls deleteDevice', () => {
+    test('confirming delete calls deleteDevice', async () => {
       render(<SmartDevice {...defaultProps} />);
       fireEvent.click(screen.getByLabelText('alice.buttons.delete-device'));
       fireEvent.click(screen.getByTestId('confirm-yes'));
       expect(aliceMock.deleteDevice).toHaveBeenCalledWith('d1');
+      await waitFor(() => expect(screen.queryByTestId('confirm-dialog')).toBeNull());
     });
 
-    test('cancelling delete closes dialog', () => {
+    test('cancelling delete closes dialog', async () => {
       render(<SmartDevice {...defaultProps} />);
       fireEvent.click(screen.getByLabelText('alice.buttons.delete-device'));
       fireEvent.click(screen.getByTestId('confirm-close'));
       expect(screen.queryByTestId('confirm-dialog')).toBeNull();
+      await waitFor(() => {});
     });
   });
 });

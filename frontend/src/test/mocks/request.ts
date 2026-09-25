@@ -1,3 +1,5 @@
+import type { Mock } from 'vitest';
+
 export enum ErrorCode {
   HTMLResponse = 'ERR_HTML_RESPONSE',
 }
@@ -25,13 +27,13 @@ export class ApiError extends Error {
 }
 
 export const requestMock = {
-  get: vi.fn(),
-  post: vi.fn(),
-  patch: vi.fn(),
-  delete: vi.fn(),
+  get: vi.fn() as Mock,
+  post: vi.fn() as Mock,
+  patch: vi.fn() as Mock,
+  delete: vi.fn() as Mock,
   interceptors: {
-    response: { use: vi.fn() },
-    request: { use: vi.fn() },
+    response: { use: vi.fn() as Mock },
+    request: { use: vi.fn() as Mock },
   },
 };
 

@@ -61,7 +61,8 @@
          "create": "Добавление панели",
          "svg-flag": "Тип панели — svg",
          "text-flag": "Тип панели — текстовая",
-         "text-dashboard": "Текстовая"
+         "text-dashboard": "Текстовая",
+         "show-history": "Показывать кнопки истории"
       },
       "buttons": {
          "add": "Добавить панель",
@@ -81,6 +82,7 @@
       },
       "errors": {
          "duplicate": "Идентификатор должен быть уникальным",
+         "invalid-id-chars": "Идентификатор содержит недопустимые символы",
          "load": "Не удалось загрузить панели",
          "svg-load": "Не удалось загрузить изображение панели",
          "save": "Не удалось сохранить настройки"
@@ -700,6 +702,7 @@
          "add-widget": "Добавить виджет",
          "edit-widget": "Редактировать виджет",
          "remove-widget": "Убрать виджет с панели",
+         "edit-dashboard": "Настройки панели",
          "fullscreen": "Перейти в полноэкранный режим",
          "fullscreen-exit": "Выйти из полноэкранного режима"
       },
@@ -816,7 +819,8 @@
          "save": "Сохранить загруженные сообщения в файл",
          "case": "Учитывать регистр символов",
          "regex": "Регулярное выражение",
-         "live-update": "Автообновление"
+         "live-update": "Автообновление",
+         "filters": "Фильтры"
       },
       "errors": {
          "unavailable": "Сервис wb-mqtt-logs недоступен",
@@ -1033,7 +1037,9 @@
          "upload-font": "Загрузить шрифт",
          "delete-font": "Удалить",
          "no-fonts": "Шрифты не загружены",
-         "fonts": "Шрифты для SVG панелей"
+         "fonts": "Шрифты для SVG панелей",
+         "confirm-delete-font-heading": "Удаление шрифта",
+         "confirm-delete-font": "Вы действительно хотите удалить шрифт <0>{{name}}</0>?"
       },
       "errors": {
          "setup-https": "Не удалось настроить HTTPS: {{error}}",
@@ -1090,6 +1096,8 @@
          "bus-monitor-description": "Шлюз должен быть подключён на скорости 115200. Если скорость ниже, при активном обмене на шине DALI монитор покажет лишь часть трафика.",
          "bus-monitor-syslog": "Сохранять в syslog",
          "bus-settings": "Широковещательные настройки",
+         "broadcast-commands": "Широковещательные команды",
+         "device-settings": "Настройки",
          "websocket-enabled": "Эмуляция шлюза Lunatone DALI-2 IoT",
          "websocket-description": "Включение этой опции запустит WebSocket-сервер, который эмулирует Lunatone DALI-2 IoT Gateway. К нему можно подключить Lunatone DALI Cockpit для управления устройствами. В DALI Cockpit надо выбрать Network в качестве интерфейса шины, указать DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, ввести адрес контроллера и порт, заданный ниже.",
          "websocket-port": "Порт WebSocket'а",
@@ -1124,13 +1132,26 @@
          "monitor-col-command": "Команда",
          "monitor-col-response": "Ответ",
          "monitor-foreign": "сторонний",
+         "setpoint-wanted-level": "Яркость",
+         "setpoint-set-rgb": "Цвет",
+         "setpoint-set-white": "Белый",
+         "setpoint-set-colour-temperature": "Цветовая температура",
+         "setpoint-set-x-coordinate": "Координата X",
+         "setpoint-set-y-coordinate": "Координата Y",
+         "setpoint-set-primary-n": "Основной N{{n}}",
+         "all-controls": "Все элементы управления",
+         "state-on": "вкл",
+         "state-off": "выкл",
+         "event-scheme-warning": "Некоторые компоненты используют схему адресации событий, не содержащую адрес устройства, поэтому их события не могут обновлять контролы. Переключите их на схему «короткий адрес устройства и номер компонента».",
          "monitor-broadcast": "Широковещательные"
       },
       "buttons": {
+         "fix-event-schemes": "Установить рекомендуемую схему",
          "rescan": "Пересканировать",
          "stop-scan": "Остановить",
          "return": "К списку устройств",
-         "reload": "Прочитать параметры заново",
+         "reload": "Перечитать",
+         "reload-settings": "Перечитать настройки",
          "clear-log": "Очистить журнал",
          "pause-log": "Приостановить получение сообщений",
          "resume-log": "Возобновить получение сообщений",

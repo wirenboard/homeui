@@ -9,7 +9,7 @@ const buildStore = (color: string) =>
       type: 'object',
       required: ['color'],
       properties: {
-        color: { type: 'string', title: 'Color', format: 'dali-rgb' },
+        color: { type: 'string', title: 'Colour', format: 'dali-rgb' },
       },
     }),
     { color },

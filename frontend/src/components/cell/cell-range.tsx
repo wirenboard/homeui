@@ -4,7 +4,7 @@ import { Range } from '@/components/range';
 import { type CellRangeProps } from './types';
 import './styles.css';
 
-export const CellRange = observer(({ cell, isReadOnly }: CellRangeProps) => {
+export const CellRange = observer(({ cell, isReadOnly, isDisabled }: CellRangeProps) => {
   const { t } = useTranslation();
 
   return (
@@ -14,7 +14,7 @@ export const CellRange = observer(({ cell, isReadOnly }: CellRangeProps) => {
       min={cell.min}
       max={cell.max}
       step={cell.step}
-      isDisabled={cell.readOnly || isReadOnly}
+      isDisabled={cell.readOnly || isReadOnly || isDisabled}
       isInvalid={!!cell.error}
       ariaLabel={cell.name}
       units={t(`units.${cell.units}`, cell.units)}

@@ -81,3 +81,46 @@
         width: 100%;
     }
 }
+
+.logsFilters-mobilePopup {
+    width: min(280px, calc(100vw - 32px));
+}
+
+.logsFilters-mobilePopup .logsFilters {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.logsFilters-mobilePopup .logsFilters-input,
+.logsFilters-mobilePopup .logsFilters-boot,
+.logsFilters-mobilePopup .logsFilters-inputDate,
+.logsFilters-mobilePopup .datetimePicker-inputWrapper,
+.logsFilters-mobilePopup .logsFilters-liveUpdate {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
+.logsFilters-mobilePopup .logsFilters-patternWrapper {
+    max-width: none;
+    min-width: 0;
+}
+
+.logsFilters-mobilePopup .formFields-group {
+    flex: 1;
+}
+
+.logsFilters-mobilePopup .logsFilters-pattern {
+    width: auto;
+    flex: 1;
+}
+
+.logsFilters-mobilePopup .logsFilters-liveUpdate {
+    margin-left: 0;
+}
+
+.logsFilters-mobilePopup .logsFilters-patternWrapper > .wb-tooltip-container {
+    display: none;
+}

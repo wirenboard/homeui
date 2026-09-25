@@ -1,9 +1,138 @@
-wb-mqtt-homeui (2.255.1) stable; urgency=medium
+wb-mqtt-homeui (2.263.1) stable; urgency=medium
 
   * Fix session cookie parsing when foreign cookies are present
   * Clear autologin when a user's type changes
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 10 Sep 2026 12:10:00 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 25 Sep 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.263.0) stable; urgency=medium
+
+  [ Evgeny Boger ]
+  * DALI: live device controls on device, group and bus pages
+
+  [ Petr Krasnoshchekov ]
+  * Remove the oversized padding around the page header
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 24 Sep 2026 15:00:00 +0500
+
+wb-mqtt-homeui (2.262.3) stable; urgency=medium
+
+  * Fix tests warnings
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 22 Sep 2026 14:11:00 +0400
+
+wb-mqtt-homeui (2.262.2) stable; urgency=medium
+
+  * Update json editor ip input - it replaces commas with dots
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 22 Sep 2026 12:06:00 +0400
+
+wb-mqtt-homeui (2.262.1) stable; urgency=medium
+
+  * Run the frontend lint, type and test checks as CI stages of their own, and skip
+    them in the package build when CI has already run them
+  * Install the npm dependencies once per build instead of once per make target
+
+ -- Maksim Volobuev <maksim.volobuev@wirenboard.com>  Wed, 16 Sep 2026 16:30:10 +0500
+
+wb-mqtt-homeui (2.262.0) stable; urgency=medium
+
+  * Logs filters moved to popup in compact resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 21 Sep 2026 17:22:00 +0400
+
+wb-mqtt-homeui (2.261.3) stable; urgency=medium
+
+  * Use restricted wb-configs helpers for system backup downloads
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Sep 2026 16:35:19 +0400
+
+wb-mqtt-homeui (2.261.2) stable; urgency=medium
+
+  * Dashboards: reject invalid characters that would break the app's hash-router
+    navigation and its use as a CSS id selector
+  * SVG dashboard editor: use checkboxes instead of switches for the visible/click/
+    read/style/swipe binding toggles
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 16:10:00 +0400
+
+wb-mqtt-homeui (2.261.1) stable; urgency=medium
+
+  * Fix svg dashboard image borders
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 14:31:00 +0400
+
+wb-mqtt-homeui (2.261.0) stable; urgency=medium
+
+  * Support old Safari/iOS (down to Safari 10 / iOS 10.1) via a legacy build fallback
+  * Improve treeshaking
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 14:07:00 +0400
+
+wb-mqtt-homeui (2.260.1) stable; urgency=medium
+
+  * config editor: revert the tab list scroll
+  * config editor: add the wb.fit_tabs_to_window schema option
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Thu, 17 Sep 2026 12:36:02 +0300
+
+wb-mqtt-homeui (2.260.0) stable; urgency=medium
+
+  * Add a "Show history" toggle to dashboard settings, hiding the history/graph
+    link for every cell on that dashboard; drop the column-count dropdown from
+    the same dialog now that it's redundant with the dashboard layout editor
+  * Hide the click-to-copy interaction (and its pointer cursor) on dashboard
+    cell values and names for users without Operator rights
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 17 Sep 2026 11:39:00 +0400
+
+wb-mqtt-homeui (2.259.0) stable; urgency=medium
+
+  * Device settings editor: a template group declared several times with different fw
+    shows the description of the declaration that matches the device firmware
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 15:10:00 +0500
+
+wb-mqtt-homeui (2.258.0) stable; urgency=medium
+
+  * Add DALI on/off control settings editor for devices and groups
+  * Keep the DALI device toolbar available when its settings fail to load
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Sep 2026 10:30:00 +0500
+
+wb-mqtt-homeui (2.257.1) stable; urgency=medium
+
+  * Ask for confirmation before deleting a custom font for SVG dashboards
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Sep 2026 12:03:00 +0300
+
+wb-mqtt-homeui (2.257.0) stable; urgency=medium
+
+  * Remove the groups editor of json-editor, unused since the wb-mqtt-serial config
+    got its own editor in 2.150.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Sep 2026 13:20:18 +0500
+
+wb-mqtt-homeui (2.256.0) stable; urgency=medium
+
+  [ Evgeny Boger ]
+  * DALI: a DALI-2 device whose instances use an event addressing scheme that cannot
+    name the sender gets a warning with a one-click "Set recommended scheme" — such
+    events decode in the bus monitor but could never update the controls
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 14 Sep 2026 19:45:13 +0500
+
+wb-mqtt-homeui (2.255.2) stable; urgency=medium
+
+  * Reject uploaded custom-font files whose content does not match their extension
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 14 Sep 2026 10:24:33 +0400
+
+wb-mqtt-homeui (2.255.1) stable; urgency=medium
+
+  * Hide the chart link in text and date-time cells when history is disabled
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 10 Sep 2026 21:20:00 +0300
 
 wb-mqtt-homeui (2.255.0) stable; urgency=medium
 

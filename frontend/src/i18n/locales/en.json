@@ -61,7 +61,8 @@
          "create": "Add panel",
          "svg-flag": "SVG panel type",
          "text-flag": "Text panel type",
-         "text-dashboard": "Text"
+         "text-dashboard": "Text",
+         "show-history": "Show history buttons"
       },
       "buttons": {
          "add": "Add",
@@ -81,6 +82,7 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed",
+         "invalid-id-chars": "Id contains invalid characters",
          "load": "Failed to load dashboards",
          "svg-load": "Failed to load the dashboard image",
          "save": "Config saving failed"
@@ -671,6 +673,7 @@
          "add-widget": "Add widget",
          "edit-widget": "Edit widget",
          "remove-widget": "Remove from this dashboard",
+         "edit-dashboard": "Dashboard settings",
          "fullscreen": "Enter fullscreen mode",
          "fullscreen-exit": "Exit fullscreen mode"
       },
@@ -787,7 +790,8 @@
          "save": "Save loaded log to file",
          "case": "Match case",
          "regex": "Regular expression",
-         "live-update": "Live update"
+         "live-update": "Live update",
+         "filters": "Filters"
       },
       "errors": {
          "unavailable": "wb-mqtt-logs service is unavailable",
@@ -1004,7 +1008,9 @@
          "upload-font": "Upload font",
          "delete-font": "Delete",
          "no-fonts": "No fonts uploaded",
-         "fonts": "Fonts for SVG dashboards"
+         "fonts": "Fonts for SVG dashboards",
+         "confirm-delete-font-heading": "Delete font",
+         "confirm-delete-font": "Are you sure you want to delete font <0>{{name}}</0>?"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
@@ -1061,6 +1067,8 @@
          "bus-monitor-description": "The gateway must be connected at 115200. At a lower speed the monitor will show only part of the traffic while the DALI bus is busy.",
          "bus-monitor-syslog": "Save to syslog",
          "bus-settings": "Broadcast settings",
+         "broadcast-commands": "Broadcast commands",
+         "device-settings": "Settings",
          "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",
          "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
          "websocket-port": "WebSocket port",
@@ -1095,13 +1103,26 @@
          "monitor-col-command": "Command",
          "monitor-col-response": "Response",
          "monitor-foreign": "foreign",
+         "setpoint-wanted-level": "Brightness",
+         "setpoint-set-rgb": "Colour",
+         "setpoint-set-white": "White",
+         "setpoint-set-colour-temperature": "Colour temperature",
+         "setpoint-set-x-coordinate": "X coordinate",
+         "setpoint-set-y-coordinate": "Y coordinate",
+         "setpoint-set-primary-n": "Primary N{{n}}",
+         "all-controls": "All controls",
+         "state-on": "on",
+         "state-off": "off",
+         "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {
+         "fix-event-schemes": "Set recommended scheme",
          "rescan": "Rescan",
          "stop-scan": "Stop",
          "return": "To devices list",
          "reload": "Reload",
+         "reload-settings": "Reload settings",
          "clear-log": "Clear log",
          "pause-log": "Pause log",
          "resume-log": "Resume log",

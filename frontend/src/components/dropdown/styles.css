@@ -180,6 +180,7 @@
 
 .dropdown__control--is-disabled {
   background-color: var(--input-background-disabled);
+  color: var(--gray-color);
   cursor: not-allowed;
 }
 

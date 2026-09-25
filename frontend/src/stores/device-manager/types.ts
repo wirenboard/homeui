@@ -226,6 +226,7 @@ export interface WbDeviceParametersGroup {
   description?: string;
   group?: string;
   ui_options?: JsonEditorOptions;
+  fw?: string;
 }
 
 export interface WbDeviceTemplate {
