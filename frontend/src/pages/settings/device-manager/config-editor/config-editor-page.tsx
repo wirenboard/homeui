@@ -71,7 +71,7 @@ const ConfigEditorPage = observer((
       try {
         parsedContent = JSON.parse(content);
       } catch {
-        pageStore.endTemplateOperation(t('device-manager.labels.upload-template-invalid-json'));
+        pageStore.setError(t('device-manager.labels.upload-template-invalid-json'));
         return;
       }
       const filename = file.name;
@@ -94,7 +94,6 @@ const ConfigEditorPage = observer((
             pageStore.deviceTypesStore.getName(deviceType) || deviceType,
         });
         if (!confirmed) {
-          pageStore.endTemplateOperation();
           return;
         }
         result = await serialTemplatesProxy.Upload({
@@ -106,25 +105,30 @@ const ConfigEditorPage = observer((
       }
       pageStore.deviceTypesStore.mergeDeviceTypes(result.types);
       const affectedTypes = new Set<string>(result.types.flatMap((g) => g.types.map((t) => t.type)));
+      pageStore.setTemplateAffectedTypes(affectedTypes);
       await pageStore.refreshDeviceTypeSchemas(affectedTypes);
-      pageStore.setTemplateHint(t('device-manager.labels.upload-template-sync-hint'));
-      if (pageStore.tabs.hasInvalidConfig) {
+      pageStore.setTemplateHint(t('device-manager.labels.template-sync-hint'));
+      if (pageStore.hasInvalidConfigForTypes(affectedTypes)) {
+        // The uploaded template itself is the cause: keep this on the affected device tabs.
         pageStore.endTemplateOperation(t('device-manager.labels.upload-template-invalid-config'));
+      } else if (pageStore.tabs.hasInvalidConfig) {
+        // Some other, unrelated device has an error: don't blame the uploaded template for it.
+        pageStore.setError(t('device-manager.labels.upload-template-unrelated-invalid-config'));
       } else {
         await pageStore.save();
-        pageStore.endTemplateOperation();
+        pageStore.setTemplateSuccessMessage(t('device-manager.labels.upload-template-success'));
       }
     } catch (err) {
-      pageStore.endTemplateOperation(
-        formatTemplateOperationError(t('device-manager.buttons.upload-template'), err),
-      );
+      pageStore.setError(formatTemplateOperationError(t('device-manager.buttons.upload-template'), err));
     } finally {
+      pageStore.endTemplateOperation();
       fileInput.value = '';
     }
   }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal, t]);
 
   const handleDeleteTemplate = useCallback(async (deviceType: string) => {
     pageStore.startTemplateOperation();
+    pageStore.setTemplateAffectedTypes(new Set<string>([deviceType]));
     try {
       let result;
       try {
@@ -142,7 +146,6 @@ const ConfigEditorPage = observer((
             pageStore.deviceTypesStore.getName(deviceType) || deviceType,
         });
         if (!confirmed) {
-          pageStore.endTemplateOperation();
           return;
         }
         result = await serialTemplatesProxy.Delete({
@@ -161,11 +164,12 @@ const ConfigEditorPage = observer((
       }
       pageStore.deviceTypesStore.mergeDeviceTypes(result.types);
       await pageStore.refreshDeviceTypeSchemas(new Set<string>([deviceType]));
-      pageStore.endTemplateOperation();
+      pageStore.setTemplateHint(t('device-manager.labels.template-sync-hint'));
+      pageStore.setTemplateSuccessMessage(t('device-manager.labels.delete-template-success'));
     } catch (err) {
-      pageStore.endTemplateOperation(
-        formatTemplateOperationError(t('device-manager.buttons.delete-template'), err),
-      );
+      pageStore.setError(formatTemplateOperationError(t('device-manager.buttons.delete-template'), err));
+    } finally {
+      pageStore.endTemplateOperation();
     }
   }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal, t]);
 
@@ -175,11 +179,16 @@ const ConfigEditorPage = observer((
         title={t('device-manager.labels.title')}
         infoLink={documentation[i18n.language]?.serial}
         hasRights={authStore.hasRights(UserRole.Admin)}
-        errors={
-          pageStore.error
-            ? [{ variant: 'danger', text: pageStore.error }]
-            : []
-        }
+        errors={[
+          ...(pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []),
+          ...(pageStore.templateSuccessMessage
+            ? [{
+              variant: 'success',
+              text: pageStore.templateSuccessMessage,
+              onClose: () => pageStore.clearTemplateSuccessMessage(),
+            }]
+            : []),
+        ]}
         isLoading={pageStore.loading || pageStore.saving}
         loadingOptions={
           pageStore.saving ? { overlay: true, showActions: true } : undefined
@@ -218,6 +227,7 @@ const ConfigEditorPage = observer((
               templateOperationPending={pageStore.templateOperationPending}
               templateError={pageStore.templateError}
               templateHint={pageStore.templateHint}
+              templateAffectedTypes={pageStore.templateAffectedTypes}
               onSelect={(index) => pageStore.tabs.onSelectTab(index)}
               onDeleteTab={() => pageStore.deleteTab(showDeleteModal)}
               onDeletePortDevices={() =>

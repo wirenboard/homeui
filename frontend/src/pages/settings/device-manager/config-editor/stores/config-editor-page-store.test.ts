@@ -231,3 +231,43 @@ describe('ConfigEditorPageStore.refreshDeviceTypeSchemas', () => {
     expect(untouchedTab.schemaStore).toBe(untouchedBefore);
   });
 });
+
+describe('ConfigEditorPageStore.hasInvalidConfigForTypes', () => {
+  it('returns true when a device tab of one of the given types has invalid config', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const deviceTab = await addDeviceTabWithType(store, portTab, 'wb-map12', '1');
+    deviceTab.setSlaveIdIsDuplicate(true);
+
+    expect(store.hasInvalidConfigForTypes(new Set(['wb-map12']))).toBe(true);
+  });
+
+  it('returns false when the only invalid device tab is not one of the given types', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    const deviceTab = await addDeviceTabWithType(store, portTab, 'wb-mdm3', '2');
+    deviceTab.setSlaveIdIsDuplicate(true);
+
+    expect(store.hasInvalidConfigForTypes(new Set(['wb-map12']))).toBe(false);
+  });
+});
+
+describe('ConfigEditorPageStore template affected types and success message', () => {
+  it('startTemplateOperation clears templateAffectedTypes and templateSuccessMessage', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateAffectedTypes(new Set(['wb-map12']));
+    store.setTemplateSuccessMessage('done');
+
+    store.startTemplateOperation();
+
+    expect(store.templateAffectedTypes.size).toBe(0);
+    expect(store.templateSuccessMessage).toBe('');
+  });
+
+  it('clearTemplateSuccessMessage resets templateSuccessMessage to an empty string', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateSuccessMessage('done');
+
+    store.clearTemplateSuccessMessage();
+
+    expect(store.templateSuccessMessage).toBe('');
+  });
+});

@@ -29,4 +29,5 @@ export interface PageTabsProps {
   onClearTemplateError?: () => void;
   templateHint?: string;
   onClearTemplateHint?: () => void;
+  templateAffectedTypes?: Set<string>;
 }

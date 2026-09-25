@@ -1,4 +1,4 @@
-/* eslint max-lines: ["warn", 460] */
+/* eslint max-lines: ["warn", 495] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
@@ -42,6 +42,10 @@ export class ConfigEditorPageStore {
   public templateOperationPending: boolean = false;
   public templateError: string = '';
   public templateHint: string = '';
+  // Device types touched by the last template upload/delete: templateError/templateHint are shown
+  // only on device tabs of these types, not on every open tab.
+  public templateAffectedTypes: Set<string> = new Set();
+  public templateSuccessMessage: string = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -77,11 +81,16 @@ export class ConfigEditorPageStore {
       templateOperationPending: observable,
       templateError: observable,
       templateHint: observable,
+      templateAffectedTypes: observable.ref,
+      templateSuccessMessage: observable,
       startTemplateOperation: action,
       endTemplateOperation: action,
       clearTemplateError: action,
       setTemplateHint: action,
       clearTemplateHint: action,
+      setTemplateAffectedTypes: action,
+      setTemplateSuccessMessage: action,
+      clearTemplateSuccessMessage: action,
       addDevices: action,
     });
   }
@@ -176,8 +185,11 @@ export class ConfigEditorPageStore {
 
   startTemplateOperation() {
     this.templateOperationPending = true;
+    this.error = '';
     this.templateError = '';
     this.templateHint = '';
+    this.templateAffectedTypes = new Set();
+    this.templateSuccessMessage = '';
   }
 
   endTemplateOperation(error?: unknown) {
@@ -199,12 +211,32 @@ export class ConfigEditorPageStore {
     this.templateHint = '';
   }
 
+  setTemplateAffectedTypes(deviceTypes: Set<string>) {
+    this.templateAffectedTypes = deviceTypes;
+  }
+
+  setTemplateSuccessMessage(message: string) {
+    this.templateSuccessMessage = message;
+  }
+
+  clearTemplateSuccessMessage() {
+    this.templateSuccessMessage = '';
+  }
+
+  // Whether any currently configured device of one of the given types has a validation error,
+  // used to tell "this template broke something" apart from "something else was already broken".
+  hasInvalidConfigForTypes(deviceTypes: Set<string>) {
+    return this.tabs.portTabs.some((portTab) =>
+      portTab.children.some((deviceTab) => deviceTypes.has(deviceTab.deviceType) && deviceTab.hasInvalidConfig),
+    );
+  }
+
   async refreshDeviceTypeSchemas(deviceTypes: Set<string>) {
     await Promise.all(
       this.tabs.portTabs.flatMap((portTab) =>
         portTab.children
           .filter((deviceTab) => deviceTypes.has(deviceTab.deviceType))
-          .map((deviceTab) => deviceTab.reloadSchema()),
+          .map((deviceTab) => deviceTab.reloadSchema(portTab.baseConfig)),
       ),
     );
   }

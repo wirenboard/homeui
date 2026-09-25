@@ -1,4 +1,4 @@
-/* eslint max-lines: ["warn", 410] */
+/* eslint max-lines: ["warn", 415] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import i18n from '@/i18n/config';
@@ -220,18 +220,26 @@ export class DeviceTabStore {
     this._clearLoading();
   }
 
-  async reloadSchema() {
+  // A parameter id can mean a different register/scale/enum in the new schema, so values can't be
+  // carried over from the old config by key: rebuild and re-read from the device instead, like
+  // setDeviceType does. Falls back to the new schema's defaults if the device is unreachable.
+  async reloadSchema(portConfig?: PortTabConfig) {
     this._initFromDeviceType(this.deviceType);
     if (this.isUnknownType || this.withSubdevices) {
       return;
     }
-    const currentData = cloneDeep(this.editedData);
+    const previousConfig = this.editedData;
     this._setLoading(i18n.t('device-manager.labels.loading-template'));
     try {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(schema, currentData);
+        this.schemaStore = new DeviceSettingsObjectStore(schema, {});
       });
+      this.schemaStore?.setDefault();
+      this.schemaStore?.restoreIdentity(previousConfig);
+      const isEnabled = !!(this.editedData?.enabled ?? true);
+      this.readRegistersState.deviceTypeChanged(this.deviceType, this.slaveId ?? '', isEnabled);
+      await this._loadConfigFromDevice(portConfig);
     } catch (err) {
       this._setError(err);
     }

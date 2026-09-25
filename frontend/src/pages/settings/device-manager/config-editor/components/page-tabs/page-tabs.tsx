@@ -39,6 +39,7 @@ export const PageTabs = observer(
     onClearTemplateError,
     templateHint,
     onClearTemplateHint,
+    templateAffectedTypes,
   }: PageTabsProps) => {
     const { t } = useTranslation();
 
@@ -83,52 +84,57 @@ export const PageTabs = observer(
           </div>
         )}
 
-        {!(mobileModeStore.inMobileMode && mobileModeStore.tabsPanelIsActive) && tabs.map((tab, index) => (
-          <TabContent
-            activeTab={selectedIndex}
-            key={index}
-            tabId={index}
-            className={classNames('deviceManagerPageTabs-tab', {
-              'deviceManagerPageTabs-tabMobile': mobileModeStore.inMobileMode,
-            })}
-          >
-            <>
-              {tab.type === TabType.Port && (
-                <PortTabContent
-                  tab={tab}
-                  onDeleteTab={onDeleteTab}
-                  onDeletePortDevices={onDeletePortDevices}
-                />
-              )}
-              {tab.type === TabType.Device && (
-                <DeviceTabContent
-                  tab={tab as DeviceTabStore}
-                  deviceTypeSelectOptions={deviceTypeSelectOptions}
-                  isUserDefinedType={isUserDefinedTypeFn?.((tab as DeviceTabStore).deviceType)}
-                  templateOperationPending={templateOperationPending}
-                  templateError={templateError}
-                  templateHint={templateHint}
-                  onClearTemplateError={onClearTemplateError}
-                  onClearTemplateHint={onClearTemplateHint}
-                  onDeleteTab={onDeleteTab}
-                  onCopyTab={onCopyTab}
-                  onDeviceTypeChange={onDeviceTypeChange}
-                  onSetUniqueMqttTopic={() => (tab as DeviceTabStore).setUniqueMqttTopic()}
-                  onSearchDisconnectedDevice={onSearchDisconnectedDevice}
-                  onUpdateFirmware={onUpdateFirmware}
-                  onUpdateBootloader={onUpdateBootloader}
-                  onUpdateComponents={onUpdateComponents}
-                  onReadRegisters={onReadRegisters}
-                  onDeleteTemplate={() => onDeleteTemplate?.((tab as DeviceTabStore).deviceType)}
-                  onUploadTemplate={onUploadTemplate}
-                />
-              )}
-              {tab.type === TabType.Settings && (
-                <SettingsTabContent tab={tab as SettingsTabStore} />
-              )}
-            </>
-          </TabContent>
-        ))}
+        {!(mobileModeStore.inMobileMode && mobileModeStore.tabsPanelIsActive) && tabs.map((tab, index) => {
+          const deviceTab = tab as DeviceTabStore;
+          const templateMessagesApply = tab.type === TabType.Device
+            && templateAffectedTypes?.has(deviceTab.deviceType);
+          return (
+            <TabContent
+              activeTab={selectedIndex}
+              key={index}
+              tabId={index}
+              className={classNames('deviceManagerPageTabs-tab', {
+                'deviceManagerPageTabs-tabMobile': mobileModeStore.inMobileMode,
+              })}
+            >
+              <>
+                {tab.type === TabType.Port && (
+                  <PortTabContent
+                    tab={tab}
+                    onDeleteTab={onDeleteTab}
+                    onDeletePortDevices={onDeletePortDevices}
+                  />
+                )}
+                {tab.type === TabType.Device && (
+                  <DeviceTabContent
+                    tab={deviceTab}
+                    deviceTypeSelectOptions={deviceTypeSelectOptions}
+                    isUserDefinedType={isUserDefinedTypeFn?.(deviceTab.deviceType)}
+                    templateOperationPending={templateOperationPending}
+                    templateError={templateMessagesApply ? templateError : ''}
+                    templateHint={templateMessagesApply ? templateHint : ''}
+                    onClearTemplateError={onClearTemplateError}
+                    onClearTemplateHint={onClearTemplateHint}
+                    onDeleteTab={onDeleteTab}
+                    onCopyTab={onCopyTab}
+                    onDeviceTypeChange={onDeviceTypeChange}
+                    onSetUniqueMqttTopic={() => deviceTab.setUniqueMqttTopic()}
+                    onSearchDisconnectedDevice={onSearchDisconnectedDevice}
+                    onUpdateFirmware={onUpdateFirmware}
+                    onUpdateBootloader={onUpdateBootloader}
+                    onUpdateComponents={onUpdateComponents}
+                    onReadRegisters={onReadRegisters}
+                    onDeleteTemplate={() => onDeleteTemplate?.(deviceTab.deviceType)}
+                    onUploadTemplate={onUploadTemplate}
+                  />
+                )}
+                {tab.type === TabType.Settings && (
+                  <SettingsTabContent tab={tab as SettingsTabStore} />
+                )}
+              </>
+            </TabContent>
+          );
+        })}
       </div>
     );
   },
