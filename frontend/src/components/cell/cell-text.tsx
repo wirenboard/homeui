@@ -9,7 +9,9 @@ import { CellHistory } from './cell-history';
 import { type CellTextProps } from './types';
 import './styles.css';
 
-export const CellText = observer(({ cell, isCompact, isReadOnly, hideHistory, hideCopy }: CellTextProps) => {
+export const CellText = observer((
+  { cell, isCompact, isReadOnly, isDisabled, hideHistory, hideCopy }: CellTextProps,
+) => {
   const { t } = useTranslation();
 
   return (
@@ -45,6 +47,7 @@ export const CellText = observer(({ cell, isCompact, isReadOnly, hideHistory, hi
           isInvalid={!!cell.error}
           options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
           value={cell.value as string | number}
+          isDisabled={isDisabled}
           onChange={(option: Option<string>) => cell.value = option.value}
         />
       )}
@@ -52,7 +55,7 @@ export const CellText = observer(({ cell, isCompact, isReadOnly, hideHistory, hi
         <Input
           id={cell.id}
           value={cell.value as string}
-          isDisabled={cell.readOnly || isReadOnly}
+          isDisabled={cell.readOnly || isReadOnly || isDisabled}
           isInvalid={!!cell.error}
           size="small"
           ariaLabel={cell.name}

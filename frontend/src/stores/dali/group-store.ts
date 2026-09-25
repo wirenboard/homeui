@@ -44,6 +44,11 @@ export class GroupStore extends BaseItemStore {
     return this.#parent;
   }
 
+  // Must match GroupVirtualDevice mqtt id in wb-mqtt-dali.
+  get controlsMqttId(): string | null {
+    return this.#parent ? `${this.#parent.id}_group_${String(this.index).padStart(2, '0')}` : null;
+  }
+
   async load() {
     if (this.objectStore) {
       return;

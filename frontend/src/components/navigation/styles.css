@@ -13,6 +13,7 @@
     @media(max-width: 768px) {
         flex-direction: row;
         height: 54px;
+        flex-shrink: 0;
         width: 100%;
         align-items: center;
         justify-content: space-between;
