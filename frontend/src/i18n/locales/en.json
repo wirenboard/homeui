@@ -135,7 +135,8 @@
          "nothing": "No data points to display",
          "date": "Date and time",
          "all_channels": "All channels: ",
-         "widget_channels": "Channels used in widgets: "
+         "widget_channels": "Channels used in widgets: ",
+         "time_shift": "Clock change"
       },
       "buttons": {
          "delete": "Delete",
