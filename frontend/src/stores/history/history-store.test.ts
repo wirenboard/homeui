@@ -3,6 +3,7 @@ import { configure } from 'mobx';
 import { dashboardsStore } from '@/stores/dashboards';
 import { devicesStore } from '@/stores/devices';
 import { historyProxyMock } from '@/test/mocks/services';
+import { toAxisValue } from './axis-time';
 import { ChartTraits } from './chart-traits';
 import HistoryStore from './history-store';
 import { ChartType, type HistoryValue } from './types';
@@ -107,8 +108,9 @@ describe('HistoryStore', () => {
         'xaxis.range[1]': '2026-01-15',
       });
 
-      expect(store.selectedStartDate).toEqual(new Date('2026-01-01'));
-      expect(store.selectedEndDate).toEqual(new Date('2026-01-15'));
+      // plotly reports wall clock values, they are shifted back by the axis offset
+      expect(store.selectedStartDate).toEqual(new Date(new Date('2026-01-01').getTime() - store.axisOffset));
+      expect(store.selectedEndDate).toEqual(new Date(new Date('2026-01-15').getTime() - store.axisOffset));
     });
 
     test('ignores event without range', () => {
@@ -315,7 +317,7 @@ describe('HistoryStore', () => {
       const ctrl = { name: 'Test', group: 'All', deviceId: 'd', controlId: 'c', valueType: 'number' as const };
       const chart = new ChartTraits(ctrl);
       (chart as any).type = type;
-      chart.xValues = [new Date()];
+      chart.xValues = [Date.now()];
       chart.yValues = [42];
       chart.text = ['42'];
       chart.minErrors = [40];
@@ -360,7 +362,7 @@ describe('HistoryStore', () => {
     test('builds config from charts with data', () => {
       const ctrl = { name: 'Temp', group: 'All', deviceId: 'd', controlId: 'c', valueType: 'number' as const };
       const chart = new ChartTraits(ctrl);
-      chart.xValues = [new Date()];
+      chart.xValues = [Date.now()];
       chart.yValues = [42];
       chart.text = ['42'];
       chart.minErrors = [40];
@@ -376,7 +378,7 @@ describe('HistoryStore', () => {
 
   describe('fillMissingDatesByFilter', () => {
     test('returns config unchanged when no nulls', () => {
-      const config = [{ x: [new Date()], y: [42], text: ['42'] }] as any;
+      const config = [{ x: [toAxisValue(Date.now(), store.axisOffset)], y: [42], text: ['42'] }] as any;
       expect(store.fillMissingDatesByFilter(config)).toBe(config);
     });
 
@@ -719,7 +721,7 @@ describe('HistoryStore', () => {
   describe('buildCharts with uptime', () => {
     test('applies uptime ticks to yaxis', () => {
       const chart = new ChartTraits({ name: 'Up', group: 'A', deviceId: 'system', controlId: 'Current uptime', valueType: 'number' });
-      chart.xValues = [new Date()];
+      chart.xValues = [Date.now()];
       chart.yValues = [3600];
       chart.text = ['1h 0m'];
       chart.minValue = 0;
@@ -733,7 +735,7 @@ describe('HistoryStore', () => {
 
     test('includes error chart for number type', () => {
       const chart = new ChartTraits({ name: 'Temp', group: 'A', deviceId: 'd', controlId: 'c', valueType: 'number' });
-      chart.xValues = [new Date()];
+      chart.xValues = [Date.now()];
       chart.yValues = [42];
       chart.text = ['42'];
       chart.minErrors = [40];
@@ -751,8 +753,8 @@ describe('HistoryStore', () => {
 
   describe('calculateTable', () => {
     test('builds table rows from chart data', () => {
-      const date1 = new Date('2026-01-01T00:00:00Z');
-      const date2 = new Date('2026-01-01T01:00:00Z');
+      const date1 = new Date('2026-01-01T00:00:00Z').getTime();
+      const date2 = new Date('2026-01-01T01:00:00Z').getTime();
 
       const chart = new ChartTraits({ name: 'Temp', group: 'A', deviceId: 'd', controlId: 'c', valueType: 'number' });
       chart.xValues = [date1, date2];
@@ -765,7 +767,7 @@ describe('HistoryStore', () => {
       store.charts = [chart];
 
       const config = [
-        { x: [date1, date2], y: [10, 20], text: ['10', '20'] },
+        { x: [date1, date2].map((d) => toAxisValue(d, store.axisOffset)), y: [10, 20], text: ['10', '20'] },
       ];
 
       const rows = store.calculateTable(config as any);
@@ -776,9 +778,9 @@ describe('HistoryStore', () => {
     });
 
     test('fills missing slow-date values from last known', () => {
-      const date1 = new Date('2026-01-01T00:00:00Z');
-      const date2 = new Date('2026-01-01T01:00:00Z');
-      const date3 = new Date('2026-01-01T02:00:00Z');
+      const date1 = new Date('2026-01-01T00:00:00Z').getTime();
+      const date2 = new Date('2026-01-01T01:00:00Z').getTime();
+      const date3 = new Date('2026-01-01T02:00:00Z').getTime();
 
       const numChart = new ChartTraits({ name: 'Temp', group: 'A', deviceId: 'd', controlId: 'c', valueType: 'number' });
       numChart.xValues = [date1, date2, date3];
@@ -795,9 +797,9 @@ describe('HistoryStore', () => {
       store.charts = [numChart, boolChart];
 
       const config = [
-        { x: [date1, date2, date3], y: [10, 20, 30], text: ['10', '20', '30'] },
+        { x: [date1, date2, date3].map((d) => toAxisValue(d, store.axisOffset)), y: [10, 20, 30], text: ['10', '20', '30'] },
         { x: [], y: [], text: [] },
-        { x: [date1], y: [1], text: ['1'] },
+        { x: [toAxisValue(date1, store.axisOffset)], y: [1], text: ['1'] },
       ];
 
       const rows = store.calculateTable(config as any);
@@ -808,7 +810,7 @@ describe('HistoryStore', () => {
     });
 
     test('shows uptime text instead of number value', () => {
-      const date1 = new Date('2026-01-01T00:00:00Z');
+      const date1 = new Date('2026-01-01T00:00:00Z').getTime();
 
       const chart = new ChartTraits({ name: 'Up', group: 'A', deviceId: 'system', controlId: 'Current uptime', valueType: 'number' });
       chart.xValues = [date1];
@@ -817,7 +819,7 @@ describe('HistoryStore', () => {
 
       store.charts = [chart];
 
-      const config = [{ x: [date1], y: [3600], text: ['1h 0m'] }];
+      const config = [{ x: [toAxisValue(date1, store.axisOffset)], y: [3600], text: ['1h 0m'] }];
 
       const rows = store.calculateTable(config as any);
 
@@ -837,7 +839,7 @@ describe('HistoryStore', () => {
     });
 
     test('skips error chart in dataMaps index', () => {
-      const date1 = new Date('2026-01-01T00:00:00Z');
+      const date1 = new Date('2026-01-01T00:00:00Z').getTime();
 
       const chart = new ChartTraits({ name: 'Temp', group: 'A', deviceId: 'd', controlId: 'c', valueType: 'number' });
       chart.xValues = [date1];
@@ -850,8 +852,8 @@ describe('HistoryStore', () => {
 
       store.charts = [chart];
 
-      const mainConfig = { x: [date1], y: [42], text: ['42'] };
-      const errorConfig = { x: [date1], y: [44, 40], text: undefined };
+      const mainConfig = { x: [toAxisValue(date1, store.axisOffset)], y: [42], text: ['42'] };
+      const errorConfig = { x: [toAxisValue(date1, store.axisOffset)], y: [44, 40], text: undefined };
 
       const rows = store.calculateTable([mainConfig, errorConfig] as any);
       expect(rows).toHaveLength(1);
@@ -865,7 +867,8 @@ describe('HistoryStore', () => {
       store.selectedEndDate = new Date('2026-01-10');
 
       const config = [{
-        x: [new Date('2026-01-02'), new Date('2026-01-03')],
+        x: [new Date('2026-01-02'), new Date('2026-01-03')]
+          .map((d) => toAxisValue(d.getTime(), store.axisOffset)),
         y: [null, null],
         text: [0, 0],
       }] as any;

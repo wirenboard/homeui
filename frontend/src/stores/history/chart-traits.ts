@@ -4,7 +4,7 @@ export class ChartTraits {
   channelName: string;
   progress: ChartProgress = { value: 0, isLoaded: false };
   type: ChartType = ChartType.Number;
-  xValues: Date[] = [];
+  xValues: number[] = [];
   yValues: Array<string | number> = [];
   text: (string | number)[] = [];
   maxErrors: (string | number)[] = [];

@@ -7,6 +7,7 @@ import { historyProxy } from '@/services';
 import { dashboardsStore, type Widget } from '@/stores/dashboards';
 import { type Cell, type Device, devicesStore } from '@/stores/devices';
 import { fixBoolAxes, getAxis } from './axis';
+import { fromAxisValue, getAxisOffset, toAxisValue } from './axis-time';
 import { ChartColors } from './chart-colors';
 import { ChartTraits } from './chart-traits';
 import { splitDate } from './date';
@@ -39,6 +40,7 @@ export default class HistoryStore {
   public stopLoadData = false;
   public selectedStartDate: Date | null = null;
   public selectedEndDate: Date | null = null;
+  public axisOffset = getAxisOffset();
   private loadId = 0;
 
   constructor() {
@@ -222,7 +224,7 @@ export default class HistoryStore {
   createMainChart(chart: ChartTraits, lineColor: string, axisName: string): PlotlyData {
     return {
       name: chart.channelName,
-      x: chart.xValues,
+      x: chart.xValues.map((time) => toAxisValue(time, this.axisOffset)),
       y: chart.yValues,
       text: chart.text,
       type: 'scatter',
@@ -241,7 +243,7 @@ export default class HistoryStore {
   createErrorChart(chart: ChartTraits, fillColor: string, axisName: string): PlotlyData {
     return {
       name: `Δ ${chart.channelName}`,
-      x: [...chart.xValues, ...[...chart.xValues].reverse()],
+      x: [...chart.xValues, ...[...chart.xValues].reverse()].map((time) => toAxisValue(time, this.axisOffset)),
       y: [...chart.maxErrors, ...[...chart.minErrors].reverse()],
       type: 'scatter',
       fill: 'toself',
@@ -323,6 +325,7 @@ export default class HistoryStore {
     const colors = new ChartColors();
     let minValue: (string | number) | undefined;
     let maxValue: (string | number) | undefined;
+    this.axisOffset = getAxisOffset(this.selectedEndDate);
     const layout: Partial<PlotlyLayout> = this.#getDefaultLayoutConfig();
     const config: PlotlyData[] = [];
 
@@ -364,18 +367,18 @@ export default class HistoryStore {
     const slowDates = new Set<number>();
     chartList.forEach((chart) => {
       if (chart.type === ChartType.Number || chart.type === ChartType.UpTime) {
-        chart.xValues.forEach((x) => slowDates.add(x.valueOf()));
+        chart.xValues.forEach((x) => slowDates.add(x));
       }
     });
 
     const dataMaps = config.map((ctrl) => {
-      const xValues = ctrl.x as Date[];
+      const xValues = ctrl.x as string[];
       const yValues = ctrl.y as number[];
       const textValues = ctrl.text as string[];
       const map = new Map<number, { y: number; text: string }>();
 
       xValues?.forEach((x, i) => {
-        const val = x.valueOf();
+        const val = fromAxisValue(x, this.axisOffset);
         dates.add(val);
         map.set(val, { y: yValues?.[i], text: textValues?.[i] });
       });
@@ -423,27 +426,22 @@ export default class HistoryStore {
       return config;
     }
     const first = config[0];
-    const xValues = first.x as Date[];
+    const xValues = first.x as string[];
     const yValues = first.y as number[];
     const textValues = first.text as Array<string | number>;
 
-    xValues?.unshift(new Date(this.selectedStartDate));
+    xValues?.unshift(toAxisValue(this.selectedStartDate.getTime(), this.axisOffset));
     yValues?.unshift(null);
     textValues?.unshift(0);
 
-    xValues?.push(new Date(this.selectedEndDate));
+    xValues?.push(toAxisValue(this.selectedEndDate.getTime(), this.axisOffset));
     yValues?.push(null);
     textValues?.push(0);
     return config;
   }
 
   processDbRecord(record: HistoryValue, chart: ChartTraits) {
-    const ts = new Date();
-    if (chart.hasBooleanValues) {
-      ts.setTime(record.t * 1000);
-    } else {
-      ts.setTime(Math.round(record.t) * 1000);
-    }
+    const ts = chart.hasBooleanValues ? record.t * 1000 : Math.round(record.t) * 1000;
 
     if (chart.type === ChartType.UpTime) {
       const uptimeParts = (record.v as string).split(' ');
@@ -463,14 +461,10 @@ export default class HistoryStore {
         const lastUpTime = chart.yValues[chart.yValues.length - 1] as number;
 
         if (lastUpTime > seconds) {
-          let newDate = new Date(chart.xValues[chart.xValues.length - 1]);
-          newDate.setMilliseconds(newDate.getMilliseconds() + 1);
-          chart.xValues.push(newDate);
+          chart.xValues.push(chart.xValues[chart.xValues.length - 1] + 1);
           chart.yValues.push(0);
           chart.text.push('0d 0h 0m');
-          newDate = new Date(ts);
-          newDate.setMilliseconds(ts.getMilliseconds() - seconds * 1000);
-          chart.xValues.push(newDate);
+          chart.xValues.push(ts - seconds * 1000);
           chart.yValues.push(0);
           chart.text.push('0d 0h 0m');
           chart.minValue = 0;
@@ -639,10 +633,8 @@ export default class HistoryStore {
     const start = event['xaxis.range[0]'];
     const end = event['xaxis.range[1]'];
     if (start && end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-      this.selectedStartDate = startDate;
-      this.selectedEndDate = endDate;
+      this.selectedStartDate = new Date(fromAxisValue(start, this.axisOffset));
+      this.selectedEndDate = new Date(fromAxisValue(end, this.axisOffset));
     }
   }
 
@@ -652,6 +644,7 @@ export default class HistoryStore {
       legend: { x: 0, y: 100 },
       hovermode: 'x unified',
       modebar: { remove: ['lasso', 'select', 'resetscale'] },
+      xaxis: { type: 'date' },
       yaxis: {},
     };
   }
