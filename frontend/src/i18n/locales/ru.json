@@ -135,7 +135,8 @@
          "nothing": "Нет записей для отображения",
          "date": "Дата и время",
          "all_channels": "Все каналы: ",
-         "widget_channels": "Каналы из виджетов: "
+         "widget_channels": "Каналы из виджетов: ",
+         "time_shift": "Перевод часов"
       },
       "buttons": {
          "delete": "Удалить",
