@@ -1,5 +1,5 @@
 import { type DeviceSettingsObjectStore, type WbDeviceParameterEditorsGroup } from '@/stores/device-manager';
-import { type ArrayStore, type Translator, type NumberStore } from '@/stores/json-schema-editor';
+import { type ArrayStore, type Translator, type NumberStore, type StringStore } from '@/stores/json-schema-editor';
 
 export interface DeviceSettingsEditorProps {
   store: DeviceSettingsObjectStore;
@@ -17,5 +17,10 @@ export interface DeviceSettingsTabsProps {
 export interface BadValueFromRegisterWarningProps {
   id: string;
   store: NumberStore;
+  translator: Translator;
+}
+
+export interface ChannelTitleEditorProps {
+  store: StringStore;
   translator: Translator;
 }

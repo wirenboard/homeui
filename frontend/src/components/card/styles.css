@@ -28,6 +28,37 @@
     position: relative;
 }
 
+/* the top border moves to the header so it stays visible while stuck */
+.card.card-stickyHeader {
+    border-top-width: 0;
+}
+
+.card-stickyHeader > .card-header,
+.card-stickyHeader > .card-headerContainer {
+    position: sticky;
+    top: 0;
+    z-index: 11;
+    margin: 0 -1px;
+    border: 1px solid;
+    border-bottom: 0;
+    border-color: inherit;
+    border-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* sticks under the header and covers the scrolled content behind its rounded corners */
+.card-stickyHeader::before {
+    content: '';
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: var(--container-border-radius);
+    margin: 0 -1px calc(-1 * var(--container-border-radius));
+    background: var(--background-color);
+}
+
 .card-headerToggable {
     border: 0;
     width: 100%;

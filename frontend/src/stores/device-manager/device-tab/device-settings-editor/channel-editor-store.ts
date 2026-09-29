@@ -60,19 +60,23 @@ export class WbDeviceChannelEditor {
   public channel: WbDeviceTemplateChannel;
   public mode: StringStore;
   public period: NumberStore;
+  public title: StringStore;
   public isSupportedByFirmware: boolean = true;
 
   private _conditionFn?: Function;
   private _dependencies?: string[];
   private _parameters: Map<string, WbDeviceParameterEditor>;
+  private _defaultTitle: string;
 
   constructor(
     channel: WbDeviceTemplateChannel,
     initialValue: WbDeviceTemplateChannelSettings | undefined,
     parameters: Map<string, WbDeviceParameterEditor>,
+    defaultTitle: string,
   ) {
     this.channel = channel;
     this._parameters = parameters;
+    this._defaultTitle = defaultTitle;
     const { mode, period } = getEditorValuesFromChannelData(initialValue === undefined ? channel : initialValue);
     if (this.channel.sporadic === true) {
       this.mode = new StringStore({
@@ -117,6 +121,14 @@ export class WbDeviceChannelEditor {
       },
     }, period, true);
 
+    this.title = new StringStore({
+      type: 'string',
+      minLength: 1,
+      options: {
+        compact: true,
+      },
+    }, initialValue?.title ?? defaultTitle, true);
+
     this._conditionFn = new Conditions().getFunction(channel.condition, channel.dependencies);
     this._dependencies = channel.dependencies;
 
@@ -126,6 +138,7 @@ export class WbDeviceChannelEditor {
       hasErrors: computed,
       isDirty: computed,
       hasCustomPeriod: computed,
+      hasCustomTitle: computed,
       customProperties: computed,
       shouldStoreInConfig: computed,
       setFirmwareInDevice: action,
@@ -143,11 +156,18 @@ export class WbDeviceChannelEditor {
   }
 
   get hasErrors() {
-    return this.mode.hasErrors || (this.hasCustomPeriod && this.period.hasErrors);
+    return this.mode.hasErrors || this.title.hasErrors || (this.hasCustomPeriod && this.period.hasErrors);
   }
 
   get hasCustomPeriod() {
     return this.mode.value === WbDeviceChannelModes.CustomPeriod;
+  }
+
+  // The template name in the current or the source language is not a custom title
+  get hasCustomTitle() {
+    return typeof this.title.value === 'string'
+      && this.title.value !== this._defaultTitle
+      && this.title.value !== this.channel.name;
   }
 
   get customProperties() : WbDeviceTemplateChannelSettings | undefined {
@@ -197,6 +217,9 @@ export class WbDeviceChannelEditor {
         break;
       }
     }
+    if (this.hasCustomTitle) {
+      res['title'] = this.title.value as string;
+    }
     if (Object.keys(res).length === 1) {
       return undefined;
     }
@@ -204,7 +227,7 @@ export class WbDeviceChannelEditor {
   }
 
   get isDirty() {
-    if (this.mode.isDirty) {
+    if (this.mode.isDirty || this.title.isDirty) {
       return true;
     }
     return this.mode.value === WbDeviceChannelModes.CustomPeriod && this.period.isDirty;
@@ -231,5 +254,6 @@ export class WbDeviceChannelEditor {
   commit() {
     this.mode.commit();
     this.period.commit();
+    this.title.commit();
   }
 }

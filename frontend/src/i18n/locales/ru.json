@@ -482,6 +482,7 @@
          "component_current_version": ", текущая {{current_firmware}}.",
          "component_update_current_version": " {{current}} на ",
          "channel": "Канал",
+         "original-channel-name": "Исходное название: {{name}}",
          "mode": "Опрос",
          "period": "Период (мс)",
          "custom-channels": "Пользовательские каналы",

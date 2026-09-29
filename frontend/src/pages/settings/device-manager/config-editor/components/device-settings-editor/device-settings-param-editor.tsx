@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
-import { type WbDeviceParameterEditor } from '@/stores/device-manager';
+import { type WbDeviceChannelEditor, type WbDeviceParameterEditor } from '@/stores/device-manager';
 import { type Translator, type NumberStore } from '@/stores/json-schema-editor';
 import { type BadValueFromRegisterWarningProps } from './types';
 
@@ -16,6 +16,25 @@ export const ParamSimpleLabel = (
       {title}
     </label>
   );
+};
+
+export const useChannelDescription = (channel: WbDeviceChannelEditor, translator: Translator) => {
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  let descriptionLines = [];
+  if (channel.hasCustomTitle) {
+    descriptionLines.push(t('device-manager.labels.original-channel-name', {
+      name: translator.find(channel.channel.name, currentLanguage),
+      interpolation: { escapeValue: false },
+    }));
+  }
+  if (channel.channel.description) {
+    descriptionLines.push(translator.find(channel.channel.description, currentLanguage));
+  }
+  if (!channel.isSupportedByFirmware) {
+    descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
+  }
+  return descriptionLines.join('\n');
 };
 
 const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberStore; translator: Translator }) => {
