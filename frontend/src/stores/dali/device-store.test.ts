@@ -106,6 +106,33 @@ describe('DeviceStore', () => {
       expect(store.isLoading).toBe(false);
     });
 
+    test('save sends the block as part of the config and feeds the reply back', async () => {
+      // ObjectStore is mocked here, so this covers the wiring, not the block's value.
+      daliProxyMock.GetDevice.mockResolvedValue({
+        config: { on_off: { enabled: false }, groups: [] },
+        schema: {},
+        name: 'Lamp',
+      });
+      await store.load();
+
+      const response = {
+        name: 'Lamp 2',
+        groups: [true],
+        config: { on_off: { enabled: true, on_action: { mode: 'scene', scene: 3 } } },
+      };
+      daliProxyMock.SetDevice.mockResolvedValue(response);
+
+      await store.save();
+
+      const sent = daliProxyMock.SetDevice.mock.calls[0][0];
+      expect(sent.deviceId).toBe('dev1');
+      expect(sent.config).toBe(store.objectStore!.value);
+      expect(store.objectStore!.setValue).toHaveBeenCalledWith(response);
+      expect(store.objectStore!.commit).toHaveBeenCalled();
+      expect(store.label).toBe('Lamp 2');
+      expect(store.groups).toEqual([0]);
+    });
+
     test('does nothing without objectStore', async () => {
       await store.save();
       expect(daliProxyMock.SetDevice).not.toHaveBeenCalled();

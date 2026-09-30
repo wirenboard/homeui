@@ -165,6 +165,8 @@ export class ArrayStore implements PropertyStore {
     this._hasStructureChanges = true;
   }
 
+  setForbidUndefined() {}
+
   addItem() {
     if (Array.isArray(this._itemsSchema)) {
       return;

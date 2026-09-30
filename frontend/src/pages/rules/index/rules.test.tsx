@@ -100,9 +100,10 @@ beforeEach(() => {
 });
 
 describe('RulesPage', () => {
-  test('calls getList on mount', () => {
+  test('calls getList on mount', async () => {
     render(<RulesPage />);
     expect(rulesMock.getList).toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByTestId('loading')).toBeNull());
   });
 
   test('shows loading state initially', () => {

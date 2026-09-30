@@ -25,6 +25,10 @@ export class ObjectParamStore {
       this.store.schema.options?.wb?.show_editor ||
       this.store.schema.options?.show_opt_in;
     this.disabled = !store.required && !store.schema.options?.wb?.show_editor && initialValue === undefined;
+    // Mirror onto the store: an enabled param (part of the object) must carry a
+    // value; a disabled one may be undefined. Set here too, because a param loaded
+    // with a value starts enabled without ever going through enable().
+    this.store.setForbidUndefined(!this.disabled);
 
     makeObservable(this, {
       disabled: observable,
@@ -39,8 +43,12 @@ export class ObjectParamStore {
 
   enable() {
     if (this.disabled) {
-      this.store.setDefault();
+      this.store.reset();
       this.disabled = false;
+      this.store.setForbidUndefined(true);
+    }
+    if (this.store.value === undefined) {
+      this.store.setDefault();
     }
   }
 
@@ -48,6 +56,7 @@ export class ObjectParamStore {
     if (!this.disabled && !this.store.required && !this.store.schema.options?.wb?.show_editor) {
       this.disabled = true;
       this.store.setUndefined();
+      this.store.setForbidUndefined(false);
     }
   }
 }
@@ -72,6 +81,7 @@ export class ObjectStore implements PropertyStore {
   readonly defaultText = '';
 
   private _paramByKey: Record<string, ObjectParamStore> = {};
+  private _initialIsUndefined: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean, builder: StoreBuilder) {
     this.schema = schema;
@@ -99,6 +109,7 @@ export class ObjectStore implements PropertyStore {
         this.isUndefined = true;
       }
     }
+    this._initialIsUndefined = this.isUndefined;
 
     makeObservable(this, {
       isUndefined: observable,
@@ -130,7 +141,8 @@ export class ObjectStore implements PropertyStore {
       return undefined;
     }
     return this.params.reduce((acc, param) => {
-      if (param.store.value === undefined || param.store.value instanceof MistypedValue) {
+      // reset() restores a nested object whether or not its param is disabled.
+      if (param.disabled || param.store.value === undefined || param.store.value instanceof MistypedValue) {
         return acc;
       }
       if (!param.store.required &&
@@ -145,6 +157,7 @@ export class ObjectStore implements PropertyStore {
 
   setUndefined() {
     this.isUndefined = true;
+    this.params.forEach((param) => param.store.setUndefined());
   }
 
   setDefault() {
@@ -183,13 +196,17 @@ export class ObjectStore implements PropertyStore {
     this.params.forEach((param) => {
       param.store.commit();
     });
+    this._initialIsUndefined = this.isUndefined;
   }
 
   reset() {
     this.params.forEach((param) => {
       param.store.reset();
     });
+    this.isUndefined = this._initialIsUndefined;
   }
+
+  setForbidUndefined() {}
 
   getParamByKey(key: string): ObjectParamStore | undefined {
     return this._paramByKey[key];

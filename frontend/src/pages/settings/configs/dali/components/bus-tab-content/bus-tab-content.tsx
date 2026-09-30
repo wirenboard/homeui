@@ -2,19 +2,21 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
-import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { JsonSchemaEditor, ParamDescription } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { daliGlobalStore, type BusStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
 import { BusCommands } from '../bus-commands';
 import { BusToggle } from '../bus-toggle';
+import { DeviceControlsDesktop, DeviceControlsMobile } from '../device-controls';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
-import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -120,6 +122,7 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
 
 export const BusTabContent = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
 
   if (store.isLoading) {
     return (
@@ -129,36 +132,61 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
     );
   }
 
-  return (
+  const body = (
     <>
       {store.isScanning ? (
         <CommissioningProgress store={store} />
       ) : (
         <>
           <CommissioningErrorBanner store={store} />
+          <BusParamsTabContent store={store} />
+          <BusCommands store={store.commands} />
+        </>
+      )}
+      <div className="wb-jsonEditor-objectProperty">
+        <BusToggle
+          label={t('dali.labels.bus-monitor')}
+          value={daliGlobalStore.isMonitorEnabled(store.id)}
+          onToggle={(v) => daliGlobalStore
+            .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
+            .then(() => store.setError(null), (e) => store.setError(e))}
+        />
+        <ParamDescription description={t('dali.labels.bus-monitor-description')} />
+      </div>
+      <BusToggle
+        label={t('dali.labels.bus-monitor-syslog')}
+        value={store.busMonitorSyslogEnabled}
+        onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
+      />
+    </>
+  );
+
+  if (store.isScanning) {
+    return <div className="dali-tabBody">{body}</div>;
+  }
+
+  return (
+    <>
+      <div className="dali-tabToolbar">
+        <h2 className="dali-contentTitle">{t('dali.labels.bus', { num: store.index })}</h2>
+        <div className="dali-tabToolbar-actions">
           <FormButtonGroup>
             <Button
               label={t('dali.buttons.rescan')}
               onClick={() => store.scan()}
             />
           </FormButtonGroup>
-          <PollingIntervalField store={store} />
-          <BusParamsTabContent store={store} />
-          <BusCommands store={store.commands} />
+        </div>
+      </div>
+      {isMobile ? (
+        <>
+          <div className="dali-tabBody">{body}</div>
+          {/* Broadcast controls only send, there is no state to peek at. */}
+          <DeviceControlsMobile mqttId={`${store.id}_broadcast`} peekTitle={t('dali.labels.broadcast-commands')} />
         </>
+      ) : (
+        <DeviceControlsDesktop mqttId={`${store.id}_broadcast`}>{body}</DeviceControlsDesktop>
       )}
-      <BusToggle
-        label={t('dali.labels.bus-monitor')}
-        value={daliGlobalStore.isMonitorEnabled(store.id)}
-        onToggle={(v) => daliGlobalStore
-          .setBusMonitorEnabled(store.id, v, { gatewayName: store.gatewayName, busIndex: store.index })
-          .then(() => store.setError(null), (e) => store.setError(e))}
-      />
-      <BusToggle
-        label={t('dali.labels.bus-monitor-syslog')}
-        value={store.busMonitorSyslogEnabled}
-        onToggle={(v) => store.setBusMonitorSyslogEnabled(v)}
-      />
     </>
   );
 });

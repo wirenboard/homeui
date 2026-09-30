@@ -99,7 +99,7 @@ vi.mock('@/components/progress', () => ({
   Progress: ({ caption }: any) => <div data-testid="progress">{caption}</div>,
 }));
 vi.mock('@/components/table', () => ({
-  Table: ({ children, ...props }: any) => <table {...props}>{children}</table>,
+  Table: ({ children, ...props }: any) => <table {...props}><tbody>{children}</tbody></table>,
   TableRow: ({ children }: any) => <tr>{children}</tr>,
   TableCell: ({ children }: any) => <td>{children}</td>,
 }));

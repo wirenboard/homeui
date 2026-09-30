@@ -91,17 +91,38 @@ def make_set_cookie_header(cookie: cookies.SimpleCookie) -> list[str]:
     return ["Set-Cookie", cookie.output(header="")]
 
 
+MAX_ID_COOKIE_CANDIDATES = 8
+
+
+def get_id_cookie_values(cookie_header: str) -> list[str]:
+    """Unique values of the cookies named exactly "id", in header order.
+
+    Parsed manually because http.cookies.SimpleCookie silently stops parsing at the first
+    foreign cookie it cannot match — JSON-valued cookies or cookies named like reserved
+    attributes ("path", "expires", ...) — and apps on other ports of the same host share
+    the browser's cookie jar, so such cookies do reach us and must not hide our "id".
+    """
+    values = []
+    for part in cookie_header.split(";"):
+        name, sep, value = part.partition("=")
+        if sep and name.strip() == "id":
+            values.append(value.strip())
+    return list(dict.fromkeys(values))[:MAX_ID_COOKIE_CANDIDATES]
+
+
 def get_session(
     request: BaseHTTPRequestHandler, users_storage: UsersStorage, sessions_storage: SessionsStorage
 ) -> Optional[Session]:
     try:
-        request_cookie = cookies.SimpleCookie()
-        request_cookie.load(request.headers.get("Cookie", ""))
-        cookie_id = request_cookie.get("id")
-        if cookie_id is None:
+        candidates = get_id_cookie_values(request.headers.get("Cookie", ""))
+        if not candidates:
             request.log_error("Cookie not found")
             return None
-        session = sessions_storage.get_session_by_id(cookie_id.value, users_storage)
+        session = None
+        for candidate in candidates:
+            session = sessions_storage.get_session_by_id(candidate, users_storage)
+            if session is not None:
+                break
         if session is None:
             request.log_error("Session not found")
             return None
@@ -166,15 +187,16 @@ def validate_add_user_request(request: dict) -> None:
 
 
 def validate_update_user_request(request: dict) -> None:
-    if request.get("type") not in [e.value for e in UserType]:
+    new_type = request.get("type")
+    if new_type is not None and new_type not in [e.value for e in UserType]:
         raise TypeError("Invalid type field")
 
     new_password = request.get("password")
-    if new_password and not isinstance(new_password, str):
+    if new_password is not None and (not isinstance(new_password, str) or not new_password):
         raise TypeError("Invalid password field")
 
     new_login = request.get("login")
-    if new_login and not isinstance(new_login, str):
+    if new_login is not None and (not isinstance(new_login, str) or not new_login):
         raise TypeError("Invalid login field")
 
     new_autologin = request.get("autologin", False)
@@ -344,6 +366,7 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
+        validate_update_user_request(form)
     except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
@@ -372,7 +395,9 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
                 return response_400("Can't change the last admin's type")
         user.type = UserType(new_type)
 
-    user.autologin = form.get("autologin", False)
+    # Absent means "unchanged": the users page patches single fields, so defaulting
+    # to False here would silently drop autologin on an unrelated edit.
+    user.autologin = form.get("autologin", user.autologin)
 
     if delete_user_sessions:
         context.sessions_storage.delete_sessions_by_user(user)

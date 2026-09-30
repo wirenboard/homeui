@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render, screen, fireEvent } from '@/test/render';
+import { render, screen, fireEvent, waitFor } from '@/test/render';
 import LogsPage from './logs';
 
 const { storeMock, downloadFileMock } = vi.hoisted(() => ({
@@ -80,35 +80,35 @@ describe('LogsPage', () => {
     storeMock.loadLogs.mockResolvedValue(true);
   });
 
-  test('renders page title', () => {
+  test('renders page title', async () => {
     render(<LogsPage />);
-    expect(screen.getByRole('heading')).toHaveTextContent('logs.title');
+    await waitFor(() => expect(screen.getByRole('heading')).toHaveTextContent('logs.title'));
   });
 
-  test('calls loadServicesAndBoots on mount', () => {
+  test('calls loadServicesAndBoots on mount', async () => {
     render(<LogsPage />);
-    expect(storeMock.loadServicesAndBoots).toHaveBeenCalled();
+    await waitFor(() => expect(storeMock.loadServicesAndBoots).toHaveBeenCalled());
   });
 
-  test('calls loadLogs on mount', () => {
+  test('calls loadLogs on mount', async () => {
     render(<LogsPage />);
-    expect(storeMock.loadLogs).toHaveBeenCalled();
+    await waitFor(() => expect(storeMock.loadLogs).toHaveBeenCalled());
   });
 
-  test('disables download button when no logs', () => {
+  test('disables download button when no logs', async () => {
     render(<LogsPage />);
-    expect(screen.getByTestId('download-btn')).toBeDisabled();
+    await waitFor(() => expect(screen.getByTestId('download-btn')).toBeDisabled());
   });
 
-  test('enables download button when logs present', () => {
+  test('enables download button when logs present', async () => {
     storeMock.logs = [{ time: 1700000000000, level: 6, msg: 'ok', service: 'svc' }];
     render(<LogsPage />);
-    expect(screen.getByTestId('download-btn')).not.toBeDisabled();
+    await waitFor(() => expect(screen.getByTestId('download-btn')).not.toBeDisabled());
   });
 
-  test('renders filters when no errors', () => {
+  test('renders filters when no errors', async () => {
     render(<LogsPage />);
-    expect(screen.getByTestId('logs-filters')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('logs-filters')).toBeInTheDocument());
   });
 
   test('hides filters on services error', async () => {
@@ -152,56 +152,62 @@ describe('LogsPage', () => {
     await vi.waitFor(() => expect(storeMock.clearLogs).toHaveBeenCalled());
   });
 
-  test('renders log entry with message and service', () => {
+  test('renders log entry with message and service', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 6, msg: 'Hello world', service: 'wb-rules' },
     ];
     render(<LogsPage />);
-    expect(screen.getByText('Hello world')).toBeInTheDocument();
-    expect(screen.getByText('[wb-rules]')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Hello world')).toBeInTheDocument();
+      expect(screen.getByText('[wb-rules]')).toBeInTheDocument();
+    });
   });
 
-  test('renders empty service column for log without service', () => {
+  test('renders empty service column for log without service', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 6, msg: 'No svc', service: '' },
     ];
     render(<LogsPage />);
-    expect(screen.getByText('No svc')).toBeInTheDocument();
-    expect(screen.queryByText(/\[.*\]/)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('No svc')).toBeInTheDocument();
+      expect(screen.queryByText(/\[.*\]/)).not.toBeInTheDocument();
+    });
   });
 
-  test('applies warning class', () => {
+  test('applies warning class', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 4, msg: 'Warn msg', service: 'svc' },
     ];
     render(<LogsPage />);
-    expect(screen.getByText('Warn msg')).toHaveClass('logs-cellWarn');
+    await waitFor(() => expect(screen.getByText('Warn msg')).toHaveClass('logs-cellWarn'));
   });
 
-  test('applies error class', () => {
+  test('applies error class', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 3, msg: 'Err msg', service: 'svc' },
     ];
     render(<LogsPage />);
-    expect(screen.getByText('Err msg')).toHaveClass('logs-cellError');
+    await waitFor(() => expect(screen.getByText('Err msg')).toHaveClass('logs-cellError'));
   });
 
-  test('applies debug class', () => {
+  test('applies debug class', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 7, msg: 'Debug msg', service: 'svc' },
     ];
     render(<LogsPage />);
-    expect(screen.getByText('Debug msg')).toHaveClass('logs-cellDebug');
+    await waitFor(() => expect(screen.getByText('Debug msg')).toHaveClass('logs-cellDebug'));
   });
 
-  test('formats log date', () => {
+  test('formats log date', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 6, msg: 'dated', service: 'svc' },
     ];
     render(<LogsPage />);
-    expect(
-      screen.getByText(/\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}\.\d{3}/),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}\.\d{3}/),
+      ).toBeInTheDocument();
+    });
   });
 
   test('shows no-logs message when empty and no more', async () => {
@@ -212,30 +218,34 @@ describe('LogsPage', () => {
     ).toBeInTheDocument();
   });
 
-  test('calls downloadFile on download click', () => {
+  test('calls downloadFile on download click', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 6, msg: 'Log line', service: 'wb-rules' },
     ];
     render(<LogsPage />);
     fireEvent.click(screen.getByTestId('download-btn'));
-    expect(downloadFileMock).toHaveBeenCalled();
-    expect(downloadFileMock.mock.calls[0][0]).toMatch(/\.log$/);
+    await waitFor(() => {
+      expect(downloadFileMock).toHaveBeenCalled();
+      expect(downloadFileMock.mock.calls[0][0]).toMatch(/\.log$/);
+    });
   });
 
-  test('renders multiple log entries', () => {
+  test('renders multiple log entries', async () => {
     storeMock.logs = [
       { time: 1700000000000, level: 6, msg: 'First', service: 'a' },
       { time: 1700000001000, level: 4, msg: 'Second', service: 'b' },
       { time: 1700000002000, level: 3, msg: 'Third', service: 'c' },
     ];
     render(<LogsPage />);
-    expect(screen.getByText('First')).toBeInTheDocument();
-    expect(screen.getByText('Second')).toBeInTheDocument();
-    expect(screen.getByText('Third')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('First')).toBeInTheDocument();
+      expect(screen.getByText('Second')).toBeInTheDocument();
+      expect(screen.getByText('Third')).toBeInTheDocument();
+    });
   });
 
   describe('search params sync', () => {
-    test('initializes filter from URL params', () => {
+    test('initializes filter from URL params', async () => {
       render(<LogsPage />, {
         initialEntries: ['/?service=wb-mqtt-serial&levels=3,4&time=1700000000&pattern=error&regex=1&case=0'],
       });
@@ -246,9 +256,10 @@ describe('LogsPage', () => {
       expect(filterJson.pattern).toBe('error');
       expect(filterJson.regex).toBe(true);
       expect(filterJson['case-sensitive']).toBe(false);
+      await waitFor(() => expect(storeMock.loadLogs).toHaveBeenCalled());
     });
 
-    test('defaults filter when no URL params', () => {
+    test('defaults filter when no URL params', async () => {
       render(<LogsPage />);
       const filterJson = JSON.parse(screen.getByTestId('filter-json').textContent);
       expect(filterJson.service).toBeNull();
@@ -257,13 +268,14 @@ describe('LogsPage', () => {
       expect(filterJson.pattern).toBe('');
       expect(filterJson.regex).toBe(false);
       expect(filterJson['case-sensitive']).toBe(true);
+      await waitFor(() => expect(storeMock.loadLogs).toHaveBeenCalled());
     });
 
     test('syncs filter change to loadLogs call', async () => {
       render(<LogsPage />);
       storeMock.loadLogs.mockClear();
       fireEvent.click(screen.getByTestId('change-filter'));
-      await vi.waitFor(() => {
+      await waitFor(() => {
         expect(storeMock.loadLogs).toHaveBeenCalled();
       });
       const callArg = storeMock.loadLogs.mock.calls[0][0];
@@ -271,21 +283,23 @@ describe('LogsPage', () => {
       expect(callArg.levels).toEqual([3, 4]);
     });
 
-    test('passes URL-restored filter to loadLogs', () => {
+    test('passes URL-restored filter to loadLogs', async () => {
       render(<LogsPage />, {
         initialEntries: ['/?service=wb-rules&levels=3'],
       });
+      await waitFor(() => expect(storeMock.loadLogs).toHaveBeenCalled());
       const callArg = storeMock.loadLogs.mock.calls[0][0];
       expect(callArg.service).toBe('wb-rules');
       expect(callArg.levels).toEqual([3]);
     });
 
-    test('initializes boot from URL params', () => {
+    test('initializes boot from URL params', async () => {
       render(<LogsPage />, {
         initialEntries: ['/?boot=abc123'],
       });
       const filterJson = JSON.parse(screen.getByTestId('filter-json').textContent);
       expect(filterJson.boot).toBe('abc123');
+      await waitFor(() => expect(storeMock.loadLogs).toHaveBeenCalled());
     });
   });
 });

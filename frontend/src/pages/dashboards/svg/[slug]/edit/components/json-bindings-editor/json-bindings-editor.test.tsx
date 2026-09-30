@@ -1,11 +1,12 @@
 // @vitest-environment happy-dom
 import { render, screen, fireEvent } from '@testing-library/react';
+import { forwardRef } from 'react';
 import { JsonBindingsEditor } from './json-bindings-editor';
 
 vi.mock('@uiw/react-codemirror', () => ({
-  default: ({ value, onChange }: any) => (
-    <textarea data-testid="code-editor" value={value} onChange={(e) => onChange(e.target.value)} />
-  ),
+  default: forwardRef(({ value, onChange }: any, ref: any) => (
+    <textarea ref={ref} data-testid="code-editor" value={value} onChange={(e) => onChange(e.target.value)} />
+  )),
 }));
 
 describe('JsonBindingsEditor', () => {

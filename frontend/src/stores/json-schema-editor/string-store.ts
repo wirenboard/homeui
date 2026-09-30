@@ -15,6 +15,7 @@ export class StringStore implements PropertyStore {
   readonly required: boolean;
 
   private _initialValue: MistypedValue | string | undefined;
+  private _forbidUndefined: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'string') {
@@ -49,6 +50,7 @@ export class StringStore implements PropertyStore {
       hasErrors: computed,
       commit: action,
       reset: action,
+      setForbidUndefined: action,
     });
   }
 
@@ -60,7 +62,8 @@ export class StringStore implements PropertyStore {
     if (this.value === undefined) {
       const forbidUndefined = (this.schema.options?.wb?.show_editor && !this.schema.options?.wb?.allow_undefined)
         || this.required
-        || this.schema.options?.show_opt_in;
+        || this.schema.options?.show_opt_in
+        || (this._forbidUndefined && !this.schema.options?.wb?.allow_undefined);
       this.error = forbidUndefined ? { key: 'json-editor.errors.required' } : undefined;
       return;
     }
@@ -128,6 +131,11 @@ export class StringStore implements PropertyStore {
   reset(): void {
     this.value = this._initialValue;
     this.isDirty = false;
+    this._checkConstraints();
+  }
+
+  setForbidUndefined(value: boolean) {
+    this._forbidUndefined = value;
     this._checkConstraints();
   }
 }

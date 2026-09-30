@@ -99,11 +99,11 @@
         height: 180px;
     }
 
-    .dali-busCommands-catalogButton .button-text {
-        display: none;
-    }
-
     .dali-busCommands-results .wb-tableWrapper {
         overflow-x: visible;
     }
+}
+
+.dali-busCommands-toolbar .button {
+    flex-shrink: 0;
 }

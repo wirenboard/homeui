@@ -13,24 +13,30 @@ const StringEditor = observer(({
   translator,
   hideError,
 }: StringEditorProps) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLanguage = i18n.language;
   const value = store.value;
   const valueToDisplay = typeof value === 'string' ? value : '';
   const isOptInEditor = store.schema.options?.wb?.show_editor || store.schema.options?.show_opt_in;
+  const allowUndefined = !store.required && !!store.schema.options?.wb?.allow_undefined;
+  const notSetLabel = t('json-editor.labels.not-set');
   const enumOptions = useMemo(() => {
     if (!store.schema.enum) return [];
-    return store.enumOptions.map((option) => ({
+    const options: Option<string | null>[] = store.enumOptions.map((option) => ({
       value: option.value,
       label: translator.find(option.label, currentLanguage),
     }));
-  }, [store.enumOptions, translator, currentLanguage]);
+    if (allowUndefined) {
+      options.unshift({ value: null, label: notSetLabel });
+    }
+    return options;
+  }, [store.enumOptions, translator, currentLanguage, allowUndefined, notSetLabel]);
   const hasErrors = store.hasErrors && !hideError;
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
       options={enumOptions}
-      value={valueToDisplay}
+      value={allowUndefined && value === undefined ? null : valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
       isDisabled={store.schema.options?.wb?.read_only}

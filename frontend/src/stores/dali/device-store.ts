@@ -9,6 +9,7 @@ export class DeviceStore extends BaseItemStore {
   readonly type = ItemType.Device;
 
   public groups: number[] = [];
+  public mqttId: string | null = null;
 
   #parent: BusStore | null;
 
@@ -26,6 +27,8 @@ export class DeviceStore extends BaseItemStore {
       isLoading: observable,
       error: observable,
       label: observable,
+      mqttId: observable,
+      objectStore: observable.ref,
       groups: observable.shallow,
     });
   }
@@ -48,11 +51,12 @@ export class DeviceStore extends BaseItemStore {
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations);
-      this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
       runInAction(() => {
+        this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
         this.label = data.name || this.label;
-        this.updateGroups((data.config as any).groups);
+        this.mqttId = data.config.mqtt_id ?? null;
+        this.updateGroups(data.config.groups);
         this.#parent?.syncGroupChildren();
       });
     } catch (error) {

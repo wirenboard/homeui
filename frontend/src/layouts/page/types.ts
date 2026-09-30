@@ -28,7 +28,7 @@ export interface PageProps {
   titleArea?: ReactElement;
   footer?: ReactElement;
   errors?: ErrorInfo[];
-  infoLink?: string;
+  infoLink?: string | null;
   onTitleChange?: (_title: string) => void;
   onTitleEditEnable?: () => void;
 }

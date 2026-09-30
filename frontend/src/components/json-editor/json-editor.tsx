@@ -1,39 +1,11 @@
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import i18n from '@/i18n/config';
 import { createJSONEditor } from './extensions/wb-json-editor';
 import { type JsonEditorProps } from './types';
 import './styles.css';
-
-// Cap the sticky vertical tab list so it scrolls on its own instead of running off-screen.
-const TAB_LIST_SELECTOR = 'ul.nav-stacked';
-const VIEWPORT_GAP = 12;
-const DESKTOP_QUERY = '(min-width: 992px)';
-// floor so a short form can't crush the list to a couple of rows
-const MIN_TAB_LIST_HEIGHT = 360;
-
-const syncTabListMaxHeight = (root: HTMLElement | null) => {
-  if (!root) {
-    return;
-  }
-  const isDesktop = window.matchMedia(DESKTOP_QUERY).matches;
-  root.querySelectorAll<HTMLElement>(TAB_LIST_SELECTOR).forEach((list) => {
-    if (!isDesktop) {
-      list.style.maxHeight = '';
-      return;
-    }
-    // clamp the top to the pinned position, else a list scrolled above the fold un-caps
-    const top = Math.max(list.getBoundingClientRect().top, VIEWPORT_GAP);
-    const viewportAvailable = window.innerHeight - top - VIEWPORT_GAP;
-    // follow the content pane (no towering over a short form), floored by MIN and capped by the viewport
-    const sibling = Array.from(list.parentElement?.children ?? []).find((el) => el !== list);
-    const contentHeight = sibling ? sibling.getBoundingClientRect().height : viewportAvailable;
-    const available = Math.min(viewportAvailable, Math.max(contentHeight, MIN_TAB_LIST_HEIGHT));
-    list.style.maxHeight = available > 0 ? `${available}px` : '';
-  });
-};
 
 export const JsonEditor = observer((props: JsonEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
@@ -84,31 +56,6 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
       }
     }
   });
-
-  useEffect(() => {
-    const root = container.current;
-    if (!root) {
-      return undefined;
-    }
-    let frame = 0;
-    const schedule = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => syncTabListMaxHeight(root));
-    };
-    schedule();
-    // capture phase to catch the inner page container scroll, not just window
-    window.addEventListener('scroll', schedule, true);
-    window.addEventListener('resize', schedule);
-    // recompute when tabs change or content resizes the layout
-    const resizeObserver = new ResizeObserver(schedule);
-    resizeObserver.observe(root);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', schedule, true);
-      window.removeEventListener('resize', schedule);
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   return <div ref={container} className={classNames('json-editor', props.className)} />;
 });

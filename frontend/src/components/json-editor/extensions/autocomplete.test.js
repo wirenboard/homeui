@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import { createJSONEditor } from './wb-json-editor';
 
 // mirrors the channels field of wb-mqtt-db.schema.json — no pattern of its own, +/+ is valid there
@@ -77,11 +77,17 @@ const topics = [
   },
 ];
 
+// createJSONEditor renders wb-autocomplete fields straight into a raw createRoot (see
+// autocomplete.js), bypassing RTL's render() — every mount/update it triggers must be wrapped
+// in act() by hand, or React warns about updates outside act's tracking.
 const buildEditor = async (value, schema = historySchema) => {
   const element = document.createElement('div');
   document.body.appendChild(element);
-  const editor = createJSONEditor(element, schema, value, 'en', 'root', topics);
-  await new Promise((resolve) => editor.on('ready', resolve));
+  let editor;
+  await act(async () => {
+    editor = createJSONEditor(element, schema, value, 'en', 'root', topics);
+    await new Promise((resolve) => editor.on('ready', resolve));
+  });
   return { editor, element };
 };
 
@@ -118,7 +124,9 @@ describe('wb-autocomplete editor in a schema that takes channel patterns', () =>
   test('the value survives a new row being added', async () => {
     const { editor } = await buildEditor({ channels: ['+/+'] });
 
-    editor.getEditor('root.channels').add_row_button.click();
+    act(() => {
+      editor.getEditor('root.channels').add_row_button.click();
+    });
 
     expect(editor.getValue().channels[0]).toBe('+/+');
 

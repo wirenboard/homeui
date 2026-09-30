@@ -1,56 +1,58 @@
+import type { Mock } from 'vitest';
+
 export const configEditorProxyMock = {
-  List: vi.fn(),
-  Load: vi.fn(),
-  Save: vi.fn(),
+  List: vi.fn() as Mock,
+  Load: vi.fn() as Mock,
+  Save: vi.fn() as Mock,
 };
 
 export const daliProxyMock = {
-  GetList: vi.fn(),
-  GetGateway: vi.fn(),
-  SetGateway: vi.fn(),
-  GetBus: vi.fn(),
-  SetBus: vi.fn(),
-  GetDevice: vi.fn(),
-  SetDevice: vi.fn(),
-  GetGroup: vi.fn(),
-  SetGroup: vi.fn(),
-  ScanBus: vi.fn(),
-  StopScanBus: vi.fn(),
-  IdentifyDevice: vi.fn(),
-  ResetDeviceSettings: vi.fn(),
-  ResetDevice: vi.fn(),
+  GetList: vi.fn() as Mock,
+  GetGateway: vi.fn() as Mock,
+  SetGateway: vi.fn() as Mock,
+  GetBus: vi.fn() as Mock,
+  SetBus: vi.fn() as Mock,
+  GetDevice: vi.fn() as Mock,
+  SetDevice: vi.fn() as Mock,
+  GetGroup: vi.fn() as Mock,
+  SetGroup: vi.fn() as Mock,
+  ScanBus: vi.fn() as Mock,
+  StopScanBus: vi.fn() as Mock,
+  IdentifyDevice: vi.fn() as Mock,
+  ResetDeviceSettings: vi.fn() as Mock,
+  ResetDevice: vi.fn() as Mock,
 };
 
 export const daliBusProxyMock = {
-  SendCommand: vi.fn(),
-  ListCommands: vi.fn(),
+  SendCommand: vi.fn() as Mock,
+  ListCommands: vi.fn() as Mock,
 };
 
 export const deviceManagerProxyMock = {
-  Stop: vi.fn(),
+  Stop: vi.fn() as Mock,
 };
 
 export const diagnosticProxyMock = {};
 
 export const editorProxyMock = {
-  List: vi.fn(),
-  Load: vi.fn(),
-  Save: vi.fn(),
-  Rename: vi.fn(),
-  ChangeState: vi.fn(),
-  Remove: vi.fn(),
+  List: vi.fn() as Mock,
+  Load: vi.fn() as Mock,
+  Save: vi.fn() as Mock,
+  Rename: vi.fn() as Mock,
+  ChangeState: vi.fn() as Mock,
+  Remove: vi.fn() as Mock,
 };
 
 export const fwUpdateProxyMock = {};
 
 export const historyProxyMock = {
-  get_values: vi.fn(),
+  get_values: vi.fn() as Mock,
 };
 
 export const logsProxyMock = {
-  List: vi.fn(),
-  Load: vi.fn(),
-  CancelLoad: vi.fn(),
+  List: vi.fn() as Mock,
+  Load: vi.fn() as Mock,
+  CancelLoad: vi.fn() as Mock,
 };
 
 export const serialDeviceProxyMock = {};
@@ -60,18 +62,18 @@ export const serialPortProxyMock = {};
 export const serialProxyMock = {};
 
 export const mqttClientMock = {
-  whenConnected: vi.fn(() => Promise.resolve()),
-  whenReady: vi.fn(() => Promise.resolve()),
-  isConnected: vi.fn(() => false),
-  reconnect: vi.fn(),
-  subscribe: vi.fn(),
-  unsubscribe: vi.fn(),
-  publish: vi.fn(),
-  send: vi.fn(),
-  addStickySubscription: vi.fn(),
+  whenConnected: vi.fn(() => Promise.resolve()) as Mock,
+  whenReady: vi.fn(() => Promise.resolve()) as Mock,
+  isConnected: vi.fn(() => false) as Mock,
+  reconnect: vi.fn() as Mock,
+  subscribe: vi.fn() as Mock,
+  unsubscribe: vi.fn() as Mock,
+  publish: vi.fn() as Mock,
+  send: vi.fn() as Mock,
+  addStickySubscription: vi.fn() as Mock,
 };
 
-export const createRpcProxy = vi.fn();
+export const createRpcProxy: Mock = vi.fn();
 
 export {
   configEditorProxyMock as configEditorProxy,

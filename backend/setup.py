@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import re
+import os
 
 from setuptools import setup
 
 
 def get_version():
-    with open("../debian/changelog", "r", encoding="utf-8") as f:
-        return re.match(r"wb-mqtt-homeui \((?P<version>.*)\)", f.readline()).group("version").split("~")[0]
+    return os.environ.get("DEB_VERSION", "0.0.0").split("~")[0].replace("-", "+")
 
 
 setup(
@@ -22,6 +21,12 @@ setup(
     url="https://github.com/wirenboard/wb-mqtt-homeui",
     packages=[
         "wb.homeui_backend",
+    ],
+    scripts=[
+        "wb-homeui-backend",
+        "wb-homeui-users",
+        "wb-homeui-gates",
+        "wb-terminal-server",
     ],
     test_suite="tests",
 )

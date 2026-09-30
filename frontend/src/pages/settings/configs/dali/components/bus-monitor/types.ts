@@ -1,9 +1,16 @@
 import type { ReactNode } from 'react';
 import type { MonitorStore } from '@/stores/dali/monitor-store';
+import type { ParsedBusMonitorLine } from '@/stores/dali/types';
 
 export interface BusMonitorTabProps {
   monitorStore: MonitorStore;
   getLabel: () => string;
+}
+
+export interface SequencedBusMonitorFrame {
+  /** The row's React key. */
+  seq: number;
+  frame: ParsedBusMonitorLine;
 }
 
 export interface RegisterBusTabParams {

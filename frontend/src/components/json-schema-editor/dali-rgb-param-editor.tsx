@@ -3,7 +3,7 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Colorpicker } from '@/components/colorpicker';
 import { rgbToHex, hexToRgb } from '@/utils/color';
-import { ChannelSlider } from './components/channel-slider';
+import { CHANNEL_MAX, ChannelSlider } from './components/channel-slider';
 import type { DaliRGBEditorProps } from './types';
 
 const MASK_VALUE = 255;
@@ -35,8 +35,11 @@ const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
     String(b === MASK_VALUE ? 0 : b),
   );
 
+  // A picked colour may hit 255 on a channel (pure red, white, ...), which DALI
+  // reserves for MASK; cap it at the highest real level.
   const onColorChange = useCallback((hex: string) => {
-    store.setValue(hexToRgb(hex));
+    const [red, green, blue] = parseRGB(hexToRgb(hex)).map((v) => Math.min(CHANNEL_MAX, v));
+    store.setValue(toRGBString(red, green, blue));
   }, [store]);
 
   const onRChange = useCallback((val: number) => {

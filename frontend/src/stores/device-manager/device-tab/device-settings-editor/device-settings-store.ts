@@ -1,4 +1,5 @@
-import { makeObservable, computed } from 'mobx';
+import { makeObservable, computed, observable, action } from 'mobx';
+import { compareFirmware, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import {
   type JsonSchema,
   type JsonObject,
@@ -19,21 +20,36 @@ import { WbDeviceChannelEditor } from './channel-editor-store';
 import { Conditions } from './conditions';
 import { WbDeviceParameterEditor } from './parameter-editor-store';
 
+// Template declarations with the same id are variants of one group: they differ in fw and
+// description, the rest of the properties is the same, so it is taken from the first declaration
 export class WbDeviceParameterEditorsGroup {
   public properties: WbDeviceParametersGroup;
   public subgroups: WbDeviceParameterEditorsGroup[] = [];
   public parameters: WbDeviceParameterEditor[] = [];
   public channels: WbDeviceChannelEditor[] = [];
 
+  private _variants: WbDeviceParametersGroup[];
+  // Until the device firmware is read the newest variant is shown
+  private _variantForFirmware?: WbDeviceParametersGroup;
+
   constructor(properties: WbDeviceParametersGroup) {
     this.properties = properties;
+    this._variants = [properties];
 
-    makeObservable(this, {
+    makeObservable<WbDeviceParameterEditorsGroup, '_variantForFirmware'>(this, {
+      _variantForFirmware: observable.ref,
+      description: computed,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
       hasBadValuesFromRegisters: computed,
+      addVariant: action,
+      setFirmwareInDevice: action,
     });
+  }
+
+  get description() {
+    return (this._variantForFirmware ?? this._variants.at(-1)).description;
   }
 
   get isEnabledByCondition() {
@@ -69,6 +85,17 @@ export class WbDeviceParameterEditorsGroup {
 
   addChannel(channel: WbDeviceChannelEditor) {
     this.channels.push(channel);
+  }
+
+  addVariant(properties: WbDeviceParametersGroup) {
+    this._variants.push(properties);
+    this._variants.sort((a, b) => compareFirmware(a.fw, b.fw));
+  }
+
+  // The newest variant supported by the device firmware, the oldest one when none is supported
+  setFirmwareInDevice(fw?: string) {
+    const supported = this._variants.filter((variant) => firmwareIsNewerOrEqual(variant.fw, fw));
+    this._variantForFirmware = supported.at(-1) ?? this._variants[0];
   }
 
   setDefault() {
@@ -145,8 +172,12 @@ export class DeviceSettingsObjectStore {
     this.topLevelGroup = new WbDeviceParameterEditorsGroup({ id: 'topLevelGroup' });
 
     deviceTemplate.groups?.forEach((groupProps) => {
-      const group = new WbDeviceParameterEditorsGroup(groupProps);
-      this._groupsByName.set(groupProps.id, group);
+      const group = this._groupsByName.get(groupProps.id);
+      if (group) {
+        group.addVariant(groupProps);
+        return;
+      }
+      this._groupsByName.set(groupProps.id, new WbDeviceParameterEditorsGroup(groupProps));
     });
 
     this._groupsByName.forEach((group, _name) => {
@@ -272,8 +303,11 @@ export class DeviceSettingsObjectStore {
   }
 
   setSlaveId(id: string | undefined) {
-    const store = this.commonParams.getParamByKey('slave_id').store as StringStore;
-    store?.setValue(id);
+    const param = this.commonParams.getParamByKey('slave_id');
+    if (id !== undefined) {
+      param?.enable();
+    }
+    (param?.store as StringStore)?.setValue(id);
   }
 
   // When switching to another template the params store is rebuilt from scratch, so the
@@ -298,6 +332,12 @@ export class DeviceSettingsObjectStore {
   }
 
   setFromDeviceRegisters(value: unknown, fw: string, isForce?: boolean){
+    this._groupsByName.forEach((group, _name) => {
+      group.setFirmwareInDevice(fw);
+      group.channels.forEach((channel) => {
+        channel.setFirmwareInDevice(fw);
+      });
+    });
     const valueAsObject = value as Record<string, any>;
     if (!valueAsObject) {
       return;
@@ -307,11 +347,6 @@ export class DeviceSettingsObjectStore {
       if (Object.hasOwn(valueAsObject, param.id)) {
         param.setFromDeviceRegister(valueAsObject[param.id], isForce);
       }
-    });
-    this._groupsByName.forEach((group, _name) => {
-      group.channels.forEach((channel) => {
-        channel.setFirmwareInDevice(fw);
-      });
     });
   }
 

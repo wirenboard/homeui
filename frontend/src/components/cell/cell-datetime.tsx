@@ -30,31 +30,37 @@ const dateToLocalTime = (date: Date): number =>
     date.getSeconds(),
   ) / 1000);
 
-export const CellDateTime = observer(({ cell, isReadOnly }: CellDateTimeProps) => {
+export const CellDateTime = observer(({ cell, isReadOnly, isDisabled, hideHistory, hideCopy }: CellDateTimeProps) => {
   const { t, i18n } = useTranslation();
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
 
   return (
     <div className="deviceCell-textWrapper">
-      <CellHistory cell={cell} />
+      {!hideHistory && <CellHistory cell={cell} />}
 
       {cell.readOnly
         ? (
-          <Tooltip
-            text={<span><b>'{cell.value}'</b> {t('widget.labels.copy')}</span>}
-            placement="top-end"
-            trigger="click"
-          >
-            <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
+          hideCopy ? (
+            <div className="deviceCell-text deviceCell-textStatic deviceCell-noClick">
               {format(localTimeToDate(cell.value as number || 0), dateFormat)}
             </div>
-          </Tooltip>
+          ) : (
+            <Tooltip
+              text={<span><b>'{cell.value}'</b> {t('widget.labels.copy')}</span>}
+              placement="top-end"
+              trigger="click"
+            >
+              <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
+                {format(localTimeToDate(cell.value as number || 0), dateFormat)}
+              </div>
+            </Tooltip>
+          )
         )
         : (
           <DateTimePicker
             size="small"
             value={localTimeToDate(cell.value as number)}
-            disabled={cell.readOnly || isReadOnly}
+            disabled={cell.readOnly || isReadOnly || isDisabled}
             isInvalid={!!cell.error}
             ariaLabel={cell.name}
             withSeconds

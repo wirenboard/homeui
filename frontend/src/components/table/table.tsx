@@ -202,8 +202,12 @@ export const Table = ({
           )}
           {inBodyRows}
           {isLoading && (
-            <tfoot className="wb-tableLoading">
-              <Loader className="page-loader" />
+            <tfoot>
+              <tr>
+                <td className="wb-tableLoading">
+                  <Loader className="page-loader" />
+                </td>
+              </tr>
             </tfoot>
           )}
         </table>

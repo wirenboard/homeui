@@ -36,6 +36,7 @@ export class NumberStore implements PropertyStore {
   private _initialValue: MistypedValue | number | undefined;
   private _anyUserInputIsDirty: boolean = false;
   private _doNotShowInvalidValue: boolean = false;
+  private _forbidUndefined: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
@@ -75,6 +76,7 @@ export class NumberStore implements PropertyStore {
       commit: action,
       reset: action,
       setDoNotShowInvalidValue: action,
+      setForbidUndefined: action,
     });
   }
 
@@ -86,7 +88,8 @@ export class NumberStore implements PropertyStore {
     if (this.value === undefined) {
       const forbidUndefined = (this.schema.options?.wb?.show_editor && !this.schema.options?.wb?.allow_undefined)
         || this.required
-        || this.schema.options?.show_opt_in;
+        || this.schema.options?.show_opt_in
+        || (this._forbidUndefined && !this.schema.options?.wb?.allow_undefined);
       this.error = forbidUndefined ? { key: 'json-editor.errors.required' } : undefined;
       return;
     }
@@ -213,6 +216,8 @@ export class NumberStore implements PropertyStore {
 
   reset(): void {
     this.value = this._initialValue;
+    // The editors render from editString, so it has to follow the restored value.
+    this.editString = typeof this.value === 'number' ? formatEditString(this.schema, this.value) : '';
     this.isDirty = false;
     this._checkConstraints();
     if (this._doNotShowInvalidValue && this.hasErrors) {
@@ -237,5 +242,10 @@ export class NumberStore implements PropertyStore {
    */
   setAnyUserInputIsDirty(anyUserInputIsDirty: boolean) {
     this._anyUserInputIsDirty = anyUserInputIsDirty;
+  }
+
+  setForbidUndefined(value: boolean) {
+    this._forbidUndefined = value;
+    this._checkConstraints();
   }
 }

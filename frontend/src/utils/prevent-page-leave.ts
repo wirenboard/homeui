@@ -1,15 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
 import i18n from '@/i18n/config';
 
 export const usePreventLeavePage = (confirmMessage: string = i18n.t('common.prompt.dirty')) => {
-  const [isDirty, setIsDirty] = useState(false);
-  const isDirtyRef = useRef(isDirty);
+  const [isDirty, setIsDirtyState] = useState(false);
+  // The blocker reads this ref instead of React state so that a navigate()
+  // issued right after setIsDirty(false) (same tick, before re-render) is not blocked.
+  const isDirtyRef = useRef(false);
   const confirmMessageRef = useRef(confirmMessage);
 
-  useEffect(() => {
-    isDirtyRef.current = isDirty;
-  }, [isDirty]);
+  const setIsDirty = useCallback((value: boolean) => {
+    isDirtyRef.current = value;
+    setIsDirtyState(value);
+  }, []);
 
   useEffect(() => {
     confirmMessageRef.current = confirmMessage;
@@ -31,7 +34,8 @@ export const usePreventLeavePage = (confirmMessage: string = i18n.t('common.prom
     };
   }, []);
 
-  const blocker = useBlocker(isDirty);
+  const shouldBlock = useCallback(() => isDirtyRef.current, []);
+  const blocker = useBlocker(shouldBlock);
 
   useEffect(() => {
     if (blocker.state !== 'blocked') return;
@@ -41,14 +45,12 @@ export const usePreventLeavePage = (confirmMessage: string = i18n.t('common.prom
     );
 
     if (confirmed) {
-      isDirtyRef.current = false;
       setIsDirty(false);
-
       blocker.proceed();
     } else {
       blocker.reset();
     }
-  }, [blocker]);
+  }, [blocker, setIsDirty]);
 
   return { isDirty, setIsDirty };
 };

@@ -45,3 +45,13 @@ export interface RuleLog {
   payload: string;
   time: number;
 }
+
+export interface SequencedRuleLog {
+  /** The row's React key. */
+  seq: number;
+  log: RuleLog;
+}
+
+export interface RulesConsoleRowProps {
+  log: RuleLog;
+}

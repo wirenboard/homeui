@@ -36,8 +36,18 @@ Run all three from `frontend/` and fix every failure before considering the chan
 ```sh
 npm run check:types   # tsc --noEmit — must pass clean
 npm run lint          # eslint — must pass clean (npm run lint:fix to autofix)
-npm test              # vitest run — all tests green
+npm test              # vitest run — all tests green, with zero console warnings/errors
 ```
+
+`npm test`'s default reporter hides console output from passing tests — a warning can be silently
+there even when everything is green. Check with `npm test -- --reporter=verbose` (or target the
+changed/new files) and grep for `Warning:`/`stderr |` before calling a test done. Common causes:
+React "not wrapped in act(...)" (an async mock resolves after the test's sync body returns — fix
+with `await waitFor(...)` on a real post-condition, not a bare flush, where one exists), invalid
+DOM nesting in a shallow mock (e.g. a `<table>` mock missing `<tbody>`), or a ref passed to a
+mocked component that isn't `forwardRef`. Fix the root cause in the test/mock; don't silence the
+warning unless it's a documented, unavoidable upstream false-positive (see
+`src/test/setup-components.ts` for the one existing precedent, with its reasoning in a comment).
 
 ## Dev server / connecting to a controller
 
@@ -78,7 +88,8 @@ Path alias: `@/` → `src/` (configured in `tsconfig.json`, `vite.config.ts`, `v
 - Lint config is `@wirenboard/eslint` (base + react) in `eslint.config.mjs`.
 - Tests: vitest with `globals: true` (no need to import `describe`/`it`/`vi`), happy-dom,
   `@testing-library/react`. Setup file `src/test/setup-components.ts`. Co-locate tests as
-  `*.test.ts(x)` next to the code.
+  `*.test.ts(x)` next to the code. A test must not print console warnings/errors — see the
+  verification pipeline above for how to check and the common causes/fixes.
 - Device/control modeling lives in `src/stores/devices/` (`Cell`, `Device`, cell-type maps). MQTT
   device/control conventions follow https://github.com/wirenboard/conventions.
 

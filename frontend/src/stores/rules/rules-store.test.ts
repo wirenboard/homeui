@@ -1,5 +1,5 @@
 import { editorProxyMock, mqttClientMock } from '@/test/mocks/services';
-import RulesStore from './rules-store';
+import RulesStore, { MAX_MESSAGES } from './rules-store';
 
 vi.mock('@/services', () => import('@/test/mocks/services'));
 vi.mock('@/utils/id', () => import('@/test/mocks/utils-id'));
@@ -263,17 +263,29 @@ describe('RulesStore', () => {
   });
 
   describe('subscribeRulesLogs / clearLogs', () => {
-    test('collects logs from MQTT and caps at 500', () => {
+    test('collects logs from MQTT and caps at MAX_MESSAGES', () => {
       store.subscribeRulesLogs();
       const handler = mqttClientMock.addStickySubscription.mock.calls[0][1];
 
-      for (let i = 0; i < 501; i++) {
+      for (let i = 0; i < MAX_MESSAGES + 1; i++) {
         handler({ topic: '/wbrules/log/info', payload: `msg${i}` });
       }
 
-      expect(store.logs).toHaveLength(500);
+      expect(store.logs).toHaveLength(MAX_MESSAGES);
       expect(store.logs[0].payload).toBe('msg1');
       expect(store.logs[0].level).toBe('info');
+    });
+
+    test('totalAppended keeps counting past the cap, so derived row keys stay unique', () => {
+      store.subscribeRulesLogs();
+      const handler = mqttClientMock.addStickySubscription.mock.calls[0][1];
+
+      for (let i = 0; i < MAX_MESSAGES + 5; i++) {
+        handler({ topic: '/wbrules/log/info', payload: `msg${i}` });
+      }
+
+      expect(store.logs).toHaveLength(MAX_MESSAGES);
+      expect(store.totalAppended).toBe(MAX_MESSAGES + 5);
     });
 
     test('clearLogs empties array', () => {

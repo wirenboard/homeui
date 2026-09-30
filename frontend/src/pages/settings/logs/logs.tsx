@@ -6,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSearchParams } from 'react-router-dom';
 import DownloadIcon from '@/assets/icons/download.svg';
+import FilterIcon from '@/assets/icons/filter.svg';
 import { RpcErrorCode } from '@/common/constants';
 import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
+import { Popup } from '@/components/popup';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
@@ -44,6 +46,8 @@ const syncFilterToParams = (filter: any, setSearchParams: (params: URLSearchPara
   setSearchParams(params, { replace: true });
 };
 
+const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
+
 const LogsPage = observer(() => {
   const { t, i18n } = useTranslation();
   const store = useStore(() => new LogsStore());
@@ -54,6 +58,16 @@ const LogsPage = observer(() => {
   const [liveUpdate, setLiveUpdate] = useState(false);
   const fetchLogsRef = useRef<(direction?: 'forward' | 'backward') => void>(null);
   const [showLoading, setShowLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_MEDIA_QUERY).matches);
+  const [isFiltersPopupOpen, setIsFiltersPopupOpen] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+    const update = () => setIsMobile(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener('change', update);
+    return () => mediaQuery.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     if (!store.isLoading) {
@@ -179,6 +193,19 @@ const LogsPage = observer(() => {
     downloadFile(`${filter.service?.split('.')[0] || 'log'}_${fileName}.log`, file);
   };
 
+  const filtersElement = (
+    <LogsFilters
+      store={store}
+      filter={filter}
+      liveUpdate={liveUpdate}
+      onLiveUpdateChange={setLiveUpdate}
+      onFilterChange={(value) => {
+        setHasMore(true);
+        setFilter(value);
+      }}
+    />
+  );
+
   return (
     <PageLayout
       title={t('logs.title')}
@@ -186,29 +213,36 @@ const LogsPage = observer(() => {
       hasRights={authStore.hasRights(UserRole.Operator)}
       errors={errors}
       actions={
-        <Tooltip text={t('logs.buttons.save')} placement="bottom">
-          <Button
-            variant="secondary"
-            icon={<DownloadIcon />}
-            disabled={!store.logs.length}
-            onClick={downloadLogs}
-          />
-        </Tooltip>
+        <>
+          {!errors.length && isMobile && (
+            <Popup
+              isOpen={isFiltersPopupOpen}
+              placement="bottom-end"
+              content={<div className="logsFilters-mobilePopup">{filtersElement}</div>}
+              onOpenChange={setIsFiltersPopupOpen}
+            >
+              <Tooltip text={t('logs.buttons.filters')} placement="bottom">
+                <Button
+                  variant="secondary"
+                  icon={<FilterIcon />}
+                  aria-label={t('logs.buttons.filters')}
+                />
+              </Tooltip>
+            </Popup>
+          )}
+          <Tooltip text={t('logs.buttons.save')} placement="bottom">
+            <Button
+              variant="secondary"
+              icon={<DownloadIcon />}
+              disabled={!store.logs.length}
+              onClick={downloadLogs}
+            />
+          </Tooltip>
+        </>
       }
       stickyHeader
     >
-      {!errors.length && (
-        <LogsFilters
-          store={store}
-          filter={filter}
-          liveUpdate={liveUpdate}
-          onLiveUpdateChange={setLiveUpdate}
-          onFilterChange={(value) => {
-            setHasMore(true);
-            setFilter(value);
-          }}
-        />
-      )}
+      {!errors.length && !isMobile && filtersElement}
       <div
         className={classNames('logs-container', {
           'logs-loading': showLoading,

@@ -3,7 +3,7 @@
     border: 1px solid var(--border-color);
     border-radius: var(--container-border-radius);
     padding: 8px;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 .datetimePicker-inputWrapper {
