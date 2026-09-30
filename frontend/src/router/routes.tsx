@@ -11,6 +11,7 @@ const SvgDashboardPage = lazy(() => import('@/pages/dashboards/svg/[slug]/index'
 const EditSvgDashboardPage = lazy(() => import('@/pages/dashboards/svg/[slug]/edit'));
 const WidgetsPage = lazy(() => import('@/pages/dashboards/widgets'));
 const DevicesPage = lazy(() => import('@/pages/devices'));
+const ConfiguratorPage = lazy(() => import('@/pages/configurator'));
 const AlicePage = lazy(() => import('@/pages/integrations/alice'));
 const HistoryPage = lazy(() => import('@/pages/history'));
 const RulesPage = lazy(() => import('@/pages/rules/index'));
@@ -75,6 +76,10 @@ export const routes: RouteObject[] = [
       {
         path: 'devices',
         element: <DevicesPage />,
+      },
+      {
+        path: 'configurator',
+        element: <ConfiguratorPage />,
       },
       {
         path: 'integrations',

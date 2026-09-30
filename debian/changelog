@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.265.0) stable; urgency=medium
+
+  * Add the device configurator page (Integrations -> Device configurator)
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 30 Sep 2026 17:12:13 +0300
+
 wb-mqtt-homeui (2.264.0) stable; urgency=medium
 
   * Fix history chart looping over a clock shift

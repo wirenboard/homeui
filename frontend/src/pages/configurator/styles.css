@@ -1,0 +1,99 @@
+.configurator-alert {
+    margin-bottom: var(--content-gap);
+}
+
+.configurator-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: var(--content-gap);
+    align-items: start;
+
+    @media (max-width: 1200px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.configurator-main {
+    min-width: 0;
+}
+
+.configurator-add {
+    display: flex;
+    gap: 8px;
+    margin-bottom: var(--content-gap);
+}
+
+.configurator-typeSelect {
+    flex: 0 1 320px;
+    min-width: 0;
+}
+
+.configurator-empty {
+    margin: 0 0 var(--content-gap);
+    color: var(--gray-color);
+}
+
+
+
+
+.configurator-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-bottom: var(--content-gap);
+}
+
+
+.configurator-cardIndicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.configurator-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--content-gap);
+    margin-bottom: var(--content-gap);
+
+    @media (max-width: 768px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+
+.configurator-range {
+    display: grid;
+    grid-template-columns: repeat(3, 96px);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+
+.configurator-preview {
+    position: sticky;
+    top: var(--content-gap);
+
+    .configurator-alert {
+        margin: var(--content-gap) 0 0;
+    }
+
+    @media (max-width: 1200px) {
+        position: static;
+    }
+}
+
+.configurator-config {
+    max-height: 60vh;
+    overflow: auto;
+    border: 1px solid var(--light-gray-color);
+    border-radius: var(--input-border-radius);
+}
+
+.configurator-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: var(--content-gap);
+}

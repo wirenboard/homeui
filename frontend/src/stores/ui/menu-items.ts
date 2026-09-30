@@ -186,6 +186,9 @@ export const getMenuItems = (
       id: 'integrations',
       icon: IntegrationsIcon,
       isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
+      children: [
+        { label: 'navigation.labels.configurator', url: '/configurator' },
+      ],
     },
     {
       label: 'navigation.labels.history',
