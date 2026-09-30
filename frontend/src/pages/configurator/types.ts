@@ -1,3 +1,6 @@
+import { type DeviceDraft } from '@/stores/configurator';
+import { type Cell } from '@/stores/devices';
+
 export type RoleKind =
   | 'measurement'
   | 'accumulation'
@@ -87,4 +90,39 @@ export interface ConfigDevice {
 export interface Config {
   version: string;
   devices: ConfigDevice[];
+}
+
+export type BackendState = 'checking' | 'available' | 'unavailable';
+
+export interface PreviewStatus {
+  variant: 'success' | 'danger';
+  text: string;
+}
+
+export interface ConfigPreviewProps {
+  yaml: string;
+  deviceCount: number;
+  status: PreviewStatus | null;
+  backendState: BackendState;
+  isSaving: boolean;
+  onSave: () => void;
+  onCopy: () => void;
+  onDownload: () => void;
+  onStatusClose: () => void;
+}
+
+export interface DeviceCardProps {
+  device: DeviceDraft;
+  type: DeviceType;
+  typeName: string;
+  roleLabel: (_role: string) => string;
+  allCells: Cell[];
+  cellById: Map<string, Cell>;
+  onDelete: (_device: DeviceDraft) => void;
+}
+
+export interface DiscoveryPanelProps {
+  boundCellIds: Set<string>;
+  typeLabel: (_id: string) => string;
+  roleLabel: (_role: string) => string;
 }
