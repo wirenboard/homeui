@@ -22,21 +22,22 @@ export default class CloudStatusStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
+  // A stopped agent clears its retained topics, which arrives here as empty payloads:
+  // an empty status is "not running", an empty link is "no link", an empty URL is ignored.
   updateStatus(status: ConnectionStatus) {
     this.initialized = true;
-    this.status = status;
+    this.status = status || ConnectionStatus.Stopped;
   }
 
   updateActivationLink(activationLink: string) {
     this.initialized = true;
-    if (activationLink === 'unknown') {
-      this.activationLink = null;
-      return;
-    }
-    this.activationLink = activationLink;
+    this.activationLink = activationLink && activationLink !== 'unknown' ? activationLink : null;
   }
 
   updateCloudBaseUrl(cloudBaseUrl: string) {
+    if (!cloudBaseUrl) {
+      return;
+    }
     this.cloudBaseUrl = cloudBaseUrl;
     this.recalcCloudLink();
   }
