@@ -1,0 +1,88 @@
+.networkSwitcher {
+    display: block;
+    max-width: 100%;
+}
+
+.networkSwitcher-editor {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    @media(max-width: 990px) {
+        flex-direction: column;
+    }
+}
+
+.networkSwitcher-editor .card {
+    max-width: unset;
+    margin-bottom: 0;
+}
+
+.networkSwitcher-description {
+    margin-bottom: 12px;
+}
+
+.networkSwitcher-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.networkSwitcher-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.networkSwitcher-priorityItem{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background: var(--background-accent-color-hover);
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--input-border-radius);
+    padding: 6px 12px;
+}
+
+.networkSwitcher-priorityItem > *:not(:first-child) {
+    margin: 0 0 0 10px;
+}
+
+.networkSwitcher-priorityItemContent {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    cursor: grab;
+    touch-action: none;
+}
+
+.networkSwitcher-priorityItem:not(.is-dragging) .networkSwitcher-priorityItemContent:focus {
+    outline: 1px dotted gray !important;
+}
+
+.networkSwitcher-priorityCardWrapper {
+    width: 100%;
+}
+
+.networkSwitcher-priorityGroup {
+    min-height: 77px;
+}
+
+.networkSwitcher-priorityGroup > *:not(:first-child) {
+    margin: 10px 0 0 0;
+}
+
+.networkSwitcher-priorityGroupOver {
+    background: var(--light-gray-color);
+}
+
+.networkSwitcher-priorityItemIsDragging {
+    z-index: 1;
+}
+
+.networkSwitcher-priorityItemIsDragging * {
+    cursor: grabbing;
+}

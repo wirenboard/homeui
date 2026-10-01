@@ -1,0 +1,203 @@
+import { makeAutoObservable, runInAction } from 'mobx';
+import { DefaultRoom } from '@/stores/alice';
+import { generateNextId } from '@/utils/id';
+import {
+  addDevice,
+  addRoom,
+  createAliceLink,
+  deleteRoom,
+  getAliceInfo,
+  getAliceLinkStatus,
+  updateRoom,
+  deleteDevice,
+  updateDevice,
+  checkIsAliceAvailable,
+  toggleAliceIntegration,
+  getAliceIntegrationStatus,
+  unlinkController,
+} from './api';
+import { Property } from './constants';
+import { getCapabilityDefaults, getPropertyDefaults } from './defaults';
+import type {
+  AddDeviceParams,
+  AliceFetchData,
+  AliceLinkStatus,
+  AliceLinkUrl,
+  AliceRoomUpdateParams,
+  Room,
+  SmartDevice,
+  SmartDeviceCapability,
+  SmartDeviceProperty,
+  SuccessMessageFetch,
+} from './types';
+
+// Backfill defaults the UI expects in saved configs
+// Old configs may omit these fields — fill them at load so the next Save
+// persists them explicitly; defaults come from getCapabilityDefaults/getPropertyDefaults
+const normalizeCapability = (cap: SmartDeviceCapability): SmartDeviceCapability => {
+  const defaults = getCapabilityDefaults(cap.type);
+  return {
+    ...cap,
+    retrievable: cap.retrievable ?? defaults.retrievable,
+    reportable: cap.reportable ?? defaults.reportable,
+    parameters: { ...defaults.parameters, ...cap.parameters },
+  };
+};
+
+const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => {
+  const defaults = getPropertyDefaults(prop.type);
+  // Event properties: defaults are forced (locked in UI) — overwrite whatever is
+  // in config so next Save persists correct values and the client stops warning
+  if (prop.type === Property.Event) {
+    return { ...prop, retrievable: defaults.retrievable, reportable: defaults.reportable };
+  }
+  return {
+    ...prop,
+    retrievable: prop.retrievable ?? defaults.retrievable,
+    reportable: prop.reportable ?? defaults.reportable,
+  };
+};
+
+const normalizeDevice = (device: SmartDevice): SmartDevice => ({
+  ...device,
+  capabilities: (device.capabilities ?? []).map(normalizeCapability),
+  properties: (device.properties ?? []).map(normalizeProperty),
+});
+
+export default class AliceStore {
+  public rooms = new Map<string, Room>();
+  public devices = new Map<string, SmartDevice>();
+  public isAvailable = null;
+  public isIntegrationEnabled = false;
+
+  constructor() {
+    makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  async checkIsAvailable(): Promise<void> {
+    try {
+      const isAvailable = await checkIsAliceAvailable();
+
+      runInAction(() => {
+        this.isAvailable = isAvailable;
+      });
+    } catch {
+      runInAction(() => {
+        this.isAvailable = false;
+      });
+    }
+  }
+
+  async fetchIntegrationStatus(): Promise<void> {
+    try {
+      const { enabled } = await getAliceIntegrationStatus();
+
+      runInAction(() => {
+        this.isIntegrationEnabled = enabled;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.isIntegrationEnabled = false;
+      });
+
+      throw err;
+    }
+  }
+
+  async fetchData(): Promise<AliceFetchData> {
+    const data = await getAliceInfo();
+
+    return runInAction(() => {
+      this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
+      this.devices = new Map(
+        Object.entries(data.devices).map(([id, device]) => [id, normalizeDevice(device)]),
+      );
+      return data;
+    });
+  }
+
+  async fetchLinkStatus(): Promise<AliceLinkStatus> {
+    return getAliceLinkStatus();
+  }
+
+  async createLink(): Promise<AliceLinkUrl> {
+    return createAliceLink();
+  }
+
+  async addRoom(name: string): Promise<string> {
+    const room = await addRoom(name);
+
+    return runInAction(() => {
+      const key = Object.keys(room).at(0);
+      this.rooms.set(key, room[key]);
+      return key;
+    });
+  }
+
+  async updateRoom(id: string, params: AliceRoomUpdateParams): Promise<void> {
+    const room = await updateRoom(id, params);
+
+    runInAction(() => {
+      this.rooms.set(id, room);
+    });
+  }
+
+  async deleteRoom(id: string): Promise<SuccessMessageFetch> {
+    return deleteRoom(id);
+  }
+
+  async addDevice(data: AddDeviceParams): Promise<string> {
+    const device = await addDevice(data);
+    return Object.keys(device).at(0);
+  }
+
+  async updateDevice(id: string, params: Partial<SmartDevice>): Promise<SmartDevice> {
+    return updateDevice(id, params);
+  }
+
+  async deleteDevice(deviceId: string): Promise<void> {
+    await deleteDevice(deviceId);
+
+    runInAction(() => {
+      const { room_id: roomId } = this.devices.get(deviceId);
+      if (roomId && roomId !== DefaultRoom) {
+        const room = this.rooms.get(roomId);
+        room.devices = room.devices.filter((id) => id !== deviceId);
+        this.rooms.set(roomId, room);
+      }
+      this.devices.delete(deviceId);
+    });
+  }
+
+  async copyDevice(data: SmartDevice): Promise<string> {
+    const name = generateNextId(
+      Array.from(this.devices).map(([_key, device]) => device.name),
+      data.name + ' ',
+    );
+    const device = await addDevice({ ...data, name });
+
+    return runInAction(() => {
+      const key = Object.keys(device).at(0);
+      const room = this.rooms.get(device[key].room_id);
+      this.devices.set(key, device[key]);
+      this.rooms.set(device[key].room_id, { name: room.name, devices: [...room.devices, key] });
+      return key;
+    });
+  }
+
+  async setIntegrationEnabled(enabled: boolean): Promise<void> {
+    await toggleAliceIntegration(enabled);
+
+    runInAction(() => {
+      this.isIntegrationEnabled = enabled;
+    });
+  }
+
+  get roomList() {
+    return Array.from(this.rooms);
+  }
+
+  async unlinkController(): Promise<SuccessMessageFetch> {
+    return unlinkController();
+  }
+}

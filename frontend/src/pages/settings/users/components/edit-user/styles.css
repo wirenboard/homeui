@@ -1,0 +1,10 @@
+.editUser-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.editUser-passwordMismatch {
+    color: var(--danger-color);
+    text-align: right;
+}

@@ -1,0 +1,19 @@
+import { type ReactElement } from 'react';
+
+export interface ConfirmationProps {
+  className?: string;
+  isOpened: boolean;
+  heading?: string;
+  width?: number;
+  headerActions?: ReactElement;
+  footerActions?: ReactElement;
+  confirmCallback?: () => Promise<void> | void;
+  closeCallback?: () => void;
+  isDisabled?: boolean;
+  isPreventSubmit?: boolean;
+  isLoading?: boolean;
+  isOverlayCloseDisabled?: boolean;
+  variant?: 'primary' | 'danger';
+  acceptLabel?: string;
+  cancelLabel?: string;
+}

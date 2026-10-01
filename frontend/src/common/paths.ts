@@ -1,0 +1,5 @@
+export const networkPath = '/usr/share/wb-mqtt-confed/schemas/wb-network.schema.json';
+
+export const mbgatePath = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-mbgate.schema.json';
+
+export const serialConfiPath = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-serial-dummy.schema.json';

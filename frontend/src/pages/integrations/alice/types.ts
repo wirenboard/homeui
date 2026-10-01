@@ -1,0 +1,13 @@
+export type AlicePageState = 'isLoading' | 'isConnected' | 'isNotConnected';
+
+export interface View {
+  roomId?: string;
+  isNewRoom?: boolean;
+  deviceId?: string;
+  isNewDevice?: boolean;
+}
+
+export type BindingView =
+  | { kind: 'linked'; statusUrl?: string }
+  | { kind: 'bind'; linkUrl: string }
+  | null;

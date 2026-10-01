@@ -1,0 +1,22 @@
+import type { FC, ReactElement, SVGProps } from 'react';
+
+export interface CardAction {
+  title: string;
+  action?: (_args: unknown | unknown[]) => void;
+  url?: (_id?: string) => string;
+  isPopupAction?: boolean;
+  icon: FC<SVGProps<SVGSVGElement>>;
+  disabled?: boolean;
+}
+
+export interface CardProps {
+  id?: string;
+  className?: string;
+  heading: string | ReactElement;
+  actions?: CardAction[];
+  indicator?: ReactElement;
+  toggleBody?: () => void;
+  isBodyVisible?: boolean;
+  variant?: 'primary' | 'secondary' | 'tertiary';
+  withError?: boolean;
+}

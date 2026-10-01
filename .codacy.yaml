@@ -1,0 +1,13 @@
+---
+# Exclude test code from Codacy static analysis.
+#
+# Codacy runs type-aware ESLint (no-unsafe-*, no-confusing-void-expression, ...)
+# and security rules that the project's own gates intentionally do NOT apply to
+# tests (frontend: eslint + tsc --noEmit; backend: its linters). On test code
+# these fire en masse on untyped mocks (vi.fn()), loose fixtures, and asserts —
+# noise, not defects. Production code stays fully analysed.
+exclude_paths:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "frontend/src/test/**"
+  - "backend/tests/**"

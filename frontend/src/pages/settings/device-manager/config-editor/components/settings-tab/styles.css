@@ -1,0 +1,28 @@
+.settingsTab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.settingsTab-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.settingsTab-icon path {
+    fill: var(--gray-color);
+    color: var(--gray-color);
+}
+
+.settingsTab-name {
+    flex-grow: 1;
+}
+
+.deviceManagerPage li:has(.settingsTab) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+    background: var(--border-color) !important;
+}

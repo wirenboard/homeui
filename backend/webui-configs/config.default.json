@@ -1,0 +1,99 @@
+{
+    "dashboards": [
+        {
+            "id": "dashboard1", 
+            "isSvg": false, 
+            "name": "Порты контроллера", 
+            "widgets": [
+                "widget2", 
+                "widget4", 
+                "widget3", 
+                "widget1", 
+                "widget6", 
+                "widget5"
+            ]
+        }, 
+        {
+            "id": "room1", 
+            "isSvg": false, 
+            "name": "Комната с Wiren Board", 
+            "widgets": [
+                "widget3", 
+                "widget2", 
+                "widget1", 
+                "widget6", 
+                "widget5", 
+                "widget4"
+            ]
+        }
+    ], 
+    "defaultDashboardId": "dashboard1", 
+    "widgets": [
+        {
+            "cells": [
+                {
+                    "id": "wb-gpio/Relay_1"
+                }
+            ], 
+            "compact": true, 
+            "description": "", 
+            "id": "widget1", 
+            "name": "Реле 1"
+        }, 
+        {
+            "cells": [
+                {
+                    "id": "power_status/working on battery"
+                }
+            ], 
+            "compact": true, 
+            "description": "", 
+            "id": "widget2", 
+            "name": "Питание от аккумулятора"
+        }, 
+        {
+            "cells": [
+                {
+                    "id": "wb-gpio/Relay_2"
+                }
+            ], 
+            "compact": true, 
+            "description": "", 
+            "id": "widget3", 
+            "name": "Реле 2"
+        }, 
+        {
+            "cells": [
+                {
+                    "id": "power_status/Vin"
+                }
+            ], 
+            "compact": true, 
+            "description": "", 
+            "id": "widget4", 
+            "name": "Напряжение питания"
+        }, 
+        {
+            "cells": [
+                {
+                    "id": "buzzer/enabled"
+                }
+            ], 
+            "compact": true, 
+            "description": "", 
+            "id": "widget5", 
+            "name": "Звуковой сигнал"
+        }, 
+        {
+            "cells": [
+                {
+                    "id": "network/Ethernet IP"
+                }
+            ], 
+            "compact": true, 
+            "description": "", 
+            "id": "widget6", 
+            "name": "IP-адрес Ethernet"
+        }
+    ]
+}

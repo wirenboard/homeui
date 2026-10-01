@@ -1,0 +1,90 @@
+.mobileKeyboard {
+  background-color: #1a1a1a;
+  border-top: 1px solid #333;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: env(safe-area-inset-bottom, 6px);
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobileKeyboard {
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+}
+
+.mobileKeyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  flex-wrap: nowrap;
+}
+
+.mobileKeyboard-key {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #2d2d2d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, monospace;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileKeyboard-key:active {
+  background-color: #444;
+  transform: scale(0.95);
+}
+
+.mobileKeyboard-key--modifier {
+  min-width: 42px;
+  background-color: #333;
+}
+
+.mobileKeyboard-key--active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+}
+
+.mobileKeyboard-key--active:active {
+  background-color: var(--primary-color-hover, var(--primary-color));
+}
+
+.mobileKeyboard-key--arrow {
+  min-width: 36px;
+  font-size: 16px;
+}
+
+.mobileKeyboard-key--char {
+  min-width: 36px;
+  font-size: 14px;
+}
+
+@media screen and (max-height: 450px) and (orientation: landscape) {
+  .mobileKeyboard {
+    padding: 4px;
+    gap: 3px;
+  }
+
+  .mobileKeyboard-key {
+    min-height: 32px;
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .mobileKeyboard-key--char {
+    min-width: 32px;
+  }
+}

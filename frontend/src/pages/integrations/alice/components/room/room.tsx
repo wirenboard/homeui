@@ -1,0 +1,240 @@
+import { observer } from 'mobx-react-lite';
+import { type SubmitEvent, useEffect, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import EditSquareIcon from '@/assets/icons/edit-square.svg';
+import TrashIcon from '@/assets/icons/trash.svg';
+import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
+import { Confirm } from '@/components/confirm';
+import { Input } from '@/components/input';
+import { Table, TableCell, type TableCellSortDirection, TableRow } from '@/components/table';
+import { aliceStore, DefaultRoom } from '@/stores/alice';
+import { useAsyncAction } from '@/utils/async-action';
+import type { RoomProps } from './types';
+import './styles.css';
+
+export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps) => {
+  const { t } = useTranslation();
+  const { addRoom, deleteRoom, devices, fetchData, rooms, updateRoom } = aliceStore;
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isDeleteRoom, setIsDeleteRoom] = useState(false);
+  const [roomName, setRoomName] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+  const [sortDirection, setSortDirection] = useState<TableCellSortDirection>('asc');
+
+  const getSortProps = (column: string, label: string) => ({
+    onSort: () => {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    },
+    isActive: column === 'device',
+    direction: sortDirection,
+    label,
+  });
+
+  const deviceList = useMemo(() => {
+    const formatRoomDevices = (keys: string[]) => keys
+      .map((id) => {
+        const device = devices.get(id)!;
+        const room = rooms.get(device.room_id)?.name;
+
+        const type: string[] = [];
+        const mqtt: string[] = [];
+
+        for (const skill of [...device.capabilities, ...device.properties]) {
+          type.push(skill.type.split('.').at(-1)!);
+          mqtt.push(skill.mqtt);
+        }
+
+        return {
+          id,
+          name: device.name,
+          room,
+          type,
+          mqtt,
+        };
+      })
+      .sort((a, b) =>
+        sortDirection === 'asc'
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name),
+      );
+
+    if (id === 'all') {
+      return formatRoomDevices(Array.from(devices.keys()));
+    } else if (id) {
+      // After create new room - can return undefined, fix it by []
+      return formatRoomDevices(rooms.get(id)?.devices || []);
+    } else {
+      return [];
+    }
+  }, [devices, rooms, id, sortDirection]);
+
+  const [save, isSaving] = useAsyncAction(async (ev: SubmitEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+
+    try {
+      if (!id) {
+        const room = await addRoom(roomName);
+        onSave(room);
+      } else {
+        await updateRoom(id, { name: roomName, devices: deviceList.map((device) => device.id) });
+        setIsEditingTitle(false);
+      }
+      setSaveError('');
+    } catch (err) {
+      setSaveError(err.response.data.detail);
+    }
+  });
+
+  useEffect(() => {
+    setSaveError(null);
+    setIsEditingTitle(!id);
+    if (id === 'all') {
+      setRoomName(t('alice.buttons.all-devices'));
+    } else {
+      setRoomName(id ? rooms.get(id).name : '');
+    }
+  }, [id]);
+
+  const [onConfirmDelete, isDeleting] = useAsyncAction(async () => {
+    await deleteRoom(id);
+    await fetchData();
+    setIsDeleteRoom(false);
+    onDelete();
+  });
+
+  return (
+    <>
+      <div>
+        <form className="alice-headerContainer" onSubmit={save}>
+          <div className="alice-headerTitleWrapper">
+            {isEditingTitle ? (
+              <Input
+                value={roomName}
+                placeholder={t('alice.labels.room-name')}
+                autoFocus
+                isFullWidth
+                onChange={(val: string) => setRoomName(val)}
+              />
+            ) : (<h4 className="alice-title">{roomName}</h4>)}
+
+            {(!isEditingTitle && id && id !== DefaultRoom && id !== 'all') && (
+              <Button
+                size="small"
+                type="button"
+                icon={<EditSquareIcon />}
+                aria-label={t('alice.buttons.edit-room-name')}
+                variant="secondary"
+                isOutlined
+                onClick={() => setIsEditingTitle(true)}
+              />
+            )}
+          </div>
+          {id !== DefaultRoom && id !== 'all' && (
+            <>
+              <Button
+                type="button"
+                icon={<TrashIcon />}
+                aria-label={t('alice.buttons.delete-room')}
+                aria-haspopup="dialog"
+                variant="danger"
+                isOutlined
+                onClick={() => {
+                  if (id) {
+                    setIsDeleteRoom(true);
+                  } else {
+                    onDelete();
+                  }
+                }}
+              />
+              <Button
+                type="submit"
+                disabled={!roomName || !isEditingTitle}
+                isLoading={isSaving}
+                label={t('alice.buttons.save')}
+                variant="primary"
+              />
+            </>
+          )}
+        </form>
+
+        {!!saveError && (
+          <Alert
+            className="alice-saveAlert"
+            variant="danger"
+            size="small"
+            onClose={() => setSaveError(null)}
+          >
+            {saveError}
+          </Alert>
+        )}
+
+        <Table isWithoutGap isFullWidth>
+          <TableRow isHeading>
+            <TableCell width="25%" sort={getSortProps('device', t('alice.labels.device'))}>
+              {t('alice.labels.device')}
+            </TableCell>
+            <TableCell width="25%">
+              {t('alice.labels.room')}
+            </TableCell>
+            <TableCell width="25%">
+              {t('alice.labels.property-capability')}
+            </TableCell>
+            <TableCell width="25%">
+              {t('alice.labels.topic')}
+            </TableCell>
+          </TableRow>
+          {deviceList.map((device) => (
+            <TableRow
+              key={device.id}
+              className="aliceRoom-item"
+              aria-label={t('alice.buttons.open-device', { name: device.name })}
+              onClick={() => onOpenDevice(device.id)}
+            >
+              <TableCell verticalAlign="top" ellipsis>
+                {device.name}
+              </TableCell>
+
+              <TableCell verticalAlign="top">
+                {device.room}
+              </TableCell>
+
+              <TableCell isWithoutPadding>
+                {device.type.map((type, i) => (
+                  <div className="aliceRoom-skills" key={type + i}>{type}</div>
+                ))}
+              </TableCell>
+
+              <TableCell isWithoutPadding>
+                {device.mqtt.map((mqtt, i) => (
+                  <div className="aliceRoom-skills" key={mqtt + i}>{mqtt}</div>
+                ))}
+              </TableCell>
+            </TableRow>
+          ))}
+        </Table>
+
+        {!deviceList.length && (
+          <div className="aliceRoom-emptyList">{t('alice.labels.empty-list')}</div>
+        )}
+      </div>
+      <Confirm
+        isOpened={isDeleteRoom}
+        heading={t('alice.prompt.delete-room-title')}
+        variant="danger"
+        isLoading={isDeleting}
+        closeCallback={() => setIsDeleteRoom(false)}
+        confirmCallback={onConfirmDelete}
+      >
+        <Trans
+          i18nKey="alice.prompt.delete-room"
+          values={{
+            name: rooms.get(id)?.name,
+          }}
+          components={[<b key="room-name" />]}
+          shouldUnescape
+        />
+      </Confirm>
+    </>
+  );
+});

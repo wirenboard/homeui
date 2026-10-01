@@ -1,0 +1,12 @@
+.jsonBindingsEditor {
+    flex-grow: 1;
+    height: 1px;
+    width: 100%;
+}
+
+.jsonBindingsEditor-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 6px;
+}

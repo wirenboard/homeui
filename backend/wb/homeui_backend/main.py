@@ -1,0 +1,1047 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import logging
+import os
+import socketserver
+import subprocess
+import traceback
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from email.utils import formatdate, parsedate_to_datetime
+from http import cookies
+from http.server import BaseHTTPRequestHandler
+from sys import argv
+from typing import Any, Callable, Optional
+from urllib.parse import unquote, urlparse
+
+import bcrypt
+
+from .cert import (
+    CertificateCheckingThread,
+    remove_nginx_https_config,
+    update_nginx_config,
+)
+from .config_file import Config
+from .dashboards import (
+    DashboardsStore,
+    DashboardWriteOutcome,
+    SeedConfigError,
+    detect_board,
+)
+from .db import open_db
+from .fonts import FontsStore
+from .gates import CUSTOM_MENU_DIR, apply_gates
+from .http_response import (
+    HttpResponse,
+    response_200,
+    response_201,
+    response_204,
+    response_304,
+    response_400,
+    response_401,
+    response_403,
+    response_404,
+    response_409,
+    response_429,
+    response_500,
+)
+from .rate_limiter import RateLimiter
+from .security import SecurityCheckingThread
+from .sessions_storage import Session, SessionsStorage
+from .users_storage import User, UsersStorage, UserType
+
+DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
+DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
+# Menu drop-in dirs, read in order: package/legacy, gate-generated, user-owned.
+CUSTOM_MENU_DIRS = (
+    "/usr/share/wb-mqtt-homeui/custom-menu",
+    CUSTOM_MENU_DIR,
+    "/etc/wb-homeui/custom-menu",
+)
+
+ADMIN_COOKIE_LIFETIME = timedelta(days=14)
+
+# A very long lifetime as we don't want cookies to expire by browser policy
+# We will check cookie validity internally
+DEFAULT_COOKIE_LIFETIME = timedelta(days=365 * 20)
+
+
+def make_password_hash(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def check_password(password: str, password_hash: str) -> bool:
+    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+
+
+def make_id_cookie(session: Session) -> cookies.SimpleCookie:
+    cookie = cookies.SimpleCookie()
+    cookie["id"] = session.id
+    cookie["id"]["path"] = "/"
+    cookie["id"]["httponly"] = True
+    cookie["id"]["samesite"] = "Lax"
+    expires = session.start_date + DEFAULT_COOKIE_LIFETIME
+    cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return cookie
+
+
+def make_set_cookie_header(cookie: cookies.SimpleCookie) -> list[str]:
+    return ["Set-Cookie", cookie.output(header="")]
+
+
+MAX_ID_COOKIE_CANDIDATES = 8
+
+
+def get_id_cookie_values(cookie_header: str) -> list[str]:
+    """Unique values of the cookies named exactly "id", in header order.
+
+    Parsed manually because http.cookies.SimpleCookie silently stops parsing at the first
+    foreign cookie it cannot match — JSON-valued cookies or cookies named like reserved
+    attributes ("path", "expires", ...) — and apps on other ports of the same host share
+    the browser's cookie jar, so such cookies do reach us and must not hide our "id".
+    """
+    values = []
+    for part in cookie_header.split(";"):
+        name, sep, value = part.partition("=")
+        if sep and name.strip() == "id":
+            values.append(value.strip())
+    return list(dict.fromkeys(values))[:MAX_ID_COOKIE_CANDIDATES]
+
+
+def get_session(
+    request: BaseHTTPRequestHandler, users_storage: UsersStorage, sessions_storage: SessionsStorage
+) -> Optional[Session]:
+    try:
+        candidates = get_id_cookie_values(request.headers.get("Cookie", ""))
+        if not candidates:
+            request.log_error("Cookie not found")
+            return None
+        session = None
+        for candidate in candidates:
+            session = sessions_storage.get_session_by_id(candidate, users_storage)
+            if session is not None:
+                break
+        if session is None:
+            request.log_error("Session not found")
+            return None
+        now = datetime.now(timezone.utc)
+        if session.user.type == UserType.ADMIN and session.start_date + ADMIN_COOKIE_LIFETIME < now:
+            request.log_error("Cookie expired")
+            return None
+        return session
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        request.log_error("Failed to get user from cookie: %s", str(e))
+    return None
+
+
+def get_wb_release(release_file: str = "/usr/lib/wb-release") -> dict[str, str]:
+    try:
+        with open(release_file, "r", encoding="utf-8") as fp:
+            return {k.strip(): v.strip() for k, v in (l.split("=", 1) for l in fp)}
+    except FileNotFoundError:
+        logging.warning("Release file %s not found", release_file)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.error("Failed to read release file %s: %s", release_file, e)
+    return {}
+
+
+def get_rootfs_expanded() -> bool:
+    if not os.path.exists("/dev/mmcblk0p6"):
+        return True
+
+    try:
+        p2_size = subprocess.check_output(["blockdev", "--getsz", "/dev/mmcblk0p2"]).decode("utf-8").strip()
+        p3_size = subprocess.check_output(["blockdev", "--getsz", "/dev/mmcblk0p3"]).decode("utf-8").strip()
+        return p2_size != p3_size
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.error("Failed to detect rootfs expansion status: %s", e)
+        return False
+
+
+def validate_login_request(form: dict) -> None:
+    if "password" not in form.keys():
+        raise TypeError("No password field")
+
+    new_password = form.get("password")
+    if not new_password or not isinstance(new_password, str):
+        raise TypeError("Invalid password field")
+
+    if "login" not in form.keys():
+        raise TypeError("No login field")
+
+    new_login = form.get("login")
+    if not new_login or not isinstance(new_login, str):
+        raise TypeError("Invalid login field")
+
+
+def validate_add_user_request(request: dict) -> None:
+    validate_login_request(request)
+
+    if request.get("type") not in [e.value for e in UserType]:
+        raise TypeError("Invalid type field")
+
+    if not isinstance(request.get("autologin", False), bool):
+        raise TypeError("Invalid autologin field")
+
+
+def validate_update_user_request(request: dict) -> None:
+    new_type = request.get("type")
+    if new_type is not None and new_type not in [e.value for e in UserType]:
+        raise TypeError("Invalid type field")
+
+    new_password = request.get("password")
+    if new_password is not None and (not isinstance(new_password, str) or not new_password):
+        raise TypeError("Invalid password field")
+
+    new_login = request.get("login")
+    if new_login is not None and (not isinstance(new_login, str) or not new_login):
+        raise TypeError("Invalid login field")
+
+    new_autologin = request.get("autologin", False)
+    if not isinstance(new_autologin, bool):
+        raise TypeError("Invalid autologin field")
+
+
+@dataclass
+class WebRequestHandlerContext:  # pylint: disable=too-many-instance-attributes
+    sn: str
+    users_storage: UsersStorage
+    sessions_storage: SessionsStorage
+    certificate_thread: CertificateCheckingThread
+    security_check_thread: SecurityCheckingThread
+    dashboards_store: DashboardsStore
+    fonts_store: FontsStore
+    session: Optional[Session] = None
+
+
+def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
+    """Fail safe to admin on a missing/empty/unknown Required-User-Type."""
+    value = request.headers.get("Required-User-Type") or UserType.ADMIN.value
+    try:
+        return UserType(value)
+    except ValueError:
+        return UserType.ADMIN
+
+
+def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    # if no users are configured allow all requests
+    if not context.users_storage.has_users():
+        return response_200()
+
+    method = request.headers.get("X-Original-Method", "GET")
+    allow_unauthorized_get = request.headers.get("Allow-Unauthorized-Get", "false").lower() == "true"
+    if method == "GET" and allow_unauthorized_get:
+        headers = []
+        if context.session is not None:
+            headers.append(["Wb-User-Type", context.session.user.type.value])
+        return response_200(headers=headers)
+
+    required_user_type = get_required_user_type(request)
+
+    if context.session is None:
+        autologin_user = context.users_storage.get_autologin_user()
+        if autologin_user is not None and autologin_user.has_access_to(required_user_type):
+            return response_200(headers=[["Wb-User-Type", autologin_user.type.value]])
+        return response_401()
+
+    if context.session.user.has_access_to(required_user_type):
+        context.sessions_storage.update_session_start_date(context.session)
+        request.log_message(
+            "Session %s start_date updated to %s", context.session.id, context.session.start_date
+        )
+        return response_200(headers=[["Wb-User-Type", context.session.user.type.value]])
+    return response_403()
+
+
+def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        form = json.loads(request.rfile.read(length).decode("utf-8"))
+        validate_login_request(form)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return response_400(str(e))
+
+    login = form.get("login", "")
+    client_ip = request.headers.get("X-Real-IP") or request.headers.get("X-Forwarded-For") or "unknown"
+    user_agent = request.headers.get("User-Agent") or "unknown"
+
+    user = context.users_storage.get_user_by_login(login)
+
+    if user is None or not check_password(form.get("password"), user.pwd_hash):
+        logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
+        return response_401()
+
+    logging.info(
+        "Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent
+    )
+    res = {"user_type": user.type.value, "user_id": user.user_id}
+    session = context.sessions_storage.add_session(user)
+    return response_200(
+        headers=[
+            make_set_cookie_header(make_id_cookie(session)),
+            ["Content-type", "application/json"],
+        ],
+        body=json.dumps(res),
+    )
+
+
+def auth_logout_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    if context.session is not None:
+        context.sessions_storage.delete_session(context.session)
+    cookie = cookies.SimpleCookie()
+    cookie["id"] = ""
+    cookie["id"]["path"] = "/"
+    cookie["id"]["expires"] = "Thu, 01 Jan 1970 00:00:00 GMT"
+    return response_200(headers=[make_set_cookie_header(cookie)])
+
+
+def auth_who_am_i_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    if not context.users_storage.has_users():
+        return response_404()
+
+    if context.session is not None:
+        res = {
+            "user_id": context.session.user.user_id,
+            "user_type": context.session.user.type.value,
+        }
+        return response_200([["Content-type", "application/json"]], json.dumps(res))
+
+    autologin_user = context.users_storage.get_autologin_user()
+    if autologin_user is not None:
+        res = {
+            "user_id": autologin_user.user_id,
+            "user_type": autologin_user.type.value,
+            "autologin": True,
+        }
+        return response_200([["Content-type", "application/json"]], json.dumps(res))
+
+    return response_401()
+
+
+def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        form = json.loads(request.rfile.read(length).decode("utf-8"))
+        validate_add_user_request(form)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return response_400(str(e))
+
+    user_to_add = User(
+        "",
+        form.get("login"),
+        make_password_hash(form.get("password")),
+        UserType(form.get("type")),
+        form.get("autologin", False),
+    )
+
+    if not context.users_storage.has_users() and user_to_add.type != UserType.ADMIN:
+        return response_400("First setup admin")
+
+    if context.users_storage.get_user_by_login(form.get("login")) is not None:
+        return response_400("Login already exists")
+
+    context.users_storage.add_user(user_to_add)
+    return response_201([["Content-type", "text/plain"]], user_to_add.user_id)
+
+
+def get_user_id_from_query(request: BaseHTTPRequestHandler) -> Optional[str]:
+    url = urlparse(request.path).path
+    query_components = url.split("/")
+    return query_components[2] if len(query_components) == 3 else None
+
+
+def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    user_id = get_user_id_from_query(request)
+    if user_id is None:
+        return response_404()
+
+    user = context.users_storage.get_user_by_id(user_id)
+    if user is None:
+        return response_404()
+
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        form = json.loads(request.rfile.read(length).decode("utf-8"))
+        validate_update_user_request(form)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return response_400(str(e))
+
+    delete_user_sessions = False
+    new_login = form.get("login")
+    if new_login is not None:
+        user_with_the_same_login = context.users_storage.get_user_by_login(new_login)
+
+        if user_with_the_same_login is not None and user_with_the_same_login.user_id != user_id:
+            return response_400("Login already exists")
+        if user.login != new_login:
+            user.login = new_login
+            delete_user_sessions = True
+
+    new_password = form.get("password")
+    if new_password is not None:
+        if not check_password(new_password, user.pwd_hash):
+            user.pwd_hash = make_password_hash(new_password)
+            delete_user_sessions = True
+
+    new_type = form.get("type")
+    if new_type is not None:
+        if user.type == UserType.ADMIN and UserType(new_type) != UserType.ADMIN:
+            admin_count = context.users_storage.count_users_by_type(UserType.ADMIN)
+            if admin_count == 1:
+                return response_400("Can't change the last admin's type")
+        user.type = UserType(new_type)
+
+    # Absent means "unchanged": the users page patches single fields, so defaulting
+    # to False here would silently drop autologin on an unrelated edit.
+    user.autologin = form.get("autologin", user.autologin)
+
+    if delete_user_sessions:
+        context.sessions_storage.delete_sessions_by_user(user)
+    context.users_storage.update_user(user)
+    return response_200()
+
+
+def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    user_id = get_user_id_from_query(request)
+    if user_id is None:
+        return response_404()
+    user = context.users_storage.get_user_by_id(user_id)
+    if user is None:
+        return response_404()
+    if context.session is not None and user.user_id == context.session.user.user_id:
+        return response_400("Can't delete yourself")
+    if user.type == UserType.ADMIN and context.users_storage.count_users_by_type(UserType.ADMIN) == 1:
+        return response_400("Can't delete the last admin")
+    context.sessions_storage.delete_sessions_by_user(user)
+    context.users_storage.delete_user(user_id)
+    return response_204()
+
+
+def get_users_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    users = map(
+        lambda user: {
+            "id": user.user_id,
+            "login": user.login,
+            "type": user.type.value,
+            "autologin": user.autologin,
+        },
+        context.users_storage.get_users(),
+    )
+    return response_200([["Content-type", "application/json"]], json.dumps(list(users)))
+
+
+def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    host_ip = request.headers.get("X-Forwarded-Host-Ip", "")
+    wb_release = get_wb_release()
+    res = {
+        "sn": context.sn,
+        "ip": host_ip,
+        "https_cert": context.certificate_thread.get_certificate_state().value,
+        "release_suite": wb_release.get("SUITE", ""),
+        "release_name": wb_release.get("RELEASE_NAME", ""),
+        "rootfs_expanded": get_rootfs_expanded(),
+    }
+    return response_200(
+        [
+            ["Content-type", "application/json"],
+            ["Access-Control-Allow-Origin", "*"],
+        ],
+        json.dumps(res),
+    )
+
+
+def effective_https_enabled(config: Config, certificate_thread: CertificateCheckingThread) -> bool:
+    """Gates and the main UI serve TLS only when the flag is on AND a usable certificate exists."""
+    return config.is_https_enabled() and certificate_thread.is_certificate_usable()
+
+
+def make_certificate_usable_change_handler(sn: str, config: Config) -> Callable[[bool], None]:
+    """On usability transitions keep the invariant: TLS configs on disk <=> usable certificate."""
+
+    def handle(usable: bool) -> None:
+        if usable:
+            update_nginx_config(sn)
+        else:
+            remove_nginx_https_config(reload_nginx=False)
+
+        result = apply_gates(config.is_https_enabled() and usable)
+        if not result.ok:
+            raise RuntimeError(result.error)
+
+    return handle
+
+
+def https_request_cert_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    context.certificate_thread.request_certificate()
+    return response_200()
+
+
+def get_https_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    return response_200(
+        [["Content-type", "application/json"]],
+        json.dumps({"enabled": context.certificate_thread.is_certificate_update_allowed()}),
+    )
+
+
+def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        form = json.loads(request.rfile.read(length).decode("utf-8"))
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return response_400(str(e))
+    https_enabled = form.get("enabled")
+    if https_enabled is not None:
+        if not isinstance(https_enabled, bool):
+            raise TypeError("Invalid enabled field")
+        WebRequestHandler.config.set_https_enabled(https_enabled)
+        if https_enabled:
+            context.certificate_thread.enable_certificate_update()
+            context.certificate_thread.request_certificate()
+        else:
+            context.certificate_thread.disable_certificate_update()
+        gates_result = apply_gates(
+            effective_https_enabled(WebRequestHandler.config, context.certificate_thread)
+        )
+        if not gates_result.ok:
+            return response_200(
+                [["Content-type", "application/json"]],
+                json.dumps({"enabled": https_enabled, "gatesError": gates_result.error}),
+            )
+    return response_200()
+
+
+def dashboard_id_from_path(request: BaseHTTPRequestHandler, expected_len: int) -> Optional[str]:
+    url = urlparse(request.path).path
+    query_components = url.split("/")
+    # The frontend percent-encodes the user-chosen id, so decode it back to the on-disk id.
+    return unquote(query_components[3]) if len(query_components) == expected_len else None
+
+
+def config_cache_headers(mtime: float) -> list[list[str]]:
+    # Revalidate every time, but let the client skip re-downloading the body when unchanged
+    # (Last-Modified / If-Modified-Since -> 304). Second-granular; fine for rare, user-driven writes.
+    return [["Cache-Control", "no-cache"], ["Last-Modified", formatdate(mtime, usegmt=True)]]
+
+
+def client_copy_is_current(request: BaseHTTPRequestHandler, mtime: float) -> bool:
+    """True if the request's If-Modified-Since shows the client already has this config."""
+    if_modified_since = request.headers.get("If-Modified-Since")
+    if not if_modified_since:
+        return False
+    try:
+        since = parsedate_to_datetime(if_modified_since)
+    except (TypeError, ValueError):
+        return False
+    if since is None:
+        return False
+    # HTTP dates are second-granular; compare truncated to whole seconds.
+    return int(mtime) <= int(since.timestamp())
+
+
+def not_modified_response(request: BaseHTTPRequestHandler, mtime: Optional[float]) -> Optional[HttpResponse]:
+    """304 (no body) when the client's copy is already current, else None to keep serving."""
+    if mtime is not None and client_copy_is_current(request, mtime):
+        return response_304(config_cache_headers(mtime))
+    return None
+
+
+def cached_config_response(mtime: Optional[float], content_type: str, body: str) -> HttpResponse:
+    """200 with content_type plus revalidation headers (Last-Modified when mtime is known)."""
+    headers = [["Content-type", content_type]]
+    if mtime is not None:
+        headers += config_cache_headers(mtime)
+    return response_200(headers, body)
+
+
+def get_dashboards_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    mtime = context.dashboards_store.get_config_mtime()
+    not_modified = not_modified_response(request, mtime)
+    if not_modified is not None:
+        return not_modified
+    body = json.dumps(context.dashboards_store.get_index(), ensure_ascii=False)
+    return cached_config_response(mtime, "application/json", body)
+
+
+def get_dashboard_svg_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 5)
+    if dashboard_id is None:
+        return response_404()
+    mtime = context.dashboards_store.get_config_mtime()
+    not_modified = not_modified_response(request, mtime)
+    if not_modified is not None:
+        return not_modified
+    svg = context.dashboards_store.get_svg(dashboard_id)
+    if svg is None:
+        return response_404()
+    response = cached_config_response(mtime, "image/svg+xml", svg)
+    # SVG is active content served same-origin: if this URL is opened/embedded directly (not via
+    # the app's fetch-as-text path), script in it would run in the app origin. CSP + nosniff
+    # blocks that for direct loads without affecting normal rendering.
+    if response.headers is not None:
+        response.headers += [
+            ["Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'"],
+            ["X-Content-Type-Options", "nosniff"],
+        ]
+    return response
+
+
+def read_json_object_body(request: BaseHTTPRequestHandler) -> tuple[Optional[dict], Optional[HttpResponse]]:
+    """Read+parse the request body as a JSON object: (body, None) or (None, error response)."""
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        body = json.loads(request.rfile.read(length).decode("utf-8"))
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return None, response_400(str(e))
+    if not isinstance(body, dict):
+        return None, response_400("Body must be a JSON object")
+    return body, None
+
+
+def update_dashboards_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    new_config, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    context.dashboards_store.replace_collection(new_config)
+    return response_200()
+
+
+def put_dashboard_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 4)
+    if dashboard_id is None:
+        return response_404()
+    dashboard, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    outcome = context.dashboards_store.put_dashboard(dashboard_id, dashboard)
+    if outcome is DashboardWriteOutcome.CREATED:
+        return response_201()
+    if outcome is DashboardWriteOutcome.CONFLICT:
+        return response_409()
+    return response_200()
+
+
+def patch_dashboard_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 4)
+    if dashboard_id is None:
+        return response_404()
+    patch, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    outcome = context.dashboards_store.patch_dashboard(dashboard_id, patch)
+    if outcome is DashboardWriteOutcome.NOT_FOUND:
+        return response_404()
+    if outcome is DashboardWriteOutcome.CONFLICT:
+        return response_409()
+    return response_200()
+
+
+def delete_dashboard_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    dashboard_id = dashboard_id_from_path(request, 4)
+    if dashboard_id is None:
+        return response_404()
+    context.dashboards_store.delete_dashboard(dashboard_id)
+    return response_204()
+
+
+def font_name_from_path(request: BaseHTTPRequestHandler) -> Optional[str]:
+    url = urlparse(request.path).path
+    parts = url.split("/")
+    return unquote(parts[3]) if len(parts) == 4 else None
+
+
+def get_fonts_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    fonts = context.fonts_store.list_fonts()
+    return response_200([["Content-type", "application/json"]], json.dumps(fonts))
+
+
+def _extract_boundary(content_type: str) -> Optional[str]:
+    if "multipart/form-data" not in content_type:
+        return None
+    for param in content_type.split(";"):
+        param = param.strip()
+        if param.startswith("boundary="):
+            return param[len("boundary=") :]
+    return None
+
+
+def _parse_multipart_file(request: BaseHTTPRequestHandler) -> Optional[tuple[str, bytes]]:
+    """Extract (filename, data) from a multipart/form-data upload, or None on failure."""
+    boundary = _extract_boundary(request.headers.get("Content-Type", ""))
+    if boundary is None:
+        return None
+
+    length = int(request.headers.get("Content-Length", 0))
+    body = request.rfile.read(length)
+    boundary_bytes = ("--" + boundary).encode("utf-8")
+    parts = body.split(boundary_bytes)
+
+    for part in parts:
+        part = part.strip(b"\r\n")
+        if not part or part == b"--":
+            continue
+        header_end = part.find(b"\r\n\r\n")
+        if header_end < 0:
+            continue
+        header_block = part[:header_end].decode("utf-8", errors="replace")
+        file_data = part[header_end + 4 :]
+        if file_data.endswith(b"\r\n"):
+            file_data = file_data[:-2]
+        for line in header_block.split("\r\n"):
+            if 'name="file"' not in line:
+                continue
+            filename = ""
+            for token in line.split(";"):
+                token = token.strip()
+                if token.startswith("filename="):
+                    filename = token[len("filename=") :].strip('"')
+            if filename:
+                return os.path.basename(filename), file_data
+    return None
+
+
+def upload_font_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    parsed = _parse_multipart_file(request)
+    if parsed is None:
+        return response_400("Expected multipart/form-data with a file field")
+    filename, data = parsed
+    try:
+        result = context.fonts_store.save_font(filename, data)
+    except ValueError as e:
+        return response_400(str(e))
+    return response_201([["Content-type", "application/json"]], json.dumps(result))
+
+
+def delete_font_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    font_name = font_name_from_path(request)
+    if font_name is None:
+        return response_404()
+    if not context.fonts_store.delete_font(font_name):
+        return response_404()
+    return response_204()
+
+
+@dataclass
+class RequestHandler:
+    fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
+    rate_per_minute_limit: Optional[int] = None
+    rate_limit_per_client: bool = False
+
+
+def load_json_file(json_file: str) -> Optional[Any]:
+    try:
+        with open(json_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.error("Failed to load JSON file %s: %s", json_file, e)
+        return None
+
+
+def add_menu_items(src: list, dst: dict) -> None:
+    # [
+    #   {
+    #     "id": "string",
+    #     ...
+    #     "children": [
+    #       ...
+    #     ]
+    #   }
+    # ]
+    for item in src:
+        if isinstance(item, dict) and "id" in item:
+            item_id = item["id"]
+            if item_id in dst:
+                for child in item.get("children", []):
+                    if "children" not in dst[item_id]:
+                        dst[item_id]["children"] = []
+                    dst[item_id]["children"].append(child)
+            else:
+                dst[item_id] = item
+
+
+def load_subfolder_items(folder_path: str) -> Optional[list]:
+    menu_items: dict[str, dict] = {}
+    try:
+        entries = sorted(os.listdir(folder_path))
+    except OSError as e:
+        # One unreadable subfolder must not break the rest of /ui/menu.
+        logging.warning("Skipping custom menu subfolder %s: %s", folder_path, e)
+        return None
+    for file in entries:
+        if file.endswith(".json"):
+            file_path = os.path.join(folder_path, file)
+            items_data = load_json_file(file_path)
+            if items_data is not None and isinstance(items_data, list):
+                add_menu_items(items_data, menu_items)
+    return list(menu_items.values())
+
+
+def security_check_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    scheme = request.headers.get("X-Forwarded-Proto", "http")
+    host = request.headers.get("X-Forwarded-Host", "")
+    port = request.headers.get("X-Forwarded-Port", 80)
+    url = f"{scheme}://{host}:{port}/"
+
+    context.security_check_thread.request_check(url)
+
+    return response_200([["Content-type", "text/plain"]], "OK")
+
+
+def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
+    menu_items = []
+    for menu_dir in CUSTOM_MENU_DIRS:
+        try:
+            with os.scandir(menu_dir) as entries:
+                for entry in sorted(entries, key=lambda e: e.name):
+                    data = None
+                    if entry.is_file() and entry.name.endswith(".json"):
+                        data = load_json_file(entry.path)
+                    elif entry.is_dir():
+                        data = load_subfolder_items(entry.path)
+                    if data is not None:
+                        menu_items.append(data)
+        except FileNotFoundError:
+            continue
+        except OSError as e:
+            # A file instead of a dir, permissions, etc. must not 500 the menu.
+            logging.warning("Skipping custom menu dir %s: %s", menu_dir, e)
+    return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
+
+
+def find_handler(url: str, handlers: dict[str, RequestHandler]) -> Optional[RequestHandler]:
+    url_components = urlparse(url).path.split("/")
+    for pattern, handler in handlers.items():
+        pattern_components = pattern.split("/")
+        if len(url_components) == len(pattern_components):
+            i = 0
+            while pattern_components[i] == "*" or pattern_components[i] == url_components[i]:
+                if i == len(pattern_components) - 1:
+                    return handler
+                i += 1
+    return None
+
+
+class WebRequestHandler(BaseHTTPRequestHandler):
+    users_storage: UsersStorage
+    sessions_storage: SessionsStorage
+    enable_debug: bool = False
+    sn: str = ""
+    certificate_thread: CertificateCheckingThread
+    security_check_thread: SecurityCheckingThread
+    rate_limiter: RateLimiter
+    config: Config
+    dashboards_store: DashboardsStore
+    fonts_store: FontsStore
+
+    def process_response(self, response: HttpResponse) -> None:
+        if 200 <= response.status < 300 or response.status == 304:
+            self.send_response(response.status)
+            if response.headers is not None:
+                for header in response.headers:
+                    self.send_header(header[0], header[1])
+            self.end_headers()
+            if response.body is not None:
+                self.wfile.write(response.body.encode("utf-8"))
+        else:
+            self.send_error(code=response.status, explain=response.body)
+            if response.body is not None:
+                self.log_error(response.body)
+
+    def _request_handler(self, handlers: dict[str, RequestHandler]) -> HttpResponse:
+        handler = find_handler(self.path, handlers)
+
+        if handler is None:
+            return response_404()
+
+        rate_limit_key = urlparse(self.path).path
+        if handler.rate_limit_per_client:
+            # X-Real-IP is nginx-set (sole route in); missing header → shared bucket.
+            rate_limit_key += "|" + self.headers.get("X-Real-IP", "")
+        if not self.rate_limiter.check_call(
+            rate_limit_key, datetime.now(timezone.utc), handler.rate_per_minute_limit
+        ):
+            return response_429()
+
+        session = get_session(self, self.users_storage, self.sessions_storage)
+        return handler.fn(
+            self,
+            WebRequestHandlerContext(
+                self.sn,
+                self.users_storage,
+                self.sessions_storage,
+                self.certificate_thread,
+                self.security_check_thread,
+                self.dashboards_store,
+                self.fonts_store,
+                session,
+            ),
+        )
+
+    def process_request(self, handlers: dict[str, RequestHandler]) -> None:
+        try:
+            response = self._request_handler(handlers)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            response = response_500(f"{e}\n{traceback.format_exc()}")
+        self.process_response(response)
+
+    def do_GET(self) -> None:  # pylint: disable=invalid-name
+        self.process_request(
+            {
+                # Gates auth_request every request, hence 1000/min per client; nginx caps
+                # each LAN IP at 900/min + burst 200 (nginx default.conf) — change only as a
+                # pair. Loopback (cloud tunnel) is exempt there and never reaches this handler.
+                "/auth/check": RequestHandler(
+                    fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
+                ),
+                "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
+                "/users": RequestHandler(fn=get_users_handler),
+                "/device/info": RequestHandler(fn=device_info_handler),
+                "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
+                "/api/https": RequestHandler(fn=get_https_handler),
+                "/api/dashboards": RequestHandler(fn=get_dashboards_handler),
+                "/api/dashboards/*/svg": RequestHandler(fn=get_dashboard_svg_handler),
+                "/api/fonts": RequestHandler(fn=get_fonts_handler),
+                "/ui/menu": RequestHandler(fn=custom_menu_handler),
+            }
+        )
+
+    def do_POST(self) -> None:  # pylint: disable=invalid-name
+        self.process_request(
+            {
+                "/users": RequestHandler(fn=add_user_handler),
+                "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
+                "/auth/logout": RequestHandler(fn=auth_logout_handler),
+                "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
+                "/api/fonts": RequestHandler(fn=upload_font_handler),
+            }
+        )
+
+    def do_PATCH(self) -> None:  # pylint: disable=invalid-name
+        self.process_request(
+            {
+                "/users/*": RequestHandler(fn=update_user_handler),
+                "/api/https": RequestHandler(fn=update_https_handler),
+                "/api/dashboards/*": RequestHandler(fn=patch_dashboard_handler),
+            }
+        )
+
+    def do_PUT(self) -> None:  # pylint: disable=invalid-name
+        self.process_request(
+            {
+                "/api/dashboards": RequestHandler(fn=update_dashboards_handler),
+                "/api/dashboards/*": RequestHandler(fn=put_dashboard_handler),
+            }
+        )
+
+    def do_DELETE(self) -> None:  # pylint: disable=invalid-name
+        self.process_request(
+            {
+                "/users/*": RequestHandler(fn=delete_user_handler),
+                "/api/dashboards/*": RequestHandler(fn=delete_dashboard_handler),
+                "/api/fonts/*": RequestHandler(fn=delete_font_handler),
+            }
+        )
+
+    def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=redefined-builtin
+        if self.enable_debug:
+            super().log_message(format, *args)
+
+    def send_error(self, code, message=None, explain=None):
+        self.error_message_format = "%(explain)s"
+        try:
+            super().send_error(code, message, explain)
+        except BrokenPipeError:
+            # nginx may close the connection before we send the response
+            # resulting in a broken pipe error
+            self.log_message("Failed to send error response: broken pipe")
+
+
+class UnixSocketHttpServer(socketserver.UnixStreamServer):
+    def get_request(self):
+        request, client_address = super().get_request()
+        if len(client_address) == 0:
+            # BaseHTTPRequestHandler expects a tuple with the client address and port
+            client_address = (self.server_address, 0)
+        return (request, client_address)
+
+
+def get_sn() -> str:
+    output = subprocess.check_output(["wb-gen-serial", "-s"])
+    sn = output.decode("utf-8").strip()
+    return sn
+
+
+def main():
+    parser = argparse.ArgumentParser(prog=argv[0], description="Home UI authentication service")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--socket-file", default=DEFAULT_SOCKET_FILE, help="Socket file")
+    parser.add_argument("--db-file", default=DEFAULT_DB_FILE, help="Database file path")
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(levelname)s:%(message)s",
+    )
+
+    con = open_db(args.db_file)
+
+    sn = get_sn()
+
+    WebRequestHandler.users_storage = UsersStorage(con)
+    WebRequestHandler.sessions_storage = SessionsStorage(con)
+    WebRequestHandler.enable_debug = args.debug
+    WebRequestHandler.sn = sn
+    WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    usable_change_handler = make_certificate_usable_change_handler(sn, WebRequestHandler.config)
+    WebRequestHandler.certificate_thread = CertificateCheckingThread(
+        sn,
+        WebRequestHandler.config.is_https_enabled(),
+        usable_change_handler,
+    )
+    try:
+        # With the certificate already gone at startup no usable transition ever
+        # fires, so the stale https.conf must be dropped here or the shared nginx -t keeps failing.
+        usable_change_handler(WebRequestHandler.certificate_thread.is_certificate_usable())
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.exception("Startup TLS reconcile failed: %s", e)
+    WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
+    WebRequestHandler.rate_limiter = RateLimiter()
+    WebRequestHandler.dashboards_store = DashboardsStore()
+    WebRequestHandler.fonts_store = FontsStore()
+
+    try:
+        WebRequestHandler.dashboards_store.seed_and_reconcile(detect_board())
+    except SeedConfigError:
+        # Unrecoverable (undetected board / missing config): exit with a RestartPreventExitStatus
+        # code so systemd settles into `failed` instead of restart-looping.
+        logging.exception("Dashboard seeding failed: board config unusable; refusing to start")
+        raise SystemExit(3) from None
+    except Exception:  # pylint: disable=broad-exception-caught
+        # Transient (e.g. /mnt/data not mounted yet): exit 1 so Restart=on-failure retries.
+        logging.exception("Dashboard seeding failed (transient?); letting systemd retry")
+        raise SystemExit(1) from None
+
+    try:
+        os.remove(args.socket_file)
+    except OSError:
+        pass
+    server = UnixSocketHttpServer((args.socket_file), WebRequestHandler)
+    os.chmod(args.socket_file, 0o662)
+    server.serve_forever()

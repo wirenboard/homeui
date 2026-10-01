@@ -1,0 +1,212 @@
+.widgetEdit .drawer-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.widgetEdit-cellsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.widgetEdit-editedHeading {
+    padding: 6px;
+    font-size: 12px;
+    margin-bottom: 6px !important;
+    border: 0 !important;
+    font-weight: bold;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: var(--border-color) !important;
+
+    @media(max-width: 700px) {
+        display: none !important;
+    }
+}
+
+.widgetEdit-editedCell {
+    align-items: center;
+    width: 100%;
+    grid-gap: 12px 12px;
+    align-self: center;
+    display: grid;
+    grid-template-columns: 20px 160px minmax(0, 1fr) 70px 60px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--input-border-radius);
+    padding: 6px;
+    grid-template-areas: "sort id control type readonly remove";
+
+    @media(max-width: 700px) {
+        min-width: fit-content;
+        grid-template-columns: 20px 1fr auto 35px 20px;
+        grid-template-areas: "sort control type readonly remove";
+    }
+
+    @media(max-width: 480px) {
+        min-width: fit-content;
+        grid-template-columns: 1fr auto 60px 20px;
+        grid-template-areas: "control type readonly remove";
+    }
+
+    @media(max-width: 420px) {
+        grid-template-columns: 1fr 40px;
+        gap: 2px;
+        grid-template-areas:
+                "control remove"
+                "type ."
+                "readonly .";
+    }
+}
+
+.widgetEdit-editedCellWithInverted {
+    grid-template-columns: 20px 160px minmax(0, 1fr) 70px 90px 60px 20px;
+    grid-template-areas: "sort id control type invert readonly remove";
+
+    @media(max-width: 700px) {
+        grid-template-columns: 20px 1fr 70px 35px 35px 20px;
+        grid-template-areas: "sort control type invert readonly remove";
+    }
+
+    @media(max-width: 460px) {
+        grid-template-columns: 20px 1fr 60px 60px 60px 20px;
+        grid-template-areas: "sort control type invert readonly remove";
+    }
+
+    @media(max-width: 420px) {
+        grid-template-columns: 1fr 40px;
+        gap: 2px;
+        grid-template-areas:
+                "control remove"
+                "type ."
+                "invert ."
+                "readonly .";
+    }
+}
+
+.widgetEdit-editedCell:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.widgetEdit-sort {
+    grid-area: sort;
+}
+
+.widgetEdit-sortHandle {
+    cursor: grab !important;
+}
+
+.widgetEdit-id {
+    grid-area: id;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    @media(max-width: 700px) {
+        display: none;
+    }
+}
+
+.widgetEdit-invert {
+    word-break: break-all;
+    line-height: 1.2em;
+}
+
+.widgetEdit-readonly {
+    line-height: 1.2em;
+}
+
+
+.widgetEdit-controlName {
+    grid-area: control;
+}
+
+.widgetEdit-type {
+    grid-area: type;
+}
+
+.widgetEdit-remove {
+    grid-area: remove;
+    color: var(--danger-color);
+}
+
+.widgetEdit-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.widgetEdit-content {
+    flex: 1;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.widgetEdit-warn {
+    margin-bottom: 12px;
+}
+
+.widgetEdit-list {
+    padding-left: 16px;
+    margin-bottom: 0;
+}
+
+.widgetEdit-name {
+    margin-bottom: 12px;
+}
+
+.widgetEdit-controls {
+    overflow-x: auto;
+    font-size: var(--font-size-small);
+}
+
+.widgetEdit-input {
+    width: 100%;
+    height: fit-content;
+}
+
+.widgetEdit-toggleViewIcon {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.widgetEdit-invert {
+    grid-area: invert;
+}
+
+.widgetEdit-readonly {
+    grid-area: readonly;
+}
+
+.widgetEdit-iconAction {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer;
+    display: flex;
+}
+
+.widgetEdit-fields {
+    margin-bottom: var(--content-gap);
+}
+
+.widgetEdit-label {
+    display: flex;
+    justify-content: space-between;
+    margin: 2px 0;
+    align-items: center;
+}
+
+.widgetEdit-description {
+    width: 100%;
+}
+
+.widgetEdit-codeEditor {
+    flex-grow: 1;
+    height: 1px;
+    width: 100%;
+    font-size: var(--font-size-medium);
+}
+
+.widgetEdit-dropdown {
+    width: 200px;
+    padding: 12px 0 4px;
+}

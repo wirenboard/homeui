@@ -1,0 +1,398 @@
+import { runInAction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { documentation } from '@/common/links';
+import { Button } from '@/components/button';
+import { Confirm } from '@/components/confirm';
+import { Switch } from '@/components/switch';
+import { TabContent, Tabs, useTabs } from '@/components/tabs';
+import { PageLayout } from '@/layouts/page';
+import { aliceStore, DefaultRoom } from '@/stores/alice';
+import { authStore, UserRole } from '@/stores/auth';
+import { uiStore } from '@/stores/ui';
+import { Room } from './components/room';
+import { SmartDevice } from './components/smart-device';
+import type { AlicePageState, BindingView, View } from './types';
+import './styles.css';
+
+const STATUS_ERROR_ID = 'alice-link-status';
+const BINDING_REQUIRED_ERROR_ID = 'alice-binding-required';
+
+const AlicePage = observer(() => {
+  const { t, i18n } = useTranslation();
+  const {
+    roomList,
+    isAvailable,
+    createLink,
+    fetchData,
+    fetchLinkStatus,
+    fetchIntegrationStatus,
+    isIntegrationEnabled,
+    checkIsAvailable,
+    setIntegrationEnabled,
+  } = aliceStore;
+  const [pageState, setPageState] = useState<AlicePageState>('isLoading');
+  const [view, setView] = useState<View>({ roomId: 'all' });
+  const [errors, setErrors] = useState([]);
+  const [isIntegrationLoading, setIntegrationLoading] = useState(true);
+  const [isBindingStatusLoading, setBindingStatusLoading] = useState(false);
+  const [bindingView, setBindingView] = useState<BindingView>(null);
+  const sortedRooms = useMemo(() => [{ id: 'all', label: t('alice.buttons.all-devices') }, ...roomList
+    .sort(([keyA], [keyB]) => {
+      if (keyA === 'all') return -1;
+      if (keyB === 'all') return 1;
+      if (keyA === DefaultRoom) return -1;
+      if (keyB === DefaultRoom) return 1;
+      return 0;
+    })
+    .map(([id, room]) => ({ id, label: room.name }))], [roomList]);
+  const { activeTab, setActiveTab, onTabChange } = useTabs({
+    onAfterTabChange: (roomId) => setView({ roomId }),
+    items: sortedRooms,
+  });
+  const isModuleInstalled = useMemo(() => uiStore.modules.some((item) => item === 'alice'), [uiStore.modules]);
+  const linkStatusErrorMessage = t('alice.errors.link-status-unavailable');
+  const bindingRequiredMessage = t('alice.errors.integration-enabled-binding-required');
+  const clearBindingView = () => setBindingView(null);
+
+  const clearStatusError = () => {
+    setErrors((prev) => prev.filter((item) => item.id !== STATUS_ERROR_ID));
+  };
+
+  const clearBindingRequiredError = () => {
+    setErrors((prev) => prev.filter((item) => item.id !== BINDING_REQUIRED_ERROR_ID));
+  };
+
+  const showStatusError = () => {
+    setErrors((prev) => {
+      const next = prev.filter((item) => (
+        item.id !== STATUS_ERROR_ID && item.id !== BINDING_REQUIRED_ERROR_ID
+      ));
+      return [...next, {
+        id: STATUS_ERROR_ID,
+        variant: 'danger',
+        text: linkStatusErrorMessage,
+        onClose: clearStatusError,
+      }];
+    });
+  };
+
+  const showBindingRequiredError = () => {
+    setErrors((prev) => {
+      const next = prev.filter((item) => item.id !== BINDING_REQUIRED_ERROR_ID);
+      return [...next, {
+        id: BINDING_REQUIRED_ERROR_ID,
+        variant: 'warn',
+        text: bindingRequiredMessage,
+        onClose: clearBindingRequiredError,
+      }];
+    });
+  };
+
+  const refreshBindingStatus = async (): Promise<BindingView> => {
+    setBindingStatusLoading(true);
+
+    try {
+      const status = await fetchLinkStatus();
+      let nextBindingView: BindingView;
+      if (status.linked) {
+        nextBindingView = { kind: 'linked', statusUrl: status.status_url };
+      } else {
+        const { link_url: linkUrl } = await createLink();
+        nextBindingView = { kind: 'bind', linkUrl };
+      }
+      setBindingView(nextBindingView);
+      clearStatusError();
+      if (nextBindingView?.kind === 'linked') {
+        clearBindingRequiredError();
+      }
+      return nextBindingView;
+    } catch (err) {
+      clearBindingView();
+      showStatusError();
+      throw err;
+    } finally {
+      setBindingStatusLoading(false);
+    }
+  };
+
+  const refreshBindingStatusInBackground = (showBindingRequiredWarning = false) => {
+    void refreshBindingStatus()
+      .then((nextBindingView) => {
+        if (showBindingRequiredWarning && nextBindingView?.kind === 'bind') {
+          showBindingRequiredError();
+        }
+      })
+    // Link status availability should not block page interactions.
+      .catch(() => {});
+  };
+
+  const handleIntegrationToggle = async (enabled: boolean) => {
+    const prevEnabled = aliceStore.isIntegrationEnabled;
+    let integrationUpdated = false;
+    setIntegrationLoading(true);
+
+    try {
+      await setIntegrationEnabled(enabled);
+      integrationUpdated = true;
+
+      if (!enabled) {
+        clearBindingView();
+        clearStatusError();
+        clearBindingRequiredError();
+      }
+    } catch (err) {
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
+
+      runInAction(() => {
+        aliceStore.isIntegrationEnabled = prevEnabled;
+      });
+
+      const msg = serverMessage
+        ? serverMessage
+        : status
+          ? `${t('alice.errors.integration-error')} (${status})`
+          : t('alice.errors.integration-error');
+
+      setErrors([{ text: msg, variant: 'danger', onClose: () => setErrors([]) }]);
+    } finally {
+      if (integrationUpdated && enabled) {
+        refreshBindingStatusInBackground(true);
+      }
+      setIntegrationLoading(false);
+    }
+  };
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) {
+      return;
+    }
+    checkIsAvailable();
+    setIntegrationLoading(true);
+    (async () => {
+      try {
+        await fetchIntegrationStatus();
+        if (aliceStore.isIntegrationEnabled) {
+          refreshBindingStatusInBackground();
+        } else {
+          clearBindingView();
+          clearStatusError();
+          clearBindingRequiredError();
+        }
+      } catch (err) {
+        const msg = err?.response?.data?.detail || err?.response?.data?.message
+          || t('alice.errors.integration-error');
+        setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+      } finally {
+        setIntegrationLoading(false);
+      }
+    })();
+
+    fetchData()
+      .then(() => setPageState('isConnected'))
+      .catch(() => setPageState('isNotConnected'));
+  }, [
+    checkIsAvailable,
+    fetchData,
+    fetchIntegrationStatus,
+    fetchLinkStatus,
+    isModuleInstalled,
+    bindingRequiredMessage,
+    linkStatusErrorMessage,
+    t,
+  ]);
+
+  useEffect(() => {
+    if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) return;
+
+    const refreshOnReturn = async () => {
+      if (!aliceStore.isIntegrationEnabled) return;
+
+      try {
+        await refreshBindingStatus();
+      } catch {
+        // Status error is already handled inside refreshBindingStatus().
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshOnReturn();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isModuleInstalled, linkStatusErrorMessage]);
+
+  useEffect(() => {
+    if (authStore.hasRights(UserRole.Admin)) {
+      const hasError = !isModuleInstalled || (typeof isAvailable === 'boolean' && !isAvailable);
+      setErrors(hasError ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+    }
+  }, [isAvailable, isModuleInstalled, t]);
+
+  const isLoading = useMemo(
+    () => (isModuleInstalled && isAvailable && pageState === 'isLoading'),
+    [isModuleInstalled, isAvailable, pageState],
+  );
+
+  const handleUnlinkController = async (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmUnlink = async () => {
+    setIsConfirmModalOpen(false);
+    try {
+      await aliceStore.unlinkController();
+      clearBindingView();
+      try {
+        await refreshBindingStatus();
+      } catch {
+        // `refreshBindingStatus()` already updates the UI with its own generic error state.
+      }
+    } catch (err: any) {
+      setErrors([{ variant: 'danger', text: err?.response?.data?.detail || err?.message || String(err) }]);
+    }
+  };
+
+  const integrationToggle = isModuleInstalled && isAvailable ? (
+    <div className="alice-integrationToggle">
+      <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
+      <Switch
+        id="alice-integration-enabled"
+        value={isIntegrationEnabled}
+        ariaLabel={t('alice.labels.enable-integration')}
+        isDisabled={isIntegrationLoading}
+        onChange={handleIntegrationToggle}
+      />
+    </div>
+  ) : undefined;
+
+  return (
+    <PageLayout
+      title={t('alice.title')}
+      infoLink={documentation[i18n.language]?.mqtt}
+      isLoading={isLoading}
+      hasRights={authStore.hasRights(UserRole.Admin)}
+      errors={errors}
+      actions={integrationToggle}
+    >
+      {isModuleInstalled && isAvailable && (
+        pageState === 'isConnected'
+          ? (
+            <>
+              {isIntegrationEnabled && bindingView?.kind === 'linked' && (
+                <div className="alice-bindingContainer">
+                  {bindingView.statusUrl && (
+                    <a href={bindingView.statusUrl} className="alice-binding" target="_blank" rel="noreferrer">
+                      {t('alice.buttons.check-binding-status')}
+                    </a>
+                  )}
+                  <span>{t('alice.labels.is-binded')}</span>
+                  <button
+                    type="button"
+                    className="alice-binding alice-unlink"
+                    title={t('alice.binding.unlink-controller')}
+                    onClick={handleUnlinkController}
+                  >
+                    {t('alice.binding.unlink-controller')}
+                  </button>
+                </div>
+              )}
+
+              {isIntegrationEnabled && bindingView?.kind === 'bind' && (
+                <div className="alice-bindingContainer">
+                  <a href={bindingView.linkUrl} className="alice-binding" target="_blank" rel="noreferrer">
+                    {t('alice.buttons.bind')}
+                  </a>
+                </div>
+              )}
+
+              {isIntegrationEnabled && isBindingStatusLoading && !bindingView && (
+                <div className="alice-bindingSkeleton" aria-hidden="true" />
+              )}
+
+              <div className="alice-container">
+                <aside className="alice-sidebar">
+                  <div className="alice-mainButtons">
+                    <Button
+                      label={t('alice.buttons.add-device')}
+                      onClick={() => {
+                        setView({ isNewDevice: true });
+                        setActiveTab(null);
+                      }}
+                    />
+
+                    <Button
+                      label={t('alice.buttons.add-room')}
+                      variant="primary"
+                      onClick={() => {
+                        setView({ isNewRoom: true });
+                        setActiveTab(null);
+                      }}
+                    />
+                  </div>
+
+                  <div className="alice-rooms">
+                    <Tabs
+                      className="alice-tabs"
+                      activeTab={activeTab}
+                      items={sortedRooms}
+                      onTabChange={onTabChange}
+                    />
+                  </div>
+                </aside>
+                {!!(view.isNewRoom || view.roomId) && (
+                  <TabContent tabId={view.roomId} activeTab={view.roomId}>
+                    <Room
+                      id={view.roomId}
+                      onSave={(roomId) => {
+                        setView({ roomId });
+                        setActiveTab(roomId);
+                      }}
+                      onDelete={() => setView({ roomId: DefaultRoom })}
+                      onOpenDevice={(deviceId) => setView({ deviceId })}
+                    />
+                  </TabContent>
+                )}
+
+                {!!(view.isNewDevice || view.deviceId) && (
+                  <SmartDevice
+                    id={view.deviceId}
+                    onSave={(deviceId) => setView({ deviceId })}
+                    onDelete={() => setView({ roomId: 'all' })}
+                    onOpenDevice={(deviceId) => setView({ deviceId })}
+                  />)}
+              </div>
+            </>
+          ) : (
+            <ol className="alice-onboarding">
+              <li>{t('alice.labels.onboarding1')}</li>
+              <li>{t('alice.labels.onboarding2')}</li>
+            </ol>
+          )
+      )}
+
+      <Confirm
+        isOpened={isConfirmModalOpen}
+        heading={t('alice.binding.confirm-unlink')}
+        confirmCallback={confirmUnlink}
+        closeCallback={() => setIsConfirmModalOpen(false)}
+        variant="danger"
+        acceptLabel={t('alice.binding.confirm-unlink-button')}
+      >
+        {t('alice.binding.confirm-unlink-message')}
+      </Confirm>
+    </PageLayout>
+  );
+});
+
+export default AlicePage;

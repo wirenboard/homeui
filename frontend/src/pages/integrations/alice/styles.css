@@ -1,0 +1,140 @@
+.alice-container {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: var(--content-gap);
+    margin-top: 18px;
+    color: var(--text-color);
+
+    @media (max-width: 990px) {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.alice-bindingContainer {
+    display: flex;
+    gap: 6px;
+}
+
+.alice-binding {
+    width: fit-content;
+}
+
+.alice-bindingSkeleton {
+    width: 220px;
+    height: 20px;
+    border-radius: 4px;
+    background: linear-gradient(
+        90deg,
+        var(--border-color) 25%,
+        rgba(255, 255, 255, 0.12) 50%,
+        var(--border-color) 75%
+    );
+    background-size: 200% 100%;
+    animation: alice-bindingSkeleton 1.2s ease-in-out infinite;
+}
+
+.alice-binding:focus {
+    text-decoration: underline;
+}
+
+.alice-unlink {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+@keyframes alice-bindingSkeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.alice-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.alice-mainButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    @media (max-width: 990px) {
+        display: flex;
+        flex-direction: row;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+}
+
+.alice-rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    @media (max-width: 990px) {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+.alice-tabs {
+    max-width: 100%;
+}
+
+.alice-tabs li:nth-child(1),
+.alice-tabs li:nth-child(2) {
+    font-weight: bold;
+}
+
+.alice-headerContainer {
+    margin: 0 0 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-height: 38px;
+}
+
+.alice-headerTitleWrapper {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.alice-title {
+    font-size: var(--font-size-large);
+    margin-left: 8px;
+}
+
+.alice-onboarding {
+    line-height: 160%;
+    padding-left: 18px;
+}
+
+.alice-integrationToggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alice-integrationToggle-label {
+    color: var(--text-color);
+}
+
+.alice-saveAlert {
+    margin-bottom: 12px;
+}

@@ -1,0 +1,50 @@
+.input {
+    border: 1px solid var(--input-border-color);
+    background: var(--input-background);
+    color: var(--input-color);
+    border-radius: var(--input-border-radius);
+    transition: background ease 300ms, outline-offset 200ms linear;
+    outline-offset: 0;
+}
+
+.input:focus {
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: border-color 200ms linear, var(--form-element-focus-transition);
+    z-index: 10;
+}
+
+.input-l {
+    height: 38px;
+    padding: 8px 12px;
+}
+
+.input-m {
+    height: var(--form-element-medium-height);
+    padding: 6px 12px;
+}
+
+.input-s {
+    height: 28px;
+    padding: 3px 8px;
+}
+
+.input-fullWidth {
+    width: 100%;
+}
+
+.input-invalid {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+input[type=number]::-webkit-inner-spin-button {
+    margin-left: 4px;
+    margin-right: -10px;
+}
+
+.input:disabled {
+    background: var(--input-background-disabled);
+    color: var(--gray-color);
+    cursor: not-allowed;
+}

@@ -1,0 +1,21 @@
+.popup {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: var(--input-border-radius);
+  border: 1px solid var(--border-color);
+  z-index: 9998;
+  font-size: var(--font-size-medium);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.popup-trigger {
+  display: inherit;
+  width: inherit;
+}
+
+.popup-arrow {
+  fill: var(--background-color);
+  stroke: var(--border-color);
+  stroke-width: 1px;
+}

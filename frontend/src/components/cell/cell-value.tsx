@@ -1,0 +1,136 @@
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dropdown, type Option } from '@/components/dropdown';
+import { Input } from '@/components/input';
+import { Tooltip } from '@/components/tooltip';
+import { CellFormat } from '@/stores/devices/cell-type';
+import { copyToClipboard } from '@/utils/clipboard';
+import { transformNumber } from '@/utils/one-wire-number';
+import { CellHistory } from './cell-history';
+import { type CellValueProps } from './types';
+import './styles.css';
+
+export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, hideCopy }: CellValueProps) => {
+  const { t } = useTranslation();
+  const [capturedValue, setCapturedValue] = useState<string>(null);
+  const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
+
+  const getCopiedText = useCallback((val: string) => val, []);
+
+  const formattedValue = useMemo(() => {
+    if (cell.type === CellFormat.OneWireId) {
+      return transformNumber(cell.value as number | string);
+    }
+    if (typeof cell.value === 'number') {
+      const digits = Math.max(minimumFractionDigits, cell.fractionDigits);
+      return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits: digits })
+        .format(cell.value)
+        .replace(/\s/g, '<span class="deviceCell-space"></span>')
+        .replace(',', '.');
+    }
+    return cell.value;
+  }, [cell.value, cell.fractionDigits, minimumFractionDigits]);
+
+  // to avoid a jumping interface, we keep the highest observed fraction digits
+  useEffect(() => {
+    if (cell.fractionDigits > minimumFractionDigits) {
+      setMinimumFractionDigits(cell.fractionDigits);
+    }
+  }, [cell.fractionDigits, minimumFractionDigits]);
+
+  return (
+    <>
+      {cell.valueType === 'number' && !(cell.readOnly || isReadOnly) && (
+        cell.isEnum ? (
+          <div className="deviceCell-withSelect">
+            {!hideHistory && <CellHistory cell={cell} />}
+            <Dropdown
+              size="small"
+              isInvalid={!!cell.error}
+              options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
+              value={cell.value as string | number}
+              ariaLabel={cell.name}
+              isDisabled={isDisabled}
+              onChange={(option: Option<string>) => cell.value = option.value}
+            />
+          </div>
+        ) : (
+          <>
+            {!hideHistory && <CellHistory cell={cell} />}
+            <Input
+              id={cell.id}
+              type="number"
+              size="small"
+              isInvalid={!!cell.error}
+              className="deviceCell-text"
+              value={cell.value as number}
+              isDisabled={cell.readOnly || isReadOnly || isDisabled}
+              min={cell.min}
+              max={cell.max}
+              step={cell.step}
+              ariaLabel={cell.name}
+              isWithExplicitChanges
+              onChange={(value) => cell.value = value}
+            />
+            {!!cell.units && (
+              <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+            )}
+          </>
+        )
+      )}
+
+      {cell.readOnly && (
+        <>
+          {!hideHistory && <CellHistory cell={cell} />}
+
+          {hideCopy ? (
+            <div className={classNames('deviceCell-value', 'deviceCell-text', 'deviceCell-noClick')}>
+              {cell.isEnum
+                ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+                : (
+                  <div>
+                    <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                      <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+                    )}
+                  </div>
+                )}
+            </div>
+          ) : (
+            <div
+              className={classNames('deviceCell-value', 'deviceCell-text')}
+              onClick={() => {
+                let value = cell.value;
+                if (cell.isEnum) {
+                  value = cell.enumValues.find((item) => item.value === cell.value).name;
+                } else if (cell.type === CellFormat.OneWireId) {
+                  value = transformNumber(cell.value as number | string);
+                }
+                setCapturedValue(value as string);
+                copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
+              }
+              }
+            >
+              <Tooltip
+                text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widget.labels.copy')}</span>}
+                placement="top"
+                trigger="click"
+              >
+                {cell.isEnum
+                  ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+                  : (
+                    <div>
+                      <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                        <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+                      )}
+                    </div>
+                  )}
+              </Tooltip>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+});

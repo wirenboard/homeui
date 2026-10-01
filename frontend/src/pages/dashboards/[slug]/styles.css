@@ -1,0 +1,34 @@
+.dashboard-fullScreen {
+    padding: 6px;
+}
+
+.dashboard-backButton {
+    position: fixed;
+    bottom: 30px;
+    right: 10px;
+}
+
+.dashboard-separator {
+    margin: 10px 0;
+    position: relative;
+    min-height: 6px;
+}
+
+.dashboard-separator::after {
+    content: "";
+    position: absolute;
+    top: 55%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--input-border-color);
+    transform: translateY(-50%);
+}
+
+.dashboard-separatorTitle {
+    background: var(--background-color);
+    z-index: 2;
+    position: relative;
+    padding: 0 4px;
+    margin-left: 6px;
+}

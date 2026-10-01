@@ -1,0 +1,167 @@
+import classNames from 'classnames';
+import { useId } from 'react';
+import type { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
+import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
+import { Tooltip } from '@/components/tooltip';
+import type { CardAction, CardProps } from './types';
+import './styles.css';
+
+const CardActionUrl = ({ action, id }: { action: CardAction; id?: string }) => {
+  return (
+    <Tooltip
+      text={action.title}
+      placement="top"
+    >
+      <a
+        href={action.url(id)}
+        className="card-action"
+        onClick={(ev) => ev.stopPropagation()}
+      >
+        <action.icon />
+      </a>
+    </Tooltip>
+  );
+};
+
+const CardActionButton = ({ action, id }: { action: CardAction; id?: string }) => {
+  const actionCall = (ev: MouseEvent<HTMLButtonElement>) => {
+    ev.stopPropagation();
+    action.action(id);
+  };
+
+  if (action.disabled) {
+    return (
+      <button
+        type="button"
+        className="card-action"
+        aria-label={action.title}
+        aria-haspopup={action.isPopupAction ? 'dialog' : null}
+        disabled
+      >
+        <action.icon />
+      </button>
+    );
+  }
+
+  return (
+    <Tooltip
+      text={action.title}
+      placement="top"
+    >
+      <button
+        type="button"
+        className="card-action"
+        disabled={action.disabled}
+        aria-label={action.title}
+        aria-haspopup={action.isPopupAction ? 'dialog' : null}
+        onClick={actionCall}
+      >
+        <action.icon />
+      </button>
+    </Tooltip>
+  );
+};
+
+const CardHeader = ({
+  id, heading, actions = [], indicator, toggleBody, isBodyVisible, withError,
+}: CardProps) => {
+  return (
+    <>
+      <h4
+        className={classNames('card-title', { 'card-titleWithError': withError })}
+        tabIndex={-1}
+      >{heading}
+      </h4>
+
+      {(!!actions.length || !!indicator || !!toggleBody) && (
+        <div className="card-actions">
+          {actions.map((action, i) => (
+            action.url ? (
+              <CardActionUrl action={action} id={id} key={i} />
+            ) : (
+              <CardActionButton action={action} id={id} key={i} />
+            )
+          ))}
+          {indicator}
+          {!!toggleBody && (
+            isBodyVisible
+              ? <ChevronDownIcon className="card-toggle" aria-hidden="true" />
+              : <ChevronRightIcon className="card-toggle" aria-hidden="true" />
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+export const Card = ({
+  children, id, className, heading, actions, indicator, toggleBody,
+  withError, isBodyVisible = true, variant = 'primary',
+}: PropsWithChildren<CardProps>) => {
+  const generatedId = useId();
+  const normalizedId = id ?? generatedId;
+  const headerId = `${normalizedId}-header`;
+  const cardBodyId = `${normalizedId}-body`;
+
+  const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
+    const target = ev.target as HTMLElement;
+
+    const isHeader = target.classList.contains('card-headerContainer')
+      || target.classList.contains('card-header');
+
+    const isAcceptKey = ev.key === 'Enter' || ev.key === ' ';
+
+    if (isHeader && isAcceptKey) {
+      ev.preventDefault();
+      toggleBody();
+    }
+  };
+
+  return (
+    <article
+      className={classNames('card', className, {
+        'card-primary': variant === 'primary',
+        'card-secondary': variant === 'secondary',
+        'card-tertiary': variant === 'tertiary',
+      })}
+      role="group"
+      id={id}
+    >
+      {toggleBody ? (
+        <div className="card-headerContainer">
+          <div
+            role="button"
+            id={headerId}
+            className="card-header card-headerToggable"
+            tabIndex={0}
+            aria-controls={cardBodyId}
+            aria-expanded={isBodyVisible}
+            onClick={toggleBody}
+            onKeyDown={onKeyHeaderClick}
+          >
+            <CardHeader
+              heading={heading}
+              id={id}
+              actions={actions}
+              indicator={indicator}
+              isBodyVisible={isBodyVisible}
+              toggleBody={toggleBody}
+              withError={withError}
+            />
+          </div>
+        </div>
+      ) : (
+        <div id={headerId} className="card-header">
+          <CardHeader heading={heading} id={id} actions={actions} indicator={indicator} withError={withError} />
+        </div>
+      )}
+
+      {isBodyVisible && (
+        <div className="card-body" id={cardBodyId} aria-labelledby={headerId}>
+          {children}
+        </div>
+      )}
+    </article>
+  );
+};

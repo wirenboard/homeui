@@ -1,0 +1,28 @@
+.aliceRoom-swap {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.aliceRoom-item {
+    cursor: pointer;
+}
+
+.aliceRoom-skills {
+    border-bottom: 1px solid var(--border-color);
+    min-height: 31px;
+    padding: 5px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.aliceRoom-skills:last-child {
+    border-bottom: 0;
+}
+
+.aliceRoom-emptyList {
+    padding: 12px 8px;
+    text-align: center;
+}

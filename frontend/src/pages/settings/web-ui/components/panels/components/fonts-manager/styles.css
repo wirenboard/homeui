@@ -1,0 +1,45 @@
+.fontsManager {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fontsManager-heading {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.fontsManager-empty {
+    margin: 0;
+}
+
+.fontsManager-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fontsManager-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fontsManager-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fontsManager-size {
+    white-space: nowrap;
+}
+
+.fontsManager > button:last-child {
+    align-self: flex-start;
+}

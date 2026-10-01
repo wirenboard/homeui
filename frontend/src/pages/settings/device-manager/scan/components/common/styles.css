@@ -1,0 +1,19 @@
+.scanDeviceName-similarSignatures {
+    white-space: pre-line;
+}
+
+.scanFirmwareVersion-extendedModbus {
+    width: 15px;
+    height: 15px;
+}
+
+.scanSlaveId {
+    display: inline-block;
+    width: 3ch;
+}
+
+.scanPort-baudrate {
+    display: inline-block;
+    width: 6ch;
+    text-align: right;
+}

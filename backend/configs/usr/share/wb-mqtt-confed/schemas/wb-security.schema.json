@@ -1,0 +1,51 @@
+{
+    "type": "object",
+    "title": "Security Settings",
+    "description": "",
+    "properties": {
+      "configVersion": {
+        "type": "integer",
+        "title": "Config version",
+        "minimum": 1,
+        "maximum": 1,
+        "default": 1,
+        "propertyOrder": 1,
+        "options": {
+          "hidden": true
+        }
+      },
+      "probeOpenPorts": {
+        "type": "boolean",
+        "title": "Enable probing open ports",
+        "description": "port_probe_desc",
+        "default": true,
+        "_format": "checkbox",
+        "propertyOrder": 2
+      }
+    },
+    "options": {
+      "disable_edit_json": false
+    },
+    "defaultProperties": [
+      "configVersion",
+      "probeOpenPorts"
+    ],
+    "required": [
+      "configVersion",
+      "probeOpenPorts"
+    ],
+    "configFile": {
+      "path": "/etc/wb-security.conf",
+      "validate": false
+    },
+    "translations": {
+      "en": {
+        "port_probe_desc": "When enabled, the controller will ask our remote server to check if the web interface, SSH or MQTT ports are open to the Internet without any additional security measures. This is useful to check if your setup is secure."
+      },
+      "ru": {
+        "Security Settings": "Настройки безопасности",
+        "Enable probing open ports": "Включить проверку открытых портов",
+        "port_probe_desc" : "Если включено, то контроллер отправляет запрос нашему удалённому серверу, чтобы проверить, не доступны ли веб-интерфейс, SSH или MQTT из Интернета. Это нужно, чтобы убедиться, что ваша система защищена."
+      }
+    }
+  }

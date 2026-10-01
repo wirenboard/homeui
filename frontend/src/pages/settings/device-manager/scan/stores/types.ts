@@ -1,0 +1,70 @@
+export interface FullScannedDevice {
+  uuid: string;
+  port: {
+    path: string;
+  };
+  cfg: {
+    slave_id: number;
+    baud_rate: number;
+    parity: string;
+    data_bits: number;
+    stop_bits: number;
+  };
+  title: string;
+  sn: string;
+  device_signature: string;
+  fw_signature: string;
+  configured_device_type: string;
+  last_seen: number;
+  bootloader_mode: boolean;
+  errors: [];
+  fw: {
+    version: string;
+    ext_support: boolean;
+    fast_modbus_command: number;
+    update?: {
+      error: string;
+    };
+  };
+}
+
+export interface GlobalError {
+  id: string;
+  message: string;
+  metadata: {
+    failed_ports: string[];
+  };
+}
+
+export enum SelectionPolicy {
+  Single = 'Select only one item',
+  Multiple = 'Multiple selection',
+}
+
+export const ScanState = {
+  Started: 'Started',
+  Stopped: 'Stopped',
+  NotSpecified: 'NotSpecified',
+};
+
+export interface SelectableConfiguredDevice {
+  portPath: string;
+  slaveId: number;
+}
+
+export interface DevicesStoreInitOptions {
+  allowToSelectDevicesInBootloader?: boolean;
+  // An already configured device (port + slave_id) that must stay selectable, used when searching
+  // for a disconnected device.
+  selectableConfiguredDevice?: SelectableConfiguredDevice;
+  // Treat a scanned device as already configured when its serial number is in the current config.
+  // Only the new-devices flow enables this; the search-disconnected flow keeps it off so a device
+  // that moved to a different slave_id stays selectable/restorable.
+  matchConfiguredBySerialNumber?: boolean;
+}
+
+export interface StartScanningOptions extends DevicesStoreInitOptions {
+  portPath?: string;
+  useModbusTcp?: boolean;
+  outOfOrderSlaveIds?: string[];
+}
