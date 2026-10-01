@@ -1,6 +1,7 @@
 import { type ReactElement } from 'react';
 import {
   type StringStore,
+  type ExactNumberStore,
   type ObjectStore,
   type NumberStore,
   type BooleanStore,
@@ -41,7 +42,7 @@ export interface BooleanEditorProps {
 }
 
 export interface NumberEditorProps {
-  store: NumberStore;
+  store: NumberStore | ExactNumberStore;
   inputId?: string;
   descriptionId?: string;
   errorId?: string;

@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
 import { type WbDeviceParameterEditor } from '@/stores/device-manager';
-import { type Translator, type NumberStore } from '@/stores/json-schema-editor';
+import { type ExactNumberStore, type Translator } from '@/stores/json-schema-editor';
 import { type BadValueFromRegisterWarningProps } from './types';
 
 export const ParamSimpleLabel = (
@@ -18,7 +18,9 @@ export const ParamSimpleLabel = (
   );
 };
 
-const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberStore; translator: Translator }) => {
+const BadValueFromRegisterWarningText = (
+  { store, translator }: { store: ExactNumberStore; translator: Translator },
+) => {
   const { t, i18n } = useTranslation();
   if (store.schema.enum) {
     return t('device-manager.errors.bad-value-from-registers', { value: JSON.stringify(store.value) });

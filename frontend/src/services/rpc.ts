@@ -1,4 +1,6 @@
 import { mqttClient } from '@/services';
+import type { JsonReviver } from '@/utils/types';
+import type { RpcMethodDescription } from './types';
 
 const RPC_TIMEOUT = 60000;
 const METHOD_AVAILABLE_TIMEOUT = 3000;
@@ -24,6 +26,8 @@ let nextId = 1;
 const inflight: Record<number, ResponseHandler> = {};
 const subs: Record<string, boolean> = Object.create(null);
 const methods: Record<string, any> = {};
+// Replies share one subscription and are parsed before the method is known, so the reviver is looked up by topic
+const replyRevivers: Record<string, JsonReviver> = {};
 let disconnectUnsubscribe: (() => void) | null = null;
 
 function invokeResponseHandler(id: number, topic: string | null, reply: any) {
@@ -84,7 +88,7 @@ function maybeStopWatching() {
 function handleMessage(msg: { topic: string; payload: string }) {
   let parsed: any;
   try {
-    parsed = JSON.parse(msg.payload);
+    parsed = JSON.parse(msg.payload, replyRevivers[msg.topic]);
   } catch {
     console.error('cannot parse MQTT RPC response: %o', msg);
     return;
@@ -106,7 +110,7 @@ function ensureSubscription(topic: string) {
   mqttClient.addStickySubscription(topic, handleMessage);
 }
 
-function rpcCall(prefix: string, method: string, params?: Record<string, any>): Promise<any> {
+function rpcCall(prefix: string, method: string, params?: Record<string, any>, reviver?: JsonReviver): Promise<any> {
   ensureSubscription(prefix + '+/' + mqttClient.getID() + '/reply');
   maybeStartWatching();
 
@@ -118,6 +122,9 @@ function rpcCall(prefix: string, method: string, params?: Record<string, any>): 
 
     const callId = nextId++;
     const topic = prefix + method + '/' + mqttClient.getID();
+    if (reviver) {
+      replyRevivers[topic + '/reply'] = reviver;
+    }
 
     try {
       mqttClient.send(
@@ -197,12 +204,13 @@ export type RpcProxy<
 
 export function createRpcProxy<
   T extends { [K in keyof T]: RpcMethod } = RpcMethods
->(target: string, methodNames: string[]): RpcProxy<T> {
+>(target: string, methods: (string | RpcMethodDescription)[]): RpcProxy<T> {
   const prefix = '/rpc/v1/' + target + '/';
   const proxy: any = {};
 
-  methodNames.forEach((method) => {
-    proxy[method] = (params?: any) => rpcCall(prefix, method, params);
+  methods.forEach((method) => {
+    const { name, reviver }: RpcMethodDescription = typeof method === 'string' ? { name: method } : method;
+    proxy[name] = (params?: any) => rpcCall(prefix, name, params, reviver);
   });
 
   proxy.hasMethod = (methodName: string) => rpcHasMethod(prefix, methodName);

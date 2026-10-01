@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.264.1) stable; urgency=medium
+
+  * Fix rounding of 1-Wire sensor IDs and other integers above 2^53
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 01 Oct 2026 11:39:17 +0500
+
 wb-mqtt-homeui (2.264.0) stable; urgency=medium
 
   * Fix history chart looping over a clock shift
