@@ -1,1 +1,0 @@
-export { PanelsSettings } from './panels';

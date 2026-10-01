@@ -1,1 +1,0 @@
-export { Diagnostic } from './diagnostic';

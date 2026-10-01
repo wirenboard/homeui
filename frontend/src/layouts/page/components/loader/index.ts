@@ -1,1 +1,0 @@
-export { PageLoader } from './loader';

@@ -1,1 +1,0 @@
-export { Colorpicker } from './colorpicker';

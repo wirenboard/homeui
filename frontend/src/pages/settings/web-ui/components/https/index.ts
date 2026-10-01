@@ -1,1 +1,0 @@
-export { HttpsSettings } from './https';

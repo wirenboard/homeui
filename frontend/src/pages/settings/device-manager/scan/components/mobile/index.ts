@@ -1,1 +1,0 @@
-export { DevicesList } from './mobile';
