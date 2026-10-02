@@ -155,6 +155,7 @@ export interface SerialPortProxySetupItem {
   data_bits?: number;
   parity: string;
   stop_bits: number;
+  // Full value of registers 270, 271. For MAP devices it differs from ScannedDevice.sn by + 0xFE000000
   sn?: number;
   cfg?: SerialPortProxySetupItemNewConfig;
 }
@@ -170,6 +171,8 @@ export interface SerialPortProxy {
 
 export interface ScannedDevice {
   title: string;
+  // Decimal serial number as shown to the user. For MAP devices it holds only the 25 bits of sn,
+  // registers 270, 271 also have the 7 most significant bits set to 1 (+ 0xFE000000)
   sn: string;
   address: number;
   newAddress?: number;

@@ -10,6 +10,7 @@ import {
   StoreBuilder,
   Translator,
 } from '@/stores/json-schema-editor';
+import { isNumberOrExact } from '@/utils/exact-number';
 import type {
   WbDeviceParametersGroup,
   WbDeviceTemplateChannel,
@@ -280,7 +281,7 @@ export class DeviceSettingsObjectStore {
     this._parametersByName.forEach((param, _name) => {
       if (param.shouldStoreInConfig) {
         const value = param.value;
-        if (typeof value === 'number') {
+        if (isNumberOrExact(value)) {
           res[param.id] = value;
         }
       }
