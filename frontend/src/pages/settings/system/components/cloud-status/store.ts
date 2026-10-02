@@ -48,6 +48,6 @@ export default class CloudStatusStore {
   }
 
   recalcCloudLink() {
-    this.cloudLink = this.serialNum ? `${this.cloudBaseUrl}/controllers/${this.serialNum}` : '';
+    this.cloudLink = this.serialNum && this.cloudBaseUrl ? `${this.cloudBaseUrl}/controllers/${this.serialNum}` : '';
   }
 }

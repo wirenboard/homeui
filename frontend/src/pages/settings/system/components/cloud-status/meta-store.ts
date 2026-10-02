@@ -39,11 +39,6 @@ export class CloudStatusMetaStore {
         ({ payload }) => store.updateCloudBaseUrl(payload),
       );
 
-      // The agent's topics are retained, so with the agent running they arrive right after
-      // the subscriptions above. A stopped agent leaves nothing to arrive, and the card would
-      // never show. The broker delivers our own message after those retained ones (one
-      // connection, one order), so getting it with the store still untouched means the agent
-      // is not running.
       const probeTopic = `/tmp/${mqttClient.getID()}/cloud-status/${provider}`;
       mqttClient.addStickySubscription(probeTopic, () => {
         if (!store.initialized) {

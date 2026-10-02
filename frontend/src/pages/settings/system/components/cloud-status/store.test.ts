@@ -28,6 +28,14 @@ describe('CloudStatusStore with the agent stopped', () => {
     expect(store.activationLink).toBeNull();
   });
 
+  test('no link to the controller page until the cloud URL is known', () => {
+    const store = new CloudStatusStore('wb');
+
+    store.updateSerialNum('ABC');
+
+    expect(store.cloudLink).toBe('');
+  });
+
   test('a cleared cloud URL keeps the last known link to the controller page', () => {
     const store = new CloudStatusStore('wb');
     store.updateSerialNum('ABC');
