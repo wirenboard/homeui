@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import i18n from '@/i18n/config';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
+import { isExactOnlyInteger } from '@/utils/exact-number';
 import { type CellError, CellComponent, cellType, type CellType, type CellTypeEntry } from './cell-type';
 import type { CellMeta, EnumTranslations, NameTranslations, SendValueUpdate, ValueType } from './types';
 
@@ -251,15 +252,14 @@ export default class Cell {
   }
 
   private _setCellValue(value: ValueType) {
-    const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
     switch (this.valueType) {
       case 'number':
         if (this.displayType === CellComponent.DateTime) {
           this._value = value || 0;
         } else if (!value || isNaN(value as number | null)) {
           this._value = 0;
-        } else if (Number(value) && Number.isInteger(Number(value)) && BigInt(Number(value)) >= maxSafeBigInt) {
-          // to avoid rounding we will set value as string if value is greater than max safe integer
+        } else if (isExactOnlyInteger(value)) {
+          // to avoid rounding we will set value as string if a number can't hold it exactly
           this._value = value;
         } else {
           if (typeof value === 'string') {

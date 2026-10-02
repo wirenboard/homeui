@@ -1,6 +1,7 @@
 import type { ConfigJson } from '@/pages/settings/device-manager/config-editor/stores/types';
 import type { DeviceTypeDescriptionGroup } from '@/stores/device-manager/types';
 import type { JsonSchema } from '@/stores/json-schema-editor';
+import { exactNumberReviver } from '@/utils/exact-number';
 import { createRpcProxy } from './rpc';
 
 interface SerialLoadResult {
@@ -17,5 +18,5 @@ interface SerialProxyMethods {
 
 export const serialProxy = createRpcProxy<SerialProxyMethods>(
   'wb-mqtt-serial/config',
-  ['Load', 'GetSchema', 'Save'],
+  [{ name: 'Load', reviver: exactNumberReviver }, 'GetSchema', 'Save'],
 );

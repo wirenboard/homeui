@@ -7,15 +7,11 @@ import {
   kelvinToMirek,
   validateKelvinEditString,
 } from '@/utils/dali-color-temperature';
-import { reverseTransformNumber, transformNumber, W1_ID_FORMAT } from '@/utils/one-wire-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import type { JsonSchema, ValidationError, PropertyStore } from './types';
 
 const formatEditString = (schema: JsonSchema, value: number): string => {
-  if (schema.format === W1_ID_FORMAT) {
-    return transformNumber(value);
-  }
   if (schema.format === DALI_TC_FORMAT) {
     return formatKelvinEditString(value);
   }
@@ -127,13 +123,6 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
-    if (this.schema.format === W1_ID_FORMAT && this.editString) {
-      const hexPattern = /^(28-[0-9A-Fa-f]{12}|0)$/;
-      if (!hexPattern.test(this.editString)) {
-        this.error = { key: 'json-editor.errors.invalid-1-wire-format' };
-        return;
-      }
-    }
     this.error = undefined;
   }
 
@@ -165,15 +154,12 @@ export class NumberStore implements PropertyStore {
 
   setEditString(value: string) {
     this.editString = value;
-    if (!value && this.schema.format === W1_ID_FORMAT) {
-      this.value = 0;
-      this.editString = '0';
-    } else if (value === '') {
+    if (value === '') {
       this.value = undefined;
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = this.schema.format === W1_ID_FORMAT ? reverseTransformNumber(value) : new MistypedValue(value);
+        this.value = new MistypedValue(value);
       } else {
         this.value = this.schema.format === DALI_TC_FORMAT ? kelvinToMirek(parsedValue) : parsedValue;
       }

@@ -21,7 +21,7 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
 
   const formattedValue = useMemo(() => {
     if (cell.type === CellFormat.OneWireId) {
-      return transformNumber(cell.value as number);
+      return transformNumber(cell.value as number | string);
     }
     if (typeof cell.value === 'number') {
       const digits = Math.max(minimumFractionDigits, cell.fractionDigits);
@@ -105,7 +105,7 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
                 if (cell.isEnum) {
                   value = cell.enumValues.find((item) => item.value === cell.value).name;
                 } else if (cell.type === CellFormat.OneWireId) {
-                  value = transformNumber(cell.value as number);
+                  value = transformNumber(cell.value as number | string);
                 }
                 setCapturedValue(value as string);
                 copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
