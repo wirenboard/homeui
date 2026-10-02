@@ -69,7 +69,6 @@
     flex-basis: 100%;
 }
 
-/* column widths come from the header only, so they don't change when the period editor appears */
 .deviceSettingsEditor-channelsTable table {
     width: 100%;
     table-layout: fixed;

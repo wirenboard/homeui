@@ -28,7 +28,6 @@
     position: relative;
 }
 
-/* the top border moves to the header so it stays visible while stuck */
 .card.card-stickyHeader {
     border-top-width: 0;
 }
@@ -47,7 +46,6 @@
     border-bottom-right-radius: 0;
 }
 
-/* sticks under the header and covers the scrolled content behind its rounded corners */
 .card-stickyHeader::before {
     content: '';
     display: block;

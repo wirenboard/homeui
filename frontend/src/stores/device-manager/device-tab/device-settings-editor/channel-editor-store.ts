@@ -163,7 +163,6 @@ export class WbDeviceChannelEditor {
     return this.mode.value === WbDeviceChannelModes.CustomPeriod;
   }
 
-  // The template name in the current or the source language is not a custom title
   get hasCustomTitle() {
     return typeof this.title.value === 'string'
       && this.title.value !== this._defaultTitle
