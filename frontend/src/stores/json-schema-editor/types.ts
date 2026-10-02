@@ -1,3 +1,4 @@
+import type { ExactNumber } from '@/utils/exact-number';
 import { type MistypedValue } from './mistyped-value';
 
 export interface TranslationsByLocale {
@@ -156,3 +157,5 @@ export interface PropertyStore {
   // composite stores that have no scalar undefined-error implement this as a no-op.
   setForbidUndefined(value: boolean): void;
 }
+
+export type ExactNumberStoreValue = number | ExactNumber | MistypedValue | undefined;
