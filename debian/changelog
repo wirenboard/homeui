@@ -1,8 +1,15 @@
-wb-mqtt-homeui (2.264.1) stable; urgency=medium
+wb-mqtt-homeui (2.265.1) stable; urgency=medium
 
   * Fix rounding of 1-Wire sensor IDs and other integers above 2^53
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 01 Oct 2026 11:39:17 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 02 Oct 2026 14:50:50 +0500
+
+wb-mqtt-homeui (2.265.0) stable; urgency=medium
+
+  * Cloud status card: show "service is not running" when wb-cloud-agent is stopped,
+    instead of an empty activation link or no card at all
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 01 Oct 2026 08:01:40 +0000
 
 wb-mqtt-homeui (2.264.0) stable; urgency=medium
 
