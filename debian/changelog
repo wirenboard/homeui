@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.264.1) stable; urgency=medium
+wb-mqtt-homeui (2.265.0) stable; urgency=medium
 
   * Cloud status card: show "service is not running" when wb-cloud-agent is stopped,
     instead of an empty activation link or no card at all
