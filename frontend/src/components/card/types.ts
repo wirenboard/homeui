@@ -19,4 +19,5 @@ export interface CardProps {
   isBodyVisible?: boolean;
   variant?: 'primary' | 'secondary' | 'tertiary';
   withError?: boolean;
+  hasStickyHeader?: boolean;
 }

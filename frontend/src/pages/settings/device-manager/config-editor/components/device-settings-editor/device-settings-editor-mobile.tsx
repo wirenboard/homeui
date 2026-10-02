@@ -15,7 +15,7 @@ import {
   type WbDeviceChannelEditor,
 } from '@/stores/device-manager';
 import { type NumberStore, type ArrayStore, type Translator } from '@/stores/json-schema-editor';
-import { MakeEditors, ParamSimpleLabel } from './device-settings-param-editor';
+import { MakeEditors, useChannelDescription, ParamSimpleLabel } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps } from './types';
 
 const DeviceSettingsSubGroup = (
@@ -53,38 +53,42 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
   );
 });
 
-const ChannelCard = observer((
+const ChannelBlock = observer((
   { channel, translator }:
   { channel: WbDeviceChannelEditor; translator: Translator },
 ) => {
-  const { i18n, t } = useTranslation();
-  const currentLanguage = i18n.language;
-  let descriptionLines = [];
-  if (channel.channel.description) {
-    descriptionLines.push(translator.find(channel.channel.description, currentLanguage));
-  }
-  if (!channel.isSupportedByFirmware) {
-    descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
-  }
-  const description = descriptionLines.join('\n');
+  const titleInputId = useId();
+  const titleErrorId = useId();
+  const titleDescriptionId = useId();
+  const modeInputId = useId();
+  const { t } = useTranslation();
+  const description = useChannelDescription(channel, translator);
   return (
-    <Card
-      key={channel.channel.name}
-      heading={translator.find(channel.channel.name, currentLanguage)}
-      id={channel.channel.name}
-      variant="secondary"
-      withError={channel.hasErrors}
-    >
-      <div className="deviceSettingsEditor-channel">
-        {description && <ParamDescription description={description} />}
-        <Suspense fallback="">
-          <StringEditor store={channel.mode} translator={translator} />
-        </Suspense>
-        {channel.hasCustomPeriod && (
-          <CustomPeriodEditor store={channel.period} translator={translator} />
+    <div className="deviceSettingsEditor-channel" id={channel.channel.name}>
+      <div className="deviceSettingsEditor-parameter">
+        <ParamSimpleLabel title={t('device-manager.labels.channel')} inputId={titleInputId} />
+        <StringEditor
+          store={channel.title}
+          inputId={titleInputId}
+          descriptionId={description ? titleDescriptionId : undefined}
+          errorId={titleErrorId}
+          translator={translator}
+        />
+        {channel.title.hasErrors && (
+          <ParamError id={titleErrorId} error={channel.title.error} translator={translator} />
         )}
+        {description && <ParamDescription id={titleDescriptionId} description={description} />}
       </div>
-    </Card>
+      <div className="deviceSettingsEditor-parameter">
+        <ParamSimpleLabel title={t('device-manager.labels.mode')} inputId={modeInputId} />
+        <Suspense fallback="">
+          <StringEditor store={channel.mode} inputId={modeInputId} translator={translator} />
+        </Suspense>
+      </div>
+      {channel.hasCustomPeriod && (
+        <CustomPeriodEditor store={channel.period} translator={translator} />
+      )}
+    </div>
   );
 });
 
@@ -99,7 +103,7 @@ const ChannelsList = observer((
           return null;
         }
         return (
-          <ChannelCard key={channel.channel.name} channel={channel} translator={translator} />
+          <ChannelBlock key={channel.channel.name} channel={channel} translator={translator} />
         );
       })}
     </>
@@ -151,6 +155,7 @@ const DeviceSettingsCard = observer((
       variant="secondary"
       withError={group.hasErrors}
       isBodyVisible={isBodyVisible}
+      hasStickyHeader={true}
       toggleBody={() => setIsBodyVisible(!isBodyVisible)}
     >
       <DeviceSettingsCardContent group={group} isTopLevel={true} translator={translator} />
@@ -172,6 +177,7 @@ const CustomChannelsCard = observer((
       variant="secondary"
       withError={customChannels.hasErrors}
       isBodyVisible={isBodyVisible}
+      hasStickyHeader={true}
       toggleBody={() => setIsBodyVisible(!isBodyVisible)}
     >
       <JsonSchemaEditor store={customChannels} translator={translator} />

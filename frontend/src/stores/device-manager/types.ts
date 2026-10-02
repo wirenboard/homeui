@@ -208,6 +208,7 @@ export interface WbDeviceTemplateChannelSettings {
   name: string;
   enabled?: boolean;
   read_period_ms?: number;
+  title?: string;
 }
 
 export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings {

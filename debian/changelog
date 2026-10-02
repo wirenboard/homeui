@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.267.0) stable; urgency=medium
+
+  * Add custom channel titles to serial device settings
+  * Sticky group headers in mobile serial device settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 02 Oct 2026 15:48:49 +0500
+
 wb-mqtt-homeui (2.266.0) stable; urgency=medium
 
   * Save the serial devices configuration through wb-mqtt-serial config/Save

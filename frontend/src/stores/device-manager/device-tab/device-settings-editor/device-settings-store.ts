@@ -1,4 +1,5 @@
 import { makeObservable, computed, observable, action } from 'mobx';
+import i18n from '@/i18n/config';
 import { compareFirmware, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import {
   type JsonSchema,
@@ -253,7 +254,8 @@ export class DeviceSettingsObjectStore {
       const channelEditor = new WbDeviceChannelEditor(
         channel,
         initialChannelsByName[channel.name],
-        this._parametersByName);
+        this._parametersByName,
+        this.schemaTranslator.find(channel.name, i18n.language));
       if (channel.group === undefined || !this._groupsByName.has(channel.group)) {
         this.topLevelGroup.addChannel(channelEditor);
       } else {

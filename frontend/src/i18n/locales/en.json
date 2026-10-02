@@ -485,6 +485,7 @@
          "component_current_version": ", current {{current_firmware}}.",
          "component_update_current_version": " {{current}} на ",
          "channel": "Channel",
+         "original-channel-name": "Original name: {{name}}",
          "mode": "Mode",
          "period": "Period (ms)",
          "custom-channels": "Custom channels",
