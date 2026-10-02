@@ -13,9 +13,10 @@ interface SerialLoadResult {
 interface SerialProxyMethods {
   Load: (params: { lang: string }) => Promise<SerialLoadResult>;
   GetSchema: (params: { type: string }) => Promise<JsonSchema>;
+  Save: (params: { config: ConfigJson }) => Promise<void>;
 }
 
 export const serialProxy = createRpcProxy<SerialProxyMethods>(
   'wb-mqtt-serial/config',
-  [{ name: 'Load', reviver: exactNumberReviver }, 'GetSchema'],
+  [{ name: 'Load', reviver: exactNumberReviver }, 'GetSchema', 'Save'],
 );

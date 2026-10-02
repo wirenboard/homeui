@@ -522,6 +522,11 @@
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
+         "write-failed": "Error writing config. See the wb-mqtt-serial system log for details",
+         "config-invalid": "The configuration is invalid: {{error}}",
+         "config-busy": "The configuration is being saved, try again later",
+         "port-busy": "A request to the port did not finish in time, the configuration is not saved. Try again",
+         "polling-restart-failed": "The configuration is saved, but polling did not start. See the wb-mqtt-serial system log for details",
          "device-config": "Error in the settings of one or more devices",
          "deprecated": "Device template is deprecated, use newer version",
          "with-subdevices": "Device template is deprecated. Editing settings is no longer supported. It is recommended to use the new version of the template",
