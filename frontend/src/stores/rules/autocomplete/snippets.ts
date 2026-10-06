@@ -48,6 +48,14 @@ const snippets = [
     { label: 'getDevice', type: 'function' },
   ),
   snippetCompletion(
+    'getDevicesList()',
+    { label: 'getDevicesList', type: 'function', detail: '(): Device[]' },
+  ),
+  snippetCompletion(
+    'removeVirtualDevice(${1:deviceName})',
+    { label: 'removeVirtualDevice', type: 'function', detail: '(deviceName: string): void' },
+  ),
+  snippetCompletion(
     'getControl(${1})',
     { label: 'getControl', type: 'function' },
   ),
