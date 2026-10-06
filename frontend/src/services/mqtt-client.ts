@@ -314,9 +314,6 @@ class MqttClient {
 
   #checkAuth(): void {
     authStore.checkAuth().catch((err) => {
-      // The check also fails when the controller is unreachable, for example while it
-      // reboots after a firmware update. That says nothing about the session, so keep
-      // the page and let the client reconnect; only 401 means the session is gone.
       if (err?.status === 401 && !authStore.isAuthenticated) {
         if (this.#worker) {
           this.#worker.postMessage({ type: 'disconnect' });
