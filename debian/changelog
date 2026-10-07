@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.267.2) stable; urgency=medium
+
+  * Keep the page when the controller is unreachable on MQTT reconnect,
+    reload only when the session is rejected
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 07 Oct 2026 10:07:51 +0300
+
 wb-mqtt-homeui (2.267.1) stable; urgency=medium
 
   * Update autocomplete snippets
