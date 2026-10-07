@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.267.3) stable; urgency=medium
+
+  * Add device/control autocomplete for defineAlias and defineRule whenChanged
+  * Add device autocomplete for removeVirtualDevice
+  * Fix control autocomplete for getDevice(...).removeControl
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 07 Oct 2026 14:10:00 +0400
+
 wb-mqtt-homeui (2.267.2) stable; urgency=medium
 
   * Keep the page when the controller is unreachable on MQTT reconnect,

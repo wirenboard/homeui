@@ -100,6 +100,10 @@ const snippets = [
     { label: 'dev', type: 'variable' },
   ),
   snippetCompletion(
+    '__filename',
+    { label: '__filename', type: 'variable', detail: 'string' },
+  ),
+  snippetCompletion(
     'cron("@hourly")',
     { label: 'cron', type: 'function' },
   ),
@@ -126,7 +130,7 @@ const snippets = [
 ];
 
 export const snippetSource: CompletionSource = (context) => {
-  const word = context.matchBefore(/\p{L}[\p{L}\d_]*$/u);
+  const word = context.matchBefore(/[\p{L}_][\p{L}\d_]*$/u);
   if (!word) return null;
 
   return {

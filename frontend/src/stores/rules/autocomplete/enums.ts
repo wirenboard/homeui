@@ -1,5 +1,6 @@
 import type { CompletionSource } from '@codemirror/autocomplete';
 import { type Device, commonCellTypes, type DevicesStore } from '@/stores/devices';
+import { makeRuleTopicsSource } from './rule-topics';
 
 const makeDevTopicsSource = (topics: string[]): CompletionSource => {
   return (context) => {
@@ -23,9 +24,9 @@ const makeDevTopicsSource = (topics: string[]): CompletionSource => {
   };
 };
 
-const makeGetDeviceSource = (devices: string[]): CompletionSource => {
+const makeDeviceSource = (devices: string[]): CompletionSource => {
   return (context) => {
-    const before = context.matchBefore(/getDevice\(\s*(['"]?)([^'"]*)$/);
+    const before = context.matchBefore(/(?:getDevice|removeVirtualDevice)\(\s*(['"]?)([^'"]*)$/);
     if (!before) {
       return null;
     }
@@ -45,15 +46,16 @@ const makeGetDeviceSource = (devices: string[]): CompletionSource => {
   };
 };
 
-const makeGetControlSource = (
+const makeControlSource = (
   devices: Map<string, Device>,
   topics: string[] = [],
 ): CompletionSource => {
+  const pattern = /(?:getDevice\(\s*(['"])([^'"]+)\1\)\.(?:getControl|removeControl)|getControl)\(\s*(['"]?)([^'"]*)$/;
   return (context) => {
-    const before = context.matchBefore(/(?:getDevice\(\s*(['"])([^'"]+)\1\)\.)?getControl\(\s*(['"]?)([^'"]*)$/);
+    const before = context.matchBefore(pattern);
     if (!before) return null;
 
-    const m = before.text.match(/(?:getDevice\(\s*(['"])([^'"]+)\1\)\.)?getControl\(\s*(['"]?)([^'"]*)$/);
+    const m = before.text.match(pattern);
     if (!m) {
       return null;
     }
@@ -133,9 +135,10 @@ export const getEnums = (devicesStore: DevicesStore) => {
 
   return [
     typeCompletionSource,
-    makeGetDeviceSource(devices),
-    makeGetControlSource(devicesStore.devices, topics),
+    makeDeviceSource(devices),
+    makeControlSource(devicesStore.devices, topics),
     makeDevTopicsSource(topics),
+    makeRuleTopicsSource(topics),
     makeTopicSource('publish', topics),
     makeTopicSource('trackMqtt', topics),
   ];
