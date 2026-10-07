@@ -39,9 +39,13 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
           .map((cell) => ({ label: `${cell.name} · ${formatValue(cell)}`, value: cell.id })),
       }))
       .filter((group) => group.options.length);
-    if (current && !devicesStore.cells.has(current)) {
-      const topic = topicOf(...splitKey(current));
-      groups.unshift({ label: t('configurator.labels.channel-lost', { ...UNESCAPED, topic }), value: current });
+    const isListed = groups.some((group) => group.options.some((option) => option.value === current));
+    if (current && !isListed) {
+      const cell = devicesStore.cells.get(current);
+      const label = cell
+        ? `${deviceTitle(cell.deviceId)}: ${cell.name} · ${formatValue(cell)}`
+        : t('configurator.labels.channel-lost', { ...UNESCAPED, topic: topicOf(...splitKey(current)) });
+      groups.unshift({ label, value: current });
     }
     return groups;
   };

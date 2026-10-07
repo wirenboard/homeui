@@ -24,7 +24,9 @@ export const deviceControls = (deviceId: string): Cell[] =>
 
 export const isLiveDevice = (deviceId: string) => deviceControls(deviceId).length > 0;
 
-export const isSystemDevice = (deviceId: string) => devicesStore.devices.get(deviceId)?.type === DeviceType.System;
+// wb-gpio для homeui служебный, но его входы и выходы — обычные реле и датчики контроллера.
+export const isSystemDevice = (deviceId: string) =>
+  deviceId !== 'wb-gpio' && devicesStore.devices.get(deviceId)?.type === DeviceType.System;
 
 export const isVirtualDevice = (deviceId: string) => devicesStore.devices.get(deviceId)?.type === DeviceType.Virtual;
 
