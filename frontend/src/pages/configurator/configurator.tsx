@@ -1,278 +1,236 @@
-import { dump as dumpYaml, load as loadYaml } from 'js-yaml';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import PlusIcon from '@/assets/icons/plus.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { Confirm } from '@/components/confirm';
-import { Dropdown, type Option } from '@/components/dropdown';
+import { Card } from '@/components/card';
+import { Confirm, useConfirm } from '@/components/confirm';
+import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { configuratorStore, type DeviceDraft } from '@/stores/configurator';
-import { devicesStore } from '@/stores/devices';
-import { buildConfig, draftsFromConfig, typeById } from './build-config';
-import { ConfigPreview } from './components/config-preview';
-import { DeviceCard } from './components/device-card';
-import { DiscoveryPanel } from './components/discovery-panel';
-import { DEVICE_TYPES } from './templates';
-import type { BackendState, Config, PreviewStatus } from './types';
+import { ConfigFormatError, ConfigParseError, configuratorStore } from '@/stores/configurator';
+import { usePreventLeavePage } from '@/utils/prevent-page-leave';
+import { AddDialog } from './components/add-dialog';
+import { DeviceList } from './components/device-list';
+import { OwnDevicePanel } from './components/own-device-panel';
+import { WbDevicePanel } from './components/wb-device-panel';
+import type { ImportFile, PageStatus } from './types';
+import { liveControls, UNESCAPED } from './utils';
 import './styles.css';
 
 const ConfiguratorPage = observer(() => {
-  const { t, i18n } = useTranslation();
-  const [typePick, setTypePick] = useState(DEVICE_TYPES[0].id);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState<PreviewStatus | null>(null);
-  const [deletedDevice, setDeletedDevice] = useState<DeviceDraft | null>(null);
-  const [isClearConfirmOpened, setIsClearConfirmOpened] = useState(false);
-
-  const importedRef = useRef(false);
-  const [savedConfig, setSavedConfig] = useState<Config | null>(null);
-  const [backendState, setBackendState] = useState<BackendState>('checking');
-  const [hasSavedConfig, setHasSavedConfig] = useState(false);
-  const [isConfigLoading, setIsConfigLoading] = useState(false);
+  const { t } = useTranslation();
+  const { setIsDirty } = usePreventLeavePage();
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [status, setStatus] = useState<PageStatus | null>(null);
+  const [isAddOpened, setIsAddOpened] = useState(false);
+  const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isClearOpened, setIsClearOpened] = useState(false);
+  const [removed, setRemoved] = useState<{ name: string; remove: () => void } | null>(null);
+  const [confirmOverwrite, isOverwriteOpened, handleOverwrite, handleOverwriteClose] = useConfirm<any>();
+  const { isDirty, isSaving, isLoading, backendState, selectedWb, selectedOwn } = configuratorStore;
+  const hasDevices = !!(configuratorStore.wbs.length + configuratorStore.own.length);
 
-  const devices = Array.from(devicesStore.devices.values());
-  const allCells = devices.flatMap((device) => devicesStore.getDeviceCells(device.id));
-  const cellById = new Map(allCells.map((cell) => [cell.id, cell]));
-  const cellByTopic = new Map(allCells.map((cell) => [cell.topic, cell.id]));
-
-  // Проверяем, установлен ли бэкенд wb-converter-ext. Без него страница работает автономно
-  // («собрать → Скопировать/Скачать YAML»): кнопку «Сохранить» и подгрузку не показываем.
   useEffect(() => {
-    let cancelled = false;
-    fetch('/converter-ext/status')
-      .then((response) => (response.ok ? response.json() : null))
-      .then((backendStatus) => {
-        if (!cancelled) {
-          setBackendState(typeof backendStatus?.has_config === 'boolean' ? 'available' : 'unavailable');
-          setHasSavedConfig(backendStatus?.has_config === true);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setBackendState('unavailable');
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
+    configuratorStore.load().catch((error) => {
+      setLoadError(error instanceof ConfigParseError
+        ? t('configurator.errors.parse', { ...UNESCAPED, path: error.path })
+        : t('configurator.errors.load', { ...UNESCAPED, error: error.message }));
+    });
   }, []);
 
-  // Если на контроллере уже есть сохранённый конфиг — забираем его.
   useEffect(() => {
-    if (!hasSavedConfig) {
-      return;
-    }
-    let cancelled = false;
-    setIsConfigLoading(true);
-    fetch('/converter-ext/config')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(String(response.status));
-        }
-        return response.text();
-      })
-      .then((text) => {
-        if (cancelled || !text) {
-          return;
-        }
-        const parsed = loadYaml(text) as Config;
-        if (!parsed || !Array.isArray(parsed.devices)) {
-          throw new Error('devices');
-        }
-        setSavedConfig(parsed);
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setLoadError(t('configurator.errors.load', { error: error.message }));
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsConfigLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [hasSavedConfig]);
+    setIsDirty(isDirty);
+  }, [isDirty]);
 
-  // Разворачиваем конфиг в черновики, когда контролы загрузились (иначе привязки не срослись бы).
-  // Один раз и только если оператор ещё ничего не набрал, чтобы не затирать правки.
-  useEffect(() => {
-    if (importedRef.current || !savedConfig || configuratorStore.devices.length > 0 || allCells.length === 0) {
-      return;
-    }
-    configuratorStore.setDevices(draftsFromConfig(savedConfig, cellByTopic));
-    importedRef.current = true;
-  }, [savedConfig, allCells.length]);
-
-  const config = buildConfig(configuratorStore.devices, cellById);
-  const configYaml = dumpYaml(config, { lineWidth: 120 });
-
-  const boundCellIds = new Set(
-    configuratorStore.devices.flatMap((device) => Object.values(device.bindings)),
-  );
-
-  const typeLabel = (id: string) => {
-    const name = typeById(id)?.name;
-    return (i18n.language === 'ru' ? name?.ru : name?.en) ?? id;
-  };
-  const roleLabel = (role: string) => t(`configurator.roles.${role}`, { defaultValue: role });
-  const typeOptions: Option<string>[] = DEVICE_TYPES.map((type) => ({ label: typeLabel(type.id), value: type.id }));
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(configYaml);
-      setStatus({ variant: 'success', text: t('configurator.labels.copied') });
-    } catch (error) {
-      setStatus({ variant: 'danger', text: t('configurator.errors.copy', { error: String(error) }) });
-    }
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([configYaml], { type: 'text/yaml' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'wb-convention-config.yaml';
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // Браузер не может писать в файловую систему контроллера, поэтому конфиг сохраняет бэк:
-  // POST на /converter-ext/config (проксируется nginx на сервис wb-converter-ext).
-  const handleSave = async () => {
-    setSaving(true);
+  const save = async () => {
     setStatus(null);
     try {
-      const response = await fetch('/converter-ext/config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/yaml' },
-        body: configYaml,
-      });
-      if (response.ok) {
-        const result = await response.json();
-        setStatus({ variant: 'success', text: t('configurator.labels.saved', { count: result.device_count }) });
-      } else {
-        const detail = await response.text();
-        setStatus({ variant: 'danger', text: t('configurator.errors.save', { status: response.status, detail }) });
+      const built = await configuratorStore.save(liveControls, async () => !!(await confirmOverwrite()));
+      if (built) {
+        const count = built.config.devices.length;
+        setStatus({
+          variant: 'success',
+          text: built.drafts.length
+            ? t('configurator.labels.saved-drafts', { ...UNESCAPED, count, drafts: built.drafts.length })
+            : t('configurator.labels.saved', { ...UNESCAPED, count }),
+        });
       }
     } catch (error) {
-      setStatus({ variant: 'danger', text: t('configurator.errors.unavailable', { error: String(error) }) });
-    } finally {
-      setSaving(false);
+      setStatus({ variant: 'danger', text: t('configurator.errors.save', { ...UNESCAPED, error: error.message }) });
     }
+  };
+
+  const applyImport = ({ name, text }: ImportFile) => {
+    try {
+      const count = configuratorStore.importConfig(text);
+      setStatus({ variant: 'success', text: t('configurator.labels.imported', { count }) });
+    } catch (error) {
+      const reason = error instanceof ConfigFormatError ? t('configurator.errors.import-format') : error.message;
+      setStatus({ variant: 'danger', text: t('configurator.errors.import', { ...UNESCAPED, name, error: reason }) });
+    }
+  };
+
+  const selectFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+    const importFile = { name: file.name, text: await file.text() };
+    if (hasDevices) {
+      setPendingImport(importFile);
+    } else {
+      applyImport(importFile);
+    }
+  };
+
+  const exportConfig = () => {
+    const yaml = configuratorStore.toYaml(configuratorStore.build(liveControls).config);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([yaml], { type: 'text/yaml' }));
+    link.download = 'devices.yaml';
+    link.click();
+    URL.revokeObjectURL(link.href);
   };
 
   return (
     <PageLayout
       title={t('configurator.title')}
       hasRights={authStore.hasRights(UserRole.Operator)}
-      isLoading={isConfigLoading}
+      isLoading={isLoading}
       errors={loadError ? [{ variant: 'danger', text: loadError, onClose: () => setLoadError(null) }] : []}
       actions={(
-        <Button
-          variant="danger"
-          label={t('configurator.buttons.clear')}
-          disabled={!configuratorStore.devices.length}
-          aria-haspopup="dialog"
-          onClick={() => setIsClearConfirmOpened(true)}
-        />
+        <div className="configurator-headerActions">
+          <Tag variant={isDirty ? 'warn' : 'gray'} role="status">
+            {isDirty ? t('configurator.labels.dirty') : t('configurator.labels.clean')}
+          </Tag>
+          {isDirty && (
+            <Button variant="secondary" label={t('configurator.buttons.discard')} onClick={configuratorStore.revert} />
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".yaml,.yml"
+            className="configurator-fileInput"
+            onChange={selectFile}
+          />
+          <Button
+            variant="secondary"
+            label={t('configurator.buttons.import')}
+            onClick={() => fileInputRef.current?.click()}
+          />
+          <Button
+            variant="secondary"
+            label={t('configurator.buttons.export')}
+            disabled={!hasDevices}
+            onClick={exportConfig}
+          />
+          <Button
+            label={t('configurator.buttons.save')}
+            disabled={!isDirty || backendState !== 'available'}
+            isLoading={isSaving}
+            onClick={save}
+          />
+        </div>
       )}
     >
-      <Alert variant="info" size="small" className="configurator-alert">
-        {t('configurator.labels.summary')}
-      </Alert>
-
-      <DiscoveryPanel boundCellIds={boundCellIds} typeLabel={typeLabel} roleLabel={roleLabel} />
+      <p className="configurator-subtitle">{t('configurator.labels.subtitle')}</p>
+      {backendState === 'unavailable' && (
+        <Alert variant="info" size="small" className="configurator-alert">
+          {t('configurator.labels.save-unavailable')}
+        </Alert>
+      )}
+      {status && (
+        <Alert variant={status.variant} size="small" className="configurator-alert" onClose={() => setStatus(null)}>
+          {status.text}
+        </Alert>
+      )}
 
       <div className="configurator-layout">
-        <section className="configurator-main">
-          <div className="configurator-add">
-            <Dropdown
-              className="configurator-typeSelect"
-              options={typeOptions}
-              value={typePick}
-              ariaLabel={t('configurator.labels.device-type')}
-              isSearchable
-              onChange={(option: Option<string>) => setTypePick(option.value)}
-            />
-            <Button
-              icon={<PlusIcon />}
-              label={t('configurator.buttons.add')}
-              onClick={() => configuratorStore.addDevice(typePick, typeLabel(typePick))}
-            />
-          </div>
+        <DeviceList onAdd={() => setIsAddOpened(true)} onClear={() => setIsClearOpened(true)} />
 
-          {!configuratorStore.devices.length && (
-            <p className="configurator-empty">{t('configurator.labels.no-devices')}</p>
+        <div className="configurator-editor">
+          {selectedWb && (
+            <WbDevicePanel
+              key={selectedWb.id}
+              wb={selectedWb}
+              onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeWb(selectedWb.id) })}
+            />
           )}
-
-          {configuratorStore.devices.map((device) => {
-            const type = typeById(device.type);
-            return type && (
-              <DeviceCard
-                key={device.did}
-                device={device}
-                type={type}
-                typeName={typeLabel(device.type)}
-                roleLabel={roleLabel}
-                allCells={allCells}
-                cellById={cellById}
-                onDelete={setDeletedDevice}
-              />
-            );
-          })}
-        </section>
-
-        <ConfigPreview
-          yaml={configYaml}
-          deviceCount={config.devices.length}
-          status={status}
-          backendState={backendState}
-          isSaving={saving}
-          onSave={handleSave}
-          onCopy={handleCopy}
-          onDownload={handleDownload}
-          onStatusClose={() => setStatus(null)}
-        />
+          {selectedOwn && (
+            <OwnDevicePanel
+              key={selectedOwn.id}
+              item={selectedOwn}
+              onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeOwn(selectedOwn.id) })}
+            />
+          )}
+          {!selectedWb && !selectedOwn && (
+            <Card heading={hasDevices ? t('configurator.labels.select-device') : t('configurator.labels.first-title')}>
+              {!hasDevices && <p>{t('configurator.labels.first-text')}</p>}
+            </Card>
+          )}
+        </div>
       </div>
 
+      <AddDialog isOpened={isAddOpened} onClose={() => setIsAddOpened(false)} />
+
       <Confirm
-        isOpened={!!deletedDevice}
-        heading={t('configurator.labels.delete-title')}
+        isOpened={!!removed}
+        heading={t('configurator.labels.remove-title')}
         variant="danger"
-        acceptLabel={t('configurator.buttons.delete')}
-        closeCallback={() => setDeletedDevice(null)}
+        acceptLabel={t('configurator.buttons.remove')}
+        closeCallback={() => setRemoved(null)}
         confirmCallback={() => {
-          configuratorStore.removeDevice(deletedDevice.did);
-          setDeletedDevice(null);
+          removed.remove();
+          setRemoved(null);
         }}
       >
         <Trans
-          i18nKey="configurator.labels.delete-prompt"
-          values={{ name: deletedDevice?.name || typeLabel(deletedDevice?.type) }}
+          i18nKey="configurator.labels.remove-prompt"
+          values={{ name: removed?.name }}
           components={[<b key="device-name" />]}
           shouldUnescape
         />
       </Confirm>
 
       <Confirm
-        isOpened={isClearConfirmOpened}
+        isOpened={isClearOpened}
         heading={t('configurator.labels.clear-title')}
         variant="danger"
-        acceptLabel={t('configurator.buttons.clear')}
-        closeCallback={() => setIsClearConfirmOpened(false)}
+        acceptLabel={t('configurator.buttons.clear-all')}
+        closeCallback={() => setIsClearOpened(false)}
         confirmCallback={() => {
-          configuratorStore.clear();
-          setIsClearConfirmOpened(false);
+          configuratorStore.clearAll();
+          setIsClearOpened(false);
         }}
       >
         {t('configurator.labels.clear-prompt')}
+      </Confirm>
+
+      <Confirm
+        isOpened={!!pendingImport}
+        heading={t('configurator.labels.import-title')}
+        acceptLabel={t('configurator.buttons.import')}
+        closeCallback={() => setPendingImport(null)}
+        confirmCallback={() => {
+          applyImport(pendingImport);
+          setPendingImport(null);
+        }}
+      >
+        {t('configurator.labels.import-prompt')}
+      </Confirm>
+
+      <Confirm
+        isOpened={isOverwriteOpened}
+        heading={t('configurator.labels.conflict-title')}
+        variant="danger"
+        acceptLabel={t('configurator.buttons.overwrite')}
+        closeCallback={() => handleOverwriteClose(null)}
+        confirmCallback={() => handleOverwrite(true)}
+      >
+        {t('configurator.labels.conflict-prompt')}
       </Confirm>
     </PageLayout>
   );

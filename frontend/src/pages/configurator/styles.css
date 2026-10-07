@@ -1,99 +1,262 @@
+.configurator-headerActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.configurator-subtitle {
+    margin: 0 0 var(--content-gap);
+}
+
 .configurator-alert {
     margin-bottom: var(--content-gap);
 }
 
+.configurator-alertInline {
+    margin-top: 8px;
+}
+
 .configurator-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 400px;
+    grid-template-columns: 320px minmax(0, 1fr);
     gap: var(--content-gap);
     align-items: start;
 
-    @media (max-width: 1200px) {
+    @media (max-width: 990px) {
         grid-template-columns: minmax(0, 1fr);
     }
 }
 
-.configurator-main {
-    min-width: 0;
-}
-
-.configurator-add {
-    display: flex;
-    gap: 8px;
-    margin-bottom: var(--content-gap);
-}
-
-.configurator-typeSelect {
-    flex: 0 1 320px;
+.configurator-editor {
     min-width: 0;
 }
 
 .configurator-empty {
-    margin: 0 0 var(--content-gap);
-    color: var(--gray-color);
+    margin: var(--content-gap) 0 0;
 }
 
+.configurator-section {
+    margin-top: var(--content-gap);
+}
 
+.configurator-sectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
 
+.configurator-sectionTitle {
+    margin: 0 0 8px;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+}
 
-.configurator-filters {
+.configurator-listSection {
+    margin-top: var(--content-gap);
+}
+
+.configurator-listItems {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-listItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px;
+    text-align: left;
+    color: var(--text-color);
+    background: transparent;
+    border: 0;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+
+    &:hover {
+        background: var(--background-accent-color);
+    }
+
+    &:focus-visible {
+        outline: var(--form-element-outline);
+        outline-offset: var(--form-element-outline-offset);
+    }
+}
+
+.configurator-listItemSelected {
+    background: var(--background-accent-color);
+    box-shadow: inset 4px 0 0 var(--primary-color);
+}
+
+.configurator-listText {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.configurator-listTitle {
+    font-weight: 600;
+}
+
+.configurator-status {
+    margin: 0;
+}
+
+.configurator-switches {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 16px;
-    margin-bottom: var(--content-gap);
+    gap: 8px 24px;
 }
 
-
-.configurator-cardIndicator {
+.configurator-switch {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    white-space: nowrap;
+}
+
+.configurator-channels {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-channel {
+    padding: 12px 0;
+    border-top: 1px solid var(--light-gray-color);
+}
+
+.configurator-channelHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.configurator-channelTitle {
+    font-weight: 600;
+}
+
+.configurator-channelBody {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding-left: 24px;
 }
 
 .configurator-fields {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--content-gap);
-    margin-bottom: var(--content-gap);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px var(--content-gap);
 
     @media (max-width: 768px) {
         grid-template-columns: minmax(0, 1fr);
     }
 }
 
-
-.configurator-range {
-    display: grid;
-    grid-template-columns: repeat(3, 96px);
+.configurator-choice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
     margin-top: 8px;
 }
 
+.configurator-choiceLabel {
+    min-width: 96px;
+}
 
-.configurator-preview {
-    position: sticky;
-    top: var(--content-gap);
+.configurator-role {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
 
-    .configurator-alert {
-        margin: var(--content-gap) 0 0;
-    }
-
-    @media (max-width: 1200px) {
-        position: static;
+    @media (max-width: 768px) {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
-.configurator-config {
-    max-height: 60vh;
+.configurator-tilesPanel {
+    margin-bottom: 8px;
+    padding: var(--content-gap);
+    background: var(--background-accent-color);
+    border-radius: var(--container-border-radius);
+}
+
+.configurator-tiles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--content-gap);
+}
+
+.configurator-tilesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+    gap: 8px;
+}
+
+.configurator-addLayout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: var(--content-gap);
+    height: 60vh;
+    padding: var(--content-gap);
+
+    @media (max-width: 768px) {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        height: auto;
+    }
+}
+
+.configurator-addDevices,
+.configurator-addChannels {
+    min-height: 0;
     overflow: auto;
-    border: 1px solid var(--light-gray-color);
-    border-radius: var(--input-border-radius);
 }
+
+.configurator-addDevices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.configurator-addNew {
+    padding: var(--content-gap);
+}
+
+.configurator-dialogFooter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: var(--content-gap);
+    border-top: 1px solid var(--light-gray-color);
+
+    span {
+        flex: 1;
+    }
+}
+
 
 .configurator-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-top: var(--content-gap);
+}
+
+.configurator-fileInput {
+    display: none;
 }

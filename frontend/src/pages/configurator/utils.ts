@@ -1,17 +1,82 @@
-import { type Cell } from '@/stores/devices';
-import { inferRole } from './infer';
-import { roleDef } from './roles';
+import i18n from '@/i18n/config';
+import {
+  CHANNEL_CLASSES, classify, primaryRole, type ChannelClass, type Classification, type ControlMeta, type LiveControls,
+} from '@/stores/configurator';
+import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
 
-// Контрол подходит роли, если совпал вид и доступ (запись → нужен rw-контрол).
-export const matchesRole = (cell: Cell, role: string): boolean => {
-  const def = roleDef(role);
-  return inferRole(cell).kind === def.kind && (def.access === 'read' || !cell.readOnly);
+const t = i18n.t.bind(i18n);
+
+export const UNESCAPED = { interpolation: { escapeValue: false } };
+
+export const controlMeta = (cell: Cell): ControlMeta => ({
+  type: cell.type,
+  units: cell.units,
+  readonly: cell.readOnly,
+  isEnum: cell.isEnum,
+  min: cell.min,
+  max: cell.max,
+});
+
+export const classifyCell = (cell: Cell): Classification => classify(controlMeta(cell));
+
+export const deviceControls = (deviceId: string): Cell[] =>
+  devicesStore.getDeviceCells(deviceId).filter((cell) => cell.type !== 'incomplete');
+
+export const isLiveDevice = (deviceId: string) => deviceControls(deviceId).length > 0;
+
+export const isSystemDevice = (deviceId: string) => devicesStore.devices.get(deviceId)?.type === DeviceType.System;
+
+export const isVirtualDevice = (deviceId: string) => devicesStore.devices.get(deviceId)?.type === DeviceType.Virtual;
+
+export const liveControls: LiveControls = {
+  meta: (deviceId, controlId) => {
+    const cell = devicesStore.cells.get(`${deviceId}/${controlId}`);
+    return cell && cell.type !== 'incomplete' ? controlMeta(cell) : null;
+  },
 };
 
-export const cellLabel = (cell: Cell): string => `${cell.name} — ${cell.deviceId}`;
+// Устройства с каналами: сначала обычные, потом служебные, внутри по имени.
+export const listDevices = (withSystem: boolean): string[] =>
+  Array.from(devicesStore.devices.keys())
+    .filter((id) => (withSystem || !isSystemDevice(id)) && isLiveDevice(id))
+    .sort((a, b) => Number(isSystemDevice(a)) - Number(isSystemDevice(b))
+      || deviceTitle(a).localeCompare(deviceTitle(b)));
 
-// Роль по контролу неоднозначна, если /meta многозначно: range (какой уровень?), alarm,
-// или value без единиц (общий числовой) — оператору стоит уточнить роль.
-const AMBIGUOUS_TYPES = new Set(['range', 'alarm']);
-export const isAmbiguous = (cell: Cell): boolean =>
-  AMBIGUOUS_TYPES.has(cell.type as string) || (cell.type === 'value' && !cell.units);
+export const deviceTitle = (deviceId: string) => devicesStore.devices.get(deviceId)?.name || deviceId;
+
+export const deviceLabel = (deviceId: string) =>
+  isLiveDevice(deviceId) && deviceTitle(deviceId) !== deviceId ? `${deviceTitle(deviceId)} (${deviceId})` : deviceId;
+
+export const formatValue = (cell: Cell | undefined): string => {
+  if (!cell) {
+    return '—';
+  }
+  if (cell.type === 'pushbutton') {
+    return t('configurator.labels.value-button');
+  }
+  if (cell.valueType === 'boolean') {
+    return cell.value ? t('configurator.labels.value-on') : t('configurator.labels.value-off');
+  }
+  const value = String(cell.value ?? '');
+  if (!value || value === '-') {
+    return '—';
+  }
+  return cell.units ? `${value} ${t(`units.${cell.units}`, cell.units)}` : value;
+};
+
+export const typeName = (typeId: string) => t(`configurator.types.${typeId}.name`);
+
+export const typeShortName = (typeId: string) => t(`configurator.types.${typeId}.short`);
+
+export const roleLabel = (role: string) => t(`configurator.roles.${role}`, { defaultValue: role });
+
+export const whyText = (classification: Classification) =>
+  t(`configurator.why.${classification.why ?? 'none'}`, {
+    ...UNESCAPED, units: classification.units ?? '',
+  });
+
+// Имя канала в приложениях: для однозначного класса — название роли, иначе тип и имя канала.
+export const defaultName = (typeId: string, cell: Cell | undefined, cls: ChannelClass) =>
+  CHANNEL_CLASSES[cls]?.types.length === 1
+    ? roleLabel(primaryRole(typeId, cls))
+    : `${typeName(typeId)} ${cell?.name ?? ''}`.trim();
