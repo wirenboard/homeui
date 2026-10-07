@@ -35,7 +35,12 @@ const DeviceManagerPage = observer(() => {
     };
 
     const saveConfig = async (content: any) => {
-      await configEditorProxy.Save({ path: serialConfiPath, content });
+      // wb-mqtt-serial before 2.282.0 has no config/Save, its config is saved by wb-mqtt-confed
+      if (await serialProxy.hasMethod('Save')) {
+        await serialProxy.Save({ config: content });
+      } else {
+        await configEditorProxy.Save({ path: serialConfiPath, content });
+      }
     };
 
     const loadDeviceTypeSchema = async (deviceType: string) => {

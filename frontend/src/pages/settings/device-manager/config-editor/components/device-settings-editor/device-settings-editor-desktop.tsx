@@ -16,8 +16,8 @@ import {
   type WbDeviceChannelEditor,
 } from '@/stores/device-manager';
 import { type NumberStore, type Translator } from '@/stores/json-schema-editor';
-import { MakeEditors } from './device-settings-param-editor';
-import type { DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types';
+import { MakeEditors, useChannelDescription } from './device-settings-param-editor';
+import type { ChannelTitleEditorProps, DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types';
 
 const DeviceSettingsSubGroup = (
   { group, translator, showChannels }:
@@ -55,6 +55,19 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
   );
 });
 
+const ChannelTitleEditor = observer(({ store, translator }: ChannelTitleEditorProps) => {
+  const errorId = useId();
+  const inputId = useId();
+  const { t } = useTranslation();
+  return (
+    <>
+      <label htmlFor={inputId} className="sr-only">{t('device-manager.labels.channel')}</label>
+      <StringEditor store={store} inputId={inputId} errorId={errorId} translator={translator} />
+      {store.hasErrors && <ParamError id={errorId} error={store.error} translator={translator} />}
+    </>
+  );
+});
+
 const ChannelsTableRow = observer(({
   channel,
   translator,
@@ -62,20 +75,11 @@ const ChannelsTableRow = observer(({
   channel: WbDeviceChannelEditor;
   translator: Translator;
 }) => {
-  const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.language;
-  let descriptionLines = [];
-  if (channel.channel.description) {
-    descriptionLines.push(translator.find(channel.channel.description, currentLanguage));
-  }
-  if (!channel.isSupportedByFirmware) {
-    descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
-  }
-  const description = descriptionLines.join('\n');
+  const description = useChannelDescription(channel, translator);
   return (
     <TableRow key={channel.channel.name}>
-      <TableCell>
-        {translator.find(channel.channel.name, currentLanguage)}
+      <TableCell className="deviceSettingsEditor-channelTitle">
+        <ChannelTitleEditor store={channel.title} translator={translator} />
         {description && <ParamDescription description={description} />}
       </TableCell>
       <TableCell>
@@ -107,9 +111,9 @@ const ChannelsTable = observer((
   return (
     <Table className="deviceSettingsEditor-channelsTable">
       <TableRow isHeading={true}>
-        <TableCell>{t('device-manager.labels.channel')}</TableCell>
-        <TableCell>{t('device-manager.labels.mode')}</TableCell>
-        <TableCell>{t('device-manager.labels.period')}</TableCell>
+        <TableCell width="50%">{t('device-manager.labels.channel')}</TableCell>
+        <TableCell width="30%">{t('device-manager.labels.mode')}</TableCell>
+        <TableCell width="20%">{t('device-manager.labels.period')}</TableCell>
       </TableRow>
       {channels.map((channel) => {
         if (!channel.isEnabledByCondition) {
