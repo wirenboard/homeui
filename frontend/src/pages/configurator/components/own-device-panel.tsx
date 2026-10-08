@@ -9,16 +9,20 @@ import { Card } from '@/components/card';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import {
-  CHANNEL_CLASSES, configuratorStore, findType, ownRowServices, splitKey, topicOf, type OwnRow, type RoleId,
+  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, rowServices, splitKey, topicOf,
+  type DeviceRow,
+  type RoleId,
 } from '@/stores/configurator';
 import { devicesStore } from '@/stores/devices';
 import type { OwnDevicePanelProps } from '../types';
 import {
-  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, roleLabel, TYPE_ICONS, typeName,
+  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, roleLabel, TYPE_ICONS,
+  typeName,
   UNESCAPED,
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
 import { TypeTiles } from './type-tiles';
+import { UnitField } from './unit-field';
 
 export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps) => {
   const { t } = useTranslation();
@@ -51,13 +55,17 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
     return groups;
   };
 
-  const bindRole = (row: OwnRow, role: RoleId, key: string | null) => {
-    const primary = findType(row.type).roles[0][0];
-    if (key && role === primary && row.name === typeName(row.type)) {
-      const cell = devicesStore.cells.get(key);
-      configuratorStore.updateOwnRow(row, { name: defaultName(row.type, cell, classifyCell(cell).cls) });
+  const bindRole = (row: DeviceRow, role: RoleId, key: string | null) => {
+    const primary = primaryRole(row.type);
+    const cell = key ? devicesStore.cells.get(key) : undefined;
+    if (cell && role === primary) {
+      const { cls, units } = classifyCell(cell);
+      configuratorStore.updateRow(row, {
+        ...(row.name === typeName(row.type) ? { name: defaultName(row.type, cell, cls) } : {}),
+        ...(hasUnit(row.type) && !row.unit ? { unit: units } : {}),
+      });
     }
-    configuratorStore.bindOwnRole(row, role, key);
+    configuratorStore.bindRole(row, role, key);
   };
 
   const addRow = (typeId: string) => {
@@ -121,7 +129,7 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
         <ul className="configurator-channels">
           {item.rows.map((row) => {
             const type = findType(row.type);
-            const { missing } = ownRowServices(row);
+            const { missing } = rowServices(row);
             const TypeIcon = TYPE_ICONS[row.type];
             const roles = type.roles
               .filter(([role, isRequired]) => isRequired || row.bind[role] || roleOptions(role, '').length);
@@ -145,14 +153,20 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
                     <StringField
                       title={t('configurator.labels.name-in-apps')}
                       value={row.name}
-                      onChange={(name) => configuratorStore.updateOwnRow(row, { name: String(name) })}
+                      onChange={(name) => configuratorStore.updateRow(row, { name: String(name) })}
                     />
                     <StringField
                       title={t('configurator.labels.group')}
                       value={row.group}
                       placeholder={t('configurator.labels.no-group')}
-                      onChange={(group) => configuratorStore.updateOwnRow(row, { group: String(group) })}
+                      onChange={(group) => configuratorStore.updateRow(row, { group: String(group) })}
                     />
+                    {hasUnit(row.type) && (
+                      <UnitField
+                        value={row.unit ?? ''}
+                        onChange={(unit) => configuratorStore.updateRow(row, { unit })}
+                      />
+                    )}
                   </div>
                   {roles.map(([role, isRequired]) => (
                     <div key={role} className="configurator-role">

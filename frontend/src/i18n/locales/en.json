@@ -1222,7 +1222,9 @@
          "unsupported": "Not suitable for apps ({{count}})",
          "type-required": "Choose a type, otherwise the channel is not exported",
          "new-devices": "The controller has devices not yet set up for apps:",
-         "more-devices": "and {{count}} more"
+         "more-devices": "and {{count}} more",
+         "unit": "Units",
+         "unit-placeholder": "Choose or type"
       },
       "buttons": {
          "add": "Add",
@@ -1232,7 +1234,6 @@
          "discard": "Discard changes",
          "remove-device": "Remove device",
          "remove-channel": "Remove channel \"{{name}}\"",
-         "unbind": "Unbind the channel from \"{{role}}\"",
          "clear-all": "Remove all devices",
          "overwrite": "Overwrite",
          "remove": "Remove",
@@ -1265,7 +1266,9 @@
          "power": "Power",
          "energy": "Energy",
          "press": "Press",
-         "battery": "Battery level"
+         "battery": "Battery level",
+         "setting": "Numeric setting",
+         "number": "Numeric value"
       },
       "types": {
          "switch": {
@@ -1283,6 +1286,10 @@
          "cover": {
             "name": "Cover",
             "short": "Cover"
+         },
+         "number_setting": {
+            "name": "Numeric setting",
+            "short": "Setting"
          },
          "button": {
             "name": "Button",
@@ -1324,6 +1331,10 @@
             "name": "Smoke sensor",
             "short": "Smoke"
          },
+         "number_sensor": {
+            "name": "Numeric sensor",
+            "short": "Number"
+         },
          "power_sensor": {
             "name": "Power sensor",
             "short": "Power"
@@ -1341,25 +1352,12 @@
       "why": {
          "enum": "Mode with a list of values, no type for it",
          "cmd": "Command button, no type for it",
-         "range_units": "Setting in \"{{units}}\", not a control",
          "color_only": "Fits only as a light color",
          "text": "Text channel",
-         "voltage": "No type for voltage",
-         "current": "No type for current",
-         "pressure": "No type for pressure",
-         "noise": "No type for noise level",
-         "water": "No type for water consumption",
-         "air": "No type for air quality",
-         "resistance": "No type for resistance",
-         "frequency": "No type for frequency",
-         "time": "No type for time",
-         "heat": "No type for heat energy",
-         "weather": "No type for weather data",
-         "no_units": "Number without units, the type is unknown",
          "none": "No suitable type",
          "battery": "Attached to another channel of the device as its battery level",
-         "range_setting": "Numeric setting, not a brightness or position",
-         "availability": "Service channel: device availability"
+         "availability": "Service channel: device availability",
+         "service": "Service channel of the device"
       }
    }
 }

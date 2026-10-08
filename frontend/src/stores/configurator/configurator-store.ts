@@ -6,14 +6,13 @@ import type {
   BackendStatus,
   BuiltConfig,
   Config,
+  DeviceRow,
   LiveControls,
-  NewWbChannel,
+  NewDeviceRow,
   OwnDevice,
-  OwnRow,
   ParsedConfig,
   RoleId,
   Selection,
-  WbChannel,
   WbDevice,
 } from './types';
 
@@ -45,7 +44,7 @@ export default class ConfiguratorStore {
   private _modifiedAt: number | null = null;
   private _savedExtras: Pick<ParsedConfig, 'raw' | 'orig' | 'mixed'> = { raw: [], orig: {}, mixed: {} };
   // Настройки снятых каналов: вернутся, если канал отметить снова.
-  private _parked: Record<string, WbChannel> = {};
+  private _parked: Record<string, DeviceRow> = {};
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -71,11 +70,9 @@ export default class ConfiguratorStore {
   // Ключи "device/control" всех каналов, уже занятых в модели.
   get usedKeys(): Set<string> {
     const used = new Set<string>();
-    this.wbs.forEach((wb) => Object.entries(wb.channels).forEach(([controlId, channel]) => {
-      used.add(`${wb.id}/${controlId}`);
-      Object.values(channel.extra).forEach((extra) => extra && used.add(`${wb.id}/${extra}`));
-    }));
-    this.own.forEach((item) => item.rows.forEach((row) => Object.values(row.bind).forEach((key) => used.add(key))));
+    this.wbs.forEach((wb) => Object.keys(wb.channels).forEach((controlId) => used.add(`${wb.id}/${controlId}`)));
+    [...this.wbs.flatMap((wb) => Object.values(wb.channels)), ...this.own.flatMap((item) => item.rows)]
+      .forEach((row) => Object.values(row.bind).forEach((key) => used.add(key)));
     return used;
   }
 
@@ -192,17 +189,17 @@ export default class ConfiguratorStore {
       ...this.wbs.flatMap((wb) => Object.values(wb.channels).map((channel) => channel.did)),
       ...this.own.flatMap((item) => item.rows.map((row) => row.did)),
       ...this.raw.map((device) => Number((device as { did?: number })?.did) || 0),
-      ...Object.values(this._parked).map((channel) => channel.did),
+      ...Object.values(this._parked).map((row) => row.did),
       ...Object.keys(this.orig).map(Number),
     ];
     return Math.max(...dids) + 1;
   }
 
-  addWb(id: string, channels: Record<string, NewWbChannel>) {
+  addWb(id: string, rows: Record<string, NewDeviceRow>) {
     const firstDid = this.nextDid();
     const wb: WbDevice = { id, matter: true, alice: true, channels: {} };
-    Object.entries(channels).forEach(([controlId, channel], index) => {
-      wb.channels[controlId] = { extra: {}, ...channel, did: firstDid + index, group: '' };
+    Object.entries(rows).forEach(([controlId, row], index) => {
+      wb.channels[controlId] = { ...row, did: firstDid + index, group: '' };
     });
     this.wbs.push(wb);
     this.selection = { kind: 'wb', id };
@@ -217,7 +214,8 @@ export default class ConfiguratorStore {
     Object.assign(target, adapters);
   }
 
-  toggleChannel(wb: WbDevice, controlId: string, defaults: Omit<WbChannel, 'did' | 'group' | 'extra'>) {
+  // Снимает отмеченный канал или отмечает: из снятых или по defaults.
+  toggleChannel(wb: WbDevice, controlId: string, defaults?: NewDeviceRow) {
     const key = `${wb.id}/${controlId}`;
     if (wb.channels[controlId]) {
       this._parked[key] = clone(wb.channels[controlId]);
@@ -230,27 +228,24 @@ export default class ConfiguratorStore {
       return;
     }
     const lastGroup = Object.values(wb.channels).map((channel) => channel.group).filter(Boolean).pop() ?? '';
-    wb.channels[controlId] = { ...defaults, did: this.nextDid(), group: lastGroup, extra: {} };
+    wb.channels[controlId] = { ...defaults, did: this.nextDid(), group: lastGroup };
   }
 
-  updateChannel(channel: WbChannel, patch: Partial<Pick<WbChannel, 'name' | 'group' | 'type' | 'prim'>>) {
-    if (patch.type && patch.type !== channel.type) {
-      channel.extra = {};
-    }
-    Object.assign(channel, patch);
+  updateRow(row: DeviceRow, patch: Partial<Pick<DeviceRow, 'name' | 'group' | 'unit' | 'type' | 'bind'>>) {
+    Object.assign(row, patch);
   }
 
-  setExtra(channel: WbChannel, role: RoleId, controlId: string | null) {
-    if (controlId) {
-      channel.extra[role] = controlId;
+  bindRole(row: DeviceRow, role: RoleId, key: string | null) {
+    if (key) {
+      row.bind[role] = key;
     } else {
-      delete channel.extra[role];
+      delete row.bind[role];
     }
   }
 
-  addOwn(name: string, row: Omit<OwnRow, 'did'>) {
+  addOwn(name: string, row: NewDeviceRow) {
     const item: OwnDevice = {
-      id: `own:new:${Date.now()}`, name, matter: true, alice: true, rows: [{ ...row, did: this.nextDid() }],
+      id: `own:new:${Date.now()}`, name, matter: true, alice: true, rows: [{ ...row, did: this.nextDid(), group: '' }],
     };
     this.own.push(item);
     this.selection = { kind: 'own', id: item.id };
@@ -265,21 +260,9 @@ export default class ConfiguratorStore {
     item.name = name;
   }
 
-  addOwnRow(item: OwnDevice, row: Omit<OwnRow, 'did' | 'group'>) {
+  addOwnRow(item: OwnDevice, row: NewDeviceRow) {
     const lastGroup = item.rows.map((existing) => existing.group).filter(Boolean).pop() ?? '';
     item.rows.unshift({ ...row, did: this.nextDid(), group: lastGroup });
-  }
-
-  updateOwnRow(row: OwnRow, patch: Partial<Pick<OwnRow, 'name' | 'group'>>) {
-    Object.assign(row, patch);
-  }
-
-  bindOwnRole(row: OwnRow, role: RoleId, key: string | null) {
-    if (key) {
-      row.bind[role] = key;
-    } else {
-      delete row.bind[role];
-    }
   }
 
   removeOwnRow(item: OwnDevice, did: number) {

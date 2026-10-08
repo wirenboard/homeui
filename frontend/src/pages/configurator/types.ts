@@ -63,6 +63,11 @@ export interface ImportFile {
   text: string;
 }
 
+export interface UnitFieldProps {
+  value: string;
+  onChange: (_unit: string) => void;
+}
+
 export interface NewDevicesAlertProps {
   onConfigure: (_deviceId: string) => void;
 }

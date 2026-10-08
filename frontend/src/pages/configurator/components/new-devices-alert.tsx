@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { CHANNEL_CLASSES, configuratorStore } from '@/stores/configurator';
+import { CHANNEL_CLASSES, configuratorStore, ROLES } from '@/stores/configurator';
 import type { NewDevicesAlertProps } from '../types';
 import { classifyCell, deviceControls, deviceTitle, isVirtualDevice, listDevices, UNESCAPED } from '../utils';
 
@@ -29,7 +29,11 @@ export const NewDevicesAlert = observer(({ onConfigure }: NewDevicesAlertProps) 
   const devices = listDevices(false).filter((id) => !isVirtualDevice(id)
     && !configured.has(id)
     && !dismissed.includes(id)
-    && deviceControls(id).some((cell) => CHANNEL_CLASSES[classifyCell(cell).cls].types.length));
+    && deviceControls(id).some((cell) => {
+      const { types, fits } = CHANNEL_CLASSES[classifyCell(cell).cls];
+      // Устройство только с числовыми датчиками и настройками новым не считаем.
+      return types.length && !fits.some((role) => ROLES[role].unit);
+    }));
 
   if (configuratorStore.isLoading || !devices.length) {
     return null;

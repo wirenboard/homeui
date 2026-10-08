@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
 import { TabContent, Tabs } from '@/components/tabs';
 import {
-  CHANNEL_CLASSES, configuratorStore, findType, isAmbiguousClass, NO_PRESET, primaryRole, type NewWbChannel,
+  CHANNEL_CLASSES, configuratorStore, findType, isAmbiguousClass, NO_PRESET, primaryRole, type NewDeviceRow,
 } from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
 import type { AddDialogProps, PickedChannel } from '../types';
@@ -63,17 +63,20 @@ export const AddDialog = observer(({ isOpened, onClose, initialDeviceId }: AddDi
   const pick = (controlId: string, choice: PickedChannel) => setPicked({ ...picked, [controlId]: choice });
 
   const addWb = () => {
-    const result: Record<string, NewWbChannel> = {};
+    const result: Record<string, NewDeviceRow> = {};
     const battery = channels.find((channel) => channel.classification.cls === 'battery')?.cell.controlId;
     typed.filter((channel) => channel.choice.checked).forEach(({ cell, classification, choice }) => {
       const hasBattery = findType(choice.type)?.roles.some(([role]) => role === 'battery');
       result[cell.controlId] = {
         type: choice.type,
         name: defaultName(choice.type, cell, classification.cls),
-        prim: choice.type
-          ? primaryRole(choice.type, classification.cls)
-          : CHANNEL_CLASSES[classification.cls].fits[0],
-        extra: battery && hasBattery ? { battery } : {},
+        bind: choice.type
+          ? {
+            [primaryRole(choice.type, classification.cls)]: cell.id,
+            ...(battery && hasBattery ? { battery: `${current}/${battery}` } : {}),
+          }
+          : {},
+        unit: classification.units,
       };
     });
     configuratorStore.addWb(current, result);
@@ -81,7 +84,7 @@ export const AddDialog = observer(({ isOpened, onClose, initialDeviceId }: AddDi
   };
 
   const addOwn = (typeId: string) => {
-    configuratorStore.addOwn(typeName(typeId), { type: typeId, name: typeName(typeId), group: '', bind: {} });
+    configuratorStore.addOwn(typeName(typeId), { type: typeId, name: typeName(typeId), bind: {} });
     onClose();
   };
 

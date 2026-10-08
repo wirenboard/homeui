@@ -28,6 +28,8 @@ export const ROLES: Record<RoleId, RoleDef> = {
   energy: {},
   press: {},
   battery: {},
+  setting: { rw: true, unit: true },
+  number: { unit: true },
 };
 
 export const TYPE_CATEGORIES: TypeCategory[] = ['control', 'sensors', 'energy'];
@@ -41,6 +43,7 @@ export const DEVICE_TYPES: DeviceTypeDef[] = [
     roles: [['on_off', true], ['brightness', false], ['color_temperature', false], ['color', false]],
   },
   { id: 'cover', category: 'control', roles: [['position', true], ['on_off', false]] },
+  { id: 'number_setting', category: 'control', roles: [['setting', true]] },
   { id: 'button', category: 'control', roles: [['press', true], ['battery', false]] },
   { id: 'temperature_sensor', category: 'sensors', roles: [['temperature', true], ['battery', false]] },
   { id: 'humidity_sensor', category: 'sensors', roles: [['humidity', true], ['battery', false]] },
@@ -51,6 +54,7 @@ export const DEVICE_TYPES: DeviceTypeDef[] = [
   { id: 'motion_sensor', category: 'sensors', roles: [['motion', true], ['battery', false]] },
   { id: 'occupancy_sensor', category: 'sensors', roles: [['occupancy', true], ['battery', false]] },
   { id: 'smoke_sensor', category: 'sensors', roles: [['smoke', true], ['battery', false]] },
+  { id: 'number_sensor', category: 'sensors', roles: [['number', true], ['battery', false]] },
   { id: 'power_sensor', category: 'energy', roles: [['power', true]] },
   { id: 'energy_meter', category: 'energy', roles: [['energy', true]] },
 ];
@@ -71,6 +75,8 @@ export const CHANNEL_CLASSES: Record<ChannelClass, ChannelClassDef> = {
   energy: { fits: ['energy'], types: ['energy_meter'], preset: false },
   press: { fits: ['press'], types: ['button'], preset: true },
   battery: { fits: ['battery'], types: [], preset: false },
+  setting: { fits: ['setting'], types: ['number_setting'], preset: false },
+  number: { fits: ['number'], types: ['number_sensor'], preset: false },
   color: { fits: ['color'], types: [], preset: false },
   none: { fits: [], types: [], preset: false },
 };
@@ -82,24 +88,17 @@ export const isAmbiguousClass = (cls: ChannelClass) =>
 // Служебные каналы модулей не отмечаем при добавлении устройства.
 export const NO_PRESET = /^(mcu|supply|board|cpu|buzzer|red led|green led|led|learn)/i;
 
-const UNITS_WHY: Record<string, string> = {
-  V: 'voltage', mV: 'voltage', A: 'current', mA: 'current',
-  Pa: 'pressure', hPa: 'pressure', mbar: 'pressure', bar: 'pressure', 'mm Hg': 'pressure',
-  dB: 'noise', dBA: 'noise', 'm^3': 'water', 'm^3/h': 'water', l: 'water', ppb: 'air', 'ug/m^3': 'air',
-  Ohm: 'resistance', Hz: 'frequency', s: 'time', ms: 'time',
-};
-
-const LEGACY_WHY: Record<string, string> = {
-  voltage: 'voltage', current: 'current', atmospheric_pressure: 'pressure', sound_level: 'noise',
-  water_flow: 'water', water_consumption: 'water', heat_power: 'heat', heat_energy: 'heat',
-  resistance: 'resistance', wind_speed: 'weather', rainfall: 'weather',
-};
+// Единицы из скобок в конце имени канала: «LED Period (s)» → «s».
+const unitsFromName = (id?: string) => /\(([^()]+)\)\s*$/.exec(id ?? '')?.[1] ?? '';
 
 // Шкалы яркости и положения без единиц (WB и zigbee-лампы).
 const LEVEL_SCALES = new Set([100, 254, 255]);
 
 // Значения action у кнопок zigbee2mqtt (Sonoff, Aqara, Tuya).
 const PRESS_VALUES = new Set(['single', 'double', 'triple', 'long', 'hold']);
+
+// Служебные числа: качество связи zigbee, адрес Modbus, серийный номер.
+const SERVICE_IDS = /^(linkquality|modbus[ _]slave[ _]id|serial([ _]number)?)$/i;
 
 const UNITS_CLASS: Record<string, ChannelClass> = {
   'deg C': 'temp', '%, RH': 'hum', ppm: 'co2', lx: 'lux', W: 'power', kWh: 'energy',
@@ -110,23 +109,20 @@ const TYPE_CLASS: Record<string, ChannelClass> = {
   power: 'power', power_consumption: 'energy',
 };
 
-const byUnits = (units: string): Classification => {
-  if (UNITS_CLASS[units]) {
-    return { cls: UNITS_CLASS[units] };
-  }
-  if (UNITS_WHY[units]) {
-    return { cls: 'none', why: UNITS_WHY[units] };
-  }
-  return { cls: 'none', why: units ? 'none' : 'no_units' };
-};
-
 // Класс канала по его /meta: какие роли он закрывает, или почему не подходит ни одной.
 export const classify = (meta: ControlMeta): Classification => {
   const type = meta.type || '';
   const units = meta.units || '';
+  const numeric = (): Classification => ({
+    cls: meta.readonly ? 'number' : 'setting',
+    units: units || unitsFromName(meta.id),
+  });
   // available у wb-mqtt-zigbee — связь с устройством, а не датчик.
   if (meta.readonly && meta.id === 'available') {
     return { cls: 'none', why: 'availability' };
+  }
+  if (SERVICE_IDS.test(meta.id ?? '')) {
+    return { cls: 'none', why: 'service' };
   }
   if (meta.readonly && units === '%' && /batter/i.test(meta.id ?? '')) {
     return { cls: 'battery', why: 'battery' };
@@ -143,31 +139,28 @@ export const classify = (meta: ControlMeta): Classification => {
     case 'pushbutton':
       return meta.readonly ? { cls: 'press' } : { cls: 'none', why: 'cmd' };
     case 'range':
-      if (units === '%' || units === 'K') {
+      if (units === '%' || units === 'K' || (!units && LEVEL_SCALES.has(meta.max ?? 100))) {
         return { cls: 'level' };
       }
-      if (!units) {
-        return LEVEL_SCALES.has(meta.max ?? 100) ? { cls: 'level' } : { cls: 'none', why: 'range_setting' };
-      }
-      return { cls: 'none', why: 'range_units', units };
+      return numeric();
     case 'rgb':
       return { cls: 'color', why: 'color_only' };
     case 'text':
       return { cls: 'none', why: 'text' };
     case 'value':
-      return byUnits(units);
+      return UNITS_CLASS[units] ? { cls: UNITS_CLASS[units] } : numeric();
     default:
       if (TYPE_CLASS[type]) {
         return { cls: TYPE_CLASS[type] };
       }
-      if (LEGACY_WHY[type]) {
-        return { cls: 'none', why: LEGACY_WHY[type] };
-      }
-      return byUnits(units);
+      return meta.valueType === 'number' ? numeric() : { cls: 'none', why: 'none' };
   }
 };
 
 export const findType = (id: string): DeviceTypeDef | undefined => DEVICE_TYPES.find((type) => type.id === id);
+
+// У типа есть единицы, если они есть у его основной роли.
+export const hasUnit = (typeId: string) => !!ROLES[findType(typeId)?.roles[0][0]]?.unit;
 
 // Роль, которую закрывает основной канал устройства выбранного типа.
 export const primaryRole = (typeId: string, cls?: ChannelClass): RoleId => {

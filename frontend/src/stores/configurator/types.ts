@@ -16,12 +16,16 @@ export type RoleId =
   | 'power'
   | 'energy'
   | 'press'
-  | 'battery';
+  | 'battery'
+  | 'setting'
+  | 'number';
 
 export interface RoleDef {
   rw?: boolean;
   bool?: boolean;
   scale?: boolean;
+  // оператор задаёт единицы, они пишутся в сервис
+  unit?: boolean;
 }
 
 export type TypeCategory = 'control' | 'sensors' | 'energy';
@@ -45,6 +49,8 @@ export type ChannelClass =
   | 'energy'
   | 'press'
   | 'battery'
+  | 'setting'
+  | 'number'
   | 'color'
   | 'none';
 
@@ -60,10 +66,12 @@ export interface ControlMeta {
   type?: string;
   units?: string;
   readonly?: boolean;
+  valueType?: string;
   isEnum?: boolean;
   enumKeys?: string[];
   min?: number;
   max?: number;
+  step?: number;
 }
 
 export interface Classification {
@@ -96,6 +104,7 @@ export interface ConfigBinding {
 export interface ConfigService {
   sid: number;
   role: string;
+  unit?: string;
   range?: Range;
   binding: ConfigBinding;
 }
@@ -115,34 +124,27 @@ export interface Config {
   devices: ConfigDevice[];
 }
 
-// Канал устройства WB, ставший устройством конфига; extra — роли из других каналов того же устройства.
-export interface WbChannel {
+// Строка устройства: канал WB или строка созданного; bind — роль → "device/control".
+export interface DeviceRow {
   did: number;
   name: string;
-  // '' — тип ещё не выбран, канал не экспортируется
+  // '' — тип ещё не выбран, строка не экспортируется
   type: string;
   group: string;
-  prim: RoleId;
-  extra: Partial<Record<RoleId, string>>;
+  // единицы числового датчика или настройки
+  unit?: string;
+  bind: Partial<Record<RoleId, string>>;
 }
 
-// Канал при добавлении устройства: did и группу назначает стор.
-export type NewWbChannel = Omit<WbChannel, 'did' | 'group' | 'extra'> & Partial<Pick<WbChannel, 'extra'>>;
+// Строка при добавлении устройства: did и группу назначает стор.
+export type NewDeviceRow = Omit<DeviceRow, 'did' | 'group'>;
 
+// channels: ключ — контрол, ради которого строка заведена.
 export interface WbDevice {
   id: string;
   matter: boolean;
   alice: boolean;
-  channels: Record<string, WbChannel>;
-}
-
-// Строка созданного устройства; bind — роль → "device/control".
-export interface OwnRow {
-  did: number;
-  type: string;
-  name: string;
-  group: string;
-  bind: Partial<Record<RoleId, string>>;
+  channels: Record<string, DeviceRow>;
 }
 
 export interface OwnDevice {
@@ -150,7 +152,7 @@ export interface OwnDevice {
   name: string;
   matter: boolean;
   alice: boolean;
-  rows: OwnRow[];
+  rows: DeviceRow[];
 }
 
 export interface OrigBinding {

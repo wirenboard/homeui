@@ -1,4 +1,6 @@
 import type { FC, SVGProps } from 'react';
+import SettingsIcon from '@/assets/icons/settings.svg';
+import StatsIcon from '@/assets/icons/stats.svg';
 import TypeButtonIcon from '@/assets/icons/type-button.svg';
 import TypeCo2Icon from '@/assets/icons/type-co2.svg';
 import TypeContactIcon from '@/assets/icons/type-contact.svg';
@@ -15,7 +17,8 @@ import TypeSwitchIcon from '@/assets/icons/type-switch.svg';
 import TypeTemperatureIcon from '@/assets/icons/type-temperature.svg';
 import i18n from '@/i18n/config';
 import {
-  CHANNEL_CLASSES, classify, primaryRole, type ChannelClass, type Classification, type ControlMeta, type LiveControls,
+  CHANNEL_CLASSES, classify, primaryRole, ROLES, type ChannelClass, type Classification, type ControlMeta,
+  type LiveControls,
 } from '@/stores/configurator';
 import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
 
@@ -26,6 +29,8 @@ export const TYPE_ICONS: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   outlet: TypeOutletIcon,
   light: TypeLightIcon,
   cover: TypeCoverIcon,
+  number_setting: SettingsIcon,
+  number_sensor: StatsIcon,
   button: TypeButtonIcon,
   temperature_sensor: TypeTemperatureIcon,
   humidity_sensor: TypeHumidityIcon,
@@ -45,12 +50,14 @@ export const UNESCAPED = { interpolation: { escapeValue: false } };
 export const controlMeta = (cell: Cell): ControlMeta => ({
   id: cell.controlId,
   type: cell.type,
+  valueType: cell.valueType,
   units: cell.units,
   readonly: cell.readOnly,
   isEnum: cell.isEnum,
   enumKeys: cell.isEnum ? cell.enumValues.map((item) => String(item.value)) : undefined,
   min: cell.min,
   max: cell.max,
+  step: cell.step,
 });
 
 export const classifyCell = (cell: Cell): Classification => classify(controlMeta(cell));
@@ -99,7 +106,8 @@ export const formatValue = (cell: Cell | undefined): string => {
   if (!value || value === '-') {
     return '—';
   }
-  return cell.units ? `${value} ${t(`units.${cell.units}`, cell.units)}` : value;
+  const units = cell.units || classifyCell(cell).units;
+  return units ? `${value} ${t(`units.${units}`, units)}` : value;
 };
 
 export const typeName = (typeId: string) => t(`configurator.types.${typeId}.name`);
@@ -108,14 +116,12 @@ export const typeShortName = (typeId: string) => t(`configurator.types.${typeId}
 
 export const roleLabel = (role: string) => t(`configurator.roles.${role}`, { defaultValue: role });
 
-export const whyText = (classification: Classification) =>
-  t(`configurator.why.${classification.why ?? 'none'}`, {
-    ...UNESCAPED, units: classification.units ?? '',
-  });
+export const whyText = (classification: Classification) => t(`configurator.why.${classification.why ?? 'none'}`);
 
-// Имя канала в приложениях: для однозначного класса — название роли, иначе тип и имя канала.
+// Имя канала в приложениях: без типа и для числовых классов — имя канала,
+// для прочих однозначных классов — название роли, иначе тип и имя канала.
 export const defaultName = (typeId: string, cell: Cell | undefined, cls: ChannelClass) => {
-  if (!typeId) {
+  if (!typeId || CHANNEL_CLASSES[cls]?.fits.some((role) => ROLES[role].unit)) {
     return cell?.name ?? '';
   }
   return CHANNEL_CLASSES[cls]?.types.length === 1
