@@ -95,6 +95,9 @@ const LEGACY_WHY: Record<string, string> = {
   resistance: 'resistance', wind_speed: 'weather', rainfall: 'weather',
 };
 
+// Шкалы яркости и положения без единиц (WB и zigbee-лампы).
+const LEVEL_SCALES = new Set([100, 254, 255]);
+
 // Значения action у кнопок zigbee2mqtt (Sonoff, Aqara, Tuya).
 const PRESS_VALUES = new Set(['single', 'double', 'triple', 'long', 'hold']);
 
@@ -136,8 +139,11 @@ export const classify = (meta: ControlMeta): Classification => {
     case 'pushbutton':
       return meta.readonly ? { cls: 'press' } : { cls: 'none', why: 'cmd' };
     case 'range':
-      if (!units || units === '%' || units === 'K') {
+      if (units === '%' || units === 'K') {
         return { cls: 'level' };
+      }
+      if (!units) {
+        return LEVEL_SCALES.has(meta.max ?? 100) ? { cls: 'level' } : { cls: 'none', why: 'range_setting' };
       }
       return { cls: 'none', why: 'range_units', units };
     case 'rgb':

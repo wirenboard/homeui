@@ -34,6 +34,8 @@ describe('classify', () => {
     expect(classify({ type: 'value', units: 'deg C' }).cls).toBe('temp');
     expect(classify({ type: 'temperature' }).cls).toBe('temp');
     expect(classify({ type: 'range' }).cls).toBe('level');
+    expect(classify({ type: 'range', max: 254 }).cls).toBe('level');
+    expect(classify({ type: 'range', max: 10 })).toEqual({ cls: 'none', why: 'range_setting' });
   });
 
   it('explains why a control has no type', () => {

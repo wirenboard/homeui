@@ -1357,7 +1357,8 @@
          "weather": "No type for weather data",
          "no_units": "Number without units, the type is unknown",
          "none": "No suitable type",
-         "battery": "Attached to another channel of the device as its battery level"
+         "battery": "Attached to another channel of the device as its battery level",
+         "range_setting": "Numeric setting, not a brightness or position"
       }
    }
 }
