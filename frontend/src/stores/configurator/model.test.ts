@@ -31,6 +31,7 @@ describe('classify', () => {
   it('maps control meta to channel classes', () => {
     expect(classify({ type: 'switch' }).cls).toBe('bin_rw');
     expect(classify({ type: 'switch', readonly: true }).cls).toBe('bin_r');
+    expect(classify({ id: 'available', type: 'switch', readonly: true })).toEqual({ cls: 'none', why: 'availability' });
     expect(classify({ type: 'value', units: 'deg C' }).cls).toBe('temp');
     expect(classify({ type: 'temperature' }).cls).toBe('temp');
     expect(classify({ type: 'range' }).cls).toBe('level');

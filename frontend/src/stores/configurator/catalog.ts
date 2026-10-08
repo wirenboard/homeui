@@ -124,6 +124,10 @@ const byUnits = (units: string): Classification => {
 export const classify = (meta: ControlMeta): Classification => {
   const type = meta.type || '';
   const units = meta.units || '';
+  // available у wb-mqtt-zigbee — связь с устройством, а не датчик.
+  if (meta.readonly && meta.id === 'available') {
+    return { cls: 'none', why: 'availability' };
+  }
   if (meta.readonly && units === '%' && /batter/i.test(meta.id ?? '')) {
     return { cls: 'battery', why: 'battery' };
   }
