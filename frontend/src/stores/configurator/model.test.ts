@@ -41,6 +41,13 @@ describe('classify', () => {
     expect(classify({ type: 'value', units: 'V' })).toEqual({ cls: 'none', why: 'voltage' });
     expect(classify({ type: 'range', units: 's' })).toEqual({ cls: 'none', why: 'range_units', units: 's' });
     expect(classify({ type: 'switch', isEnum: true })).toEqual({ cls: 'none', why: 'enum' });
+    expect(classify({ id: 'battery', type: 'value', readonly: true, units: '%' }))
+      .toEqual({ cls: 'battery', why: 'battery' });
+    expect(classify({ id: 'battery_temperature', type: 'value', readonly: true, units: 'deg C' }).cls).toBe('temp');
+    expect(classify({ type: 'text', readonly: true, isEnum: true, enumKeys: ['single', 'double', 'long'] }))
+      .toEqual({ cls: 'press' });
+    expect(classify({ type: 'text', readonly: true, isEnum: true, enumKeys: ['Battery', 'Mains'] }))
+      .toEqual({ cls: 'none', why: 'enum' });
     expect(classify({ type: 'value', units: 'dBA' })).toEqual({ cls: 'none', why: 'noise' });
   });
 });
@@ -143,5 +150,25 @@ describe('fromConfig / toConfig', () => {
 
     expect(built.config.devices).toEqual([]);
     expect(built.drafts).toEqual([{ name: 'Шум', role: null }]);
+  });
+
+  it('exports the battery level as an extra service of the button', () => {
+    const built = toConfig({
+      raw: [],
+      own: [],
+      wbs: [{
+        id: 'snzb',
+        matter: true,
+        alice: true,
+        channels: {
+          action: { did: 10, name: 'Кнопка', type: 'button', group: '', prim: 'press', extra: { battery: 'battery' } },
+        },
+      }],
+    }, liveOf({ 'snzb/action': { type: 'text' }, 'snzb/battery': { type: 'value', units: '%' } }), {});
+
+    expect(built.config.devices[0].services.map((service) => [service.role, service.binding.state])).toEqual([
+      ['press', '/devices/snzb/controls/action'],
+      ['battery', '/devices/snzb/controls/battery'],
+    ]);
   });
 });

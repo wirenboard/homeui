@@ -277,3 +277,14 @@
 .configurator-fileInput {
     display: none;
 }
+
+.configurator-newDevicesText {
+    margin: 0 0 8px;
+}
+
+.configurator-newDevices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}

@@ -27,6 +27,7 @@ export const ROLES: Record<RoleId, RoleDef> = {
   power: {},
   energy: {},
   press: {},
+  battery: {},
 };
 
 export const TYPE_CATEGORIES: TypeCategory[] = ['control', 'sensors', 'energy'];
@@ -40,16 +41,16 @@ export const DEVICE_TYPES: DeviceTypeDef[] = [
     roles: [['on_off', true], ['brightness', false], ['color_temperature', false], ['color', false]],
   },
   { id: 'cover', category: 'control', roles: [['position', true], ['on_off', false]] },
-  { id: 'button', category: 'control', roles: [['press', true]] },
-  { id: 'temperature_sensor', category: 'sensors', roles: [['temperature', true]] },
-  { id: 'humidity_sensor', category: 'sensors', roles: [['humidity', true]] },
-  { id: 'co2_sensor', category: 'sensors', roles: [['co2', true]] },
-  { id: 'illuminance_sensor', category: 'sensors', roles: [['illuminance', true]] },
-  { id: 'leak_sensor', category: 'sensors', roles: [['leak', true]] },
-  { id: 'contact_sensor', category: 'sensors', roles: [['contact', true]] },
-  { id: 'motion_sensor', category: 'sensors', roles: [['motion', true]] },
-  { id: 'occupancy_sensor', category: 'sensors', roles: [['occupancy', true]] },
-  { id: 'smoke_sensor', category: 'sensors', roles: [['smoke', true]] },
+  { id: 'button', category: 'control', roles: [['press', true], ['battery', false]] },
+  { id: 'temperature_sensor', category: 'sensors', roles: [['temperature', true], ['battery', false]] },
+  { id: 'humidity_sensor', category: 'sensors', roles: [['humidity', true], ['battery', false]] },
+  { id: 'co2_sensor', category: 'sensors', roles: [['co2', true], ['battery', false]] },
+  { id: 'illuminance_sensor', category: 'sensors', roles: [['illuminance', true], ['battery', false]] },
+  { id: 'leak_sensor', category: 'sensors', roles: [['leak', true], ['battery', false]] },
+  { id: 'contact_sensor', category: 'sensors', roles: [['contact', true], ['battery', false]] },
+  { id: 'motion_sensor', category: 'sensors', roles: [['motion', true], ['battery', false]] },
+  { id: 'occupancy_sensor', category: 'sensors', roles: [['occupancy', true], ['battery', false]] },
+  { id: 'smoke_sensor', category: 'sensors', roles: [['smoke', true], ['battery', false]] },
   { id: 'power_sensor', category: 'energy', roles: [['power', true]] },
   { id: 'energy_meter', category: 'energy', roles: [['energy', true]] },
 ];
@@ -68,7 +69,8 @@ export const CHANNEL_CLASSES: Record<ChannelClass, ChannelClassDef> = {
   lux: { fits: ['illuminance'], types: ['illuminance_sensor'], preset: true },
   power: { fits: ['power'], types: ['power_sensor'], preset: false },
   energy: { fits: ['energy'], types: ['energy_meter'], preset: false },
-  press: { fits: ['press'], types: ['button'], preset: false },
+  press: { fits: ['press'], types: ['button'], preset: true },
+  battery: { fits: ['battery'], types: [], preset: false },
   color: { fits: ['color'], types: [], preset: false },
   none: { fits: [], types: [], preset: false },
 };
@@ -93,6 +95,9 @@ const LEGACY_WHY: Record<string, string> = {
   resistance: 'resistance', wind_speed: 'weather', rainfall: 'weather',
 };
 
+// Значения action у кнопок zigbee2mqtt (Sonoff, Aqara, Tuya).
+const PRESS_VALUES = new Set(['single', 'double', 'triple', 'long', 'hold']);
+
 const UNITS_CLASS: Record<string, ChannelClass> = {
   'deg C': 'temp', '%, RH': 'hum', ppm: 'co2', lx: 'lux', W: 'power', kWh: 'energy',
 };
@@ -116,8 +121,12 @@ const byUnits = (units: string): Classification => {
 export const classify = (meta: ControlMeta): Classification => {
   const type = meta.type || '';
   const units = meta.units || '';
+  if (meta.readonly && units === '%' && /batter/i.test(meta.id ?? '')) {
+    return { cls: 'battery', why: 'battery' };
+  }
   if (meta.isEnum) {
-    return { cls: 'none', why: 'enum' };
+    const isPress = meta.readonly && meta.enumKeys?.some((key) => PRESS_VALUES.has(key));
+    return isPress ? { cls: 'press' } : { cls: 'none', why: 'enum' };
   }
   switch (type) {
     case 'switch':

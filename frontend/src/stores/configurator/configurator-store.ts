@@ -7,6 +7,7 @@ import type {
   BuiltConfig,
   Config,
   LiveControls,
+  NewWbChannel,
   OwnDevice,
   OwnRow,
   ParsedConfig,
@@ -197,11 +198,11 @@ export default class ConfiguratorStore {
     return Math.max(...dids) + 1;
   }
 
-  addWb(id: string, channels: Record<string, Omit<WbChannel, 'did' | 'group' | 'extra'>>) {
+  addWb(id: string, channels: Record<string, NewWbChannel>) {
     const firstDid = this.nextDid();
     const wb: WbDevice = { id, matter: true, alice: true, channels: {} };
     Object.entries(channels).forEach(([controlId, channel], index) => {
-      wb.channels[controlId] = { ...channel, did: firstDid + index, group: '', extra: {} };
+      wb.channels[controlId] = { extra: {}, ...channel, did: firstDid + index, group: '' };
     });
     this.wbs.push(wb);
     this.selection = { kind: 'wb', id };

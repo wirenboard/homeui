@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
 import { TabContent, Tabs } from '@/components/tabs';
 import {
-  CHANNEL_CLASSES, configuratorStore, isAmbiguousClass, NO_PRESET, primaryRole, type WbChannel,
+  CHANNEL_CLASSES, configuratorStore, findType, isAmbiguousClass, NO_PRESET, primaryRole, type NewWbChannel,
 } from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
 import type { AddDialogProps, PickedChannel } from '../types';
@@ -22,7 +22,7 @@ import { UnsupportedChannels } from './unsupported-channels';
 const TAB_WB = 'configurator-add-wb';
 const TAB_NEW = 'configurator-add-new';
 
-export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
+export const AddDialog = observer(({ isOpened, onClose, initialDeviceId }: AddDialogProps) => {
   const { t } = useTranslation();
   const [tab, setTab] = useState(TAB_WB);
   const [showSystem, setShowSystem] = useState(false);
@@ -40,7 +40,7 @@ export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
     if (isOpened) {
       setTab(TAB_WB);
       setPicked({});
-      setDeviceId(listDevices(false).find((id) => !added.has(id)) ?? null);
+      setDeviceId(initialDeviceId ?? listDevices(false).find((id) => !added.has(id)) ?? null);
     }
   }, [isOpened]);
 
@@ -63,14 +63,17 @@ export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
   const pick = (controlId: string, choice: PickedChannel) => setPicked({ ...picked, [controlId]: choice });
 
   const addWb = () => {
-    const result: Record<string, Omit<WbChannel, 'did' | 'group' | 'extra'>> = {};
+    const result: Record<string, NewWbChannel> = {};
+    const battery = channels.find((channel) => channel.classification.cls === 'battery')?.cell.controlId;
     typed.filter((channel) => channel.choice.checked).forEach(({ cell, classification, choice }) => {
+      const hasBattery = findType(choice.type)?.roles.some(([role]) => role === 'battery');
       result[cell.controlId] = {
         type: choice.type,
         name: defaultName(choice.type, cell, classification.cls),
         prim: choice.type
           ? primaryRole(choice.type, classification.cls)
           : CHANNEL_CLASSES[classification.cls].fits[0],
+        extra: battery && hasBattery ? { battery } : {},
       };
     });
     configuratorStore.addWb(current, result);
@@ -174,14 +177,12 @@ export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
                           {isAmbiguousClass(classification.cls) && `, ${t('configurator.labels.choose-type-hint')}`}
                         </span>
                       </div>
-                      {types.length > 1 && (
-                        <TypeChoice
-                          types={types}
-                          value={choice.type}
-                          ariaLabel={`${t('configurator.labels.type')}: ${cell.name}`}
-                          onChange={(typeId) => pick(cell.controlId, { checked: true, type: typeId })}
-                        />
-                      )}
+                      <TypeChoice
+                        types={types}
+                        value={choice.type}
+                        ariaLabel={`${t('configurator.labels.type')}: ${cell.name}`}
+                        onChange={(typeId) => pick(cell.controlId, { checked: true, type: typeId })}
+                      />
                     </li>
                   ))}
                 </ul>

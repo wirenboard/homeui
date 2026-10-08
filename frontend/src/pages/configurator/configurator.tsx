@@ -12,6 +12,7 @@ import { ConfigFormatError, ConfigParseError, configuratorStore } from '@/stores
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { AddDialog } from './components/add-dialog';
 import { DeviceList } from './components/device-list';
+import { NewDevicesAlert } from './components/new-devices-alert';
 import { OwnDevicePanel } from './components/own-device-panel';
 import { WbDevicePanel } from './components/wb-device-panel';
 import type { ImportFile, PageStatus } from './types';
@@ -24,6 +25,7 @@ const ConfiguratorPage = observer(() => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [status, setStatus] = useState<PageStatus | null>(null);
   const [isAddOpened, setIsAddOpened] = useState(false);
+  const [addDeviceId, setAddDeviceId] = useState<string | null>(null);
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isClearOpened, setIsClearOpened] = useState(false);
@@ -148,8 +150,21 @@ const ConfiguratorPage = observer(() => {
         </Alert>
       )}
 
+      <NewDevicesAlert
+        onConfigure={(deviceId) => {
+          setAddDeviceId(deviceId);
+          setIsAddOpened(true);
+        }}
+      />
+
       <div className="configurator-layout">
-        <DeviceList onAdd={() => setIsAddOpened(true)} onClear={() => setIsClearOpened(true)} />
+        <DeviceList
+          onAdd={() => {
+            setAddDeviceId(null);
+            setIsAddOpened(true);
+          }}
+          onClear={() => setIsClearOpened(true)}
+        />
 
         <div className="configurator-editor">
           {selectedWb && (
@@ -174,7 +189,7 @@ const ConfiguratorPage = observer(() => {
         </div>
       </div>
 
-      <AddDialog isOpened={isAddOpened} onClose={() => setIsAddOpened(false)} />
+      <AddDialog isOpened={isAddOpened} initialDeviceId={addDeviceId} onClose={() => setIsAddOpened(false)} />
 
       <Confirm
         isOpened={!!removed}

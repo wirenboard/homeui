@@ -15,7 +15,8 @@ export type RoleId =
   | 'smoke'
   | 'power'
   | 'energy'
-  | 'press';
+  | 'press'
+  | 'battery';
 
 export interface RoleDef {
   rw?: boolean;
@@ -43,6 +44,7 @@ export type ChannelClass =
   | 'power'
   | 'energy'
   | 'press'
+  | 'battery'
   | 'color'
   | 'none';
 
@@ -54,10 +56,12 @@ export interface ChannelClassDef {
 }
 
 export interface ControlMeta {
+  id?: string;
   type?: string;
   units?: string;
   readonly?: boolean;
   isEnum?: boolean;
+  enumKeys?: string[];
   min?: number;
   max?: number;
 }
@@ -121,6 +125,9 @@ export interface WbChannel {
   prim: RoleId;
   extra: Partial<Record<RoleId, string>>;
 }
+
+// Канал при добавлении устройства: did и группу назначает стор.
+export type NewWbChannel = Omit<WbChannel, 'did' | 'group' | 'extra'> & Partial<Pick<WbChannel, 'extra'>>;
 
 export interface WbDevice {
   id: string;

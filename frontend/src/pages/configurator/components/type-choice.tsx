@@ -18,7 +18,7 @@ export const TypeChoice = ({ types, value, ariaLabel, onChange }: TypeChoiceProp
           aria-pressed={typeId === value}
           onClick={() => onChange(typeId)}
         />
-      )) : <span>{typeName(value)}</span>}
+      )) : <span>{typeName(types[0])}</span>}
     </div>
   );
 };

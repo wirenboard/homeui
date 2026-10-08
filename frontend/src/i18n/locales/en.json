@@ -1220,7 +1220,9 @@
          "import-prompt": "Devices from the file will replace the current list. The controller gets the changes after saving.",
          "imported": "Devices imported: {{count}}. Check the list and press \"Save\".",
          "unsupported": "Not suitable for apps ({{count}})",
-         "type-required": "Choose a type, otherwise the channel is not exported"
+         "type-required": "Choose a type, otherwise the channel is not exported",
+         "new-devices": "The controller has devices not yet set up for apps:",
+         "more-devices": "and {{count}} more"
       },
       "buttons": {
          "add": "Add",
@@ -1235,7 +1237,8 @@
          "overwrite": "Overwrite",
          "remove": "Remove",
          "import": "Import",
-         "export": "Export"
+         "export": "Export",
+         "configure": "Set up \"{{name}}\""
       },
       "errors": {
          "load": "Failed to load the config: {{error}}",
@@ -1261,7 +1264,8 @@
          "smoke": "Smoke",
          "power": "Power",
          "energy": "Energy",
-         "press": "Press"
+         "press": "Press",
+         "battery": "Battery level"
       },
       "types": {
          "switch": {
@@ -1352,7 +1356,8 @@
          "heat": "No type for heat energy",
          "weather": "No type for weather data",
          "no_units": "Number without units, the type is unknown",
-         "none": "No suitable type"
+         "none": "No suitable type",
+         "battery": "Attached to another channel of the device as its battery level"
       }
    }
 }

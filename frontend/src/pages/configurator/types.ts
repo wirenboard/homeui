@@ -38,6 +38,8 @@ export interface OwnDevicePanelProps {
 export interface AddDialogProps {
   isOpened: boolean;
   onClose: () => void;
+  // устройство, открытое сразу; иначе первое не добавленное
+  initialDeviceId?: string | null;
 }
 
 // Выбор канала в диалоге добавления; type '' — тип ещё не выбран.
@@ -59,4 +61,8 @@ export interface UnsupportedChannelsProps {
 export interface ImportFile {
   name: string;
   text: string;
+}
+
+export interface NewDevicesAlertProps {
+  onConfigure: (_deviceId: string) => void;
 }

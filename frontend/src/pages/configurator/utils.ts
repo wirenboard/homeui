@@ -43,10 +43,12 @@ export const TYPE_ICONS: Record<string, FC<SVGProps<SVGSVGElement>>> = {
 export const UNESCAPED = { interpolation: { escapeValue: false } };
 
 export const controlMeta = (cell: Cell): ControlMeta => ({
+  id: cell.controlId,
   type: cell.type,
   units: cell.units,
   readonly: cell.readOnly,
   isEnum: cell.isEnum,
+  enumKeys: cell.isEnum ? cell.enumValues.map((item) => String(item.value)) : undefined,
   min: cell.min,
   max: cell.max,
 });
@@ -93,7 +95,7 @@ export const formatValue = (cell: Cell | undefined): string => {
   if (cell.valueType === 'boolean') {
     return cell.value ? t('configurator.labels.value-on') : t('configurator.labels.value-off');
   }
-  const value = String(cell.value ?? '');
+  const value = String(cell.value ?? '').trim();
   if (!value || value === '-') {
     return '—';
   }
