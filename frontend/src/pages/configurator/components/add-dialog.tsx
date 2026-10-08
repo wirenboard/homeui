@@ -6,15 +6,18 @@ import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
 import { TabContent, Tabs } from '@/components/tabs';
-import { CHANNEL_CLASSES, configuratorStore, NO_PRESET, primaryRole, type WbChannel } from '@/stores/configurator';
+import {
+  CHANNEL_CLASSES, configuratorStore, isAmbiguousClass, NO_PRESET, primaryRole, type WbChannel,
+} from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
-import type { AddDialogProps } from '../types';
+import type { AddDialogProps, PickedChannel } from '../types';
 import {
   classifyCell, defaultName, deviceControls, deviceTitle, formatValue, isSystemDevice, isVirtualDevice, listDevices,
   typeName, UNESCAPED, whyText,
 } from '../utils';
 import { TypeChoice } from './type-choice';
 import { TypeTiles } from './type-tiles';
+import { UnsupportedChannels } from './unsupported-channels';
 
 const TAB_WB = 'configurator-add-wb';
 const TAB_NEW = 'configurator-add-new';
@@ -24,8 +27,8 @@ export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
   const [tab, setTab] = useState(TAB_WB);
   const [showSystem, setShowSystem] = useState(false);
   const [deviceId, setDeviceId] = useState<string | null>(null);
-  // Выбор пользователя поверх предотметки: controlId → тип или '' (снят).
-  const [picked, setPicked] = useState<Record<string, string>>({});
+  // Выбор пользователя поверх предотметки.
+  const [picked, setPicked] = useState<Record<string, PickedChannel>>({});
 
   const added = new Set(configuratorStore.wbs.map((wb) => wb.id));
   const allDevices = listDevices(showSystem);
@@ -42,28 +45,32 @@ export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
   }, [isOpened]);
 
   const used = configuratorStore.usedKeys;
-  const presetType = (cell: Cell, types: string[], preset: boolean) =>
-    preset && !used.has(cell.id) && !NO_PRESET.test(cell.controlId) && !NO_PRESET.test(cell.name) ? types[0] : '';
+  const preset = (cell: Cell, types: string[], isPreset: boolean): PickedChannel => {
+    const checked = isPreset && !used.has(cell.id) && !NO_PRESET.test(cell.controlId) && !NO_PRESET.test(cell.name);
+    return { checked, type: checked ? types[0] : '' };
+  };
 
   const channels = current ? deviceControls(current).map((cell) => {
     const classification = classifyCell(cell);
-    const { types, preset } = CHANNEL_CLASSES[classification.cls];
-    const chosen = cell.controlId in picked ? picked[cell.controlId] : presetType(cell, types, preset);
-    return { cell, classification, types, preset, chosen };
+    const { types, preset: isPreset } = CHANNEL_CLASSES[classification.cls];
+    const choice = picked[cell.controlId] ?? preset(cell, types, isPreset);
+    return { cell, classification, types, choice };
   }) : [];
   const typed = channels.filter((channel) => channel.types.length);
   const unsupported = channels.filter((channel) => !channel.types.length);
-  const chosenCount = typed.filter((channel) => channel.chosen).length;
+  const chosenCount = typed.filter((channel) => channel.choice.checked).length;
 
-  const pick = (controlId: string, typeId: string) => setPicked({ ...picked, [controlId]: typeId });
+  const pick = (controlId: string, choice: PickedChannel) => setPicked({ ...picked, [controlId]: choice });
 
   const addWb = () => {
     const result: Record<string, Omit<WbChannel, 'did' | 'group' | 'extra'>> = {};
-    typed.filter((channel) => channel.chosen).forEach(({ cell, classification, chosen }) => {
+    typed.filter((channel) => channel.choice.checked).forEach(({ cell, classification, choice }) => {
       result[cell.controlId] = {
-        type: chosen,
-        name: defaultName(chosen, cell, classification.cls),
-        prim: primaryRole(chosen, classification.cls),
+        type: choice.type,
+        name: defaultName(choice.type, cell, classification.cls),
+        prim: choice.type
+          ? primaryRole(choice.type, classification.cls)
+          : CHANNEL_CLASSES[classification.cls].fits[0],
       };
     });
     configuratorStore.addWb(current, result);
@@ -150,45 +157,39 @@ export const AddDialog = observer(({ isOpened, onClose }: AddDialogProps) => {
                 <h3 className="configurator-sectionTitle">{`${deviceTitle(current)} (${current})`}</h3>
                 <p>{t('configurator.labels.add-hint')}</p>
                 <ul className="configurator-channels">
-                  {typed.map(({ cell, types, preset, chosen }) => (
+                  {typed.map(({ cell, classification, types, choice }) => (
                     <li key={cell.controlId} className="configurator-channel">
                       <div className="configurator-channelHead">
                         <Checkbox
-                          checked={!!chosen}
+                          checked={choice.checked}
                           title={cell.name}
                           ariaLabel={t('configurator.labels.show-channel', { ...UNESCAPED, name: cell.name })}
-                          onChange={() => pick(cell.controlId, chosen ? '' : types[0])}
+                          onChange={(checked) => pick(cell.controlId, {
+                            checked,
+                            type: checked && !isAmbiguousClass(classification.cls) ? types[0] : '',
+                          })}
                         />
                         <span className="configurator-channelValue">
                           {t('configurator.labels.value', { ...UNESCAPED, value: formatValue(cell) })}
-                          {!preset && `, ${t('configurator.labels.choose-type-hint')}`}
+                          {isAmbiguousClass(classification.cls) && `, ${t('configurator.labels.choose-type-hint')}`}
                         </span>
                       </div>
                       {types.length > 1 && (
                         <TypeChoice
                           types={types}
-                          value={chosen}
+                          value={choice.type}
                           ariaLabel={`${t('configurator.labels.type')}: ${cell.name}`}
-                          onChange={(typeId) => pick(cell.controlId, typeId)}
+                          onChange={(typeId) => pick(cell.controlId, { checked: true, type: typeId })}
                         />
                       )}
                     </li>
                   ))}
-                  {unsupported.map(({ cell, classification }) => (
-                    <li key={cell.controlId} className="configurator-channel">
-                      <div className="configurator-channelHead">
-                        <Checkbox
-                          checked={false}
-                          title={cell.name}
-                          ariaLabel={t('configurator.labels.channel-unsupported', { ...UNESCAPED, name: cell.name })}
-                          isDisabled
-                          onChange={() => {}}
-                        />
-                        <span className="configurator-channelValue">{whyText(classification)}</span>
-                      </div>
-                    </li>
-                  ))}
                 </ul>
+                <UnsupportedChannels
+                  items={unsupported.map(({ cell, classification }) => ({
+                    id: cell.controlId, name: cell.name, reason: whyText(classification),
+                  }))}
+                />
               </>
             ) : (
               <p>

@@ -4,7 +4,7 @@ const configuratorStore = new ConfiguratorStore();
 
 export { ConfiguratorStore, ConfigFormatError, ConfigParseError, configuratorStore };
 export {
-  CHANNEL_CLASSES, classify, DEVICE_TYPES, findType, NO_PRESET, primaryRole, ROLES, TYPE_CATEGORIES
+  CHANNEL_CLASSES, classify, DEVICE_TYPES, findType, isAmbiguousClass, NO_PRESET, primaryRole, ROLES, TYPE_CATEGORIES
 } from './catalog';
 export { channelServices, ownRowServices, splitKey, stable, topicOf } from './model';
 export type * from './types';

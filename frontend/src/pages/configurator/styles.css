@@ -142,7 +142,19 @@
 }
 
 .configurator-channelTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 600;
+}
+
+.configurator-typeIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.configurator-tile {
+    justify-content: flex-start;
 }
 
 .configurator-channelBody {
@@ -234,6 +246,11 @@
 
 .configurator-addNew {
     padding: var(--content-gap);
+}
+
+.configurator-addNew > p,
+.configurator-tilesPanel > p {
+    margin: 0 0 var(--content-gap);
 }
 
 .configurator-dialogFooter {

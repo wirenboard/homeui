@@ -41,6 +41,7 @@ describe('classify', () => {
     expect(classify({ type: 'value', units: 'V' })).toEqual({ cls: 'none', why: 'voltage' });
     expect(classify({ type: 'range', units: 's' })).toEqual({ cls: 'none', why: 'range_units', units: 's' });
     expect(classify({ type: 'switch', isEnum: true })).toEqual({ cls: 'none', why: 'enum' });
+    expect(classify({ type: 'value', units: 'dBA' })).toEqual({ cls: 'none', why: 'noise' });
   });
 });
 
@@ -126,5 +127,21 @@ describe('fromConfig / toConfig', () => {
     expect(built.config.devices).toHaveLength(1);
     expect(built.config.devices[0].services[0].binding.transform)
       .toEqual({ type: 'scale', from: { min: 0, max: 255 }, to: { min: 0, max: 100 } });
+  });
+
+  it('keeps a channel without a chosen type out of the config as a draft', () => {
+    const built = toConfig({
+      raw: [],
+      own: [],
+      wbs: [{
+        id: 'wb-msw',
+        matter: true,
+        alice: true,
+        channels: { Noise: { did: 10, name: 'Шум', type: '', group: '', prim: 'leak', extra: {} } },
+      }],
+    }, liveOf({ 'wb-msw/Noise': { type: 'switch', readonly: true } }), {});
+
+    expect(built.config.devices).toEqual([]);
+    expect(built.drafts).toEqual([{ name: 'Шум', role: null }]);
   });
 });

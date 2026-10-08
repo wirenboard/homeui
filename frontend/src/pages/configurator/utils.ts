@@ -1,3 +1,18 @@
+import type { FC, SVGProps } from 'react';
+import TypeButtonIcon from '@/assets/icons/type-button.svg';
+import TypeCo2Icon from '@/assets/icons/type-co2.svg';
+import TypeContactIcon from '@/assets/icons/type-contact.svg';
+import TypeCoverIcon from '@/assets/icons/type-cover.svg';
+import TypeEnergyIcon from '@/assets/icons/type-energy.svg';
+import TypeHumidityIcon from '@/assets/icons/type-humidity.svg';
+import TypeIlluminanceIcon from '@/assets/icons/type-illuminance.svg';
+import TypeLeakIcon from '@/assets/icons/type-leak.svg';
+import TypeLightIcon from '@/assets/icons/type-light.svg';
+import TypeMotionIcon from '@/assets/icons/type-motion.svg';
+import TypeOutletIcon from '@/assets/icons/type-outlet.svg';
+import TypeSmokeIcon from '@/assets/icons/type-smoke.svg';
+import TypeSwitchIcon from '@/assets/icons/type-switch.svg';
+import TypeTemperatureIcon from '@/assets/icons/type-temperature.svg';
 import i18n from '@/i18n/config';
 import {
   CHANNEL_CLASSES, classify, primaryRole, type ChannelClass, type Classification, type ControlMeta, type LiveControls,
@@ -5,6 +20,25 @@ import {
 import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
 
 const t = i18n.t.bind(i18n);
+
+export const TYPE_ICONS: Record<string, FC<SVGProps<SVGSVGElement>>> = {
+  switch: TypeSwitchIcon,
+  outlet: TypeOutletIcon,
+  light: TypeLightIcon,
+  cover: TypeCoverIcon,
+  button: TypeButtonIcon,
+  temperature_sensor: TypeTemperatureIcon,
+  humidity_sensor: TypeHumidityIcon,
+  co2_sensor: TypeCo2Icon,
+  illuminance_sensor: TypeIlluminanceIcon,
+  leak_sensor: TypeLeakIcon,
+  contact_sensor: TypeContactIcon,
+  motion_sensor: TypeMotionIcon,
+  occupancy_sensor: TypeMotionIcon,
+  smoke_sensor: TypeSmokeIcon,
+  power_sensor: TypeEnergyIcon,
+  energy_meter: TypeEnergyIcon,
+};
 
 export const UNESCAPED = { interpolation: { escapeValue: false } };
 
@@ -78,7 +112,11 @@ export const whyText = (classification: Classification) =>
   });
 
 // Имя канала в приложениях: для однозначного класса — название роли, иначе тип и имя канала.
-export const defaultName = (typeId: string, cell: Cell | undefined, cls: ChannelClass) =>
-  CHANNEL_CLASSES[cls]?.types.length === 1
+export const defaultName = (typeId: string, cell: Cell | undefined, cls: ChannelClass) => {
+  if (!typeId) {
+    return cell?.name ?? '';
+  }
+  return CHANNEL_CLASSES[cls]?.types.length === 1
     ? roleLabel(primaryRole(typeId, cls))
     : `${typeName(typeId)} ${cell?.name ?? ''}`.trim();
+};

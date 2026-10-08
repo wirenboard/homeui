@@ -7,7 +7,7 @@ import { Card } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
 import { OptionsField, StringField } from '@/components/form';
 import {
-  CHANNEL_CLASSES, channelServices, configuratorStore, findType, primaryRole, type WbChannel,
+  CHANNEL_CLASSES, channelServices, configuratorStore, findType, isAmbiguousClass, primaryRole, type WbChannel,
 } from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
 import type { WbDevicePanelProps } from '../types';
@@ -16,6 +16,7 @@ import {
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
 import { TypeChoice } from './type-choice';
+import { UnsupportedChannels } from './unsupported-channels';
 
 export const WbDevicePanel = observer(({ wb, onRemove }: WbDevicePanelProps) => {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export const WbDevicePanel = observer(({ wb, onRemove }: WbDevicePanelProps) => 
     const channel = wb.channels[controlId];
     const classification = cell ? classifyCell(cell) : { cls: null };
     const types = classification.cls ? [...CHANNEL_CLASSES[classification.cls].types] : [];
-    if (channel && !types.includes(channel.type)) {
+    if (channel?.type && !types.includes(channel.type)) {
       types.unshift(channel.type);
     }
     return { controlId, cell, channel, classification, types };
@@ -48,7 +49,7 @@ export const WbDevicePanel = observer(({ wb, onRemove }: WbDevicePanelProps) => 
     });
   };
 
-  const extraRoles = (controlId: string, channel: WbChannel) => findType(channel.type).roles
+  const extraRoles = (controlId: string, channel: WbChannel) => (findType(channel.type)?.roles ?? [])
     .map(([role]) => role)
     .filter((role) => role !== channel.prim)
     .map((role) => ({
@@ -106,11 +107,16 @@ export const WbDevicePanel = observer(({ wb, onRemove }: WbDevicePanelProps) => 
                     checked={!!channel}
                     title={cell?.name ?? controlId}
                     ariaLabel={t('configurator.labels.show-channel', { ...UNESCAPED, name: cell?.name ?? controlId })}
-                    onChange={() => configuratorStore.toggleChannel(wb, controlId, {
-                      type: types[0],
-                      name: defaultName(types[0], cell, classification.cls),
-                      prim: primaryRole(types[0], classification.cls),
-                    })}
+                    onChange={() => {
+                      const type = isAmbiguousClass(classification.cls) ? '' : types[0];
+                      configuratorStore.toggleChannel(wb, controlId, {
+                        type,
+                        name: defaultName(type, cell, classification.cls),
+                        prim: type
+                          ? primaryRole(type, classification.cls)
+                          : CHANNEL_CLASSES[classification.cls].fits[0],
+                      });
+                    }}
                   />
                   <span className="configurator-channelValue">{formatValue(cell)}</span>
                 </div>
@@ -147,6 +153,11 @@ export const WbDevicePanel = observer(({ wb, onRemove }: WbDevicePanelProps) => 
                         onChange={(value: string) => configuratorStore.setExtra(channel, role, value || null)}
                       />
                     ))}
+                    {!channel.type && (
+                      <Alert variant="warn" size="small" className="configurator-alertInline">
+                        {t('configurator.labels.type-required')}
+                      </Alert>
+                    )}
                     {!!missing.length && (
                       <Alert variant="warn" size="small" className="configurator-alertInline">
                         {t('configurator.labels.role-required', { ...UNESCAPED, role: roleLabel(missing[0]) })}
@@ -157,23 +168,12 @@ export const WbDevicePanel = observer(({ wb, onRemove }: WbDevicePanelProps) => 
               </li>
             );
           })}
-          {unsupportedRows.map(({ controlId, cell, classification }) => (
-            <li key={controlId} className="configurator-channel">
-              <div className="configurator-channelHead">
-                <Checkbox
-                  checked={false}
-                  title={cell?.name ?? controlId}
-                  ariaLabel={t('configurator.labels.channel-unsupported', {
-                    ...UNESCAPED, name: cell?.name ?? controlId,
-                  })}
-                  isDisabled
-                  onChange={() => {}}
-                />
-                <span className="configurator-channelValue">{whyText(classification)}</span>
-              </div>
-            </li>
-          ))}
         </ul>
+        <UnsupportedChannels
+          items={unsupportedRows.map(({ controlId, cell, classification }) => ({
+            id: controlId, name: cell?.name ?? controlId, reason: whyText(classification),
+          }))}
+        />
       </section>
     </Card>
   );

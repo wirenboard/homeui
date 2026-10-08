@@ -40,6 +40,22 @@ export interface AddDialogProps {
   onClose: () => void;
 }
 
+// Выбор канала в диалоге добавления; type '' — тип ещё не выбран.
+export interface PickedChannel {
+  checked: boolean;
+  type: string;
+}
+
+export interface UnsupportedChannel {
+  id: string;
+  name: string;
+  reason: string;
+}
+
+export interface UnsupportedChannelsProps {
+  items: UnsupportedChannel[];
+}
+
 export interface ImportFile {
   name: string;
   text: string;

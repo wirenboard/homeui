@@ -14,7 +14,8 @@ import {
 import { devicesStore } from '@/stores/devices';
 import type { OwnDevicePanelProps } from '../types';
 import {
-  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, roleLabel, typeName, UNESCAPED,
+  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, roleLabel, TYPE_ICONS, typeName,
+  UNESCAPED,
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
 import { TypeTiles } from './type-tiles';
@@ -121,12 +122,16 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
           {item.rows.map((row) => {
             const type = findType(row.type);
             const { missing } = ownRowServices(row);
+            const TypeIcon = TYPE_ICONS[row.type];
             const roles = type.roles
               .filter(([role, isRequired]) => isRequired || row.bind[role] || roleOptions(role, '').length);
             return (
               <li key={row.did} className="configurator-channel">
                 <div className="configurator-channelHead">
-                  <span className="configurator-channelTitle">{typeName(row.type)}</span>
+                  <span className="configurator-channelTitle">
+                    <TypeIcon className="configurator-typeIcon" />
+                    {typeName(row.type)}
+                  </span>
                   <Button
                     size="small"
                     variant="secondary"

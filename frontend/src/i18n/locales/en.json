@@ -1186,7 +1186,6 @@
          "channel-for-role": "Channel for \"{{role}}\"",
          "channel-lost": "Channel {{topic}} is not published right now, the binding is kept",
          "show-channel": "Show channel \"{{name}}\" in apps",
-         "channel-unsupported": "Channel \"{{name}}\" cannot be shown in apps",
          "add-title": "Add a device",
          "tab-wb": "WB device",
          "tab-new": "Create",
@@ -1219,7 +1218,9 @@
          "save-unavailable": "Saving to the controller is unavailable: the wb-converter-ext service is not installed.",
          "import-title": "Import config",
          "import-prompt": "Devices from the file will replace the current list. The controller gets the changes after saving.",
-         "imported": "Devices imported: {{count}}. Check the list and press \"Save\"."
+         "imported": "Devices imported: {{count}}. Check the list and press \"Save\".",
+         "unsupported": "Not suitable for apps ({{count}})",
+         "type-required": "Choose a type, otherwise the channel is not exported"
       },
       "buttons": {
          "add": "Add",

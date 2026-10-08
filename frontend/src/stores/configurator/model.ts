@@ -45,6 +45,9 @@ export const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
 // Роли канала устройства WB: основная плюс дополнительные из того же устройства.
 export const channelServices = (channel: WbChannel) => {
+  if (!channel.type) {
+    return { list: [], missing: [] };
+  }
   const bound: Partial<Record<RoleId, string>> = { [channel.prim]: SELF };
   Object.entries(channel.extra || {}).forEach(([role, controlId]) => {
     if (controlId && role !== channel.prim) {
@@ -217,8 +220,8 @@ export const toConfig = (
   model.wbs.forEach((wb) => {
     Object.entries(wb.channels).forEach(([controlId, channel]) => {
       const { list, missing } = channelServices(channel);
-      if (missing.length) {
-        drafts.push({ name: channel.name, role: missing[0] });
+      if (!channel.type || missing.length) {
+        drafts.push({ name: channel.name, role: missing[0] ?? null });
         return;
       }
       devices.push(makeDevice(

@@ -73,13 +73,17 @@ export const CHANNEL_CLASSES: Record<ChannelClass, ChannelClassDef> = {
   none: { fits: [], types: [], preset: false },
 };
 
+// Тип по классу нельзя угадать — пользователь выбирает его сам.
+export const isAmbiguousClass = (cls: ChannelClass) =>
+  !CHANNEL_CLASSES[cls].preset && CHANNEL_CLASSES[cls].types.length > 1;
+
 // Служебные каналы модулей не отмечаем при добавлении устройства.
 export const NO_PRESET = /^(mcu|supply|board|cpu|buzzer|red led|green led|led|learn)/i;
 
 const UNITS_WHY: Record<string, string> = {
   V: 'voltage', mV: 'voltage', A: 'current', mA: 'current',
   Pa: 'pressure', hPa: 'pressure', mbar: 'pressure', bar: 'pressure', 'mm Hg': 'pressure',
-  dB: 'noise', 'm^3': 'water', 'm^3/h': 'water', l: 'water', ppb: 'air', 'ug/m^3': 'air',
+  dB: 'noise', dBA: 'noise', 'm^3': 'water', 'm^3/h': 'water', l: 'water', ppb: 'air', 'ug/m^3': 'air',
   Ohm: 'resistance', Hz: 'frequency', s: 'time', ms: 'time',
 };
 

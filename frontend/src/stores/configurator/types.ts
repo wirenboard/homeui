@@ -115,6 +115,7 @@ export interface Config {
 export interface WbChannel {
   did: number;
   name: string;
+  // '' — тип ещё не выбран, канал не экспортируется
   type: string;
   group: string;
   prim: RoleId;
@@ -161,9 +162,10 @@ export interface ParsedConfig extends EditorModel {
   mixed: Record<string, boolean>;
 }
 
+// role пуст, если у канала не выбран тип.
 export interface Draft {
   name: string;
-  role: RoleId;
+  role: RoleId | null;
 }
 
 export interface BuiltConfig {
