@@ -38,7 +38,9 @@ export const UnitField = ({ value, onChange }: UnitFieldProps) => {
         isClearable
         isCreatable
         menuPortal
-        onChange={(option: Option<string>) => onChange(option?.value ?? '')}
+        onChange={(option: Option<string>) => {
+          onChange(option?.value ?? '');
+        }}
       />
     </FormField>
   );

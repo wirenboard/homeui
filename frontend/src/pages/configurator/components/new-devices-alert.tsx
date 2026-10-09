@@ -12,7 +12,7 @@ const SHOWN_LIMIT = 5;
 
 const readDismissed = (): string[] => {
   try {
-    return JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]');
+    return JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]') as string[];
   } catch {
     return [];
   }
@@ -60,7 +60,9 @@ export const NewDevicesAlert = observer(({ onConfigure }: NewDevicesAlertProps) 
             variant="secondary"
             label={t('configurator.buttons.configure', { ...UNESCAPED, name: deviceTitle(id) })}
             aria-haspopup="dialog"
-            onClick={() => onConfigure(id)}
+            onClick={() => {
+              onConfigure(id);
+            }}
           />
         ))}
         {devices.length > SHOWN_LIMIT && (
