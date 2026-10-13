@@ -1,3 +1,5 @@
+/* eslint-disable stylistic/max-len */
+
 import mqtt from 'mqtt';
 
 export const DEFAULT_PREFIX = 'stress-dev-';
@@ -15,7 +17,7 @@ export function computeDeviceIntervals({ deviceCount, cellsPerDevice, updatesPer
   return { avgCellsPerUpdate, avgDeviceInterval, deviceIntervals };
 }
 
-export function publishDeviceMeta(client, { deviceCount, cellsPerDevice, prefix = DEFAULT_PREFIX, cellType }) {
+export function publishDeviceMeta(client, { deviceCount, cellsPerDevice, prefix = DEFAULT_PREFIX, cellType = undefined }) {
   for (let d = 1; d <= deviceCount; d++) {
     const name = prefix + d;
     client.publish(`/devices/${name}/meta/name`, `Stress Device ${d}`, { retain: true, qos: 1 });
@@ -128,7 +130,7 @@ export async function startMockDevices({
   cellsPerDevice = 5,
   updatesPerSec = 300,
   prefix = DEFAULT_PREFIX,
-  cellType,
+  cellType = undefined,
 }) {
   const client = mqtt.connect(broker, {
     clientId: 'mock-devices-' + Math.random().toString(36).slice(2, 8),
