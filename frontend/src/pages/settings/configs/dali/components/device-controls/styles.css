@@ -166,6 +166,11 @@
     display: none;
 }
 
+/* The name is above, not beside: the half-width cap squeezed the dropdown until its chevron wrapped. */
+.daliDeviceControls-pinnedControlsCell .deviceCell-withSelect {
+    max-width: none;
+}
+
 .daliDeviceControls-cell .deviceCell-columns {
     flex-direction: row;
     align-items: center;
