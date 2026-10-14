@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { documentation } from '@/common/links';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { useConfirm } from '@/components/confirm';
 import { Progress } from '@/components/progress';
@@ -14,12 +15,15 @@ import { SetupAddressModal } from './components/setup-address-modal';
 import { type ScanPageProps } from './types';
 import './styles.css';
 
-const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
+const ScanPage = observer(({ pageStore, scanType, onAddDeviceManually }: ScanPageProps) => {
   const { t, i18n } = useTranslation();
   const isDesktop = useMediaQuery({ minWidth: 874 });
   const [confirmAddressChange, isConfirmOpened, handleConfirm, handleClose, devicesToModify] = useConfirm<any>();
   const nothingFound = !pageStore.commonScanStore.devicesStore.newDevices.length
     && !pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices.length;
+  const isScanning = pageStore.commonScanStore.scanStore.actualState === ScanState.Started;
+  const isExtendedScanning = pageStore.commonScanStore.scanStore.isExtendedScanning;
+  const showFastModbusNotice = scanType === 'new' && isScanning && isExtendedScanning;
 
   return (
     <>
@@ -51,6 +55,22 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
           </>
         }
       >
+        {showFastModbusNotice && (
+          <Alert variant="info" className="scan-fastModbusNotice">
+            <Trans
+              i18nKey="scan.labels.fast-modbus-notice"
+              components={[
+                <a target="_blank" rel="noopener noreferrer"></a>,
+                <button
+                  type="button"
+                  className="scan-addManuallyLink"
+                  onClick={onAddDeviceManually}
+                >
+                </button>,
+              ]}
+            />
+          </Alert>
+        )}
         {scanType === 'disconnected' && (
           <p className="scan-disconnectedNotice"><strong>{t('scan.labels.notice')}</strong></p>
         )}
@@ -58,7 +78,7 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
           {!nothingFound && (
             isDesktop ? (
               <DevicesTable
-                isScanning={pageStore.commonScanStore.scanStore.actualState === ScanState.Started}
+                isScanning={isScanning}
                 newDevices={pageStore.commonScanStore.devicesStore.newDevices}
                 alreadyConfiguredDevices={pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices}
                 collapseButtonState={pageStore.commonScanStore.alreadyConfiguredDevicesCollapseButtonState}
@@ -67,7 +87,7 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
               />
             ) : (
               <DevicesList
-                isScanning={pageStore.commonScanStore.scanStore.actualState === ScanState.Started}
+                isScanning={isScanning}
                 newDevices={pageStore.commonScanStore.devicesStore.newDevices}
                 alreadyConfiguredDevices={pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices}
                 selectionValue={pageStore.commonScanStore.deviceSelectionState}
@@ -75,19 +95,17 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
               />
             )
           )}
-          {pageStore.commonScanStore.scanStore.actualState === ScanState.Started ? (
+          {isScanning ? (
             <div className="scan-bottomPanel">
               <Progress value={pageStore.commonScanStore.scanStore.progress} />
               <p className="scan-infoMessage">
                 <Trans>
-                  {t(pageStore.commonScanStore.scanStore.isExtendedScanning
-                    ? 'scan.labels.fast-scanning'
-                    : 'scan.labels.scanning', {
+                  {t(isExtendedScanning ? 'scan.labels.fast-scanning' : 'scan.labels.scanning', {
                     ports: pageStore.commonScanStore.scanStore.scanningPorts.join(', '),
                   })}
                 </Trans>
               </p>
-              {!pageStore.commonScanStore.scanStore.isExtendedScanning && (
+              {!isExtendedScanning && (
                 <Button
                   variant="secondary"
                   label={t('scan.buttons.stop')}
@@ -96,10 +114,9 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
               )}
             </div>
           ) : (
-            <div className="scan-bottomPanel">
-              <p className="scan-infoMessage">
-                <Trans>{t('scan.labels.try-normal-scan')}</Trans>
-              </p>
+            <Alert variant="info" className="scan-tryNormalScanNotice">
+              <p className="scan-tryNormalScanText">{t('scan.labels.try-normal-scan')}</p>
+              <p className="scan-tryNormalScanText">{t('scan.labels.try-normal-scan-caveat')}</p>
               <div className="scan-buttonGroup">
                 <Button
                   variant="secondary"
@@ -111,8 +128,15 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
                   label={t('scan.buttons.bootloader-scan')}
                   onClick={() => pageStore.commonScanStore.startBootloaderScanning()}
                 />
+                {scanType === 'new' && (
+                  <Button
+                    variant="secondary"
+                    label={t('device-manager.buttons.add-custom-device')}
+                    onClick={onAddDeviceManually}
+                  />
+                )}
               </div>
-            </div>
+            </Alert>
           )}
         </div>
       </PageLayout>

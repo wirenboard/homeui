@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { type HeaderButtonsProps } from './types';
+import './styles.css';
 
 const SaveSettingsButton = ({ onClick, disabled, isLoading }) => {
   const { t } = useTranslation();
@@ -15,23 +17,43 @@ const SaveSettingsButton = ({ onClick, disabled, isLoading }) => {
   );
 };
 
-const AddDevicesButtonsPanel = ({ allowAddDevice, isSaving, onAddDevice, onAddWbDevice }) => {
+type AddMenuAction = 'port' | 'wb-device' | 'custom-device';
+
+const AddMenu = ({ allowAddDevice, isSaving, onAddDevice, onAddWbDevice, onAddPort }) => {
   const { t } = useTranslation();
+  const options: Option<AddMenuAction>[] = [
+    ...(allowAddDevice
+      ? [
+        { label: t('device-manager.buttons.add-wb-device'), value: 'wb-device' as const },
+        { label: t('device-manager.buttons.add-custom-device'), value: 'custom-device' as const },
+      ]
+      : []),
+    { label: t('device-manager.buttons.add-port'), value: 'port' },
+  ];
+
   return (
-    <>
-      <Button
-        label={t('device-manager.buttons.add-wb-device')}
-        disabled={!allowAddDevice || isSaving}
-        onClick={onAddWbDevice}
-      />
-      <Button
-        label={t('device-manager.buttons.add-custom-device')}
-        aria-haspopup="dialog"
-        variant="secondary"
-        disabled={!allowAddDevice || isSaving}
-        onClick={onAddDevice}
-      />
-    </>
+    <Dropdown
+      className="deviceManagerAddMenu"
+      value={null}
+      options={options}
+      placeholder={t('device-manager.buttons.add')}
+      ariaLabel={t('device-manager.buttons.add')}
+      isDisabled={isSaving}
+      isButton
+      onChange={(option: Option<AddMenuAction>) => {
+        switch (option?.value) {
+          case 'port':
+            onAddPort();
+            break;
+          case 'wb-device':
+            onAddWbDevice();
+            break;
+          case 'custom-device':
+            onAddDevice();
+            break;
+        }
+      }}
+    />
   );
 };
 
@@ -43,6 +65,7 @@ export const HeaderButtons = observer(
     onSave,
     onAddDevice,
     onAddWbDevice,
+    onAddPort,
     mobileModeStore,
   }: HeaderButtonsProps) => {
     const { t } = useTranslation();
@@ -52,11 +75,12 @@ export const HeaderButtons = observer(
         return (
           <>
             <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
-            <AddDevicesButtonsPanel
+            <AddMenu
               isSaving={isSaving}
               allowAddDevice={allowAddDevice}
               onAddDevice={onAddDevice}
               onAddWbDevice={onAddWbDevice}
+              onAddPort={onAddPort}
             />
           </>
         );
@@ -73,11 +97,12 @@ export const HeaderButtons = observer(
     }
     return (
       <>
-        <AddDevicesButtonsPanel
+        <AddMenu
           allowAddDevice={allowAddDevice}
           isSaving={isSaving}
           onAddDevice={onAddDevice}
           onAddWbDevice={onAddWbDevice}
+          onAddPort={onAddPort}
         />
         <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
       </>

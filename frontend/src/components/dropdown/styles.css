@@ -142,6 +142,10 @@
   font-family: var(--font);
 }
 
+.dropdown__menu {
+  overflow: hidden;
+}
+
 .dropdown__option--is-disabled:not(.dropdown__option--is-selected) {
   background: var(--light-gray-color);
   cursor: not-allowed !important;

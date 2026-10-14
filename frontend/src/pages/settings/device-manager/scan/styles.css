@@ -18,3 +18,32 @@
 .scan-disconnectedNotice {
     text-align: center;
 }
+
+.scan-fastModbusNotice {
+    margin-bottom: 12px;
+}
+
+.scan-tryNormalScanNotice {
+    margin-top: 12px;
+}
+
+.scan-tryNormalScanText {
+    margin: 0 0 8px;
+}
+
+.scan-addManuallyLink {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.scan-addManuallyLink:focus {
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
+}
