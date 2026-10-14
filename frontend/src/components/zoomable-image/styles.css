@@ -1,0 +1,38 @@
+/* White in both themes, product photos are shot on white. The frame hugs the image.
+   content-box, so max sizes set from outside limit the image, which inherits them. */
+.zoomableImage {
+    box-sizing: content-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+    cursor: zoom-in;
+}
+
+.zoomableImage img {
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: inherit;
+}
+
+.zoomableImage-loading {
+    display: none;
+}
+
+.zoomableImage-zoomed {
+    display: flex;
+    justify-content: center;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.zoomableImage-zoomed img {
+    display: block;
+    max-width: 100%;
+    max-height: 75vh;
+}

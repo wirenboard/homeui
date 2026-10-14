@@ -77,7 +77,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       open: true,
       proxy: {
         ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
-          + '|api/dashboards|api/fonts|fonts|api/integrations/alice)']: {
+          + '|api/dashboards|api/fonts|fonts|api/integrations/alice|dali-images)']: {
           target: env.MQTT_BROKER_URI,
           changeOrigin: true,
           ws: true,

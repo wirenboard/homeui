@@ -1,6 +1,6 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
 import { daliProxy } from '@/services';
-import { type GetDeviceParams } from '@/stores/dali/types';
+import { type DaliDeviceDescription, type GetDeviceParams } from '@/stores/dali/types';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
@@ -10,6 +10,7 @@ export class DeviceStore extends BaseItemStore {
 
   public groups: number[] = [];
   public mqttId: string | null = null;
+  public description: DaliDeviceDescription | null = null;
 
   #parent: BusStore | null;
 
@@ -28,6 +29,7 @@ export class DeviceStore extends BaseItemStore {
       error: observable,
       label: observable,
       mqttId: observable,
+      description: observable.ref,
       objectStore: observable.ref,
       groups: observable.shallow,
     });
@@ -56,6 +58,7 @@ export class DeviceStore extends BaseItemStore {
         this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
         this.label = data.name || this.label;
         this.mqttId = data.config.mqtt_id ?? null;
+        this.description = data.config;
         this.updateGroups(data.config.groups);
         this.#parent?.syncGroupChildren();
       });
