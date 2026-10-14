@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 export DH_VERBOSE=1
+export DEB_VERSION=$(shell dpkg-parsechangelog -S Version)
 
 %:
 	dh $@ --with python3 --with config-package

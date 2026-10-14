@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.208.1-wb103-cb8ea449-1) stable; urgency=medium
+
+  * Backport PEP 440 compatible backend version from master
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Wed, 14 Oct 2026 15:29:56 +0300
+
 wb-mqtt-homeui (2.208.1-wb103-cb8ea449) stable; urgency=medium
 
   * Rebase ONI-branded UI customizations onto wb-2606 release
