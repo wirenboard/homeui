@@ -22,7 +22,9 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
-  const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
+  const [isMenuCompact, setIsMenuCompact] = useState(
+    !HIDE_COMPACT_MENU && localStorage.getItem('isMenuCompact') === 'true',
+  );
   const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
   const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);

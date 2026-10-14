@@ -116,8 +116,6 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
       </fieldset>
 
       <nav className="login-links">
-        <a href="https://wiki.wirenboard.com/wiki/Documentation" target="_blank">{t('login.labels.documentation')}</a>
-
         <label htmlFor="language" className="login-languageWrapper">
           <LocaleIcon className="login-languageIcon" />
           <Dropdown
