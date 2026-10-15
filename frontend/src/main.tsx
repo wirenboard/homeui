@@ -11,6 +11,7 @@ import { dashboardsStore } from '@/stores/dashboards';
 import { registerRulesTab, rulesStore } from '@/stores/rules';
 import { HttpsSetupPhase, uiStore } from '@/stores/ui';
 import { CertificateStatus, findHttpsRedirectTarget, switchToHttps } from '@/utils/https-utils';
+import { polyfillsReady } from './polyfills';
 import { routes } from './router/routes';
 import './i18n/config';
 import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
@@ -23,11 +24,14 @@ window.addEventListener('vite:preloadError', () => {
 });
 
 const root = createRoot(document.getElementById('root'));
-root.render(<App />);
 
 // createHashRouter() runs authGuard at once, so build the router only if we stay on this host:
 // the session cookie is host-bound, and the switch usually sends us to another hostname.
-findHttpsRedirectTarget()
+polyfillsReady
+  .then(() => {
+    root.render(<App />);
+    return findHttpsRedirectTarget();
+  })
   .then((deviceInfo) => {
     if (!deviceInfo) {
       return false;

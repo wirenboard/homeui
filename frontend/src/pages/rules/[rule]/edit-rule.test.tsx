@@ -106,9 +106,10 @@ beforeEach(() => {
 });
 
 describe('EditRulePage', () => {
-  test('loads rule on mount when params.id exists', () => {
+  test('loads rule on mount when params.id exists', async () => {
     render(<EditRulePage />);
     expect(rulesMock.load).toHaveBeenCalledWith('test-rule.js');
+    await waitFor(() => expect(screen.queryByTestId('loading')).toBeNull());
   });
 
   test('shows loading state while rule loads', () => {

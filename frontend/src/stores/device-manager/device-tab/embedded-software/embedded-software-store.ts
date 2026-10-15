@@ -9,6 +9,10 @@ import type {
   UpdateItem,
 } from '../../types';
 
+const VERSION_READ_RETRIABLE_ERRORS = ['config-busy', 'MqttTimeoutError'];
+const VERSION_READ_RETRY_DELAYS_MS = [1000, 2000, 4000, 10000];
+const VERSION_READ_MAX_RETRIES = 30;
+
 export class EmbeddedSoftwareComponent {
   public current: string = '';
   public available: string = '';
@@ -134,6 +138,8 @@ export class EmbeddedSoftware {
   public deviceModel:string = '';
 
   private _fwUpdateProxy: FwUpdateProxy;
+  private _retryTimer: ReturnType<typeof setTimeout> | null = null;
+  private _retryAttempt = 0;
 
   constructor(fwUpdateProxy: FwUpdateProxy) {
     this._fwUpdateProxy = fwUpdateProxy;
@@ -158,6 +164,7 @@ export class EmbeddedSoftware {
   }
 
   async updateVersion(address: string | number, portConfig: PortTabConfig) {
+    this._cancelRetry();
     try {
       if (await this._fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
         const params: FwUpdateProxyGetFirmwareInfoParams = {
@@ -183,7 +190,17 @@ export class EmbeddedSoftware {
         this.firmware.setVersion(res.fw, res.available_fw, res.fw_has_update);
         this.bootloader.setVersion(res.bootloader, res.available_bootloader, res.bootloader_has_update);
       }
+      this._retryAttempt = 0;
     } catch (err) {
+      if (VERSION_READ_RETRIABLE_ERRORS.includes(err?.data) && this._retryAttempt < VERSION_READ_MAX_RETRIES) {
+        this._cancelRetry();
+        this._retryTimer = setTimeout(
+          () => this.updateVersion(address, portConfig),
+          VERSION_READ_RETRY_DELAYS_MS[Math.min(this._retryAttempt, VERSION_READ_RETRY_DELAYS_MS.length - 1)],
+        );
+        this._retryAttempt++;
+        return;
+      }
       this.clearVersion();
     }
   }
@@ -294,6 +311,8 @@ export class EmbeddedSoftware {
   }
 
   clearVersion() {
+    this._cancelRetry();
+    this._retryAttempt = 0;
     this.firmware.clearVersion();
     this.bootloader.clearVersion();
     this.clearComponentsVersion();
@@ -329,5 +348,10 @@ export class EmbeddedSoftware {
 
   get bootloaderCanSaveSettings() {
     return firmwareIsNewerOrEqual('1.2.0', this.bootloader.current);
+  }
+
+  private _cancelRetry() {
+    clearTimeout(this._retryTimer);
+    this._retryTimer = null;
   }
 }

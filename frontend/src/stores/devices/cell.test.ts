@@ -366,3 +366,47 @@ describe('Cell', () => {
     });
   });
 });
+
+const BIG = '36028797018963969'; // above 2^53, rounds to ...970 as a number
+
+describe('Cell with integers a number cannot hold exactly', () => {
+  const sendMock = vi.fn();
+  let cell: Cell;
+
+  beforeEach(() => {
+    sendMock.mockClear();
+    cell = new Cell('device1/counter', sendMock);
+    cell.setType('value');
+  });
+
+  test.each([BIG, `-${BIG}`])('keeps %s from MQTT exactly', (value) => {
+    cell.receiveValue(value);
+    expect(cell.value).toBe(value);
+    expect(cell.getStringifiedValue()).toBe(value);
+  });
+
+  test('keeps ordinary numbers as numbers', () => {
+    cell.receiveValue('9007199254740991');
+    expect(cell.value).toBe(9007199254740991);
+    cell.receiveValue('42.5');
+    expect(cell.value).toBe(42.5);
+  });
+
+  test.each([BIG, `-${BIG}`])('sends %s back without rounding', async (value) => {
+    cell.setReadOnly(false);
+    cell.receiveValue('1');
+
+    cell.value = value;
+
+    await vi.waitFor(() => {
+      expect(sendMock).toHaveBeenCalledWith('device1', 'counter', value);
+    });
+  });
+
+  test('keeps the exact value when the type is set after the value', () => {
+    const untyped = new Cell('device1/raw', sendMock);
+    untyped.receiveValue(BIG);
+    untyped.setType('value');
+    expect(untyped.value).toBe(BIG);
+  });
+});

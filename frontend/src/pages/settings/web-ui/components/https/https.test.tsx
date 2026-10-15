@@ -51,9 +51,11 @@ beforeEach(() => {
 describe('HttpsSettings', () => {
   const onError = vi.fn();
 
-  test('renders heading', () => {
+  test('renders heading', async () => {
     render(<HttpsSettings onError={onError} />);
     expect(screen.getByText('web-ui-settings.labels.https-settings')).toBeDefined();
+    // lets the mount-time isHttpsEnabled() await settle inside act()
+    await waitFor(() => {});
   });
 
   test('renders toggle initially disabled', () => {

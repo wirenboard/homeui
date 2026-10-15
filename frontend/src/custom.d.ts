@@ -23,3 +23,9 @@ declare const __LOGO__: string;
 declare const __LOGO_COMPACT__: string;
 declare const __APP_NAME__: string;
 declare const __APP_SHORT_NAME__: string;
+
+// JSON.parse source text access (ES2026), polyfilled by core-js for older browsers
+interface JSON {
+  parse(text: string, reviver?: import('@/utils/types').JsonReviver): any;
+  rawJSON(text: string): import('@/utils/types').RawJson;
+}

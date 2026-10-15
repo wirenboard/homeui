@@ -22,7 +22,7 @@ const RangeSliderEditor = observer(({ store, inputId }: RangeSliderEditorProps) 
       step={1}
       isDisabled={isDisabled}
       isInvalid={store.hasErrors}
-      labelPosition="bottom"
+      labelPosition="right"
       formatLabel={(val) => String(val)}
       onChange={onChange}
     />

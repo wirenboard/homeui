@@ -91,17 +91,38 @@ def make_set_cookie_header(cookie: cookies.SimpleCookie) -> list[str]:
     return ["Set-Cookie", cookie.output(header="")]
 
 
+MAX_ID_COOKIE_CANDIDATES = 8
+
+
+def get_id_cookie_values(cookie_header: str) -> list[str]:
+    """Unique values of the cookies named exactly "id", in header order.
+
+    Parsed manually because http.cookies.SimpleCookie silently stops parsing at the first
+    foreign cookie it cannot match — JSON-valued cookies or cookies named like reserved
+    attributes ("path", "expires", ...) — and apps on other ports of the same host share
+    the browser's cookie jar, so such cookies do reach us and must not hide our "id".
+    """
+    values = []
+    for part in cookie_header.split(";"):
+        name, sep, value = part.partition("=")
+        if sep and name.strip() == "id":
+            values.append(value.strip())
+    return list(dict.fromkeys(values))[:MAX_ID_COOKIE_CANDIDATES]
+
+
 def get_session(
     request: BaseHTTPRequestHandler, users_storage: UsersStorage, sessions_storage: SessionsStorage
 ) -> Optional[Session]:
     try:
-        request_cookie = cookies.SimpleCookie()
-        request_cookie.load(request.headers.get("Cookie", ""))
-        cookie_id = request_cookie.get("id")
-        if cookie_id is None:
+        candidates = get_id_cookie_values(request.headers.get("Cookie", ""))
+        if not candidates:
             request.log_error("Cookie not found")
             return None
-        session = sessions_storage.get_session_by_id(cookie_id.value, users_storage)
+        session = None
+        for candidate in candidates:
+            session = sessions_storage.get_session_by_id(candidate, users_storage)
+            if session is not None:
+                break
         if session is None:
             request.log_error("Session not found")
             return None

@@ -1,0 +1,21 @@
+# Pinned browser support floor. Reviewed & frozen: 2026-09-17.
+#
+# Do NOT use "defaults" here. "defaults" resolves against caniuse-lite's live
+# global usage-share data, so a routine caniuse-lite bump (npm update, a
+# dependency bot) can silently drop a browser our clients still use — this
+# already happened once (commit f375b356 "fix old browsers support" had to
+# re-add iOS/Safari >= 10 after "defaults" dropped them).
+#
+# Instead, every line below is an explicit version floor chosen deliberately.
+# It only ever gets *raised*, and only on purpose (edit this file, bump the
+# date above, note why). New browser releases above these floors are picked
+# up automatically since there's no upper bound.
+chrome >= 109
+firefox >= 140
+edge >= 146
+safari >= 10
+ios_saf >= 10
+android >= 148
+samsung >= 28
+opera >= 127
+op_mob >= 80

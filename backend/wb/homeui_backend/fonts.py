@@ -1,6 +1,18 @@
 import os
 
-ALLOWED_EXTENSIONS = {".ttf", ".woff", ".woff2", ".otf"}
+# OpenType sfnt versions (TrueType 0x00010000 and CFF "OTTO"):
+# https://learn.microsoft.com/en-us/typography/opentype/spec/otff
+# Legacy Apple TrueType "true" scaler signature:
+# https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6AATIntro.html
+# WOFF and WOFF2 magic numbers:
+# https://www.w3.org/TR/WOFF/ and https://www.w3.org/TR/WOFF2/
+_FONT_SIGNATURES = {
+    ".ttf": (b"\x00\x01\x00\x00", b"true"),
+    ".otf": (b"OTTO",),
+    ".woff": (b"wOFF",),
+    ".woff2": (b"wOF2",),
+}
+ALLOWED_EXTENSIONS = set(_FONT_SIGNATURES)
 DEFAULT_FONTS_DIR = "/var/lib/wb-homeui/fonts/"
 
 
@@ -25,6 +37,8 @@ class FontsStore:
         ext = os.path.splitext(filename)[1].lower()
         if ext not in ALLOWED_EXTENSIONS:
             raise ValueError(f"Unsupported font extension: {ext}")
+        if not data.startswith(_FONT_SIGNATURES[ext]):
+            raise ValueError(f"File content does not match font extension: {ext}")
         path = os.path.join(self._fonts_dir, filename)
         with open(path, "wb") as f:
             f.write(data)

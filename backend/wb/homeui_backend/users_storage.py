@@ -43,7 +43,7 @@ class User:
     def type(self, value: UserType):
         self._type = value
         if not self.supports_autologin():
-            self.autologin = False
+            self._autologin = False
 
     @property
     def autologin(self) -> bool:
