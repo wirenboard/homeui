@@ -8,3 +8,8 @@
         padding-bottom: 10px;
     }
 }
+
+.applyProblems-group ul {
+    list-style: disc;
+    padding-left: 20px;
+}

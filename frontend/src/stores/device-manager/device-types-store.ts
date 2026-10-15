@@ -56,47 +56,11 @@ export class DeviceTypesStore {
     makeObservable(this, {
       deviceTypeDropdownOptions: observable,
       setDeviceTypeGroups: action,
-      mergeDeviceTypes: action,
-      removeDeviceType: action,
     });
   }
 
   setDeviceTypeGroups(deviceTypeGroups: DeviceTypeDescriptionGroup[]) {
     this._groups = deviceTypeGroups;
-    this._rebuildFromGroups();
-  }
-
-  mergeDeviceTypes(responseGroups: DeviceTypeDescriptionGroup[]) {
-    const responseTypes = new Set<string>();
-    for (const group of responseGroups) {
-      for (const type of group.types) {
-        responseTypes.add(type.type);
-      }
-    }
-
-    for (const group of this._groups) {
-      group.types = group.types.filter((t) => !responseTypes.has(t.type));
-    }
-
-    for (const responseGroup of responseGroups) {
-      let existingGroup = this._groups.find((g) => g.name === responseGroup.name);
-      if (!existingGroup) {
-        existingGroup = { name: responseGroup.name, types: [] };
-        this._groups.push(existingGroup);
-      }
-      existingGroup.types.push(...responseGroup.types);
-      existingGroup.types.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    this._groups = this._groups.filter((g) => g.types.length > 0);
-    this._rebuildFromGroups();
-  }
-
-  removeDeviceType(deviceType: string) {
-    for (const group of this._groups) {
-      group.types = group.types.filter((t) => t.type !== deviceType);
-    }
-    this._groups = this._groups.filter((g) => g.types.length > 0);
     this._rebuildFromGroups();
   }
 

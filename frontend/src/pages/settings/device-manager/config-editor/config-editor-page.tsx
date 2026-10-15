@@ -6,21 +6,15 @@ import { documentation } from '@/common/links';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { formatError } from '@/utils/format-error';
 import { AddDeviceModal } from './components/add-device-modal';
 import { AddPortModal } from './components/add-port-modal';
 import { CopyDeviceModal } from './components/copy-device-modal';
 import { DeleteModal } from './components/delete-modal';
 import { HeaderButtons } from './components/header-buttons';
 import { PageTabs } from './components/page-tabs';
-import type { ConfigEditorPageProps } from './types';
+import { callWithForceOnTemplateInUse, formatTemplateOperationError } from './template-errors';
+import type { ApplyProblemDevice, ConfigEditorPageProps } from './types';
 import './styles.css';
-
-const isTemplateInUseError = (err: unknown): boolean =>
-  typeof err === 'object' && err !== null && (err as any).data === 'template-in-use';
-
-const formatTemplateOperationError = (actionLabel: string, err: unknown): string =>
-  `${actionLabel}: ${formatError(err)}`;
 
 const ConfigEditorPage = observer((
   { pageStore, serialTemplatesProxy, onAddWbDevice, onSearchDisconnectedDevice }: ConfigEditorPageProps,
@@ -52,11 +46,15 @@ const ConfigEditorPage = observer((
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadTemplate = useCallback(async () => {
+    if (pageStore.isDirty) {
+      pageStore.setError(t('device-manager.labels.template-requires-saved-config'));
+      return;
+    }
     const confirmed = await showUploadConfirmModal();
     if (confirmed) {
       fileInputRef.current?.click();
     }
-  }, [showUploadConfirmModal]);
+  }, [pageStore, showUploadConfirmModal, t]);
 
   const handleFileSelect = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,46 +74,29 @@ const ConfigEditorPage = observer((
       }
       const filename = file.name;
 
-      let result;
-      try {
-        result = await serialTemplatesProxy.Upload({
-          content,
-          filename,
-          lang: i18n.language,
-        });
-      } catch (uploadErr) {
-        if (!isTemplateInUseError(uploadErr)) {
-          throw uploadErr;
-        }
-        const deviceType = parsedContent?.device_type || filename.replace(/\.json$/, '');
-        const confirmed = await showTemplateInUseModal({
-          action: 'upload',
-          templateName:
-            pageStore.deviceTypesStore.getName(deviceType) || deviceType,
-        });
-        if (!confirmed) {
-          return;
-        }
-        result = await serialTemplatesProxy.Upload({
-          content,
-          filename,
-          lang: i18n.language,
-          force: true,
-        });
+      const outcome = await callWithForceOnTemplateInUse(
+        (force) => serialTemplatesProxy.Upload({ content, filename, lang: i18n.language, force }),
+        (classification) => {
+          const deviceType = parsedContent?.device_type || filename.replace(/\.json$/, '');
+          return showTemplateInUseModal({
+            action: 'upload',
+            templateName: pageStore.deviceTypesStore.getName(deviceType) || deviceType,
+            problems: classification.kind === 'apply-problems' ? classification.problems : undefined,
+          }).then(Boolean);
+        },
+      );
+      if (!outcome) {
+        return;
       }
-      pageStore.deviceTypesStore.mergeDeviceTypes(result.types);
-      const affectedTypes = new Set<string>(result.types.flatMap((g) => g.types.map((t) => t.type)));
-      pageStore.setTemplateAffectedTypes(affectedTypes);
-      await pageStore.refreshDeviceTypeSchemas(affectedTypes);
-      pageStore.setTemplateHint(t('device-manager.labels.template-sync-hint'));
-      if (pageStore.hasInvalidConfigForTypes(affectedTypes)) {
-        // The uploaded template itself is the cause: keep this on the affected device tabs.
-        pageStore.endTemplateOperation(t('device-manager.labels.upload-template-invalid-config'));
-      } else if (pageStore.tabs.hasInvalidConfig) {
-        // Some other, unrelated device has an error: don't blame the uploaded template for it.
-        pageStore.setError(t('device-manager.labels.upload-template-unrelated-invalid-config'));
-      } else {
-        await pageStore.save();
+      if (outcome.forced) {
+        const affectedTypes = new Set<string>(
+          outcome.result.types.flatMap((group) => group.types.map((type) => type.type)),
+        );
+        pageStore.setTemplateAffectedTypes(affectedTypes);
+        pageStore.setTemplateHint(t('device-manager.labels.template-sync-hint'));
+      }
+      await pageStore.reload();
+      if (!pageStore.error) {
         pageStore.setTemplateSuccessMessage(t('device-manager.labels.upload-template-success'));
       }
     } catch (err) {
@@ -127,51 +108,59 @@ const ConfigEditorPage = observer((
   }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal, t]);
 
   const handleDeleteTemplate = useCallback(async (deviceType: string) => {
+    if (pageStore.isDirty) {
+      pageStore.setError(t('device-manager.labels.template-requires-saved-config'));
+      return;
+    }
     pageStore.startTemplateOperation();
-    pageStore.setTemplateAffectedTypes(new Set<string>([deviceType]));
     try {
-      let result;
-      try {
-        result = await serialTemplatesProxy.Delete({
-          type: deviceType,
-          lang: i18n.language,
-        });
-      } catch (deleteErr) {
-        if (!isTemplateInUseError(deleteErr)) {
-          throw deleteErr;
-        }
-        const confirmed = await showTemplateInUseModal({
+      const outcome = await callWithForceOnTemplateInUse(
+        (force) => serialTemplatesProxy.Delete({ type: deviceType, lang: i18n.language, force }),
+        (classification) => showTemplateInUseModal({
           action: 'delete',
-          templateName:
-            pageStore.deviceTypesStore.getName(deviceType) || deviceType,
-        });
-        if (!confirmed) {
-          return;
-        }
-        result = await serialTemplatesProxy.Delete({
-          type: deviceType,
-          lang: i18n.language,
-          force: true,
-        });
+          templateName: pageStore.deviceTypesStore.getName(deviceType) || deviceType,
+          problems: classification.kind === 'apply-problems' ? classification.problems : undefined,
+        }).then(Boolean),
+      );
+      if (!outcome) {
+        return;
       }
-      pageStore.deviceTypesStore.removeDeviceType(deviceType);
-      for (const group of result.types) {
-        for (const type of group.types) {
-          if (type.type === deviceType) {
-            delete type['user-defined'];
-          }
-        }
+      if (outcome.forced) {
+        pageStore.setTemplateAffectedTypes(new Set<string>([deviceType]));
+        pageStore.setTemplateHint(t('device-manager.labels.template-sync-hint'));
       }
-      pageStore.deviceTypesStore.mergeDeviceTypes(result.types);
-      await pageStore.refreshDeviceTypeSchemas(new Set<string>([deviceType]));
-      pageStore.setTemplateHint(t('device-manager.labels.template-sync-hint'));
-      pageStore.setTemplateSuccessMessage(t('device-manager.labels.delete-template-success'));
+      await pageStore.reload();
+      if (!pageStore.error) {
+        pageStore.setTemplateSuccessMessage(t('device-manager.labels.delete-template-success'));
+      }
     } catch (err) {
       pageStore.setError(formatTemplateOperationError(t('device-manager.buttons.delete-template'), err));
     } finally {
       pageStore.endTemplateOperation();
     }
   }, [pageStore, serialTemplatesProxy, i18n.language, showTemplateInUseModal, t]);
+
+  const renderProblemDeviceGroup = (labelKey: string, devices: ApplyProblemDevice[]) => {
+    if (devices.length === 0) {
+      return null;
+    }
+    return (
+      <div className="applyProblems-group">
+        <p>{t(labelKey)}:</p>
+        <ul>
+          {devices.map((device) => (
+            <li key={`${device.port}-${device.slave_id}`}>
+              {t('device-manager.labels.apply-problems-device', {
+                port: device.port,
+                slaveId: device.slave_id,
+                interpolation: { escapeValue: false },
+              })}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -225,7 +214,6 @@ const ConfigEditorPage = observer((
                 pageStore.deviceTypesStore.isUserDefined(type)
               }
               templateOperationPending={pageStore.templateOperationPending}
-              templateError={pageStore.templateError}
               templateHint={pageStore.templateHint}
               templateAffectedTypes={pageStore.templateAffectedTypes}
               onSelect={(index) => pageStore.tabs.onSelectTab(index)}
@@ -249,7 +237,6 @@ const ConfigEditorPage = observer((
                   showRereadConfigModal,
                 )
               }
-              onClearTemplateError={() => pageStore.clearTemplateError()}
               onClearTemplateHint={() => pageStore.clearTemplateHint()}
               onDeleteTemplate={handleDeleteTemplate}
               onUploadTemplate={handleUploadTemplate}
@@ -338,14 +325,39 @@ const ConfigEditorPage = observer((
           confirmCallback={() => handleTemplateInUseConfirm(true)}
           closeCallback={() => handleTemplateInUseClose()}
         >
-          {t(
-            templateInUsePayload?.action === 'delete'
-              ? 'device-manager.labels.confirm-template-in-use-delete'
-              : 'device-manager.labels.confirm-template-in-use-upload',
-            {
-              item: templateInUsePayload?.templateName,
-              interpolation: { escapeValue: false },
-            },
+          {templateInUsePayload?.problems ? (
+            <>
+              <p>
+                {t(
+                  templateInUsePayload.action === 'delete'
+                    ? 'device-manager.labels.apply-problems-intro-delete'
+                    : 'device-manager.labels.apply-problems-intro-upload',
+                  { item: templateInUsePayload.templateName, interpolation: { escapeValue: false } },
+                )}
+              </p>
+              {renderProblemDeviceGroup(
+                'device-manager.labels.apply-problems-disabled',
+                templateInUsePayload.problems.disabled_devices,
+              )}
+              {renderProblemDeviceGroup(
+                'device-manager.labels.apply-problems-unread',
+                templateInUsePayload.problems.unread_devices,
+              )}
+              {renderProblemDeviceGroup(
+                'device-manager.labels.apply-problems-invalid',
+                templateInUsePayload.problems.invalid_devices,
+              )}
+            </>
+          ) : (
+            t(
+              templateInUsePayload?.action === 'delete'
+                ? 'device-manager.labels.confirm-template-in-use-delete'
+                : 'device-manager.labels.confirm-template-in-use-upload',
+              {
+                item: templateInUsePayload?.templateName,
+                interpolation: { escapeValue: false },
+              },
+            )
           )}
         </Confirm>
       )}

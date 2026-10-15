@@ -25,8 +25,6 @@ export interface PageTabsProps {
   onDeleteTemplate?: (_deviceType: string) => void;
   onUploadTemplate?: () => void;
   templateOperationPending?: boolean;
-  templateError?: string;
-  onClearTemplateError?: () => void;
   templateHint?: string;
   onClearTemplateHint?: () => void;
   templateAffectedTypes?: Set<string>;

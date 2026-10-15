@@ -92,8 +92,6 @@ export const DeviceTabContent = observer(
     onDeleteTemplate,
     onUploadTemplate,
     templateOperationPending,
-    templateError,
-    onClearTemplateError,
     templateHint,
     onClearTemplateHint,
   }: DeviceTabContentProps) => {
@@ -118,9 +116,6 @@ export const DeviceTabContent = observer(
         )}
         {tab.error && (
           <Alert variant="danger">{tab.error}</Alert>
-        )}
-        {!!templateError && (
-          <Alert variant="danger" size="small" onClose={onClearTemplateError}>{templateError}</Alert>
         )}
         {!!templateHint && (
           <Alert variant="warn" size="small" onClose={onClearTemplateHint}>{templateHint}</Alert>

@@ -40,9 +40,8 @@ export class ConfigEditorPageStore {
   public saving: boolean = false;
   public error = '';
   public templateOperationPending: boolean = false;
-  public templateError: string = '';
   public templateHint: string = '';
-  // Device types touched by the last template upload/delete: templateError/templateHint are shown
+  // Device types touched by the last forced template upload/delete: templateHint is shown
   // only on device tabs of these types, not on every open tab.
   public templateAffectedTypes: Set<string> = new Set();
   public templateSuccessMessage: string = '';
@@ -79,13 +78,11 @@ export class ConfigEditorPageStore {
       loading: observable,
       saving: observable,
       templateOperationPending: observable,
-      templateError: observable,
       templateHint: observable,
       templateAffectedTypes: observable.ref,
       templateSuccessMessage: observable,
       startTemplateOperation: action,
       endTemplateOperation: action,
-      clearTemplateError: action,
       setTemplateHint: action,
       clearTemplateHint: action,
       setTemplateAffectedTypes: action,
@@ -186,21 +183,13 @@ export class ConfigEditorPageStore {
   startTemplateOperation() {
     this.templateOperationPending = true;
     this.error = '';
-    this.templateError = '';
     this.templateHint = '';
     this.templateAffectedTypes = new Set();
     this.templateSuccessMessage = '';
   }
 
-  endTemplateOperation(error?: unknown) {
+  endTemplateOperation() {
     this.templateOperationPending = false;
-    if (error) {
-      this.templateError = formatError(error);
-    }
-  }
-
-  clearTemplateError() {
-    this.templateError = '';
   }
 
   setTemplateHint(hint: string) {
@@ -223,30 +212,16 @@ export class ConfigEditorPageStore {
     this.templateSuccessMessage = '';
   }
 
-  // Whether any currently configured device of one of the given types has a validation error,
-  // used to tell "this template broke something" apart from "something else was already broken".
-  hasInvalidConfigForTypes(deviceTypes: Set<string>) {
-    return this.tabs.portTabs.some((portTab) =>
-      portTab.children.some((deviceTab) => deviceTypes.has(deviceTab.deviceType) && deviceTab.hasInvalidConfig),
-    );
-  }
-
-  async refreshDeviceTypeSchemas(deviceTypes: Set<string>) {
-    await Promise.all(
-      this.tabs.portTabs.flatMap((portTab) =>
-        portTab.children
-          .filter((deviceTab) => deviceTypes.has(deviceTab.deviceType))
-          .map((deviceTab) => deviceTab.reloadSchema(portTab.baseConfig)),
-      ),
-    );
-  }
-
   async reload() {
+    const previousSelectedIndex = this.tabs.selectedTabIndex;
     runInAction(() => {
       this.loading = true;
     });
     this.tabs.clear();
     await this.load();
+    if (this.tabs.items.length > 0) {
+      this.tabs.onSelectTab(Math.min(previousSelectedIndex, this.tabs.items.length - 1));
+    }
   }
 
   async addPort(showAddPortModal: () => Promise<string | null>) {

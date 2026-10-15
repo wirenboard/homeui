@@ -17,8 +17,6 @@ export interface DeviceTabContentProps {
   onDeleteTemplate?: () => void;
   onUploadTemplate?: () => void;
   templateOperationPending?: boolean;
-  templateError?: string;
-  onClearTemplateError?: () => void;
   templateHint?: string;
   onClearTemplateHint?: () => void;
 }

@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
-import { type DeviceTypesStore } from '@/stores/device-manager';
+import { DeviceTabStore, type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
 import { Translator, type JsonSchema } from '@/stores/json-schema-editor';
 import { ConfigEditorPageStore } from './config-editor-page-store';
 import { PortTab, makeSerialPortTabName } from './port-tab-store';
+import { TabType } from './tabs-store';
 
 // A minimal serial device schema whose top-level (template-independent) properties include `sn`,
 // so the serial number survives into editedData just as it does for real wb-mqtt-serial devices.
@@ -152,101 +153,22 @@ describe('ConfigEditorPageStore.addScannedDeviceToConfig serial-number persisten
   });
 });
 
-const addDeviceTabWithType = async (
-  store: ConfigEditorPageStore,
-  portTab: PortTab,
-  deviceType: string,
-  slaveId: string,
-) => {
-  const deviceTab = store.createDeviceTab({ slave_id: slaveId, device_type: deviceType });
-  store.tabs.addDeviceTab(portTab, deviceTab, false);
-  await deviceTab.loadContent(portTab.baseConfig);
-  return deviceTab;
-};
-
 describe('ConfigEditorPageStore template operation state', () => {
-  it('startTemplateOperation sets pending flag and clears previous error', () => {
+  it('startTemplateOperation sets pending flag', () => {
     const { store } = makeStoreWithPort(makeDeviceTypesStore());
-    store.endTemplateOperation(new Error('old error'));
-    expect(store.templateError).not.toBe('');
 
     store.startTemplateOperation();
 
     expect(store.templateOperationPending).toBe(true);
-    expect(store.templateError).toBe('');
   });
 
-  it('endTemplateOperation without error clears pending flag', () => {
+  it('endTemplateOperation clears pending flag', () => {
     const { store } = makeStoreWithPort(makeDeviceTypesStore());
     store.startTemplateOperation();
 
     store.endTemplateOperation();
 
     expect(store.templateOperationPending).toBe(false);
-    expect(store.templateError).toBe('');
-  });
-
-  it('endTemplateOperation with error clears pending flag and stores formatted error', () => {
-    const { store } = makeStoreWithPort(makeDeviceTypesStore());
-    store.startTemplateOperation();
-
-    store.endTemplateOperation(new Error('upload failed'));
-
-    expect(store.templateOperationPending).toBe(false);
-    expect(store.templateError).toBe('upload failed');
-  });
-
-  it('clearTemplateError resets templateError to empty string', () => {
-    const { store } = makeStoreWithPort(makeDeviceTypesStore());
-    store.endTemplateOperation(new Error('some error'));
-    expect(store.templateError).not.toBe('');
-
-    store.clearTemplateError();
-
-    expect(store.templateError).toBe('');
-  });
-});
-
-describe('ConfigEditorPageStore.refreshDeviceTypeSchemas', () => {
-  it('reloads schemas for device tabs matching the given types', async () => {
-    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
-    const deviceTab = await addDeviceTabWithType(store, portTab, 'wb-map12', '1');
-    const schemaStoreBefore = deviceTab.schemaStore;
-
-    await store.refreshDeviceTypeSchemas(new Set(['wb-map12']));
-
-    expect(deviceTab.schemaStore).not.toBe(schemaStoreBefore);
-  });
-
-  it('does not reload schemas for device tabs whose type is not in the set', async () => {
-    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
-    const matchingTab = await addDeviceTabWithType(store, portTab, 'wb-map12', '1');
-    const untouchedTab = await addDeviceTabWithType(store, portTab, 'wb-mdm3', '2');
-    const matchingBefore = matchingTab.schemaStore;
-    const untouchedBefore = untouchedTab.schemaStore;
-
-    await store.refreshDeviceTypeSchemas(new Set(['wb-map12']));
-
-    expect(matchingTab.schemaStore).not.toBe(matchingBefore);
-    expect(untouchedTab.schemaStore).toBe(untouchedBefore);
-  });
-});
-
-describe('ConfigEditorPageStore.hasInvalidConfigForTypes', () => {
-  it('returns true when a device tab of one of the given types has invalid config', async () => {
-    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
-    const deviceTab = await addDeviceTabWithType(store, portTab, 'wb-map12', '1');
-    deviceTab.setSlaveIdIsDuplicate(true);
-
-    expect(store.hasInvalidConfigForTypes(new Set(['wb-map12']))).toBe(true);
-  });
-
-  it('returns false when the only invalid device tab is not one of the given types', async () => {
-    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
-    const deviceTab = await addDeviceTabWithType(store, portTab, 'wb-mdm3', '2');
-    deviceTab.setSlaveIdIsDuplicate(true);
-
-    expect(store.hasInvalidConfigForTypes(new Set(['wb-map12']))).toBe(false);
   });
 });
 
@@ -269,5 +191,58 @@ describe('ConfigEditorPageStore template affected types and success message', ()
     store.clearTemplateSuccessMessage();
 
     expect(store.templateSuccessMessage).toBe('');
+  });
+});
+
+describe('ConfigEditorPageStore.reload', () => {
+  const makeReplacementPortTab = (store: ConfigEditorPageStore) => {
+    const newPortTab = new PortTab(
+      { path: '/dev/ttyRS485-1', enabled: true, baud_rate: 9600, parity: 'N', data_bits: 8, stop_bits: 2 },
+      {
+        type: 'object',
+        properties: {
+          path: { type: 'string' },
+          enabled: { type: 'boolean' },
+          baud_rate: { type: 'number' },
+          parity: { type: 'string' },
+          data_bits: { type: 'number' },
+          stop_bits: { type: 'number' },
+        },
+      } as unknown as JsonSchema,
+      makeSerialPortTabName,
+      new Translator(),
+    );
+    newPortTab.addChildren(store.createDeviceTab({ slave_id: '5' }));
+    return newPortTab;
+  };
+
+  it('restores the previously selected tab position and reloads the new device tab there', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    await addSelectedDeviceTab(store, portTab);
+    const selectedIndexBeforeReload = store.tabs.selectedTabIndex;
+    vi.spyOn(store, 'load').mockImplementation(async () => {
+      store.tabs.addPortTab(makeReplacementPortTab(store), true);
+    });
+    const loadContentSpy = vi.spyOn(DeviceTabStore.prototype, 'loadContent');
+
+    await store.reload();
+
+    expect(store.tabs.selectedTabIndex).toBe(selectedIndexBeforeReload);
+    const restoredTab = store.tabs.selectedTab as DeviceTabStore;
+    expect(restoredTab.type).toBe(TabType.Device);
+    expect(loadContentSpy.mock.instances).toContain(restoredTab);
+
+    loadContentSpy.mockRestore();
+  });
+
+  it('does not try to restore a selection when the reloaded config has no tabs', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    await addSelectedDeviceTab(store, portTab);
+    vi.spyOn(store, 'load').mockImplementation(async () => {
+      store.tabs.clear();
+    });
+
+    await expect(store.reload()).resolves.toBeUndefined();
+    expect(store.tabs.items).toHaveLength(0);
   });
 });

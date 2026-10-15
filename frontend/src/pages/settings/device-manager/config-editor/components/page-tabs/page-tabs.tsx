@@ -35,8 +35,6 @@ export const PageTabs = observer(
     onDeleteTemplate,
     onUploadTemplate,
     templateOperationPending,
-    templateError,
-    onClearTemplateError,
     templateHint,
     onClearTemplateHint,
     templateAffectedTypes,
@@ -111,9 +109,7 @@ export const PageTabs = observer(
                     deviceTypeSelectOptions={deviceTypeSelectOptions}
                     isUserDefinedType={isUserDefinedTypeFn?.(deviceTab.deviceType)}
                     templateOperationPending={templateOperationPending}
-                    templateError={templateMessagesApply ? templateError : ''}
                     templateHint={templateMessagesApply ? templateHint : ''}
-                    onClearTemplateError={onClearTemplateError}
                     onClearTemplateHint={onClearTemplateHint}
                     onDeleteTab={onDeleteTab}
                     onCopyTab={onCopyTab}

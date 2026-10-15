@@ -7,3 +7,19 @@ export interface ConfigEditorPageProps {
   onAddWbDevice: () => void;
   onSearchDisconnectedDevice: () => void;
 }
+
+export interface ApplyProblemDevice {
+  port: string;
+  slave_id: string;
+}
+
+export interface ApplyProblems {
+  disabled_devices: ApplyProblemDevice[];
+  unread_devices: ApplyProblemDevice[];
+  invalid_devices: ApplyProblemDevice[];
+}
+
+export type TemplateErrorClassification =
+  | { kind: 'template-in-use' }
+  | { kind: 'apply-problems'; problems: ApplyProblems }
+  | { kind: 'other' };
