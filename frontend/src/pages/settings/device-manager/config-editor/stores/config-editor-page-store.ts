@@ -1,4 +1,4 @@
-/* eslint max-lines: ["warn", 450] */
+/* eslint max-lines: ["warn", 495] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
@@ -39,6 +39,12 @@ export class ConfigEditorPageStore {
   public loading: boolean = true;
   public saving: boolean = false;
   public error = '';
+  public templateOperationPending: boolean = false;
+  public templateHint: string = '';
+  // Device types touched by the last forced template upload/delete: templateHint is shown
+  // only on device tabs of these types, not on every open tab.
+  public templateAffectedTypes: Set<string> = new Set();
+  public templateSuccessMessage: string = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -71,6 +77,17 @@ export class ConfigEditorPageStore {
       isDirty: computed,
       loading: observable,
       saving: observable,
+      templateOperationPending: observable,
+      templateHint: observable,
+      templateAffectedTypes: observable.ref,
+      templateSuccessMessage: observable,
+      startTemplateOperation: action,
+      endTemplateOperation: action,
+      setTemplateHint: action,
+      clearTemplateHint: action,
+      setTemplateAffectedTypes: action,
+      setTemplateSuccessMessage: action,
+      clearTemplateSuccessMessage: action,
       addDevices: action,
     });
   }
@@ -161,6 +178,50 @@ export class ConfigEditorPageStore {
 
   setError(error) {
     this.error = formatError(error);
+  }
+
+  startTemplateOperation() {
+    this.templateOperationPending = true;
+    this.error = '';
+    this.templateHint = '';
+    this.templateAffectedTypes = new Set();
+    this.templateSuccessMessage = '';
+  }
+
+  endTemplateOperation() {
+    this.templateOperationPending = false;
+  }
+
+  setTemplateHint(hint: string) {
+    this.templateHint = hint;
+  }
+
+  clearTemplateHint() {
+    this.templateHint = '';
+  }
+
+  setTemplateAffectedTypes(deviceTypes: Set<string>) {
+    this.templateAffectedTypes = deviceTypes;
+  }
+
+  setTemplateSuccessMessage(message: string) {
+    this.templateSuccessMessage = message;
+  }
+
+  clearTemplateSuccessMessage() {
+    this.templateSuccessMessage = '';
+  }
+
+  async reload() {
+    const previousSelectedIndex = this.tabs.selectedTabIndex;
+    runInAction(() => {
+      this.loading = true;
+    });
+    this.tabs.clear();
+    await this.load();
+    if (this.tabs.items.length > 0) {
+      this.tabs.onSelectTab(Math.min(previousSelectedIndex, this.tabs.items.length - 1));
+    }
   }
 
   async addPort(showAddPortModal: () => Promise<string | null>) {

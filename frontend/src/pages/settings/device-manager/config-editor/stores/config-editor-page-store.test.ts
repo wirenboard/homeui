@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
-import { type DeviceTypesStore } from '@/stores/device-manager';
+import { DeviceTabStore, type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
 import { Translator, type JsonSchema } from '@/stores/json-schema-editor';
 import { ConfigEditorPageStore } from './config-editor-page-store';
 import { PortTab, makeSerialPortTabName } from './port-tab-store';
+import { TabType } from './tabs-store';
 
 // A minimal serial device schema whose top-level (template-independent) properties include `sn`,
 // so the serial number survives into editedData just as it does for real wb-mqtt-serial devices.
@@ -149,5 +150,99 @@ describe('ConfigEditorPageStore.addScannedDeviceToConfig serial-number persisten
     expect(portTab.children).toHaveLength(1);
     expect(portTab.children[0].editedData.sn).toBeUndefined();
     expect(portTab.children[0].editedData.slave_id).toBe('5');
+  });
+});
+
+describe('ConfigEditorPageStore template operation state', () => {
+  it('startTemplateOperation sets pending flag', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+
+    store.startTemplateOperation();
+
+    expect(store.templateOperationPending).toBe(true);
+  });
+
+  it('endTemplateOperation clears pending flag', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.startTemplateOperation();
+
+    store.endTemplateOperation();
+
+    expect(store.templateOperationPending).toBe(false);
+  });
+});
+
+describe('ConfigEditorPageStore template affected types and success message', () => {
+  it('startTemplateOperation clears templateAffectedTypes and templateSuccessMessage', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateAffectedTypes(new Set(['wb-map12']));
+    store.setTemplateSuccessMessage('done');
+
+    store.startTemplateOperation();
+
+    expect(store.templateAffectedTypes.size).toBe(0);
+    expect(store.templateSuccessMessage).toBe('');
+  });
+
+  it('clearTemplateSuccessMessage resets templateSuccessMessage to an empty string', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateSuccessMessage('done');
+
+    store.clearTemplateSuccessMessage();
+
+    expect(store.templateSuccessMessage).toBe('');
+  });
+});
+
+describe('ConfigEditorPageStore.reload', () => {
+  const makeReplacementPortTab = (store: ConfigEditorPageStore) => {
+    const newPortTab = new PortTab(
+      { path: '/dev/ttyRS485-1', enabled: true, baud_rate: 9600, parity: 'N', data_bits: 8, stop_bits: 2 },
+      {
+        type: 'object',
+        properties: {
+          path: { type: 'string' },
+          enabled: { type: 'boolean' },
+          baud_rate: { type: 'number' },
+          parity: { type: 'string' },
+          data_bits: { type: 'number' },
+          stop_bits: { type: 'number' },
+        },
+      } as unknown as JsonSchema,
+      makeSerialPortTabName,
+      new Translator(),
+    );
+    newPortTab.addChildren(store.createDeviceTab({ slave_id: '5' }));
+    return newPortTab;
+  };
+
+  it('restores the previously selected tab position and reloads the new device tab there', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    await addSelectedDeviceTab(store, portTab);
+    const selectedIndexBeforeReload = store.tabs.selectedTabIndex;
+    vi.spyOn(store, 'load').mockImplementation(async () => {
+      store.tabs.addPortTab(makeReplacementPortTab(store), true);
+    });
+    const loadContentSpy = vi.spyOn(DeviceTabStore.prototype, 'loadContent');
+
+    await store.reload();
+
+    expect(store.tabs.selectedTabIndex).toBe(selectedIndexBeforeReload);
+    const restoredTab = store.tabs.selectedTab as DeviceTabStore;
+    expect(restoredTab.type).toBe(TabType.Device);
+    expect(loadContentSpy.mock.instances).toContain(restoredTab);
+
+    loadContentSpy.mockRestore();
+  });
+
+  it('does not try to restore a selection when the reloaded config has no tabs', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    await addSelectedDeviceTab(store, portTab);
+    vi.spyOn(store, 'load').mockImplementation(async () => {
+      store.tabs.clear();
+    });
+
+    await expect(store.reload()).resolves.toBeUndefined();
+    expect(store.tabs.items).toHaveLength(0);
   });
 });
