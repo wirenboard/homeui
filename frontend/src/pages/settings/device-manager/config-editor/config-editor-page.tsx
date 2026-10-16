@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { type ChangeEvent, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { documentation } from '@/common/links';
+import { Alert } from '@/components/alert';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
@@ -44,6 +45,7 @@ const ConfigEditorPage = observer((
     templateInUsePayload,
   ] = useConfirm<any>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isBusy = pageStore.saving || pageStore.templateOperationPending;
 
   const handleUploadTemplate = useCallback(async () => {
     if (pageStore.isDirty) {
@@ -178,15 +180,15 @@ const ConfigEditorPage = observer((
             }]
             : []),
         ]}
-        isLoading={pageStore.loading || pageStore.saving}
+        isLoading={pageStore.loading || isBusy}
         loadingOptions={
-          pageStore.saving ? { overlay: true, showActions: true } : undefined
+          isBusy ? { overlay: true, showActions: true } : undefined
         }
         actions={
           (!pageStore.loading) && (
             <HeaderButtons
               allowSave={pageStore.allowSave}
-              isSaving={pageStore.saving}
+              isSaving={isBusy}
               allowAddDevice={pageStore.tabs.hasPortTabs}
               mobileModeStore={pageStore.tabs.mobileModeStore}
               onSave={() => pageStore.save()}
@@ -346,6 +348,11 @@ const ConfigEditorPage = observer((
               {renderProblemDeviceGroup(
                 'device-manager.labels.apply-problems-invalid',
                 templateInUsePayload.problems.invalid_devices,
+              )}
+              {templateInUsePayload.problems.invalid_devices.length > 0 && (
+                <Alert variant="danger" size="small">
+                  {t('device-manager.labels.apply-problems-invalid-warning')}
+                </Alert>
               )}
             </>
           ) : (

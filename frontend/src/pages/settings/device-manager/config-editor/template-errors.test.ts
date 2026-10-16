@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { callWithForceOnTemplateInUse, classifyTemplateError, formatTemplateOperationError } from './template-errors';
 
 describe('classifyTemplateError', () => {
@@ -95,5 +96,12 @@ describe('callWithForceOnTemplateInUse', () => {
 describe('formatTemplateOperationError', () => {
   it('prefixes the formatted error with the given action label', () => {
     expect(formatTemplateOperationError('Upload', new Error('boom'))).toBe('Upload: boom');
+  });
+
+  it('translates a known wb-mqtt-serial error code instead of showing it raw', () => {
+    const err = { code: -32000, data: 'write-failed', message: 'Server error' };
+    expect(formatTemplateOperationError('Upload', err)).toBe(
+      'Upload: Error writing config. See the wb-mqtt-serial system log for details',
+    );
   });
 });

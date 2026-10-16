@@ -246,3 +246,67 @@ describe('ConfigEditorPageStore.reload', () => {
     expect(store.tabs.items).toHaveLength(0);
   });
 });
+
+describe('ConfigEditorPageStore.load config-busy retry', () => {
+  const configBusyError = { code: -32000, data: 'config-busy', message: 'Server error' };
+
+  const successResult = () => ({
+    config: { ports: [] } as any,
+    schema: { definitions: {}, properties: {} } as any,
+    deviceTypeGroups: [],
+  });
+
+  const makeStoreWithLoadConfigFn = (loadConfigFn: () => Promise<any>) =>
+    new ConfigEditorPageStore(
+      loadConfigFn,
+      async () => {},
+      () => {},
+      () => {},
+      { setDeviceTypeGroups: vi.fn() } as unknown as DeviceTypesStore,
+      {} as any,
+      {} as any,
+      {} as any,
+    );
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('retries loading on config-busy with escalating delays and recovers once it succeeds', async () => {
+    const loadConfigFn = vi.fn()
+      .mockRejectedValueOnce(configBusyError)
+      .mockRejectedValueOnce(configBusyError)
+      .mockResolvedValueOnce(successResult());
+    const store = makeStoreWithLoadConfigFn(loadConfigFn);
+
+    const loadPromise = store.load();
+    expect(loadConfigFn).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(loadConfigFn).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(loadConfigFn).toHaveBeenCalledTimes(3);
+
+    await loadPromise;
+    expect(store.loading).toBe(false);
+    expect(store.error).toBe('');
+  });
+
+  it('gives up after the max retry count and surfaces a translated config-busy error', async () => {
+    const loadConfigFn = vi.fn().mockRejectedValue(configBusyError);
+    const store = makeStoreWithLoadConfigFn(loadConfigFn);
+
+    const loadPromise = store.load();
+    await vi.advanceTimersByTimeAsync(300 * 1000);
+    await loadPromise;
+
+    expect(loadConfigFn).toHaveBeenCalledTimes(31);
+    expect(store.loading).toBe(false);
+    expect(store.error).toBe('The configuration is being saved, try again later');
+  });
+});

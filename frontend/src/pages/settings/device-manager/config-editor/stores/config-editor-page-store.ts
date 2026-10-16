@@ -17,7 +17,6 @@ import {
   type JsonObject,
   type JsonSchema,
 } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/format-error';
 import { getTranslation } from '../stores/json-schema-utils';
 import {
   getDeviceSetupErrorMessage,
@@ -32,6 +31,9 @@ import { PortTab, makeModbusTcpPortTabName, makeSerialPortTabName, makeTcpPortTa
 import { SettingsTab } from './settings-tab-store';
 import { TabsStore } from './tabs-store';
 import type { ConfigJson, LoadConfigResult, PortConfig } from './types';
+
+const LOAD_RETRY_DELAYS_MS = [1000, 2000, 4000, 10000];
+const LOAD_MAX_RETRIES = 30;
 
 export class ConfigEditorPageStore {
   public tabs: TabsStore;
@@ -52,6 +54,7 @@ export class ConfigEditorPageStore {
   public loadConfigFn: () => Promise<LoadConfigResult>;
   public saveConfigFn: (_cfg: ConfigJson) => Promise<void>;
   public portSchemaMap = {};
+  private _loadRetryAttempt = 0;
 
   constructor(
     loadConfigFn: () => Promise<LoadConfigResult>,
@@ -167,7 +170,15 @@ export class ConfigEditorPageStore {
         this.tabs.addPortTab(portTab, true);
       });
       this.tabs.addSettingsTab(this.createSettingsTab(config, schema));
+      this._loadRetryAttempt = 0;
     } catch (err) {
+      if (err?.data === 'config-busy' && this._loadRetryAttempt < LOAD_MAX_RETRIES) {
+        const delay = LOAD_RETRY_DELAYS_MS[Math.min(this._loadRetryAttempt, LOAD_RETRY_DELAYS_MS.length - 1)];
+        this._loadRetryAttempt++;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return this.load();
+      }
+      this._loadRetryAttempt = 0;
       this.tabs.clear();
       this.setError(err);
     }
@@ -177,7 +188,7 @@ export class ConfigEditorPageStore {
   }
 
   setError(error) {
-    this.error = formatError(error);
+    this.error = getErrorMessage(error);
   }
 
   startTemplateOperation() {

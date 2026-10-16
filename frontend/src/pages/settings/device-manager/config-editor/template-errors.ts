@@ -1,4 +1,4 @@
-import { formatError } from '@/utils/format-error';
+import { getErrorMessage } from './stores/helpers';
 import type { TemplateErrorClassification } from './types';
 
 const APPLY_PROBLEMS_PREFIX = 'apply-problems: ';
@@ -23,7 +23,7 @@ export const classifyTemplateError = (err: unknown): TemplateErrorClassification
 };
 
 export const formatTemplateOperationError = (actionLabel: string, err: unknown): string =>
-  `${actionLabel}: ${formatError(err)}`;
+  `${actionLabel}: ${getErrorMessage(err)}`;
 
 export const callWithForceOnTemplateInUse = async <T>(
   call: (force?: boolean) => Promise<T>,
