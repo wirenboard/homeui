@@ -3,6 +3,10 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+
+    @media (max-width: 768px) {
+        gap: 6px;
+    }
 }
 
 .configurator-subtitle {
@@ -227,8 +231,7 @@
 
     @media (max-width: 768px) {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: auto;
-        height: auto;
+        grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
     }
 }
 

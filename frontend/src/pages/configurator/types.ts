@@ -23,6 +23,7 @@ export interface TypeTilesProps {
 export interface DeviceListProps {
   onAdd: () => void;
   onClear: () => void;
+  onSelect: () => void;
 }
 
 export interface WbDevicePanelProps {

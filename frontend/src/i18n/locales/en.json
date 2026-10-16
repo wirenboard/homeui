@@ -1231,6 +1231,7 @@
          "add-channel": "Add channel",
          "save": "Save",
          "discard": "Discard changes",
+         "to-list": "To device list",
          "remove-device": "Remove device",
          "remove-channel": "Remove channel \"{{name}}\"",
          "clear-all": "Remove all devices",

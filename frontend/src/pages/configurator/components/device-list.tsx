@@ -13,7 +13,7 @@ import { stable } from '@/stores/configurator';
 import type { DeviceListProps } from '../types';
 import { deviceLabel, isLiveDevice } from '../utils';
 
-export const DeviceList = observer(({ onAdd, onClear }: DeviceListProps) => {
+export const DeviceList = observer(({ onAdd, onClear, onSelect }: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const { wbs, own, selection, savedModel } = configuratorStore;
@@ -48,7 +48,10 @@ export const DeviceList = observer(({ onAdd, onClear }: DeviceListProps) => {
           type="button"
           className={classNames('configurator-listItem', { 'configurator-listItemSelected': isSelected })}
           aria-current={isSelected || undefined}
-          onClick={() => configuratorStore.select({ kind, id: item.id })}
+          onClick={() => {
+            configuratorStore.select({ kind, id: item.id });
+            onSelect();
+          }}
         >
           <span className="configurator-listText">
             <span className="configurator-listTitle">{title}</span>
