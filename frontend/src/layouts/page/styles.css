@@ -25,6 +25,7 @@
 
     @media(max-width: 768px) {
         gap: 6px;
+        padding-top: 0;
     }
 }
 
