@@ -39,6 +39,7 @@ export class ConfigEditorPageStore {
   public loading: boolean = true;
   public saving: boolean = false;
   public error = '';
+  public pendingAddDeviceRequest: boolean = false;
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -71,12 +72,23 @@ export class ConfigEditorPageStore {
       isDirty: computed,
       loading: observable,
       saving: observable,
+      pendingAddDeviceRequest: observable,
       addDevices: action,
+      requestAddDevice: action,
+      clearAddDeviceRequest: action,
     });
   }
 
   get isDirty() {
     return this.tabs.isDirty;
+  }
+
+  requestAddDevice() {
+    this.pendingAddDeviceRequest = true;
+  }
+
+  clearAddDeviceRequest() {
+    this.pendingAddDeviceRequest = false;
   }
 
   get allowSave() {

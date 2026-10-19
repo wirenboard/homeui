@@ -118,7 +118,7 @@ export const LogsFilters = observer((
 
         <Tooltip text={t('logs.labels.help')} placement="bottom">
           <a
-            href="https://unicode-org.github.io/icu/userguide/strings/regexp.html"
+            href="https://www.pcre.org/current/doc/html/pcre2syntax.html"
             target="_blank"
             className="logsFilters-info"
           >

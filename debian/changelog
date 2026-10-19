@@ -1,8 +1,35 @@
-wb-mqtt-homeui (2.268.0) stable; urgency=medium
+wb-mqtt-homeui (2.269.0) stable; urgency=medium
 
   * Add performance tests
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 12 Oct 2026 17:15:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 19 Oct 2026 15:30:00 +0300
+
+wb-mqtt-homeui (2.268.0) stable; urgency=medium
+
+  * Add device search to the serial device configuration page
+  * Combine add port / scan devices / add device manually into one menu on the serial device configuration page
+  * Explain Fast Modbus scanning and add a manual-add shortcut on the new-devices scan page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 19 Oct 2026 13:37:00 +0300
+
+wb-mqtt-homeui (2.267.7) stable; urgency=medium
+
+  * Update a link to regex user guide
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 15 Oct 2026 17:00:00 +0400
+
+wb-mqtt-homeui (2.267.6) stable; urgency=medium
+
+  * Fix long enum values being truncated or wrapped awkwardly in device cells
+    on dashboards and the devices page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 14 Oct 2026 12:00:00 +0400
+
+wb-mqtt-homeui (2.267.5) stable; urgency=medium
+
+  * Depend on nginx instead of nginx-extras, drop unused /fwupdate/progress endpoint
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 14 Oct 2026 12:00:00 +0400
 
 wb-mqtt-homeui (2.267.4) stable; urgency=medium
 
