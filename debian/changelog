@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.268.0) stable; urgency=medium
+
+  * Add device search to the serial device configuration page
+  * Combine add port / scan devices / add device manually into one menu on the serial device configuration page
+  * Explain Fast Modbus scanning and add a manual-add shortcut on the new-devices scan page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 19 Oct 2026 13:37:00 +0300
+
 wb-mqtt-homeui (2.267.7) stable; urgency=medium
 
   * Update a link to regex user guide

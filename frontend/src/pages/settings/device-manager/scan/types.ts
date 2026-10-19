@@ -3,4 +3,5 @@ import type { NewDevicesScanPageStore, SearchDisconnectedScanPageStore } from '@
 export interface ScanPageProps {
   pageStore: NewDevicesScanPageStore | SearchDisconnectedScanPageStore;
   scanType: 'new' | 'disconnected';
+  onAddDeviceManually?: () => void;
 }
