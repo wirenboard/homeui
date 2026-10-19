@@ -74,7 +74,6 @@ export const HeaderButtons = observer(
       if (mobileModeStore.tabsPanelIsActive) {
         return (
           <>
-            <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
             <AddMenu
               isSaving={isSaving}
               allowAddDevice={allowAddDevice}
@@ -82,6 +81,7 @@ export const HeaderButtons = observer(
               onAddWbDevice={onAddWbDevice}
               onAddPort={onAddPort}
             />
+            <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
           </>
         );
       }

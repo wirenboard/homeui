@@ -55,27 +55,11 @@ const ScanPage = observer(({ pageStore, scanType, onAddDeviceManually }: ScanPag
           </>
         }
       >
-        {showFastModbusNotice && (
-          <Alert variant="info" className="scan-fastModbusNotice">
-            <Trans
-              i18nKey="scan.labels.fast-modbus-notice"
-              components={[
-                <a target="_blank" rel="noopener noreferrer"></a>,
-                <button
-                  type="button"
-                  className="scan-addManuallyLink"
-                  onClick={onAddDeviceManually}
-                >
-                </button>,
-              ]}
-            />
-          </Alert>
-        )}
         {scanType === 'disconnected' && (
           <p className="scan-disconnectedNotice"><strong>{t('scan.labels.notice')}</strong></p>
         )}
         <div>
-          {!nothingFound && (
+          {(isScanning || !nothingFound) && (
             isDesktop ? (
               <DevicesTable
                 isScanning={isScanning}
@@ -95,6 +79,25 @@ const ScanPage = observer(({ pageStore, scanType, onAddDeviceManually }: ScanPag
               />
             )
           )}
+          {showFastModbusNotice && (
+            <Alert variant="info" className="scan-fastModbusNotice">
+              <p className="scan-fastModbusText">
+                <Trans
+                  i18nKey="scan.labels.fast-modbus-notice"
+                  components={[
+                    <a target="_blank" rel="noopener noreferrer"></a>,
+                  ]}
+                />
+              </p>
+              <div className="scan-buttonGroup">
+                <Button
+                  variant="secondary"
+                  label={t('device-manager.buttons.add-custom-device')}
+                  onClick={onAddDeviceManually}
+                />
+              </div>
+            </Alert>
+          )}
           {isScanning ? (
             <div className="scan-bottomPanel">
               <Progress value={pageStore.commonScanStore.scanStore.progress} />
@@ -105,13 +108,11 @@ const ScanPage = observer(({ pageStore, scanType, onAddDeviceManually }: ScanPag
                   })}
                 </Trans>
               </p>
-              {!isExtendedScanning && (
-                <Button
-                  variant="secondary"
-                  label={t('scan.buttons.stop')}
-                  onClick={() => pageStore.commonScanStore.stopScanning()}
-                />
-              )}
+              <Button
+                variant="secondary"
+                label={t('scan.buttons.stop')}
+                onClick={() => pageStore.commonScanStore.stopScanning()}
+              />
             </div>
           ) : (
             <Alert variant="info" className="scan-tryNormalScanNotice">

@@ -37,6 +37,10 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
     }
   }, [pageStore.pendingAddDeviceRequest]);
 
+  const isMobile = pageStore.tabs.mobileModeStore.inMobileMode;
+  const showSearch = !pageStore.tabs.isEmpty
+    && (!isMobile || pageStore.tabs.mobileModeStore.tabsPanelIsActive);
+
   return (
     <>
       <PageLayout
@@ -46,19 +50,25 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
         errors={pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []}
         isLoading={pageStore.loading || pageStore.saving}
         loadingOptions={pageStore.saving ? { overlay: true, showActions: true } : undefined}
+        titleArea={isMobile && showSearch && (
+          <SearchBar
+            value={searchQuery}
+            placeholder={t('device-manager.labels.search')}
+            ariaLabel={t('device-manager.labels.search')}
+            onChange={setSearchQuery}
+          />
+        )}
         actions={
           (!pageStore.loading) && (
             <>
-              {!pageStore.tabs.isEmpty
-                && (!pageStore.tabs.mobileModeStore.inMobileMode || pageStore.tabs.mobileModeStore.tabsPanelIsActive)
-                && (
-                  <SearchBar
-                    value={searchQuery}
-                    placeholder={t('device-manager.labels.search')}
-                    ariaLabel={t('device-manager.labels.search')}
-                    onChange={setSearchQuery}
-                  />
-                )}
+              {!isMobile && showSearch && (
+                <SearchBar
+                  value={searchQuery}
+                  placeholder={t('device-manager.labels.search')}
+                  ariaLabel={t('device-manager.labels.search')}
+                  onChange={setSearchQuery}
+                />
+              )}
               <HeaderButtons
                 allowSave={pageStore.allowSave}
                 isSaving={pageStore.saving}

@@ -181,7 +181,7 @@
          "scanning": "Поиск {{-ports}}...",
          "fast-scanning": "Быстрое сканирование {{-ports}}...",
          "extended-modbus": "Это устройство было найдено сканированием через быстрый Modbus",
-         "fast-modbus-notice": "Автоматический поиск находит устройства Wiren Board и устройства других производителей, поддерживающие протокол <0 target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://wiki.wirenboard.com/wiki/Fast_Modbus\">Быстрый Modbus</0>.<br/>Остальные устройства можно <1>добавить вручную</1>.",
+         "fast-modbus-notice": "Автоматический поиск находит устройства Wiren Board и устройства других производителей, поддерживающие протокол <0 target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://wiki.wirenboard.com/wiki/Fast_Modbus\">Быстрый Modbus</0>.<br/>Остальные устройства можно добавить вручную.",
          "try-normal-scan": "Если нужные устройства не найдены, запустите медленное сканирование или поиск устройств в режиме загрузчика.",
          "try-normal-scan-caveat": "В это время уже настроенные устройства не будут опрашиваться и принимать команды.",
          "misconfigured-port": "отличается от настроек порта",
