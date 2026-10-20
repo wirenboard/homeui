@@ -10,15 +10,11 @@ import './styles.css';
 
 const WebUiSettingsPage = () => {
   const { t } = useTranslation();
-  const [errors, setErrors] = useState([]);
+  const [httpsError, setHttpsError] = useState('');
 
-  const httpsErrorHandler = (error: string) => {
-    if (error) {
-      setErrors([{ variant: 'danger', text: error }]);
-    } else {
-      setErrors([]);
-    }
-  };
+  const errors = [httpsError]
+    .filter((text) => !!text)
+    .map((text) => ({ variant: 'danger', text }));
 
   return (
     <PageLayout title={t('web-ui-settings.title')} errors={errors} hasRights>
@@ -26,7 +22,9 @@ const WebUiSettingsPage = () => {
         <CommonSettings />
         {authStore.hasRights(UserRole.Operator) && <MqttSettings />}
         {authStore.hasRights(UserRole.Operator) && <PanelsSettings />}
-        {authStore.hasRights(UserRole.Admin) && <HttpsSettings onError={httpsErrorHandler} />}
+        {authStore.hasRights(UserRole.Admin) && (
+          <HttpsSettings onError={setHttpsError} />
+        )}
       </div>
     </PageLayout>
   );

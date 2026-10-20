@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
+import ipaddress
 import json
+import re
 import secrets
 import threading
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 from urllib.parse import urlparse
 
 import fido2.features
@@ -28,6 +30,26 @@ MAX_CREDENTIAL_NAME_LENGTH = 80
 # Browser responses use the WebAuthn JSON representation (base64url for binary fields).
 # python-fido2 1.2 keeps this parser behind a compatibility feature flag.
 fido2.features.webauthn_json_mapping.enabled = True
+
+_DOMAIN_LABEL_RE = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
+
+
+def is_valid_domain(value: str) -> bool:
+    """A syntactically valid DNS domain name: not blank/whitespace, not a bare IP literal,
+    dotted labels that are each a valid DNS label. Used to validate admin-entered WebAuthn
+    domains (the canonical rp_id and each related domain)."""
+    domain = value.strip().rstrip(".")
+    if not domain or len(domain) > 253:
+        return False
+    try:
+        ipaddress.ip_address(domain)
+        return False
+    except ValueError:
+        pass
+    labels = domain.split(".")
+    if len(labels) < 2:
+        return False
+    return all(_DOMAIN_LABEL_RE.match(label) for label in labels)
 
 
 class WebAuthnChallengeType(Enum):
@@ -84,7 +106,13 @@ class WebAuthnChallengeStore:
 
 
 class WebAuthnService:
-    def __init__(self, rp_id: str, origin: str, credentials_storage: WebAuthnCredentialsStorage):
+    def __init__(
+        self,
+        rp_id: str,
+        origin: str,
+        credentials_storage: WebAuthnCredentialsStorage,
+        related_origins: Sequence[str] = (),
+    ):
         normalized_rp_id = rp_id.strip().lower().rstrip(".")
         normalized_origin = origin.strip().rstrip("/")
         parsed_origin = urlparse(normalized_origin)
@@ -99,12 +127,19 @@ class WebAuthnService:
             raise ValueError("WebAuthn origin must not contain a path, query, or fragment")
         self.rp_id = normalized_rp_id
         self.origin = normalized_origin
+        self.related_origins = tuple(o.strip().rstrip("/") for o in related_origins)
         self.credentials_storage = credentials_storage
         self.challenges = WebAuthnChallengeStore()
         self.server = Fido2Server(
             PublicKeyCredentialRpEntity(id=rp_id, name="Wiren Board"),
-            verify_origin=lambda request_origin: request_origin == self.origin,
+            verify_origin=self.accepts_origin,
         )
+
+    def accepts_origin(self, request_origin: str) -> bool:
+        """True for the canonical origin or any configured related origin (Related Origin
+        Requests). Passed to `Fido2Server` as `verify_origin`; exposed publicly so it can be
+        unit-tested directly."""
+        return request_origin == self.origin or request_origin in self.related_origins
 
     def begin_registration(self, user: User) -> dict[str, Any]:
         credentials = self.credentials_storage.get_credentials_by_user(user.user_id)
@@ -171,9 +206,6 @@ class WebAuthnService:
 
     def list_credentials(self, user_id: str) -> list[WebAuthnCredential]:
         return self.credentials_storage.get_credentials_by_user(user_id)
-
-    def has_credentials(self) -> bool:
-        return self.credentials_storage.has_any_credentials()
 
     def delete_credential(self, user_id: str, credential_id: bytes) -> bool:
         return self.credentials_storage.delete_credential(user_id, credential_id)

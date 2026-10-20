@@ -20,6 +20,7 @@ from wb.homeui_backend.webauthn import (
     WebAuthnChallengeStore,
     WebAuthnChallengeType,
     WebAuthnService,
+    is_valid_domain,
     json_dumps,
 )
 from wb.homeui_backend.webauthn_storage import WebAuthnCredentialsStorage
@@ -313,3 +314,66 @@ def test_authentication_stale_sign_counter(storage):
         complete_authentication(service, user, credential_data, private_key, (rp_id, origin), sign_count=5)
 
     assert storage.get_credentials_by_user(user.user_id)[0].sign_count == 5
+
+
+@pytest.mark.parametrize(
+    "domain,expected",
+    [
+        ("wb.example.com", True),
+        ("other.example.net", True),
+        ("a.b.c.example.com", True),
+        ("WB.Example.com", True),
+        ("  wb.example.com  ", True),
+        ("wb.example.com.", True),
+        ("", False),
+        ("   ", False),
+        ("localhost", False),
+        ("192.168.1.1", False),
+        ("::1", False),
+        ("not a domain", False),
+        ("-bad.example.com", False),
+        ("bad-.example.com", False),
+        ("https://wb.example.com", False),
+        ("wb.example.com/path", False),
+    ],
+)
+def test_is_valid_domain(domain, expected):
+    assert is_valid_domain(domain) is expected
+
+
+def test_related_origin_accepted_for_authentication(storage):
+    """A credential registered against the canonical rp_id authenticates from a related
+    (non-canonical) origin too -- the whole point of Related Origin Requests."""
+    rp_id = "wb.example.com"
+    canonical_origin = "https://wb.example.com"
+    related_origin = "https://related.example.net"
+    service = WebAuthnService(rp_id, canonical_origin, storage, related_origins=[related_origin])
+    user = User("user-id", "admin", "hash", UserType.ADMIN, False)
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    credential_data = AttestedCredentialData.create(
+        Aaguid.NONE,
+        b"credential-id",
+        ES256.from_cryptography_key(private_key.public_key()),
+    )
+    complete_registration(service, user, credential_data, canonical_origin, rp_id)
+
+    authenticated_user_id, authenticated_credential = complete_authentication(
+        service, user, credential_data, private_key, (rp_id, related_origin)
+    )
+
+    assert authenticated_user_id == user.user_id
+    assert authenticated_credential.credential_id == credential_data.credential_id
+
+
+def test_origin_outside_canonical_and_related_set_is_rejected(storage):
+    """An origin that is neither the canonical one nor a configured related origin must still
+    fail the ceremony, exactly like today without Related Origin Requests configured."""
+    rp_id = "wb.example.com"
+    canonical_origin = "https://wb.example.com"
+    service = WebAuthnService(
+        rp_id, canonical_origin, storage, related_origins=["https://related.example.net"]
+    )
+
+    assert service.accepts_origin(canonical_origin) is True
+    assert service.accepts_origin("https://related.example.net") is True
+    assert service.accepts_origin("https://unrelated.example.org") is False

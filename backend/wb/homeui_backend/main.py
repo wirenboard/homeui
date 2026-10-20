@@ -51,7 +51,7 @@ from .rate_limiter import RateLimiter
 from .security import SecurityCheckingThread
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
-from .webauthn import WebAuthnService, json_dumps
+from .webauthn import WebAuthnService, is_valid_domain, json_dumps
 from .webauthn_storage import WebAuthnCredentialsStorage
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
@@ -314,13 +314,92 @@ def read_json_request(request: BaseHTTPRequestHandler) -> dict:
     return form
 
 
+def webauthn_request_host(request: BaseHTTPRequestHandler) -> str:
+    """The domain the request itself arrived on (port stripped, lowercased). nginx forwards the
+    original `Host` header for `/auth/webauthn/config`, so `enabled` can be scoped to it."""
+    host = request.headers.get("Host", "")
+    return host.split(":", 1)[0].strip().lower()
+
+
+def build_webauthn_service(
+    config: Config, credentials_storage: WebAuthnCredentialsStorage
+) -> Optional[WebAuthnService]:
+    """(Re)builds the live WebAuthnService from the persisted domain list: None when WebAuthn is
+    fully disabled (no canonical domain configured), else bound to the canonical rp_id with every
+    other configured domain accepted as a Related Origin Request."""
+    canonical = config.get_canonical_webauthn_domain()
+    if canonical is None:
+        return None
+    related_origins = [f"https://{domain}" for domain in config.get_related_webauthn_domains()]
+    return WebAuthnService(canonical, f"https://{canonical}", credentials_storage, related_origins)
+
+
 def webauthn_config_handler(
-    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    res = {"enabled": context.webauthn_service is not None}
-    if context.webauthn_service is not None:
-        res["rp_id"] = context.webauthn_service.rp_id
-        res["has_credentials"] = context.webauthn_service.has_credentials()
+    config = WebRequestHandler.config
+    domains = config.get_webauthn_domains()
+    https_ready = effective_https_enabled(config, context.certificate_thread)
+    res = {
+        "enabled": https_ready and webauthn_request_host(request) in domains,
+        "rp_id": context.webauthn_service.rp_id if context.webauthn_service is not None else None,
+        "origin": context.webauthn_service.origin if context.webauthn_service is not None else None,
+        "domains": domains,
+        "has_credentials": WebRequestHandler.webauthn_credentials_storage.has_any_credentials(),
+        "https_ready": https_ready,
+    }
+    return response_200([["Content-type", "application/json"]], json.dumps(res))
+
+
+def parse_webauthn_domains_request(raw_domains: Any) -> list[str]:
+    """Parses+validates a PATCH /auth/webauthn/config body's `domains` list, raising ValueError
+    with a human-readable message on the first problem found. Order is the only notion of
+    priority: the first entry is the canonical relying-party domain, the rest are Related
+    Origin Request domains — there is no separate "is canonical" flag to get out of sync."""
+    if not isinstance(raw_domains, list):
+        raise ValueError("domains must be a list")
+    parsed = []
+    seen_domains = set()
+    for domain in raw_domains:
+        if not isinstance(domain, str) or not is_valid_domain(domain):
+            raise ValueError(f"Invalid domain: {domain!r}")
+        normalized_domain = domain.strip().rstrip(".").lower()
+        if normalized_domain in seen_domains:
+            raise ValueError(f"Duplicate domain: {normalized_domain}")
+        seen_domains.add(normalized_domain)
+        parsed.append(normalized_domain)
+    return parsed
+
+
+def webauthn_update_config_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    form, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    try:
+        domains = parse_webauthn_domains_request(form.get("domains"))
+    except ValueError as e:
+        return response_400(str(e))
+    config = WebRequestHandler.config
+    if domains and not effective_https_enabled(config, context.certificate_thread):
+        return response_400("HTTPS must be enabled and usable before configuring WebAuthn")
+    config.set_webauthn_domains(domains)
+    new_service = build_webauthn_service(config, WebRequestHandler.webauthn_credentials_storage)
+    WebRequestHandler.webauthn_service = new_service
+    WebRequestHandlerContext.webauthn_service = new_service
+    return webauthn_config_handler(request, context)
+
+
+def well_known_webauthn_handler(
+    _request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext
+) -> HttpResponse:
+    """Related Origin Requests config file: the canonical domain's browser fetches this to
+    learn which other origins it should also accept this rp_id's credentials from. Always a
+    valid (possibly empty) response so the endpoint's presence doesn't itself leak whether
+    WebAuthn is configured."""
+    related = WebRequestHandler.config.get_related_webauthn_domains()
+    res = {"origins": [f"https://{domain}" for domain in related]}
     return response_200([["Content-type", "application/json"]], json.dumps(res))
 
 
@@ -1006,6 +1085,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     dashboards_store: DashboardsStore
     fonts_store: FontsStore
     webauthn_service: Optional[WebAuthnService] = None
+    webauthn_credentials_storage: WebAuthnCredentialsStorage
 
     def process_response(self, response: HttpResponse) -> None:
         if 200 <= response.status < 300 or response.status == 304:
@@ -1070,6 +1150,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/auth/webauthn/config": RequestHandler(fn=webauthn_config_handler),
                 "/auth/webauthn/users/*/credentials": RequestHandler(fn=webauthn_credentials_handler),
+                "/.well-known/webauthn": RequestHandler(fn=well_known_webauthn_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
@@ -1113,6 +1194,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             {
                 "/users/*": RequestHandler(fn=update_user_handler),
                 "/api/https": RequestHandler(fn=update_https_handler),
+                "/auth/webauthn/config": RequestHandler(fn=webauthn_update_config_handler),
                 "/api/dashboards/*": RequestHandler(fn=patch_dashboard_handler),
             }
         )
@@ -1169,12 +1251,7 @@ def main():
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--socket-file", default=DEFAULT_SOCKET_FILE, help="Socket file")
     parser.add_argument("--db-file", default=DEFAULT_DB_FILE, help="Database file path")
-    parser.add_argument("--webauthn-rp-id", help="WebAuthn relying party domain")
-    parser.add_argument("--webauthn-origin", help="Allowed WebAuthn HTTPS origin")
     args = parser.parse_args()
-
-    if bool(args.webauthn_rp_id) != bool(args.webauthn_origin):
-        parser.error("--webauthn-rp-id and --webauthn-origin must be used together")
 
     logging.basicConfig(
         level=logging.DEBUG if args.debug else logging.INFO,
@@ -1187,16 +1264,14 @@ def main():
 
     WebRequestHandler.users_storage = UsersStorage(con)
     WebRequestHandler.sessions_storage = SessionsStorage(con)
-    if args.webauthn_rp_id:
-        WebRequestHandler.webauthn_service = WebAuthnService(
-            args.webauthn_rp_id,
-            args.webauthn_origin,
-            WebAuthnCredentialsStorage(con),
-        )
-    WebRequestHandlerContext.webauthn_service = WebRequestHandler.webauthn_service
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    WebRequestHandler.webauthn_credentials_storage = WebAuthnCredentialsStorage(con)
+    WebRequestHandler.webauthn_service = build_webauthn_service(
+        WebRequestHandler.config, WebRequestHandler.webauthn_credentials_storage
+    )
+    WebRequestHandlerContext.webauthn_service = WebRequestHandler.webauthn_service
     usable_change_handler = make_certificate_usable_change_handler(sn, WebRequestHandler.config)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn,

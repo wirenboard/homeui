@@ -2,7 +2,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import UsersPage from './users';
 
-const { storeMock, authMock } = vi.hoisted(() => ({
+const { storeMock, authMock, webauthnMock } = vi.hoisted(() => ({
   storeMock: {
     users: [] as any[],
     errors: [],
@@ -24,9 +24,14 @@ const { storeMock, authMock } = vi.hoisted(() => ({
     users: [] as any[],
     me: { id: 'u1', autologin: false },
   },
+  webauthnMock: {
+    getWebAuthnConfig: vi.fn(async () => ({ domains: ['wb.example.com'], https_ready: true })),
+    setWebAuthnConfig: vi.fn(async (domains: string[]) => ({ domains, https_ready: true })),
+  },
 }));
 
 vi.mock('./page-store', () => ({ store: storeMock }));
+vi.mock('@/services/webauthn', () => webauthnMock);
 vi.mock('@/stores/auth', () => ({
   authStore: authMock,
   UserRole: { Admin: 'admin', Operator: 'operator', User: 'user' },
@@ -139,6 +144,7 @@ const makeUser = (id: string, login: string, type = 'user') => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  webauthnMock.getWebAuthnConfig.mockResolvedValue({ domains: ['wb.example.com'], https_ready: true });
   authMock.hasRights.mockReturnValue(true);
   authMock.areUsersConfigured = true;
   authMock.users = [
@@ -270,6 +276,16 @@ describe('UsersPage', () => {
     expect(screen.getByTestId('passkeys-dialog')).toBeDefined();
     expect(screen.getByTestId('passkeys-dialog-heading').textContent).toBe('users.labels.passkeys-heading');
     expect(screen.getByTestId('passkeys').getAttribute('data-user-id')).toBe('u2');
+  });
+
+  test('disables the passkeys button when no WebAuthn domains are configured', async () => {
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ domains: [], https_ready: true });
+    render(<UsersPage />);
+
+    await waitFor(() => {
+      const button = screen.getByLabelText(/username-viewer passkeys/) as HTMLButtonElement;
+      expect(button.disabled).toBe(true);
+    });
   });
 
   test('closing the passkeys dialog hides it', () => {

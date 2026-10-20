@@ -8,6 +8,7 @@ import { Input } from '@/components/input';
 import { Table, TableCell, TableRow } from '@/components/table';
 import {
   canUseWebAuthn,
+  classifyWebAuthnError,
   deletePasskey,
   getPasskeys,
   getWebAuthnConfig,
@@ -23,7 +24,9 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
   const [credentials, setCredentials] = useState<PasskeyCredential[]>([]);
   const [name, setName] = useState('');
   const [isEnabled, setIsEnabled] = useState(false);
+  const [hasDomainsConfigured, setHasDomainsConfigured] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [credentialToDelete, setCredentialToDelete] = useState<PasskeyCredential>();
   const [error, setError] = useState('');
   const [confirm, isConfirmOpened, handleConfirm, handleClose] = useConfirm<any>();
@@ -31,6 +34,7 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
   const [loadCredentials, isLoading] = useAsyncAction(async () => {
     const config = await getWebAuthnConfig();
     setIsEnabled(config.enabled);
+    setHasDomainsConfigured(!!config.domains?.length);
     if (config.enabled) {
       setCredentials(await getPasskeys(userId));
     }
@@ -38,7 +42,10 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
   });
 
   useEffect(() => {
-    loadCredentials().catch(() => setIsLoaded(true));
+    loadCredentials().catch(() => {
+      setLoadFailed(true);
+      setIsLoaded(true);
+    });
   }, [userId]);
 
   const [addCredential, isAdding] = useAsyncAction(async () => {
@@ -48,9 +55,13 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
       setCredentials((items) => [...items, credential]);
       setName('');
     } catch (err) {
-      setError(t('users.errors.passkey-register-failed', {
-        msg: err?.message || err, interpolation: { escapeValue: false },
-      }));
+      if (classifyWebAuthnError(err) === 'unsupported-origin') {
+        setError(t('users.errors.passkey-register-unsupported-origin'));
+      } else {
+        setError(t('users.errors.passkey-register-failed', {
+          msg: err?.message || err, interpolation: { escapeValue: false },
+        }));
+      }
     }
   });
 
@@ -80,8 +91,19 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
   if (!isLoaded && isLoading) {
     return null;
   }
-  if (!isEnabled) {
+  if (loadFailed) {
     return null;
+  }
+  if (!isEnabled) {
+    return (
+      <section className="passkeys">
+        <Alert variant="warn">
+          {hasDomainsConfigured
+            ? t('users.labels.passkeys-wrong-domain')
+            : t('users.labels.passkeys-not-configured')}
+        </Alert>
+      </section>
+    );
   }
 
   const formatDate = (value?: string) => value
@@ -90,6 +112,7 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
 
   return (
     <section className="passkeys">
+      <p className="passkeys-intro">{t('users.labels.passkeys-intro')}</p>
       {!!error && (
         <Alert variant="danger" size="small" onClose={() => setError('')}>
           {error}

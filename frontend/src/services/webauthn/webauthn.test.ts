@@ -3,10 +3,12 @@ import { requestMock } from '@/test/mocks/request';
 import {
   authenticateWithPasskey,
   canUseWebAuthn,
+  classifyWebAuthnError,
   deletePasskey,
   getPasskeys,
   getWebAuthnConfig,
   registerPasskey,
+  setWebAuthnConfig,
 } from './webauthn';
 
 vi.mock('@/utils/request', () => import('@/test/mocks/request'));
@@ -74,6 +76,57 @@ describe('getWebAuthnConfig', () => {
 
     expect(requestMock.get).toHaveBeenCalledWith('/auth/webauthn/config');
     expect(config).toEqual({ enabled: true, rp_id: 'wb.example.com' });
+  });
+});
+
+describe('setWebAuthnConfig', () => {
+  test('PATCHes the full domain list as-is, in order', async () => {
+    const config = {
+      enabled: true,
+      rp_id: 'wb.example.com',
+      origin: 'https://wb.example.com',
+      domains: ['wb.example.com', 'related.example.com'],
+      has_credentials: true,
+      https_ready: true,
+    };
+    requestMock.patch.mockResolvedValue({ data: config });
+
+    const result = await setWebAuthnConfig(['wb.example.com', 'related.example.com']);
+
+    expect(requestMock.patch).toHaveBeenCalledWith('/auth/webauthn/config', {
+      domains: ['wb.example.com', 'related.example.com'],
+    });
+    expect(result).toEqual(config);
+  });
+
+  test('sends an empty domain list as-is, to disable WebAuthn entirely', async () => {
+    requestMock.patch.mockResolvedValue({ data: { enabled: false } });
+
+    await setWebAuthnConfig([]);
+
+    expect(requestMock.patch).toHaveBeenCalledWith('/auth/webauthn/config', { domains: [] });
+  });
+});
+
+describe('classifyWebAuthnError', () => {
+  test('classifies a NotAllowedError (cancel / no matching authenticator) as cancelled', () => {
+    expect(classifyWebAuthnError(new DOMException('denied', 'NotAllowedError'))).toBe('cancelled');
+  });
+
+  test('classifies our own synthetic cancellation errors as cancelled', () => {
+    expect(classifyWebAuthnError(new Error('WebAuthn authentication cancelled'))).toBe('cancelled');
+    expect(classifyWebAuthnError(new Error('WebAuthn registration cancelled'))).toBe('cancelled');
+  });
+
+  test('classifies a SecurityError (origin not covered by rp_id/related origins) as unsupported-origin', () => {
+    expect(classifyWebAuthnError(new DOMException('bad origin', 'SecurityError'))).toBe('unsupported-origin');
+  });
+
+  test('classifies anything else as unknown', () => {
+    expect(classifyWebAuthnError(new Error('network error'))).toBe('unknown');
+    expect(classifyWebAuthnError(new DOMException('oops', 'InvalidStateError'))).toBe('unknown');
+    expect(classifyWebAuthnError(null)).toBe('unknown');
+    expect(classifyWebAuthnError('not an error')).toBe('unknown');
   });
 });
 

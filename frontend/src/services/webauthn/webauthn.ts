@@ -5,6 +5,7 @@ import type {
   PasskeyCredential,
   WebAuthnCeremony,
   WebAuthnConfig,
+  WebAuthnErrorClassification,
   WebAuthnLoginResult,
 } from './types';
 
@@ -83,6 +84,30 @@ export const canUseWebAuthn = () => window.isSecureContext && 'PublicKeyCredenti
 export const getWebAuthnConfig = async () => {
   const { data } = await request.get<WebAuthnConfig>('/auth/webauthn/config');
   return data;
+};
+
+export const setWebAuthnConfig = async (domains: string[]) => {
+  const { data } = await request.patch<WebAuthnConfig>('/auth/webauthn/config', { domains });
+  return data;
+};
+
+/**
+ * Classifies a thrown WebAuthn ceremony error (from `navigator.credentials.get()`/`create()`, or
+ * our own synthetic "cancelled" errors around a null result) so callers can show an accurate
+ * message instead of a generic one. See `WebAuthnErrorClassification` for the meaning of each case.
+ */
+export const classifyWebAuthnError = (error: unknown): WebAuthnErrorClassification => {
+  const name = (error as { name?: string })?.name;
+  if (name === 'NotAllowedError') {
+    return 'cancelled';
+  }
+  if (name === 'SecurityError') {
+    return 'unsupported-origin';
+  }
+  if (error instanceof Error && /cancelled/i.test(error.message)) {
+    return 'cancelled';
+  }
+  return 'unknown';
 };
 
 export const authenticateWithPasskey = async (): Promise<WebAuthnLoginResult> => {

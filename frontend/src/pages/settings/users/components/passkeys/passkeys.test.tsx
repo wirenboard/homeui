@@ -6,12 +6,13 @@ import { Passkeys } from './passkeys';
 const { webauthnMock } = vi.hoisted(() => ({
   webauthnMock: {
     canUseWebAuthn: vi.fn(() => true),
-    getWebAuthnConfig: vi.fn(async () => ({ enabled: true })),
+    getWebAuthnConfig: vi.fn(async () => ({ enabled: true, domains: ['wb.example.com'] })),
     getPasskeys: vi.fn(async () => []),
     registerPasskey: vi.fn(async (_userId: string, name: string) => (
       { id: 'new-id', name, created_at: '2026-01-01T00:00:00Z' }
     )),
     deletePasskey: vi.fn(async () => {}),
+    classifyWebAuthnError: vi.fn(() => 'unknown'),
   },
 }));
 
@@ -87,22 +88,32 @@ function getRow(name: string) {
 beforeEach(() => {
   vi.clearAllMocks();
   webauthnMock.canUseWebAuthn.mockReturnValue(true);
-  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true });
+  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, domains: ['wb.example.com'] });
   webauthnMock.getPasskeys.mockResolvedValue([]);
   webauthnMock.registerPasskey.mockImplementation(
     async (_userId: string, name: string) => ({ id: 'new-id', name, created_at: '2026-01-01T00:00:00Z' }),
   );
   webauthnMock.deletePasskey.mockResolvedValue(undefined);
+  webauthnMock.classifyWebAuthnError.mockReturnValue('unknown');
 });
 
 describe('Passkeys', () => {
-  test('renders nothing while WebAuthn is disabled on the backend', async () => {
-    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false });
-    const { container } = render(<Passkeys userId="user-1" />);
+  test('explains that nothing is configured yet when no domains exist at all', async () => {
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false, domains: [] });
+    render(<Passkeys userId="user-1" />);
     await waitFor(() => {
-      expect(webauthnMock.getWebAuthnConfig).toHaveBeenCalled();
+      expect(screen.getByText('users.labels.passkeys-not-configured')).toBeDefined();
     });
-    expect(container).toBeEmptyDOMElement();
+  });
+
+  test('explains that passkeys are configured but not available from this address', async () => {
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({
+      enabled: false, domains: ['other.example.com'],
+    });
+    render(<Passkeys userId="user-1" />);
+    await waitFor(() => {
+      expect(screen.getByText('users.labels.passkeys-wrong-domain')).toBeDefined();
+    });
   });
 
   test('renders nothing when loading the config fails', async () => {
@@ -121,6 +132,13 @@ describe('Passkeys', () => {
       expect(screen.getByText('users.labels.passkeys-unavailable')).toBeDefined();
     });
     expect(screen.queryByLabelText('users.labels.passkey-name')).toBeNull();
+  });
+
+  test('renders the introductory copy explaining what a passkey is', async () => {
+    render(<Passkeys userId="user-1" />);
+    await waitFor(() => {
+      expect(screen.getByText('users.labels.passkeys-intro')).toBeDefined();
+    });
   });
 
   test('shows the add-passkey form when the browser supports WebAuthn', async () => {
@@ -202,6 +220,23 @@ describe('Passkeys', () => {
     expect(screen.queryByText('My key')).toBeNull();
 
     fireEvent.click(within(errorAlert as HTMLElement).getByTestId('alert-close'));
+    expect(screen.queryByText('users.errors.passkey-register-failed')).toBeNull();
+  });
+
+  test('shows the unsupported-origin message when registration fails for that reason', async () => {
+    webauthnMock.registerPasskey.mockRejectedValue(new Error('SecurityError'));
+    webauthnMock.classifyWebAuthnError.mockReturnValue('unsupported-origin');
+    render(<Passkeys userId="user-1" />);
+    const input = await waitFor(
+      () => screen.getByLabelText('users.labels.passkey-name'),
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'My key' } });
+
+    fireEvent.click(screen.getByText('users.buttons.add-passkey'));
+
+    await waitFor(() => {
+      expect(screen.getByText('users.errors.passkey-register-unsupported-origin')).toBeDefined();
+    });
     expect(screen.queryByText('users.errors.passkey-register-failed')).toBeNull();
   });
 

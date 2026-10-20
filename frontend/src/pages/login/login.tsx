@@ -13,7 +13,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
 import { Tooltip } from '@/components/tooltip';
-import { canUseWebAuthn, getWebAuthnConfig } from '@/services/webauthn';
+import { canUseWebAuthn, classifyWebAuthnError, getWebAuthnConfig } from '@/services/webauthn';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
@@ -40,7 +40,7 @@ const LoginPage = observer(() => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [login, setLogin] = useState('');
-  const [isShowError, setIsShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<'password' | 'passkey' | null>(null);
   const [password, setPassword] = useState('');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
@@ -63,7 +63,7 @@ const LoginPage = observer(() => {
     action: 'password' | 'passkey', authenticate: () => Promise<unknown>,
   ) => {
     try {
-      setIsShowError(false);
+      setErrorMessage(null);
       setLoadingAction(action);
       await authenticate();
       const externalReturn = getSafeExternalReturn();
@@ -72,8 +72,21 @@ const LoginPage = observer(() => {
         return;
       }
       navigate(searchParams.get('returnState') ?? '/', { replace: true });
-    } catch {
-      setIsShowError(true);
+    } catch (err) {
+      if (action === 'passkey') {
+        switch (classifyWebAuthnError(err)) {
+          case 'cancelled':
+            setErrorMessage(t('login.errors.passkey-cancelled'));
+            break;
+          case 'unsupported-origin':
+            setErrorMessage(t('login.errors.passkey-unsupported-origin'));
+            break;
+          default:
+            setErrorMessage(t('login.errors.passkey-failed'));
+        }
+      } else {
+        setErrorMessage(t('login.errors.failed'));
+      }
     } finally {
       setLoadingAction(null);
     }
@@ -144,8 +157,8 @@ const LoginPage = observer(() => {
               />
             </label>
 
-            {!!isShowError && (
-              <Alert variant="danger" withIcon={false}>{t('login.errors.failed')}</Alert>
+            {!!errorMessage && (
+              <Alert variant="danger" withIcon={false}>{errorMessage}</Alert>
             )}
             <a
               className="login-link login-passwordLink"

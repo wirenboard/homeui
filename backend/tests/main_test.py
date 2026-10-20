@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler
 from unittest.mock import MagicMock, mock_open, patch
 
 from wb.homeui_backend.cert import CertificateState
+from wb.homeui_backend.config_file import Config
 from wb.homeui_backend.gates import CUSTOM_MENU_DIR as GATES_CUSTOM_MENU_DIR
 from wb.homeui_backend.gates import ApplyResult
 from wb.homeui_backend.http_response import (
@@ -26,12 +27,14 @@ from wb.homeui_backend.main import (
     WebRequestHandlerContext,
     auth_check_handler,
     auth_who_am_i_handler,
+    build_webauthn_service,
     custom_menu_handler,
     delete_user_handler,
     device_info_handler,
     get_required_user_type,
     get_users_handler,
     make_certificate_usable_change_handler,
+    parse_webauthn_domains_request,
     security_check_handler,
     update_https_handler,
     update_user_handler,
@@ -40,12 +43,15 @@ from wb.homeui_backend.main import (
     webauthn_delete_credential_handler,
     webauthn_registration_complete_handler,
     webauthn_registration_options_handler,
+    webauthn_update_config_handler,
+    well_known_webauthn_handler,
 )
 from wb.homeui_backend.rate_limiter import RateLimiter
 from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
 from wb.homeui_backend.webauthn import WebAuthnService
+from wb.homeui_backend.webauthn_storage import WebAuthnCredentialsStorage
 
 
 class DeleteUserHandlerTest(unittest.TestCase):
@@ -1015,8 +1021,270 @@ class WebAuthnHandlersTest(unittest.TestCase):
 class WebAuthnConfigHandlerTest(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
+        self.request.headers = {"Host": "wb.example.com"}
         self.webauthn_service_mock = MagicMock(spec=WebAuthnService)
-        self.webauthn_service_mock.rp_id = "example.com"
+        self.webauthn_service_mock.rp_id = "wb.example.com"
+        self.webauthn_service_mock.origin = "https://wb.example.com"
+        self.config = MagicMock(spec=Config)
+        self.config.get_webauthn_domains.return_value = ["wb.example.com", "related.example.net"]
+        self.config.is_https_enabled.return_value = True
+        self.credentials_storage = MagicMock(spec=WebAuthnCredentialsStorage)
+        self.credentials_storage.has_any_credentials.return_value = False
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=MagicMock(),
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            session=None,
+        )
+        self.context.certificate_thread.is_certificate_usable.return_value = True
+        self.context.webauthn_service = self.webauthn_service_mock
+        config_patcher = patch.object(WebRequestHandler, "config", self.config, create=True)
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+        storage_patcher = patch.object(
+            WebRequestHandler, "webauthn_credentials_storage", self.credentials_storage, create=True
+        )
+        storage_patcher.start()
+        self.addCleanup(storage_patcher.stop)
+
+    def test_enabled_for_canonical_origin(self):
+        response = webauthn_config_handler(self.request, self.context)
+        self.assertEqual(
+            json.loads(response.body),
+            {
+                "enabled": True,
+                "rp_id": "wb.example.com",
+                "origin": "https://wb.example.com",
+                "domains": ["wb.example.com", "related.example.net"],
+                "has_credentials": False,
+                "https_ready": True,
+            },
+        )
+
+    def test_enabled_for_related_origin(self):
+        """A caller arriving via the related (non-canonical) domain also sees `enabled: true`."""
+        self.request.headers = {"Host": "related.example.net"}
+        response = webauthn_config_handler(self.request, self.context)
+        self.assertTrue(json.loads(response.body)["enabled"])
+
+    def test_disabled_for_unconfigured_origin(self):
+        """A domain WebAuthn was never configured for reports `enabled: false` even though
+        WebAuthn is enabled overall for other domains."""
+        self.request.headers = {"Host": "unconfigured.example.org"}
+        response = webauthn_config_handler(self.request, self.context)
+        body = json.loads(response.body)
+        self.assertFalse(body["enabled"])
+        self.assertTrue(body["https_ready"])
+
+    def test_disabled_when_https_not_ready(self):
+        self.context.certificate_thread.is_certificate_usable.return_value = False
+        response = webauthn_config_handler(self.request, self.context)
+        body = json.loads(response.body)
+        self.assertFalse(body["enabled"])
+        self.assertFalse(body["https_ready"])
+
+    def test_fully_disabled_when_no_domains_configured(self):
+        self.config.get_webauthn_domains.return_value = []
+        self.context.webauthn_service = None
+        response = webauthn_config_handler(self.request, self.context)
+        self.assertEqual(
+            json.loads(response.body),
+            {
+                "enabled": False,
+                "rp_id": None,
+                "origin": None,
+                "domains": [],
+                "has_credentials": False,
+                "https_ready": True,
+            },
+        )
+
+    def test_has_credentials_reported_even_without_a_live_service(self):
+        """Credentials aren't deleted when WebAuthn is disabled, so `has_credentials` must keep
+        reflecting the database, not just whether a service is currently built."""
+        self.config.get_webauthn_domains.return_value = []
+        self.context.webauthn_service = None
+        self.credentials_storage.has_any_credentials.return_value = True
+        response = webauthn_config_handler(self.request, self.context)
+        self.assertTrue(json.loads(response.body)["has_credentials"])
+
+
+class BuildWebAuthnServiceTest(unittest.TestCase):
+    def test_none_when_no_canonical_domain(self):
+        config = MagicMock(spec=Config)
+        config.get_canonical_webauthn_domain.return_value = None
+        self.assertIsNone(build_webauthn_service(config, MagicMock(spec=WebAuthnCredentialsStorage)))
+
+    def test_builds_service_covering_canonical_and_related_domains(self):
+        config = MagicMock(spec=Config)
+        config.get_canonical_webauthn_domain.return_value = "wb.example.com"
+        config.get_related_webauthn_domains.return_value = ["related.example.net"]
+
+        service = build_webauthn_service(config, MagicMock(spec=WebAuthnCredentialsStorage))
+
+        self.assertEqual(service.rp_id, "wb.example.com")
+        self.assertEqual(service.origin, "https://wb.example.com")
+        self.assertTrue(service.accepts_origin("https://wb.example.com"))
+        self.assertTrue(service.accepts_origin("https://related.example.net"))
+        self.assertFalse(service.accepts_origin("https://unrelated.example.org"))
+
+
+class ParseWebAuthnDomainsRequestTest(unittest.TestCase):
+    def test_empty_list_is_valid(self):
+        self.assertEqual(parse_webauthn_domains_request([]), [])
+
+    def test_valid_list_is_returned_in_order(self):
+        parsed = parse_webauthn_domains_request(["wb.example.com", "other.example.net"])
+        self.assertEqual(parsed, ["wb.example.com", "other.example.net"])
+
+    def test_rejects_non_list(self):
+        with self.assertRaises(ValueError):
+            parse_webauthn_domains_request({"domain": "wb.example.com"})
+
+    def test_rejects_invalid_domain(self):
+        with self.assertRaises(ValueError):
+            parse_webauthn_domains_request(["192.168.1.1"])
+
+    def test_rejects_non_string_entry(self):
+        with self.assertRaises(ValueError):
+            parse_webauthn_domains_request([{"domain": "wb.example.com"}])
+
+    def test_rejects_duplicate_domain(self):
+        with self.assertRaises(ValueError):
+            parse_webauthn_domains_request(["wb.example.com", "wb.example.com"])
+
+    def test_rejects_duplicate_domain_regardless_of_case(self):
+        """Lowercasing must happen before the dedup check, not after -- two domains differing
+        only in case are the same domain."""
+        with self.assertRaises(ValueError):
+            parse_webauthn_domains_request(["WB.example.com", "wb.example.com"])
+
+
+class WebAuthnUpdateConfigHandlerTest(unittest.TestCase):
+    """Exercises the PATCH handler against a real Config (backed by a temp file) so the test
+    also proves the live WebAuthnService is rebuilt in place -- no process restart."""
+
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp_dir, ignore_errors=True)
+        config_path = os.path.join(self.tmp_dir, "wb-homeui-backend.conf")
+        config_file_patcher = patch("wb.homeui_backend.config_file.CONFIG_FILE", config_path)
+        config_file_patcher.start()
+        self.addCleanup(config_file_patcher.stop)
+
+        users_storage = MagicMock(spec=UsersStorage)
+        users_storage.has_users.return_value = True
+        self.config = Config(users_storage)
+        self.config.set_https_enabled(True)
+
+        self.credentials_storage = MagicMock(spec=WebAuthnCredentialsStorage)
+        self.credentials_storage.has_any_credentials.return_value = False
+
+        config_patcher = patch.object(WebRequestHandler, "config", self.config, create=True)
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+        storage_patcher = patch.object(
+            WebRequestHandler, "webauthn_credentials_storage", self.credentials_storage, create=True
+        )
+        storage_patcher.start()
+        self.addCleanup(storage_patcher.stop)
+        service_patcher = patch.object(WebRequestHandler, "webauthn_service", None, create=True)
+        service_patcher.start()
+        self.addCleanup(service_patcher.stop)
+        context_service_patcher = patch.object(WebRequestHandlerContext, "webauthn_service", None)
+        context_service_patcher.start()
+        self.addCleanup(context_service_patcher.stop)
+
+        self.request = MagicMock()
+        self.request.headers = {"Host": "wb.example.com"}
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=users_storage,
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            session=None,
+        )
+        self.context.certificate_thread.is_certificate_usable.return_value = True
+
+    def _set_body(self, domains):
+        payload = json.dumps({"domains": domains}).encode("utf-8")
+        self.request.headers["Content-Length"] = str(len(payload))
+        self.request.rfile.read.return_value = payload
+
+    def test_happy_path_applies_without_restart(self):
+        self._set_body(["wb.example.com"])
+
+        response = webauthn_update_config_handler(self.request, self.context)
+
+        self.assertEqual(response.status, 200)
+        body = json.loads(response.body)
+        self.assertTrue(body["enabled"])
+        self.assertEqual(body["rp_id"], "wb.example.com")
+        self.assertIsNotNone(WebRequestHandler.webauthn_service)
+        # A later request in the same process reflects the change: no restart needed.
+        second_response = webauthn_config_handler(self.request, self.context)
+        self.assertTrue(json.loads(second_response.body)["enabled"])
+
+    def test_first_domain_becomes_canonical(self):
+        """Position is the only notion of "canonical" -- no separate flag to set."""
+        self._set_body(["wb.example.com", "other.example.net"])
+
+        response = webauthn_update_config_handler(self.request, self.context)
+
+        body = json.loads(response.body)
+        self.assertEqual(body["rp_id"], "wb.example.com")
+        self.assertEqual(body["domains"], ["wb.example.com", "other.example.net"])
+
+    def test_empty_list_disables_webauthn(self):
+        self._set_body([])
+
+        response = webauthn_update_config_handler(self.request, self.context)
+
+        self.assertEqual(response.status, 200)
+        body = json.loads(response.body)
+        self.assertFalse(body["enabled"])
+        self.assertIsNone(body["rp_id"])
+        self.assertIsNone(WebRequestHandler.webauthn_service)
+
+    def test_rejects_invalid_domain(self):
+        self._set_body(["192.168.1.1"])
+        response = webauthn_update_config_handler(self.request, self.context)
+        self.assertEqual(response.status, 400)
+
+    def test_rejects_when_https_not_ready(self):
+        """Non-empty domains require HTTPS to currently be enabled and usable."""
+        self.context.certificate_thread.is_certificate_usable.return_value = False
+        self._set_body(["wb.example.com"])
+        response = webauthn_update_config_handler(self.request, self.context)
+        self.assertEqual(response.status, 400)
+
+    def test_empty_list_allowed_even_when_https_not_ready(self):
+        """Disabling WebAuthn (empty list) must always be possible, HTTPS or not."""
+        self.context.certificate_thread.is_certificate_usable.return_value = False
+        self._set_body([])
+        response = webauthn_update_config_handler(self.request, self.context)
+        self.assertEqual(response.status, 200)
+
+    # Admin-only access to this PATCH endpoint is enforced entirely at the nginx layer
+    # (auth_request with the fail-safe default Required-User-Type, same mechanism as
+    # /auth/users's PATCH/DELETE handlers) -- the handler itself, like update_user_handler,
+    # performs no session/role check, so there is nothing admin-specific to exercise here at
+    # the Python level; see backend/configs/.../nginx/default.conf.
+
+
+class WellKnownWebAuthnHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.config = MagicMock(spec=Config)
+        config_patcher = patch.object(WebRequestHandler, "config", self.config, create=True)
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
         self.context = WebRequestHandlerContext(
             sn="",
             users_storage=MagicMock(),
@@ -1028,25 +1296,21 @@ class WebAuthnConfigHandlerTest(unittest.TestCase):
             session=None,
         )
 
-    def test_disabled(self):
-        self.context.webauthn_service = None
-        response = webauthn_config_handler(self.request, self.context)
-        self.assertEqual(json.loads(response.body), {"enabled": False})
-
-    def test_enabled_with_credentials(self):
-        self.webauthn_service_mock.has_credentials.return_value = True
-        self.context.webauthn_service = self.webauthn_service_mock
-        response = webauthn_config_handler(self.request, self.context)
+    def test_lists_related_origins(self):
+        self.config.get_related_webauthn_domains.return_value = [
+            "related.example.net",
+            "other.example.org",
+        ]
+        response = well_known_webauthn_handler(MagicMock(), self.context)
         self.assertEqual(
             json.loads(response.body),
-            {"enabled": True, "rp_id": "example.com", "has_credentials": True},
+            {"origins": ["https://related.example.net", "https://other.example.org"]},
         )
 
-    def test_enabled_without_credentials(self):
-        self.webauthn_service_mock.has_credentials.return_value = False
-        self.context.webauthn_service = self.webauthn_service_mock
-        response = webauthn_config_handler(self.request, self.context)
-        self.assertEqual(
-            json.loads(response.body),
-            {"enabled": True, "rp_id": "example.com", "has_credentials": False},
-        )
+    def test_empty_array_when_no_related_domains(self):
+        """Still a valid 200 with an empty list, not 404, whether WebAuthn is unconfigured or
+        only a canonical domain (no related ones) is set -- existence must not leak config."""
+        self.config.get_related_webauthn_domains.return_value = []
+        response = well_known_webauthn_handler(MagicMock(), self.context)
+        self.assertEqual(response.status, 200)
+        self.assertEqual(json.loads(response.body), {"origins": []})

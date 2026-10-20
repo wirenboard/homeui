@@ -19,7 +19,10 @@ const { authMock, navigateMock, searchParamsMock, webauthnMock } = vi.hoisted(()
 }));
 
 vi.mock('@/stores/auth', () => ({ authStore: authMock }));
-vi.mock('@/services/webauthn', () => webauthnMock);
+vi.mock('@/services/webauthn', async () => {
+  const actual = await vi.importActual<any>('@/services/webauthn');
+  return { ...webauthnMock, classifyWebAuthnError: actual.classifyWebAuthnError };
+});
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<any>('react-router-dom');
   return {
@@ -393,6 +396,21 @@ describe('LoginPage', () => {
       });
       expect(authMock.login).not.toHaveBeenCalled();
       expect(navigateMock).not.toHaveBeenCalled();
+    });
+
+    test.each([
+      { error: new DOMException('denied', 'NotAllowedError'), message: 'login.errors.passkey-cancelled' },
+      { error: new DOMException('bad origin', 'SecurityError'), message: 'login.errors.passkey-unsupported-origin' },
+      { error: new Error('network error'), message: 'login.errors.passkey-failed' },
+    ])('shows "$message" for a classified passkey failure', async ({ error, message }) => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      authMock.loginWithPasskey.mockRejectedValue(error);
+      render(<LoginPage />);
+      const btn = await waitFor(() => screen.getByLabelText('login.buttons.passkey'));
+      fireEvent.click(btn);
+      await waitFor(() => expect(screen.getByText(message)).toBeDefined());
+      expect(screen.queryByText('login.errors.failed')).toBeNull();
     });
   });
 });

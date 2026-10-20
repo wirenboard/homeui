@@ -4,6 +4,13 @@
   gap: 16px;
 }
 
+.passkeys-intro {
+  margin: 0;
+  color: var(--gray-color);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+}
+
 .passkeys-add {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

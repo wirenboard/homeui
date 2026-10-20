@@ -1,9 +1,15 @@
 export {
   authenticateWithPasskey,
   canUseWebAuthn,
+  classifyWebAuthnError,
   deletePasskey,
   getPasskeys,
   getWebAuthnConfig,
-  registerPasskey
+  registerPasskey,
+  setWebAuthnConfig
 } from './webauthn';
-export type { PasskeyCredential, WebAuthnConfig } from './types';
+export type {
+  PasskeyCredential,
+  WebAuthnConfig,
+  WebAuthnErrorClassification
+} from './types';

@@ -823,6 +823,7 @@
          "old-backend": "The software is out of date. Please update it",
          "unknown": "Error: {{msg}}",
          "passkey-register-failed": "Failed to register the passkey: {{msg}}",
+         "passkey-register-unsupported-origin": "This address doesn't support registering a passkey. Open HomeUI through the controller's canonical address and register from there instead.",
          "passkey-delete-failed": "Failed to delete the passkey: {{msg}}"
       },
       "labels":{
@@ -842,6 +843,7 @@
          "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access.",
          "empty-list": "No users have been created. Click \"Add\" to create the first user.",
          "passkeys-heading": "Passkeys — {{login}}",
+         "passkeys-intro": "A passkey replaces typing a password with this device's own unlock method — Touch ID, Windows Hello, a security key, or a phone's screen lock. It will be created on whichever device and browser has this dialog open right now, not necessarily the user's own — make sure that's the right one before registering.",
          "passkey-name": "Device name",
          "passkey-name-hint": "The name is just for your convenience, to tell keys apart. The passkey itself will be created next, in a system dialog.",
          "passkey-created": "Created",
@@ -850,6 +852,8 @@
          "passkeys-empty": "No passkeys have been registered for this user.",
          "confirm-delete-passkey": "Are you sure you want to delete the passkey <0>{{name}}</0>?",
          "passkeys-unavailable": "Passkeys require a supported browser and a secure HTTPS connection.",
+         "passkeys-not-configured": "Passkeys aren't set up for this controller yet. An admin can add a domain in Settings → Users → Passkeys / WebAuthn.",
+         "passkeys-wrong-domain": "Passkeys aren't available from this address. Open HomeUI through one of the configured domains (Settings → Users → Passkeys / WebAuthn) to manage them.",
          "role-user-desc": "view dashboards, history and MQTT channels",
          "role-operator-desc": "all User permissions + create and edit dashboards",
          "role-admin-desc": "full access: settings, rules, user management, firmware updates, archive downloads"
@@ -869,7 +873,10 @@
    "login": {
       "title": "Controller interface",
       "errors": {
-         "failed": "Incorrect credentials"
+         "failed": "Incorrect credentials",
+         "passkey-cancelled": "Passkey sign-in was cancelled.",
+         "passkey-unsupported-origin": "This address doesn't support passkey sign-in. Try signing in from the controller's primary address instead.",
+         "passkey-failed": "Passkey sign-in failed. Try again, or sign in with your password."
       },
       "buttons": {
          "login": "Sign in",
@@ -1019,12 +1026,28 @@
          "upload-font": "Upload font",
          "delete-font": "Delete",
          "no-fonts": "No fonts uploaded",
-         "fonts": "Fonts for SVG dashboards"
+         "fonts": "Fonts for SVG dashboards",
+         "webauthn-settings": "Domains for passkeys",
+         "webauthn-needs-https": "Passkeys require HTTPS to be enabled above first",
+         "webauthn-domains-empty": "No domains configured yet. Passkeys stay disabled until at least one domain is added.",
+         "webauthn-new-domain": "Add one more domain",
+         "webauthn-confirm-heading": "Remove this address?",
+         "webauthn-confirm-remove-primary": "Removing \"{{domain}}\" invalidates every passkey currently registered, for every user — they will all need to register new ones. Continue?"
+      },
+      "buttons": {
+         "webauthn-add-domain": "Add domain",
+         "webauthn-remove-domain": "Remove domain",
+         "webauthn-confirm-continue": "Yes, continue"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
          "get-https-status": "Failed to get HTTPS status: {{error}}",
-         "font-upload": "Font upload failed"
+         "get-webauthn-status": "Failed to get WebAuthn status: {{error}}",
+         "font-upload": "Font upload failed",
+         "setup-webauthn": "Failed to update passkey configuration: {{error}}",
+         "webauthn-domain-empty": "Enter a domain name.",
+         "webauthn-domain-ip": "Enter a domain name, not a bare IP address.",
+         "webauthn-domain-duplicate": "This domain is already configured."
       }
    },
    "mqtt": {
