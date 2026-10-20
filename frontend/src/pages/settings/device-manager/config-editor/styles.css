@@ -13,3 +13,16 @@
     list-style: disc;
     padding-left: 20px;
 }
+
+.page-headerTitleWrapper:has(.searchBar-expanded) > :not(.searchBar) {
+    display: none;
+}
+
+.page-headerTitleWrapper:has(.searchBar-expanded) .searchBar-expanded {
+    flex: 1 1 auto;
+    width: auto;
+}
+
+.page-headerTitleWrapper:has(.searchBar) ~ .page-actions {
+    flex-basis: 100%;
+}

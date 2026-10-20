@@ -7,15 +7,14 @@ import type { SettingsTab } from '../../stores/settings-tab-store';
 export interface PageTabsProps {
   tabs: (PortTab | SettingsTab | DeviceTabStore)[];
   selectedIndex: number;
-  showButtons: boolean;
   deviceTypeSelectOptions: DeviceTypeDropdownOptionGroup[];
   mobileModeStore: MobileModeTabsStore;
   isUserDefinedTypeFn?: (_type: string) => boolean;
+  searchQuery: string;
   onSelect: (_index: number) => boolean;
   onDeleteTab: () => Promise<void>;
   onDeletePortDevices: (_portTab: PortTab) => Promise<void>;
   onCopyTab: () => Promise<void>;
-  onAddPort: () => Promise<void>;
   onDeviceTypeChange: (_tab: DeviceTabStore, _type: string) => Promise<void>;
   onSearchDisconnectedDevice: () => void;
   onUpdateFirmware: () => void;

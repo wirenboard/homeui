@@ -1,0 +1,7 @@
+.deviceManagerAddMenu .dropdown__menu {
+    max-width: none !important;
+}
+
+.deviceManagerAddMenu .dropdown__option {
+    white-space: nowrap;
+}

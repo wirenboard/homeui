@@ -41,6 +41,7 @@ export class ConfigEditorPageStore {
   public loading: boolean = true;
   public saving: boolean = false;
   public error = '';
+  public pendingAddDeviceRequest: boolean = false;
   public templateOperationPending: boolean = false;
   public templateHint: string = '';
   // Device types touched by the last forced template upload/delete: templateHint is shown
@@ -80,6 +81,7 @@ export class ConfigEditorPageStore {
       isDirty: computed,
       loading: observable,
       saving: observable,
+      pendingAddDeviceRequest: observable,
       templateOperationPending: observable,
       templateHint: observable,
       templateAffectedTypes: observable.ref,
@@ -92,11 +94,21 @@ export class ConfigEditorPageStore {
       setTemplateSuccessMessage: action,
       clearTemplateSuccessMessage: action,
       addDevices: action,
+      requestAddDevice: action,
+      clearAddDeviceRequest: action,
     });
   }
 
   get isDirty() {
     return this.tabs.isDirty;
+  }
+
+  requestAddDevice() {
+    this.pendingAddDeviceRequest = true;
+  }
+
+  clearAddDeviceRequest() {
+    this.pendingAddDeviceRequest = false;
   }
 
   get allowSave() {

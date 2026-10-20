@@ -9,6 +9,10 @@
  * (some fast, some slow), updates a random subset of cells each time, with
  * timing jitter. Devices fire independently, not in sync.
  *
+ * The device-simulation logic itself lives in `mock-devices.mjs` (shared with
+ * the Playwright performance harness, `npm run test:perf`); this script is a
+ * CLI wrapper around it that adds console reporting and graceful cleanup.
+ *
  * Usage:
  *   node src/test/mqtt-stress.mjs [devices] [cells] [updates_per_sec] [broker]
  *   or
@@ -26,6 +30,7 @@
  * Ctrl+C to stop — cleans up test devices from the broker.
  */
 import mqtt from 'mqtt';
+import { computeDeviceIntervals, createUpdateLoop, publishDeviceMeta, removeDeviceMeta } from './mock-devices.mjs';
 
 const DEVICE_COUNT = parseInt(process.argv[2]) || 400;
 const CELLS_PER_DEVICE = parseInt(process.argv[3]) || 5;
@@ -33,10 +38,9 @@ const UPDATES_PER_SEC = parseInt(process.argv[4]) || 300;
 const BROKER_URL = process.argv[5] || 'mqtt://192.168.1.39:1883';
 const PREFIX = 'stress-dev-';
 const TOTAL_CELLS = DEVICE_COUNT * CELLS_PER_DEVICE;
-const CHECK_INTERVAL_MS = 50;
 
 let client;
-let updateTimer;
+let updateLoop;
 let statsTimer;
 let devicesCreated = false;
 let sentCount = 0;
@@ -44,66 +48,40 @@ let lastReportSent = 0;
 let lastReportTime = Date.now();
 let reconnects = 0;
 
-const avgCellsPerUpdate = Math.max(1, Math.ceil(CELLS_PER_DEVICE * 0.6));
-const avgDeviceInterval = 1000 * DEVICE_COUNT * avgCellsPerUpdate / UPDATES_PER_SEC;
-
-const deviceIntervals = new Float64Array(DEVICE_COUNT);
-const nextUpdate = new Float64Array(DEVICE_COUNT);
-
-for (let d = 0; d < DEVICE_COUNT; d++) {
-  deviceIntervals[d] = avgDeviceInterval * (0.3 + Math.random() * 1.4);
-}
+const { avgCellsPerUpdate, avgDeviceInterval, deviceIntervals } = computeDeviceIntervals({
+  deviceCount: DEVICE_COUNT,
+  cellsPerDevice: CELLS_PER_DEVICE,
+  updatesPerSec: UPDATES_PER_SEC,
+});
 
 function createDevices() {
   console.log(`Creating ${DEVICE_COUNT} devices with ${CELLS_PER_DEVICE} cells each (${TOTAL_CELLS} total)...`);
-  for (let d = 1; d <= DEVICE_COUNT; d++) {
-    const name = PREFIX + d;
-    client.publish(`/devices/${name}/meta/name`, `Stress Device ${d}`, { retain: true, qos: 1 });
-    for (let c = 1; c <= CELLS_PER_DEVICE; c++) {
-      client.publish(`/devices/${name}/controls/cell_${c}/meta/type`, 'text', { retain: true, qos: 1 });
-      client.publish(`/devices/${name}/controls/cell_${c}/meta/order`, String(c), { retain: true, qos: 1 });
-      client.publish(`/devices/${name}/controls/cell_${c}`, '0000', { retain: true, qos: 1 });
-    }
-  }
+  publishDeviceMeta(client, { deviceCount: DEVICE_COUNT, cellsPerDevice: CELLS_PER_DEVICE, prefix: PREFIX });
   console.log('Devices created.');
 }
 
 function startUpdates() {
-  if (updateTimer) return;
-
-  const now = performance.now();
-  for (let d = 0; d < DEVICE_COUNT; d++) {
-    nextUpdate[d] = now + Math.random() * deviceIntervals[d];
-  }
+  if (updateLoop) return;
 
   console.log(`\nStarting updates: target ~${UPDATES_PER_SEC} updates/sec`);
   console.log(`  Avg device interval: ${Math.round(avgDeviceInterval)}ms (range: ${Math.round(avgDeviceInterval * 0.3)}-${Math.round(avgDeviceInterval * 1.7)}ms)`);
   console.log(`  Avg cells per update: ~${avgCellsPerUpdate} of ${CELLS_PER_DEVICE}\n`);
 
-  updateTimer = setInterval(() => {
-    const now = performance.now();
-    for (let d = 0; d < DEVICE_COUNT; d++) {
-      if (now < nextUpdate[d]) continue;
+  updateLoop = createUpdateLoop(client, {
+    deviceCount: DEVICE_COUNT,
+    cellsPerDevice: CELLS_PER_DEVICE,
+    prefix: PREFIX,
+    deviceIntervals,
+    onPublish: () => sentCount++,
+  });
+  updateLoop.start();
+}
 
-      const name = PREFIX + (d + 1);
-      const cellsToUpdate = 1 + Math.floor(Math.random() * CELLS_PER_DEVICE);
-      const usedCells = new Set();
-
-      for (let i = 0; i < cellsToUpdate; i++) {
-        let c;
-        do {
-          c = 1 + Math.floor(Math.random() * CELLS_PER_DEVICE);
-        } while (usedCells.has(c));
-        usedCells.add(c);
-
-        const value = String(Math.floor(Math.random() * 9000) + 1000);
-        client.publish(`/devices/${name}/controls/cell_${c}`, value, { qos: 0 });
-        sentCount++;
-      }
-
-      nextUpdate[d] = now + deviceIntervals[d] * (0.8 + Math.random() * 0.4);
-    }
-  }, CHECK_INTERVAL_MS);
+function stopUpdates() {
+  if (updateLoop) {
+    updateLoop.stop();
+    updateLoop = null;
+  }
 }
 
 function printStats() {
@@ -117,25 +95,12 @@ function printStats() {
 }
 
 function removeDevices() {
-  return new Promise((resolve) => {
-    console.log('\n\nCleaning up test devices...');
-    let pending = 0;
-    for (let d = 1; d <= DEVICE_COUNT; d++) {
-      const name = PREFIX + d;
-      for (let c = 1; c <= CELLS_PER_DEVICE; c++) {
-        client.publish(`/devices/${name}/controls/cell_${c}`, '', { retain: true, qos: 1 });
-        client.publish(`/devices/${name}/controls/cell_${c}/meta/type`, '', { retain: true, qos: 1 });
-        client.publish(`/devices/${name}/controls/cell_${c}/meta/order`, '', { retain: true, qos: 1 });
-        pending += 3;
-      }
-      client.publish(`/devices/${name}/meta/name`, '', { retain: true, qos: 1 });
-      pending += 1;
-    }
-    setTimeout(() => {
+  console.log('\n\nCleaning up test devices...');
+  const pending = DEVICE_COUNT * (CELLS_PER_DEVICE * 3 + 1);
+  return removeDeviceMeta(client, { deviceCount: DEVICE_COUNT, cellsPerDevice: CELLS_PER_DEVICE, prefix: PREFIX })
+    .then(() => {
       console.log(`Removed ${DEVICE_COUNT} devices (${pending} messages).`);
-      resolve();
-    }, Math.min(pending * 2, 5000));
-  });
+    });
 }
 
 function waitForConnection(timeoutMs = 30000) {
@@ -163,10 +128,7 @@ async function shutdown() {
   if (shuttingDown) return;
   shuttingDown = true;
 
-  if (updateTimer) {
-    clearInterval(updateTimer);
-    updateTimer = null;
-  }
+  stopUpdates();
   if (statsTimer) {
     clearInterval(statsTimer);
     statsTimer = null;
@@ -220,9 +182,8 @@ client.on('error', (err) => {
 });
 
 client.on('close', () => {
-  if (updateTimer) {
+  if (updateLoop) {
     console.log('\n  Connection lost, pausing updates.');
-    clearInterval(updateTimer);
-    updateTimer = null;
+    stopUpdates();
   }
 });

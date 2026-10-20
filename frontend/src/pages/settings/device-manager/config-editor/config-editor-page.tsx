@@ -1,10 +1,11 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type ChangeEvent, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Confirm, useConfirm } from '@/components/confirm';
+import { SearchBar } from '@/components/search-bar';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { AddDeviceModal } from './components/add-device-modal';
@@ -21,6 +22,7 @@ const ConfigEditorPage = observer((
   { pageStore, serialTemplatesProxy, onAddWbDevice, onSearchDisconnectedDevice }: ConfigEditorPageProps,
 ) => {
   const { t, i18n } = useTranslation();
+  const [ searchQuery, setSearchQuery ] = useState('');
   const [ showCopyDeviceModal, isCopyTabOpened, handleCopyTab, handleCopyTabClose ] = useConfirm<any>();
   const [ showAddDeviceModal, isAddDeviceOpened, handleAddDevice, handleAddDeviceClose ] = useConfirm<any>();
   const [ showAddPortModal, isAddPortOpened, handleAddPort, handleAddPortClose ] = useConfirm<any>();
@@ -164,6 +166,17 @@ const ConfigEditorPage = observer((
     );
   };
 
+  useEffect(() => {
+    if (pageStore.pendingAddDeviceRequest) {
+      pageStore.clearAddDeviceRequest();
+      pageStore.addDevice(showAddDeviceModal);
+    }
+  }, [pageStore.pendingAddDeviceRequest]);
+
+  const isMobile = pageStore.tabs.mobileModeStore.inMobileMode;
+  const showSearch = !pageStore.tabs.isEmpty
+    && (!isMobile || pageStore.tabs.mobileModeStore.tabsPanelIsActive);
+
   return (
     <>
       <PageLayout
@@ -171,30 +184,49 @@ const ConfigEditorPage = observer((
         infoLink={documentation[i18n.language]?.serial}
         hasRights={authStore.hasRights(UserRole.Admin)}
         errors={[
-          ...(pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []),
-          ...(pageStore.templateSuccessMessage
-            ? [{
-              variant: 'success',
-              text: pageStore.templateSuccessMessage,
-              onClose: () => pageStore.clearTemplateSuccessMessage(),
-            }]
-            : []),
+            ...(pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []),
+            ...(pageStore.templateSuccessMessage
+                ? [{
+                    variant: 'success',
+                    text: pageStore.templateSuccessMessage,
+                    onClose: () => pageStore.clearTemplateSuccessMessage(),
+                }]
+                : []),
         ]}
         isLoading={pageStore.loading || isBusy}
         loadingOptions={
-          isBusy ? { overlay: true, showActions: true } : undefined
+            isBusy ? { overlay: true, showActions: true } : undefined
         }
+        titleArea={isMobile && showSearch && (
+          <SearchBar
+            value={searchQuery}
+            placeholder={t('device-manager.labels.search')}
+            ariaLabel={t('device-manager.labels.search')}
+            onChange={setSearchQuery}
+          />
+        )}
         actions={
           (!pageStore.loading) && (
-            <HeaderButtons
-              allowSave={pageStore.allowSave}
-              isSaving={isBusy}
-              allowAddDevice={pageStore.tabs.hasPortTabs}
-              mobileModeStore={pageStore.tabs.mobileModeStore}
-              onSave={() => pageStore.save()}
-              onAddDevice={() => pageStore.addDevice(showAddDeviceModal)}
-              onAddWbDevice={onAddWbDevice}
-            />
+            <>
+              {!isMobile && showSearch && (
+                <SearchBar
+                  value={searchQuery}
+                  placeholder={t('device-manager.labels.search')}
+                  ariaLabel={t('device-manager.labels.search')}
+                  onChange={setSearchQuery}
+                />
+              )}
+              <HeaderButtons
+                allowSave={pageStore.allowSave}
+                isSaving={isBusy}
+                allowAddDevice={pageStore.tabs.hasPortTabs}
+                mobileModeStore={pageStore.tabs.mobileModeStore}
+                onSave={() => pageStore.save()}
+                onAddDevice={() => pageStore.addDevice(showAddDeviceModal)}
+                onAddWbDevice={onAddWbDevice}
+                onAddPort={() => pageStore.addPort(showAddPortModal)}
+              />
+            </>
           )
         }
       >
@@ -207,11 +239,11 @@ const ConfigEditorPage = observer((
             <PageTabs
               tabs={pageStore.tabs.items}
               selectedIndex={pageStore.tabs.selectedTabIndex}
-              showButtons={!pageStore.loading}
               deviceTypeSelectOptions={
                 pageStore.deviceTypesStore.deviceTypeDropdownOptions
               }
               mobileModeStore={pageStore.tabs.mobileModeStore}
+              searchQuery={searchQuery}
               isUserDefinedTypeFn={(type) =>
                 pageStore.deviceTypesStore.isUserDefined(type)
               }
@@ -224,7 +256,6 @@ const ConfigEditorPage = observer((
                 pageStore.deletePortDevices(showDeleteModal)
               }
               onCopyTab={() => pageStore.copyTab(showCopyDeviceModal)}
-              onAddPort={() => pageStore.addPort(showAddPortModal)}
               onDeviceTypeChange={(tab, type) =>
                 pageStore.changeDeviceType(tab, type)
               }
