@@ -13,6 +13,7 @@ import {
 } from '@/components/json-editor/forms';
 import { PageLayout } from '@/layouts/page';
 import { MbGateStore } from '@/pages/settings/configs/mbgate/stores/page-store';
+import { type RegisterTypeSelection } from '@/pages/settings/configs/mbgate/stores/types';
 import { authStore, UserRole } from '@/stores/auth';
 import { configsStore } from '@/stores/configs';
 import { devicesStore } from '@/stores/devices';
@@ -39,8 +40,8 @@ const MbGatePage = observer(() => {
   }, [store]);
 
   const handleConfirmSelect = useCallback(
-    (selectedControls: string[]) => {
-      store.addControls(selectedControls);
+    (selectedControls: string[], registerType: RegisterTypeSelection) => {
+      store.addControls(selectedControls, registerType);
       setIsSelectOpen(false);
     },
     [store],

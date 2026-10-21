@@ -1,11 +1,15 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Confirm } from '@/components/confirm';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tree, type TreeItem } from '@/components/tree';
+import { type RegisterTypeSelection } from '@/pages/settings/configs/mbgate/stores/types';
 import type Cell from '@/stores/devices/cell';
 import type { SelectControlProps, ControlNode } from './types';
 import './styles.css';
+
+const WRITABLE_REGISTER_TYPES: RegisterTypeSelection[] = ['coils', 'holdings'];
 
 function makeControlNodes(
   cells: Map<string, Cell>,
@@ -94,6 +98,7 @@ export const SelectControls = ({
   const [devicePattern, setDevicePattern] = useState('');
   const [controlPattern, setControlPattern] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [registerType, setRegisterType] = useState<RegisterTypeSelection>('auto');
 
   const controls = useMemo(
     () => buildControlTree(devicesStore, configuredControls),
@@ -106,6 +111,32 @@ export const SelectControls = ({
     return ids;
   }, [controls]);
 
+  const selectedControls = useMemo(
+    () => Array.from(selectedIds).filter((id) => leafIds.has(id)),
+    [selectedIds, leafIds],
+  );
+
+  const hasReadOnlySelected = useMemo(
+    () => selectedControls.some((id) => devicesStore.cells.get(id)?.readOnly),
+    [selectedControls, devicesStore],
+  );
+
+  // Writable register types make no sense for read-only channels
+  const registerTypeOptions: Option<RegisterTypeSelection>[] = useMemo(
+    () =>
+      (['auto', 'discretes', 'coils', 'inputs', 'holdings'] as RegisterTypeSelection[])
+        .filter((value) => !hasReadOnlySelected || !WRITABLE_REGISTER_TYPES.includes(value))
+        .map((value) => ({
+          value,
+          label: t(`mbgate.labels.register-types.${value}`),
+        })),
+    [t, hasReadOnlySelected],
+  );
+
+  const effectiveRegisterType = registerTypeOptions.some((option) => option.value === registerType)
+    ? registerType
+    : 'auto';
+
   const filteredTreeItems = useMemo(() => {
     const filtered = filterTree(
       controls,
@@ -116,8 +147,8 @@ export const SelectControls = ({
   }, [controls, devicePattern, controlPattern]);
 
   const handleConfirm = useCallback(() => {
-    onConfirm(Array.from(selectedIds).filter((id) => leafIds.has(id)));
-  }, [selectedIds, leafIds, onConfirm]);
+    onConfirm(selectedControls, effectiveRegisterType);
+  }, [selectedControls, effectiveRegisterType, onConfirm]);
 
   return (
     <Confirm
@@ -147,6 +178,15 @@ export const SelectControls = ({
         selectable
         onSelectionChange={setSelectedIds}
       />
+      <label className="selectControls-registerType">
+        {t('mbgate.labels.register-type')}
+        <Dropdown
+          options={registerTypeOptions}
+          value={effectiveRegisterType}
+          menuPortal
+          onChange={({ value }: Option<RegisterTypeSelection>) => setRegisterType(value)}
+        />
+      </label>
     </Confirm>
   );
 };

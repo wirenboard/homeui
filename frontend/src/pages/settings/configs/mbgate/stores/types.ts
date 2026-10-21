@@ -10,6 +10,10 @@ export interface Register {
   wordswap?: boolean;
 }
 
+export type RegisterType = 'coils' | 'discretes' | 'holdings' | 'inputs';
+
+export type RegisterTypeSelection = RegisterType | 'auto';
+
 export interface AllRegisters {
   coils: Register[];
   discretes: Register[];

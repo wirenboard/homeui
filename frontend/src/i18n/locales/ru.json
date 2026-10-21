@@ -577,7 +577,15 @@
          "no-controls": "Все доступные каналы уже настроены",
          "select-channels": "Выберите каналы",
          "search-device": "Найти устройство",
-         "search-control": "Найти канал"
+         "search-control": "Найти канал",
+         "register-type": "Тип регистра",
+         "register-types": {
+            "auto": "Автоматически по типу канала",
+            "discretes": "Дискретные входы (Discrete inputs)",
+            "coils": "Дискретные выходы (Coils)",
+            "inputs": "Регистры Input",
+            "holdings": "Регистры Holding"
+         }
       }
    },
    "configurations": {

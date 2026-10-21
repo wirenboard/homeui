@@ -579,7 +579,15 @@
          "no-controls": "All available channels are already configured",
          "select-channels": "Select channels",
          "search-device": "Search device",
-         "search-control": "Search channel"
+         "search-control": "Search channel",
+         "register-type": "Register type",
+         "register-types": {
+            "auto": "Automatically by channel type",
+            "discretes": "Discrete inputs",
+            "coils": "Coils",
+            "inputs": "Input registers",
+            "holdings": "Holding registers"
+         }
       }
    },
    "configurations": {

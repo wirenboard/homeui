@@ -1,10 +1,11 @@
+import { type RegisterTypeSelection } from '@/pages/settings/configs/mbgate/stores/types';
 import { type DevicesStore } from '@/stores/devices';
 
 export interface SelectControlProps {
   isOpen: boolean;
   configuredControls: string[];
   devicesStore: DevicesStore;
-  onConfirm: (selectedControls: string[]) => void;
+  onConfirm: (selectedControls: string[], registerType: RegisterTypeSelection) => void;
   onClose: () => void;
 }
 

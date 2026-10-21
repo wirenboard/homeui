@@ -13,6 +13,19 @@ vi.mock('@/components/confirm', () => ({
       </div>
     ) : null,
 }));
+vi.mock('@/components/dropdown', () => ({
+  Dropdown: ({ options, value, onChange }: any) => (
+    <select
+      data-testid="register-type"
+      value={value}
+      onChange={(e: any) => onChange(options.find((o: any) => o.value === e.target.value))}
+    >
+      {options.map((o: any) => (
+        <option key={o.value} value={o.value}>{o.label}</option>
+      ))}
+    </select>
+  ),
+}));
 vi.mock('@/components/input', () => ({
   Input: ({ placeholder, value, onChange }: any) => (
     <input
@@ -51,7 +64,7 @@ vi.mock('@/components/tree', () => ({
 
 function makeDevicesStore(
   devices: { id: string; name: string; cells: string[] }[],
-  cellData: Record<string, { name: string }>,
+  cellData: Record<string, { name: string; readOnly?: boolean }>,
 ) {
   return {
     cells: new Map(Object.entries(cellData)),
@@ -68,7 +81,7 @@ const defaultDevicesStore = () =>
       { id: 'wb-gpio', name: 'GPIO', cells: ['wb-gpio/EXT1'] },
     ],
     {
-      'wb-adc/Vin': { name: 'Vin' },
+      'wb-adc/Vin': { name: 'Vin', readOnly: true },
       'wb-adc/A1': { name: 'A1' },
       'wb-gpio/EXT1': { name: 'EXT1' },
     },
@@ -164,7 +177,41 @@ describe('SelectControls', () => {
     renderSelect();
     fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
     fireEvent.click(screen.getByTestId('confirm-btn'));
-    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin']);
+    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'auto');
+  });
+
+  test('calls onConfirm with selected register type', () => {
+    renderSelect();
+    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
+    fireEvent.change(screen.getByTestId('register-type'), { target: { value: 'inputs' } });
+    fireEvent.click(screen.getByTestId('confirm-btn'));
+    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'inputs');
+  });
+
+  test('offers all register types for writable controls', () => {
+    renderSelect();
+    fireEvent.click(screen.getByTestId('select-wb-adc/A1'));
+    const values = Array.from(screen.getByTestId('register-type').querySelectorAll('option'))
+      .map((o) => o.getAttribute('value'));
+    expect(values).toEqual(['auto', 'discretes', 'coils', 'inputs', 'holdings']);
+  });
+
+  test('hides writable register types when read-only control selected', () => {
+    renderSelect();
+    fireEvent.click(screen.getByTestId('select-wb-adc/A1'));
+    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
+    const values = Array.from(screen.getByTestId('register-type').querySelectorAll('option'))
+      .map((o) => o.getAttribute('value'));
+    expect(values).toEqual(['auto', 'discretes', 'inputs']);
+  });
+
+  test('falls back to auto when chosen register type becomes hidden', () => {
+    renderSelect();
+    fireEvent.click(screen.getByTestId('select-wb-adc/A1'));
+    fireEvent.change(screen.getByTestId('register-type'), { target: { value: 'holdings' } });
+    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
+    fireEvent.click(screen.getByTestId('confirm-btn'));
+    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/A1', 'wb-adc/Vin'], 'auto');
   });
 
   test('sorts devices alphabetically', () => {
