@@ -583,7 +583,7 @@
          "additional-port": "Port {{number}}",
          "delete-port": "Delete port",
          "delete-port-confirm": "Delete port \"{{name}}\" with all its channels?",
-         "settings": "General settings",
+         "settings": "wb-mqtt-mbgate settings",
          "select-channels-to": {
             "auto": "Select channels",
             "discretes": "Select channels for discrete inputs",

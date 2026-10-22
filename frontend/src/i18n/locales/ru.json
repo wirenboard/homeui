@@ -581,7 +581,7 @@
          "additional-port": "Порт {{number}}",
          "delete-port": "Удаление порта",
          "delete-port-confirm": "Удалить порт «{{name}}» вместе со всеми его каналами?",
-         "settings": "Общие настройки",
+         "settings": "Настройки wb-mqtt-mbgate",
          "select-channels-to": {
             "auto": "Выберите каналы",
             "discretes": "Выберите каналы для дискретных входов",

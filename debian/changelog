@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.271.0) stable; urgency=medium
+
+  * Support additional ports on the MQTT to Modbus gateway page
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 22 Oct 2026 14:15:28 +0300
+
 wb-mqtt-homeui (2.270.0) stable; urgency=medium
 
   * Allow choosing the register type when adding channels on the MQTT to Modbus gateway page
