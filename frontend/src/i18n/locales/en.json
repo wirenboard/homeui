@@ -573,12 +573,16 @@
       "title": "MQTT to Modbus TCP and RTU slave gateway configuration",
       "buttons": {
          "save": "Save",
-         "add": "Add"
+         "add": "Add",
+         "add-port": "Add port",
+         "delete-port": "Delete port"
       },
       "labels": {
          "no-controls": "All available channels are already configured",
          "main-port": "Main port",
          "additional-port": "Port {{number}}",
+         "delete-port": "Delete port",
+         "delete-port-confirm": "Delete port \"{{name}}\" with all its channels?",
          "settings": "General settings",
          "select-channels-to": {
             "auto": "Select channels",
@@ -596,6 +600,9 @@
             "inputs": "To input registers",
             "holdings": "To holding registers"
          }
+      },
+      "errors": {
+         "port-conflict": "Port {{ports}} has the same connection settings. Each port must use its own TCP port or device."
       }
    },
    "configurations": {

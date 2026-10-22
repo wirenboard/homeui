@@ -2,9 +2,11 @@ import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SettingsIcon from '@/assets/icons/settings.svg';
+import WarnIcon from '@/assets/icons/warn.svg';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import {
@@ -52,6 +54,7 @@ const MbGatePage = observer(() => {
   const [registerType, setRegisterType] = useState<RegisterTypeSelection>('auto');
   const [activeTab, setActiveTab] = useState<string>(MAIN_PORT_TAB);
   const [targetRegisters, setTargetRegisters] = useState(null);
+  const [portToDelete, setPortToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     setIsDirty(store.isDirty);
@@ -143,27 +146,45 @@ const MbGatePage = observer(() => {
 
   const params = store.paramsStore.params;
 
+  const getAdditionalPortName = (index: number) =>
+    store.additionalPorts[index]?.params.name?.value || t('mbgate.labels.additional-port', { number: index + 1 });
+
+  const portToDeleteName = portToDelete !== null ? getAdditionalPortName(portToDelete) : '';
+
+  // Port numbering follows store.portConflicts: 0 is the main port, i + 1 is additional port i
+  const getPortName = (portNumber: number) =>
+    portNumber === 0 ? t('mbgate.labels.main-port') : getAdditionalPortName(portNumber - 1);
+
+  const portConflicts = store.portConflicts;
+
+  const renderPortTab = (portNumber: number, binding?: Record<string, any>) => (
+    <div className="mbgate-portTab">
+      <span className="mbgate-portTabName">
+        {getPortName(portNumber)}
+        {!!portConflicts[portNumber]?.length && <WarnIcon className="mbgate-portTabWarn" />}
+      </span>
+      <span className="mbgate-portTabDetails">{formatPortBinding(binding)}</span>
+    </div>
+  );
+
+  const renderPortConflict = (portNumber: number) =>
+    !!portConflicts[portNumber]?.length && (
+      <Alert variant="danger" className="mbgate-portConflict">
+        {t('mbgate.errors.port-conflict', {
+          ports: portConflicts[portNumber].map((other) => `«${getPortName(other)}»`).join(', '),
+        })}
+      </Alert>
+    );
+
   const tabs = params
     ? [
       {
         id: MAIN_PORT_TAB,
-        label: (
-          <div className="mbgate-portTab">
-            <span className="mbgate-portTabName">{t('mbgate.labels.main-port')}</span>
-            <span className="mbgate-portTabDetails">{formatPortBinding(params.modbus?.value)}</span>
-          </div>
-        ),
+        label: renderPortTab(0, params.modbus?.value),
       },
       ...store.additionalPorts.map((port, index) => ({
         id: additionalPortTab(index),
-        label: (
-          <div className="mbgate-portTab">
-            <span className="mbgate-portTabName">
-              {port.params.name?.value || t('mbgate.labels.additional-port', { number: index + 1 })}
-            </span>
-            <span className="mbgate-portTabDetails">{formatPortBinding(port.params.modbus?.value)}</span>
-          </div>
-        ),
+        label: renderPortTab(index + 1, port.params.modbus?.value),
       })),
       {
         id: SETTINGS_TAB,
@@ -187,6 +208,13 @@ const MbGatePage = observer(() => {
         errors={store.error ? [{ variant: 'danger', text: store.error }] : []}
         actions={
           <>
+            {params && (
+              <Button
+                label={t('mbgate.buttons.add-port')}
+                variant="secondary"
+                onClick={() => setActiveTab(additionalPortTab(store.addPort()))}
+              />
+            )}
             <Button
               label={t('mbgate.buttons.save')}
               disabled={!store.allowSave && !isSaving}
@@ -205,12 +233,22 @@ const MbGatePage = observer(() => {
               <ShowParamCaptionContext.Provider value={true}>
                 <CustomEditorBuilderContext.Provider value={buildRegistersForm}>
                   <TabContent activeTab={activeTab} tabId={MAIN_PORT_TAB}>
+                    {renderPortConflict(0)}
                     <div className="form-content">
                       {MakeFormFields([['modbus', params.modbus], ['registers', params.registers]])}
                     </div>
                   </TabContent>
                   {store.additionalPorts.map((port, index) => (
                     <TabContent key={index} activeTab={activeTab} tabId={additionalPortTab(index)}>
+                      <div className="mbgate-portHeader">
+                        <Button
+                          label={t('mbgate.buttons.delete-port')}
+                          variant="danger"
+                          aria-haspopup="dialog"
+                          onClick={() => setPortToDelete(index)}
+                        />
+                      </div>
+                      {renderPortConflict(index + 1)}
                       <div className="form-content">
                         {MakeFormFields([
                           ['name', port.params.name],
@@ -231,6 +269,20 @@ const MbGatePage = observer(() => {
           </div>
         )}
       </PageLayout>
+      <Confirm
+        isOpened={portToDelete !== null}
+        heading={t('mbgate.labels.delete-port')}
+        variant="danger"
+        acceptLabel={t('mbgate.buttons.delete-port')}
+        closeCallback={() => setPortToDelete(null)}
+        confirmCallback={() => {
+          store.removePort(portToDelete);
+          setPortToDelete(null);
+          setActiveTab(MAIN_PORT_TAB);
+        }}
+      >
+        {t('mbgate.labels.delete-port-confirm', { name: portToDeleteName })}
+      </Confirm>
       <SelectControls
         isOpen={isSelectOpen}
         configuredControls={configuredControls}

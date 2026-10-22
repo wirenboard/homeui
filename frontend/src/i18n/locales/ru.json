@@ -571,12 +571,16 @@
       "title": "Шлюз MQTT - Modbus RTU/TCP slave",
       "buttons": {
          "save": "Сохранить",
-         "add": "Добавить"
+         "add": "Добавить",
+         "add-port": "Добавить порт",
+         "delete-port": "Удалить порт"
       },
       "labels": {
          "no-controls": "Все доступные каналы уже настроены",
          "main-port": "Основной порт",
          "additional-port": "Порт {{number}}",
+         "delete-port": "Удаление порта",
+         "delete-port-confirm": "Удалить порт «{{name}}» вместе со всеми его каналами?",
          "settings": "Общие настройки",
          "select-channels-to": {
             "auto": "Выберите каналы",
@@ -594,6 +598,9 @@
             "inputs": "В регистры Input",
             "holdings": "В регистры Holding"
          }
+      },
+      "errors": {
+         "port-conflict": "Такие же настройки подключения у порта {{ports}}. Каждый порт должен использовать свой TCP-порт или своё устройство."
       }
    },
    "configurations": {

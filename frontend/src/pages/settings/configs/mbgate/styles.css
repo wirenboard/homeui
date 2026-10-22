@@ -19,6 +19,12 @@
     padding: 8px 18px;
 }
 
+.mbgate-portHeader {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
 .mbgate-portTab {
     display: flex;
     flex-direction: column;
@@ -26,7 +32,21 @@
 }
 
 .mbgate-portTabName {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-weight: bold;
+}
+
+.mbgate-portTabWarn {
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    color: var(--danger-color);
+}
+
+.mbgate-portConflict {
+    margin-bottom: 12px;
 }
 
 .mbgate-portTabDetails {
