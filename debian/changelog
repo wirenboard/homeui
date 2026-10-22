@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.271.0) stable; urgency=medium
+
+  * Add custom device template management
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 22 Oct 2026 14:08:00 +0300
+
 wb-mqtt-homeui (2.270.0) stable; urgency=medium
 
   * Allow choosing the register type when adding channels on the MQTT to Modbus gateway page

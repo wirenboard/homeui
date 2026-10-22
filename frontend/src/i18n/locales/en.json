@@ -504,7 +504,25 @@
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
          "not-polled": "The device is not being polled",
          "user-defined": "Custom",
-         "search": "Search devices"
+         "search": "Search devices",
+         "upload-template-title": "Upload template",
+         "upload-template-warning": "The template is saved immediately. If devices already use this template, applying it may re-read their settings from the device and rewrite the configuration.",
+         "upload-template-invalid-json": "The template file is corrupted or is not valid JSON",
+         "upload-template-success": "Template uploaded, the configuration was saved automatically",
+         "delete-template-success": "Custom template deleted",
+         "template-sync-hint": "Parameters read from the device were refreshed per the new template, provided the device is enabled, reachable, and the template reads them from hardware. Otherwise, the previous values are kept.",
+         "template-requires-saved-config": "Save your current configuration changes before uploading or deleting a template",
+         "template-in-use-upload-title": "Template in use",
+         "confirm-template-in-use-upload": "The current configuration contains devices using template \"{{item}}\". Their settings will be displayed using the new template.",
+         "template-in-use-delete-title": "Template in use",
+         "confirm-template-in-use-delete": "The current configuration contains devices using template \"{{item}}\". Deleting it will revert them to the standard template.",
+         "apply-problems-intro-upload": "Applying template \"{{item}}\" may affect devices that already use it:",
+         "apply-problems-intro-delete": "Deleting template \"{{item}}\" may affect devices that already use it:",
+         "apply-problems-disabled": "Already disabled, parameters will not change",
+         "apply-problems-unread": "Could not be read, will keep their previous parameter values",
+         "apply-problems-invalid": "Will end up with an invalid configuration",
+         "apply-problems-invalid-warning": "As long as even one device has an invalid configuration, polling will not start at all, for any device on the controller. It resumes only once the configuration is fixed and saved.",
+         "apply-problems-device": "{{port}} (slave ID {{slaveId}})"
       },
       "buttons": {
          "save": "Save config",
@@ -522,7 +540,11 @@
          "update": "Update",
          "parameters": "Parameters",
          "reread-config": "Reread config",
-         "switch-template": "Switch template"
+         "switch-template": "Switch template",
+         "upload-template": "Upload custom template",
+         "delete-template": "Delete custom template",
+         "overwrite-template": "Overwrite",
+         "template-actions": "Template"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
