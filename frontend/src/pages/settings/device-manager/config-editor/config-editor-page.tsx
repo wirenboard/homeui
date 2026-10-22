@@ -51,7 +51,7 @@ const ConfigEditorPage = observer((
 
   const handleUploadTemplate = useCallback(async () => {
     if (pageStore.isDirty) {
-      pageStore.setError(t('device-manager.labels.template-requires-saved-config'));
+      pageStore.setTemplateWarning(t('device-manager.labels.template-requires-saved-config'));
       return;
     }
     const confirmed = await showUploadConfirmModal();
@@ -113,7 +113,7 @@ const ConfigEditorPage = observer((
 
   const handleDeleteTemplate = useCallback(async (deviceType: string) => {
     if (pageStore.isDirty) {
-      pageStore.setError(t('device-manager.labels.template-requires-saved-config'));
+      pageStore.setTemplateWarning(t('device-manager.labels.template-requires-saved-config'));
       return;
     }
     pageStore.startTemplateOperation();
@@ -184,18 +184,25 @@ const ConfigEditorPage = observer((
         infoLink={documentation[i18n.language]?.serial}
         hasRights={authStore.hasRights(UserRole.Admin)}
         errors={[
-            ...(pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []),
-            ...(pageStore.templateSuccessMessage
-                ? [{
-                    variant: 'success',
-                    text: pageStore.templateSuccessMessage,
-                    onClose: () => pageStore.clearTemplateSuccessMessage(),
-                }]
-                : []),
+          ...(pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []),
+          ...(pageStore.templateWarning
+            ? [{
+              variant: 'warn',
+              text: pageStore.templateWarning,
+              onClose: () => pageStore.clearTemplateWarning(),
+            }]
+            : []),
+          ...(pageStore.templateSuccessMessage
+            ? [{
+              variant: 'success',
+              text: pageStore.templateSuccessMessage,
+              onClose: () => pageStore.clearTemplateSuccessMessage(),
+            }]
+            : []),
         ]}
         isLoading={pageStore.loading || isBusy}
         loadingOptions={
-            isBusy ? { overlay: true, showActions: true } : undefined
+          isBusy ? { overlay: true, showActions: true } : undefined
         }
         titleArea={isMobile && showSearch && (
           <SearchBar

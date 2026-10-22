@@ -48,6 +48,7 @@ export class ConfigEditorPageStore {
   // only on device tabs of these types, not on every open tab.
   public templateAffectedTypes: Set<string> = new Set();
   public templateSuccessMessage: string = '';
+  public templateWarning: string = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -81,11 +82,14 @@ export class ConfigEditorPageStore {
       isDirty: computed,
       loading: observable,
       saving: observable,
+      error: observable,
       pendingAddDeviceRequest: observable,
       templateOperationPending: observable,
       templateHint: observable,
       templateAffectedTypes: observable.ref,
       templateSuccessMessage: observable,
+      templateWarning: observable,
+      setError: action,
       startTemplateOperation: action,
       endTemplateOperation: action,
       setTemplateHint: action,
@@ -93,6 +97,8 @@ export class ConfigEditorPageStore {
       setTemplateAffectedTypes: action,
       setTemplateSuccessMessage: action,
       clearTemplateSuccessMessage: action,
+      setTemplateWarning: action,
+      clearTemplateWarning: action,
       addDevices: action,
       requestAddDevice: action,
       clearAddDeviceRequest: action,
@@ -159,7 +165,9 @@ export class ConfigEditorPageStore {
 
   async load() {
     try {
-      this.error = '';
+      runInAction(() => {
+        this.error = '';
+      });
       const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(schema.translations);
@@ -209,6 +217,7 @@ export class ConfigEditorPageStore {
     this.templateHint = '';
     this.templateAffectedTypes = new Set();
     this.templateSuccessMessage = '';
+    this.templateWarning = '';
   }
 
   endTemplateOperation() {
@@ -233,6 +242,14 @@ export class ConfigEditorPageStore {
 
   clearTemplateSuccessMessage() {
     this.templateSuccessMessage = '';
+  }
+
+  setTemplateWarning(message: string) {
+    this.templateWarning = message;
+  }
+
+  clearTemplateWarning() {
+    this.templateWarning = '';
   }
 
   async reload() {
@@ -327,6 +344,7 @@ export class ConfigEditorPageStore {
       await this.saveConfigFn(this.makeConfigJson());
       runInAction(() => {
         this.tabs.commitData();
+        this.templateWarning = '';
       });
     } catch (err) {
       runInAction(() => {

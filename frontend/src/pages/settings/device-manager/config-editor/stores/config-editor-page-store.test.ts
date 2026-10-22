@@ -194,6 +194,56 @@ describe('ConfigEditorPageStore template affected types and success message', ()
   });
 });
 
+describe('ConfigEditorPageStore template warning', () => {
+  it('setTemplateWarning sets the templateWarning text', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+
+    store.setTemplateWarning('unsaved changes');
+
+    expect(store.templateWarning).toBe('unsaved changes');
+  });
+
+  it('clearTemplateWarning resets templateWarning to an empty string', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateWarning('unsaved changes');
+
+    store.clearTemplateWarning();
+
+    expect(store.templateWarning).toBe('');
+  });
+
+  it('startTemplateOperation clears a pending templateWarning', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateWarning('unsaved changes');
+
+    store.startTemplateOperation();
+
+    expect(store.templateWarning).toBe('');
+  });
+
+  it('save clears the templateWarning once the configuration is saved successfully', async () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateWarning('unsaved changes');
+
+    await store.save();
+
+    expect(store.templateWarning).toBe('');
+  });
+
+  it('save leaves the templateWarning in place when saving fails', async () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.saveConfigFn = async () => {
+      throw new Error('write failed');
+    };
+    store.setTemplateWarning('unsaved changes');
+
+    await store.save();
+
+    expect(store.templateWarning).toBe('unsaved changes');
+    expect(store.error).not.toBe('');
+  });
+});
+
 describe('ConfigEditorPageStore.reload', () => {
   const makeReplacementPortTab = (store: ConfigEditorPageStore) => {
     const newPortTab = new PortTab(
