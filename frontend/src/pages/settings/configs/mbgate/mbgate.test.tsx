@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render, screen } from '@/test/render';
+import { fireEvent, render, screen } from '@/test/render';
 import MbGatePage from './mbgate';
 
 const { storeMock } = vi.hoisted(() => ({
@@ -8,13 +8,25 @@ const { storeMock } = vi.hoisted(() => ({
     error: null as string | null,
     isDirty: false,
     allowSave: false,
+    additionalPorts: [] as any[],
+    portConflicts: [] as number[][],
     loadData: vi.fn(),
     save: vi.fn().mockResolvedValue(undefined),
     getConfiguredControls: vi.fn().mockReturnValue([]),
     addControls: vi.fn(),
     checkAllControlsConfigured: vi.fn().mockReturnValue(false),
+    addPort: vi.fn().mockReturnValue(0),
+    removePort: vi.fn(),
   },
 }));
+
+function makeParams(modbus: Record<string, any> = { host: '*', port: 502 }) {
+  return { modbus: { value: modbus }, registers: {}, debug: {}, mqtt: {} };
+}
+
+function makePort(modbus: Record<string, any>, name = '') {
+  return { params: { name: { value: name }, modbus: { value: modbus }, registers: {} } };
+}
 
 vi.mock('@/utils/use-store', () => ({ useStore: () => storeMock }));
 vi.mock('@/utils/prevent-page-leave', () => ({
@@ -61,6 +73,15 @@ vi.mock('@/components/json-editor/forms', () => ({
   MakeFormFields: () => null,
   makeParameterStoreFromJsonSchema: vi.fn(),
 }));
+vi.mock('@/components/confirm', () => ({
+  Confirm: ({ isOpened, children, confirmCallback }: any) =>
+    isOpened ? (
+      <div data-testid="confirm-dialog">
+        {children}
+        <button data-testid="confirm-btn" onClick={confirmCallback}>OK</button>
+      </div>
+    ) : null,
+}));
 vi.mock('./components/select-controls', () => ({
   SelectControls: ({ isOpen }: any) =>
     isOpen ? <div data-testid="select-controls" /> : null,
@@ -73,7 +94,10 @@ describe('MbGatePage', () => {
     storeMock.error = null;
     storeMock.isDirty = false;
     storeMock.allowSave = false;
+    storeMock.additionalPorts = [];
+    storeMock.portConflicts = [];
     storeMock.checkAllControlsConfigured.mockReturnValue(false);
+    storeMock.addPort.mockReturnValue(0);
   });
 
   test('renders page title', () => {
@@ -107,15 +131,70 @@ describe('MbGatePage', () => {
     expect(screen.queryByTestId('page-error')).not.toBeInTheDocument();
   });
 
-  test('renders form when paramsStore has params', () => {
-    storeMock.paramsStore = { params: { registers: {} } };
+  test('renders main port and settings tabs when params loaded', () => {
+    storeMock.paramsStore = { params: makeParams() };
     render(<MbGatePage />);
-    expect(screen.getByTestId('json-form')).toBeInTheDocument();
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(2);
+    expect(tabs[0]).toHaveTextContent('mbgate.labels.main-port');
+    expect(tabs[0]).toHaveTextContent('TCP *:502');
+    expect(tabs[1]).toHaveTextContent('mbgate.labels.settings');
   });
 
-  test('does not render form when no params', () => {
+  test('does not render tabs and add port button when no params', () => {
     render(<MbGatePage />);
-    expect(screen.queryByTestId('json-form')).not.toBeInTheDocument();
+    expect(screen.queryAllByRole('tab')).toHaveLength(0);
+    expect(screen.queryByTestId('btn-mbgate.buttons.add-port')).not.toBeInTheDocument();
+  });
+
+  test('renders additional port tabs between main port and settings', () => {
+    storeMock.paramsStore = { params: makeParams() };
+    storeMock.additionalPorts = [makePort({ host: '*', port: 503 }, 'SCADA'), makePort({ path: '/dev/ttyRS485-2' })];
+    render(<MbGatePage />);
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(4);
+    expect(tabs[1]).toHaveTextContent('SCADA');
+    expect(tabs[1]).toHaveTextContent('TCP *:503');
+    expect(tabs[2]).toHaveTextContent('mbgate.labels.additional-port');
+    expect(tabs[2]).toHaveTextContent('RTU /dev/ttyRS485-2');
+    expect(tabs[3]).toHaveTextContent('mbgate.labels.settings');
+  });
+
+  test('add port button adds port and opens its tab', () => {
+    storeMock.paramsStore = { params: makeParams() };
+    storeMock.addPort.mockImplementation(() => {
+      storeMock.additionalPorts = [makePort({ host: '*', port: 503 }, 'New')];
+      return 0;
+    });
+    render(<MbGatePage />);
+    fireEvent.click(screen.getByTestId('btn-mbgate.buttons.add-port'));
+    expect(storeMock.addPort).toHaveBeenCalled();
+    expect(screen.getByRole('tab', { selected: true })).toHaveTextContent('New');
+  });
+
+  test('deletes additional port after confirmation', () => {
+    storeMock.paramsStore = { params: makeParams() };
+    storeMock.additionalPorts = [makePort({ host: '*', port: 503 }, 'SCADA')];
+    render(<MbGatePage />);
+    fireEvent.click(screen.getAllByRole('tab')[1]);
+    fireEvent.click(screen.getByTestId('btn-mbgate.buttons.delete-port'));
+    expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('confirm-btn'));
+    expect(storeMock.removePort).toHaveBeenCalledWith(0);
+  });
+
+  test('main port has no delete button', () => {
+    storeMock.paramsStore = { params: makeParams() };
+    render(<MbGatePage />);
+    expect(screen.queryByTestId('btn-mbgate.buttons.delete-port')).not.toBeInTheDocument();
+  });
+
+  test('shows conflict error on conflicting port', () => {
+    storeMock.paramsStore = { params: makeParams() };
+    storeMock.additionalPorts = [makePort({ host: '*', port: 502 }, 'SCADA')];
+    storeMock.portConflicts = [[1], [0]];
+    render(<MbGatePage />);
+    expect(screen.getByTestId('alert')).toHaveTextContent('mbgate.errors.port-conflict');
   });
 
   test('select controls dialog is closed initially', () => {
