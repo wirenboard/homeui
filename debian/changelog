@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.270.0) stable; urgency=medium
+
+  * Allow choosing the register type when adding channels on the MQTT to Modbus gateway page
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Wed, 21 Oct 2026 15:50:39 +0300
+
 wb-mqtt-homeui (2.269.0) stable; urgency=medium
 
   * Add performance tests

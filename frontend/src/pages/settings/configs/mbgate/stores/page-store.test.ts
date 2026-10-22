@@ -214,6 +214,62 @@ describe('MbGateStore', () => {
       expect(regs.holdings[0].size).toBe(1);
     });
 
+    test('adds writable numeric as input when register type is forced', () => {
+      devicesStore = makeDevicesStore({ 'dev/t': { type: 'temperature', readOnly: false } });
+      const ps = makeParamsStore();
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.addControls(['dev/t'], 'inputs');
+
+      const regs = ps.params.registers.setValue.mock.calls[0][0];
+      expect(regs.inputs).toHaveLength(1);
+      expect(regs.inputs[0].format).toBe('signed');
+      expect(regs.holdings).toHaveLength(0);
+    });
+
+    test('adds text as varchar holding when register type is forced', () => {
+      devicesStore = makeDevicesStore({ 'dev/txt': { type: 'text', readOnly: true } });
+      const ps = makeParamsStore();
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.addControls(['dev/txt'], 'holdings');
+
+      const regs = ps.params.registers.setValue.mock.calls[0][0];
+      expect(regs.holdings).toHaveLength(1);
+      expect(regs.holdings[0].format).toBe('varchar');
+      expect(regs.inputs).toHaveLength(0);
+    });
+
+    test('adds numeric as single-bit discrete when register type is forced', () => {
+      devicesStore = makeDevicesStore({ 'dev/t': { type: 'value', readOnly: false } });
+      const ps = makeParamsStore();
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.addControls(['dev/t'], 'discretes');
+
+      const regs = ps.params.registers.setValue.mock.calls[0][0];
+      expect(regs.discretes).toHaveLength(1);
+      expect(regs.discretes[0].topic).toBe('dev/t');
+      expect(regs.discretes[0].format).toBeUndefined();
+      expect(regs.holdings).toHaveLength(0);
+    });
+
+    test('adds switch as input when register type is forced', () => {
+      devicesStore = makeDevicesStore({ 'dev/sw': { type: 'switch', readOnly: false } });
+      const ps = makeParamsStore();
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.addControls(['dev/sw'], 'inputs');
+
+      const regs = ps.params.registers.setValue.mock.calls[0][0];
+      expect(regs.inputs).toHaveLength(1);
+      expect(regs.coils).toHaveLength(0);
+    });
+
     test('merges with existing registers', () => {
       devicesStore = makeDevicesStore({ 'dev/new': { type: 'switch', readOnly: false } });
       const existing = makeReg({ topic: 'dev/old', address: 10, unitId: 3 });
