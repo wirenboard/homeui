@@ -577,6 +577,8 @@
       },
       "labels": {
          "no-controls": "All available channels are already configured",
+         "main-port": "Main port",
+         "settings": "General settings",
          "select-channels-to": {
             "auto": "Select channels",
             "discretes": "Select channels for discrete inputs",

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import SettingsIcon from '@/assets/icons/settings.svg';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -8,10 +9,10 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import {
   CustomEditorBuilderContext,
-  Form,
   MakeFormFields,
   ShowParamCaptionContext,
 } from '@/components/json-editor/forms';
+import { Tabs, TabContent } from '@/components/tabs';
 import { PageLayout } from '@/layouts/page';
 import { MbGateStore } from '@/pages/settings/configs/mbgate/stores/page-store';
 import {
@@ -27,6 +28,19 @@ import { useStore } from '@/utils/use-store';
 import { SelectControls } from './components/select-controls';
 import './styles.css';
 
+const MAIN_PORT_TAB = 'main';
+const SETTINGS_TAB = 'settings';
+
+function formatPortBinding(binding?: Record<string, any>) {
+  if (!binding) {
+    return '';
+  }
+  if (binding.path) {
+    return `RTU ${binding.path}`;
+  }
+  return `TCP ${binding.host ?? ''}:${binding.port ?? ''}`;
+}
+
 const MbGatePage = observer(() => {
   const { t, i18n } = useTranslation();
   const { setIsDirty } = usePreventLeavePage();
@@ -34,6 +48,7 @@ const MbGatePage = observer(() => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [configuredControls, setConfiguredControls] = useState<string[]>([]);
   const [registerType, setRegisterType] = useState<RegisterTypeSelection>('auto');
+  const [activeTab, setActiveTab] = useState<string>(MAIN_PORT_TAB);
 
   useEffect(() => {
     setIsDirty(store.isDirty);
@@ -122,6 +137,31 @@ const MbGatePage = observer(() => {
     loadData();
   }, []);
 
+  const params = store.paramsStore.params;
+
+  const tabs = params
+    ? [
+      {
+        id: MAIN_PORT_TAB,
+        label: (
+          <div className="mbgate-portTab">
+            <span className="mbgate-portTabName">{t('mbgate.labels.main-port')}</span>
+            <span className="mbgate-portTabDetails">{formatPortBinding(params.modbus?.value)}</span>
+          </div>
+        ),
+      },
+      {
+        id: SETTINGS_TAB,
+        label: (
+          <div className="mbgate-settingsTab">
+            <SettingsIcon className="mbgate-settingsTabIcon" />
+            <span>{t('mbgate.labels.settings')}</span>
+          </div>
+        ),
+      },
+    ]
+    : [];
+
   return (
     <>
       <PageLayout
@@ -141,13 +181,29 @@ const MbGatePage = observer(() => {
           </>
         }
       >
-        <div className="mbgate">
-          <ShowParamCaptionContext.Provider value={false}>
-            <CustomEditorBuilderContext.Provider value={buildRegistersForm}>
-              {store.paramsStore.params && <Form store={store.paramsStore} />}
-            </CustomEditorBuilderContext.Provider>
-          </ShowParamCaptionContext.Provider>
-        </div>
+        {params && (
+          <div className="mbgate">
+            <div className="mbgate-tabList">
+              <Tabs activeTab={activeTab} items={tabs} isEllipsis={false} onTabChange={setActiveTab} />
+            </div>
+            <div className="mbgate-tabContent">
+              <ShowParamCaptionContext.Provider value={true}>
+                <CustomEditorBuilderContext.Provider value={buildRegistersForm}>
+                  <TabContent activeTab={activeTab} tabId={MAIN_PORT_TAB}>
+                    <div className="form-content">
+                      {MakeFormFields([['modbus', params.modbus], ['registers', params.registers]])}
+                    </div>
+                  </TabContent>
+                  <TabContent activeTab={activeTab} tabId={SETTINGS_TAB}>
+                    <div className="form-content">
+                      {MakeFormFields([['debug', params.debug], ['mqtt', params.mqtt]])}
+                    </div>
+                  </TabContent>
+                </CustomEditorBuilderContext.Provider>
+              </ShowParamCaptionContext.Provider>
+            </div>
+          </div>
+        )}
       </PageLayout>
       <SelectControls
         isOpen={isSelectOpen}
