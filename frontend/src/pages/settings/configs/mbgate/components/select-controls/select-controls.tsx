@@ -1,10 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Confirm } from '@/components/confirm';
-import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tree, type TreeItem } from '@/components/tree';
-import { type RegisterTypeSelection } from '@/pages/settings/configs/mbgate/stores/types';
 import type Cell from '@/stores/devices/cell';
 import type { SelectControlProps, ControlNode } from './types';
 import './styles.css';
@@ -89,6 +87,7 @@ export const SelectControls = ({
   isOpen,
   configuredControls,
   devicesStore,
+  registerType,
   onConfirm,
   onClose,
 }: SelectControlProps) => {
@@ -96,7 +95,6 @@ export const SelectControls = ({
   const [devicePattern, setDevicePattern] = useState('');
   const [controlPattern, setControlPattern] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [registerType, setRegisterType] = useState<RegisterTypeSelection>('auto');
 
   const controls = useMemo(
     () => buildControlTree(devicesStore, configuredControls),
@@ -109,20 +107,6 @@ export const SelectControls = ({
     return ids;
   }, [controls]);
 
-  const selectedControls = useMemo(
-    () => Array.from(selectedIds).filter((id) => leafIds.has(id)),
-    [selectedIds, leafIds],
-  );
-
-  const registerTypeOptions: Option<RegisterTypeSelection>[] = useMemo(
-    () =>
-      (['auto', 'discretes', 'coils', 'inputs', 'holdings'] as RegisterTypeSelection[]).map((value) => ({
-        value,
-        label: t(`mbgate.labels.register-types.${value}`),
-      })),
-    [t],
-  );
-
   const filteredTreeItems = useMemo(() => {
     const filtered = filterTree(
       controls,
@@ -133,14 +117,14 @@ export const SelectControls = ({
   }, [controls, devicePattern, controlPattern]);
 
   const handleConfirm = useCallback(() => {
-    onConfirm(selectedControls, registerType);
-  }, [selectedControls, registerType, onConfirm]);
+    onConfirm(Array.from(selectedIds).filter((id) => leafIds.has(id)));
+  }, [selectedIds, leafIds, onConfirm]);
 
   return (
     <Confirm
       isOpened={isOpen}
       width={650}
-      heading={t('mbgate.labels.select-channels')}
+      heading={t(`mbgate.labels.select-channels-to.${registerType}`)}
       acceptLabel={t('mbgate.buttons.add')}
       closeCallback={onClose}
       confirmCallback={handleConfirm}
@@ -164,15 +148,6 @@ export const SelectControls = ({
         selectable
         onSelectionChange={setSelectedIds}
       />
-      <label className="selectControls-registerType">
-        {t('mbgate.labels.register-type')}
-        <Dropdown
-          options={registerTypeOptions}
-          value={registerType}
-          menuPortal
-          onChange={({ value }: Option<RegisterTypeSelection>) => setRegisterType(value)}
-        />
-      </label>
     </Confirm>
   );
 };

@@ -577,16 +577,21 @@
       },
       "labels": {
          "no-controls": "All available channels are already configured",
-         "select-channels": "Select channels",
+         "select-channels-to": {
+            "auto": "Select channels",
+            "discretes": "Select channels for discrete inputs",
+            "coils": "Select channels for coils",
+            "inputs": "Select channels for input registers",
+            "holdings": "Select channels for holding registers"
+         },
          "search-device": "Search device",
          "search-control": "Search channel",
-         "register-type": "Register type",
          "register-types": {
             "auto": "Automatically by channel type",
-            "discretes": "Discrete inputs",
-            "coils": "Coils",
-            "inputs": "Input registers",
-            "holdings": "Holding registers"
+            "discretes": "To discrete inputs",
+            "coils": "To coils",
+            "inputs": "To input registers",
+            "holdings": "To holding registers"
          }
       }
    },

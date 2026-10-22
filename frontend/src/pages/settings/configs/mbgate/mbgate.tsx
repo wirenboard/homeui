@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import {
   CustomEditorBuilderContext,
@@ -13,7 +14,10 @@ import {
 } from '@/components/json-editor/forms';
 import { PageLayout } from '@/layouts/page';
 import { MbGateStore } from '@/pages/settings/configs/mbgate/stores/page-store';
-import { type RegisterTypeSelection } from '@/pages/settings/configs/mbgate/stores/types';
+import {
+  REGISTER_TYPE_SELECTIONS,
+  type RegisterTypeSelection,
+} from '@/pages/settings/configs/mbgate/stores/types';
 import { authStore, UserRole } from '@/stores/auth';
 import { configsStore } from '@/stores/configs';
 import { devicesStore } from '@/stores/devices';
@@ -29,22 +33,32 @@ const MbGatePage = observer(() => {
   const store = useStore(() => new MbGateStore(configsStore, devicesStore));
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [configuredControls, setConfiguredControls] = useState<string[]>([]);
+  const [registerType, setRegisterType] = useState<RegisterTypeSelection>('auto');
 
   useEffect(() => {
     setIsDirty(store.isDirty);
   }, [store.isDirty]);
 
-  const handleOpenSelect = useCallback(() => {
+  const addMenuOptions: Option<RegisterTypeSelection>[] = REGISTER_TYPE_SELECTIONS.map((value) => ({
+    value,
+    label: t(`mbgate.labels.register-types.${value}`),
+  }));
+
+  const handleOpenSelect = useCallback((option: Option<RegisterTypeSelection>) => {
+    if (!option?.value) {
+      return;
+    }
+    setRegisterType(option.value);
     setConfiguredControls(store.getConfiguredControls());
     setIsSelectOpen(true);
   }, [store]);
 
   const handleConfirmSelect = useCallback(
-    (selectedControls: string[], registerType: RegisterTypeSelection) => {
+    (selectedControls: string[]) => {
       store.addControls(selectedControls, registerType);
       setIsSelectOpen(false);
     },
-    [store],
+    [store, registerType],
   );
 
   const handleCloseSelect = useCallback(() => {
@@ -58,11 +72,15 @@ const MbGatePage = observer(() => {
         <fieldset>
           <legend className="mbgate-registersHeader">
             <span className="mbgate-registerName">{param.name}</span>
-            <Button
-              label={t('mbgate.buttons.add')}
-              aria-haspopup="dialog"
-              disabled={allConfigured}
-              onClick={handleOpenSelect}
+            <Dropdown
+              className="mbgate-addMenu"
+              value={null}
+              options={addMenuOptions}
+              placeholder={t('mbgate.buttons.add')}
+              ariaLabel={t('mbgate.buttons.add')}
+              isDisabled={allConfigured}
+              isButton
+              onChange={handleOpenSelect}
             />
             {allConfigured && (
               <Alert variant="info" size="small" withIcon={false}>
@@ -135,6 +153,7 @@ const MbGatePage = observer(() => {
         isOpen={isSelectOpen}
         configuredControls={configuredControls}
         devicesStore={devicesStore}
+        registerType={registerType}
         onConfirm={handleConfirmSelect}
         onClose={handleCloseSelect}
       />

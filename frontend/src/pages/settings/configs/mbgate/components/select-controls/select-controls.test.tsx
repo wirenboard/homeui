@@ -13,19 +13,6 @@ vi.mock('@/components/confirm', () => ({
       </div>
     ) : null,
 }));
-vi.mock('@/components/dropdown', () => ({
-  Dropdown: ({ options, value, onChange }: any) => (
-    <select
-      data-testid="register-type"
-      value={value}
-      onChange={(e: any) => onChange(options.find((o: any) => o.value === e.target.value))}
-    >
-      {options.map((o: any) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
-      ))}
-    </select>
-  ),
-}));
 vi.mock('@/components/input', () => ({
   Input: ({ placeholder, value, onChange }: any) => (
     <input
@@ -64,7 +51,7 @@ vi.mock('@/components/tree', () => ({
 
 function makeDevicesStore(
   devices: { id: string; name: string; cells: string[] }[],
-  cellData: Record<string, { name: string; readOnly?: boolean }>,
+  cellData: Record<string, { name: string }>,
 ) {
   return {
     cells: new Map(Object.entries(cellData)),
@@ -81,7 +68,7 @@ const defaultDevicesStore = () =>
       { id: 'wb-gpio', name: 'GPIO', cells: ['wb-gpio/EXT1'] },
     ],
     {
-      'wb-adc/Vin': { name: 'Vin', readOnly: true },
+      'wb-adc/Vin': { name: 'Vin' },
       'wb-adc/A1': { name: 'A1' },
       'wb-gpio/EXT1': { name: 'EXT1' },
     },
@@ -97,6 +84,7 @@ describe('SelectControls', () => {
         isOpen={true}
         configuredControls={[]}
         devicesStore={defaultDevicesStore()}
+        registerType="auto"
         onConfirm={onConfirm}
         onClose={onClose}
         {...props}
@@ -119,7 +107,14 @@ describe('SelectControls', () => {
   test('renders heading', () => {
     renderSelect();
     expect(screen.getByTestId('heading')).toHaveTextContent(
-      'mbgate.labels.select-channels',
+      'mbgate.labels.select-channels-to.auto',
+    );
+  });
+
+  test('renders heading for chosen register type', () => {
+    renderSelect({ registerType: 'inputs' });
+    expect(screen.getByTestId('heading')).toHaveTextContent(
+      'mbgate.labels.select-channels-to.inputs',
     );
   });
 
@@ -177,31 +172,7 @@ describe('SelectControls', () => {
     renderSelect();
     fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
     fireEvent.click(screen.getByTestId('confirm-btn'));
-    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'auto');
-  });
-
-  test('calls onConfirm with selected register type', () => {
-    renderSelect();
-    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
-    fireEvent.change(screen.getByTestId('register-type'), { target: { value: 'inputs' } });
-    fireEvent.click(screen.getByTestId('confirm-btn'));
-    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'inputs');
-  });
-
-  test('offers all register types when read-only control selected', () => {
-    renderSelect();
-    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
-    const values = Array.from(screen.getByTestId('register-type').querySelectorAll('option'))
-      .map((o) => o.getAttribute('value'));
-    expect(values).toEqual(['auto', 'discretes', 'coils', 'inputs', 'holdings']);
-  });
-
-  test('keeps writable register type for read-only control', () => {
-    renderSelect();
-    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
-    fireEvent.change(screen.getByTestId('register-type'), { target: { value: 'holdings' } });
-    fireEvent.click(screen.getByTestId('confirm-btn'));
-    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'holdings');
+    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin']);
   });
 
   test('sorts devices alphabetically', () => {

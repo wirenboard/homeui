@@ -575,16 +575,21 @@
       },
       "labels": {
          "no-controls": "Все доступные каналы уже настроены",
-         "select-channels": "Выберите каналы",
+         "select-channels-to": {
+            "auto": "Выберите каналы",
+            "discretes": "Выберите каналы для дискретных входов",
+            "coils": "Выберите каналы для дискретных выходов",
+            "inputs": "Выберите каналы для регистров Input",
+            "holdings": "Выберите каналы для регистров Holding"
+         },
          "search-device": "Найти устройство",
          "search-control": "Найти канал",
-         "register-type": "Тип регистра",
          "register-types": {
             "auto": "Автоматически по типу канала",
-            "discretes": "Дискретные входы (Discrete inputs)",
-            "coils": "Дискретные выходы (Coils)",
-            "inputs": "Регистры Input",
-            "holdings": "Регистры Holding"
+            "discretes": "В дискретные входы (Discrete inputs)",
+            "coils": "В дискретные выходы (Coils)",
+            "inputs": "В регистры Input",
+            "holdings": "В регистры Holding"
          }
       }
    },

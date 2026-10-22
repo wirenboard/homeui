@@ -5,7 +5,8 @@ export interface SelectControlProps {
   isOpen: boolean;
   configuredControls: string[];
   devicesStore: DevicesStore;
-  onConfirm: (selectedControls: string[], registerType: RegisterTypeSelection) => void;
+  registerType: RegisterTypeSelection;
+  onConfirm: (selectedControls: string[]) => void;
   onClose: () => void;
 }
 
