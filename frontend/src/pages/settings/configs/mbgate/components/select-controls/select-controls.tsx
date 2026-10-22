@@ -9,8 +9,6 @@ import type Cell from '@/stores/devices/cell';
 import type { SelectControlProps, ControlNode } from './types';
 import './styles.css';
 
-const WRITABLE_REGISTER_TYPES: RegisterTypeSelection[] = ['coils', 'holdings'];
-
 function makeControlNodes(
   cells: Map<string, Cell>,
   configuredControls: string[],
@@ -116,26 +114,14 @@ export const SelectControls = ({
     [selectedIds, leafIds],
   );
 
-  const hasReadOnlySelected = useMemo(
-    () => selectedControls.some((id) => devicesStore.cells.get(id)?.readOnly),
-    [selectedControls, devicesStore],
-  );
-
-  // Writable register types make no sense for read-only channels
   const registerTypeOptions: Option<RegisterTypeSelection>[] = useMemo(
     () =>
-      (['auto', 'discretes', 'coils', 'inputs', 'holdings'] as RegisterTypeSelection[])
-        .filter((value) => !hasReadOnlySelected || !WRITABLE_REGISTER_TYPES.includes(value))
-        .map((value) => ({
-          value,
-          label: t(`mbgate.labels.register-types.${value}`),
-        })),
-    [t, hasReadOnlySelected],
+      (['auto', 'discretes', 'coils', 'inputs', 'holdings'] as RegisterTypeSelection[]).map((value) => ({
+        value,
+        label: t(`mbgate.labels.register-types.${value}`),
+      })),
+    [t],
   );
-
-  const effectiveRegisterType = registerTypeOptions.some((option) => option.value === registerType)
-    ? registerType
-    : 'auto';
 
   const filteredTreeItems = useMemo(() => {
     const filtered = filterTree(
@@ -147,8 +133,8 @@ export const SelectControls = ({
   }, [controls, devicePattern, controlPattern]);
 
   const handleConfirm = useCallback(() => {
-    onConfirm(selectedControls, effectiveRegisterType);
-  }, [selectedControls, effectiveRegisterType, onConfirm]);
+    onConfirm(selectedControls, registerType);
+  }, [selectedControls, registerType, onConfirm]);
 
   return (
     <Confirm
@@ -182,7 +168,7 @@ export const SelectControls = ({
         {t('mbgate.labels.register-type')}
         <Dropdown
           options={registerTypeOptions}
-          value={effectiveRegisterType}
+          value={registerType}
           menuPortal
           onChange={({ value }: Option<RegisterTypeSelection>) => setRegisterType(value)}
         />

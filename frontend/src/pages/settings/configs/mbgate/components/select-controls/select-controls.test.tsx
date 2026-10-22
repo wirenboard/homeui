@@ -188,30 +188,20 @@ describe('SelectControls', () => {
     expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'inputs');
   });
 
-  test('offers all register types for writable controls', () => {
+  test('offers all register types when read-only control selected', () => {
     renderSelect();
-    fireEvent.click(screen.getByTestId('select-wb-adc/A1'));
+    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
     const values = Array.from(screen.getByTestId('register-type').querySelectorAll('option'))
       .map((o) => o.getAttribute('value'));
     expect(values).toEqual(['auto', 'discretes', 'coils', 'inputs', 'holdings']);
   });
 
-  test('hides writable register types when read-only control selected', () => {
+  test('keeps writable register type for read-only control', () => {
     renderSelect();
-    fireEvent.click(screen.getByTestId('select-wb-adc/A1'));
     fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
-    const values = Array.from(screen.getByTestId('register-type').querySelectorAll('option'))
-      .map((o) => o.getAttribute('value'));
-    expect(values).toEqual(['auto', 'discretes', 'inputs']);
-  });
-
-  test('falls back to auto when chosen register type becomes hidden', () => {
-    renderSelect();
-    fireEvent.click(screen.getByTestId('select-wb-adc/A1'));
     fireEvent.change(screen.getByTestId('register-type'), { target: { value: 'holdings' } });
-    fireEvent.click(screen.getByTestId('select-wb-adc/Vin'));
     fireEvent.click(screen.getByTestId('confirm-btn'));
-    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/A1', 'wb-adc/Vin'], 'auto');
+    expect(onConfirm).toHaveBeenCalledWith(['wb-adc/Vin'], 'holdings');
   });
 
   test('sorts devices alphabetically', () => {
