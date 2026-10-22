@@ -36,9 +36,9 @@ export class ArrayStore {
     this.contentIsChanged = true;
   }
 
-  setValue(value: Record<string, unknown>[]) {
+  setValue(value: Record<string, unknown>[] | undefined) {
     this.items.replace(
-      value.map((v) => {
+      (value ?? []).map((v) => {
         let form = this.makeItemFormFn();
         form.setValue(v);
         return form;
