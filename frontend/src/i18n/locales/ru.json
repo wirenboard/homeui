@@ -576,6 +576,7 @@
       "labels": {
          "no-controls": "Все доступные каналы уже настроены",
          "main-port": "Основной порт",
+         "additional-port": "Порт {{number}}",
          "settings": "Общие настройки",
          "select-channels-to": {
             "auto": "Выберите каналы",

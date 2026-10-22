@@ -31,6 +31,8 @@ import './styles.css';
 const MAIN_PORT_TAB = 'main';
 const SETTINGS_TAB = 'settings';
 
+const additionalPortTab = (index: number) => `port-${index}`;
+
 function formatPortBinding(binding?: Record<string, any>) {
   if (!binding) {
     return '';
@@ -49,6 +51,7 @@ const MbGatePage = observer(() => {
   const [configuredControls, setConfiguredControls] = useState<string[]>([]);
   const [registerType, setRegisterType] = useState<RegisterTypeSelection>('auto');
   const [activeTab, setActiveTab] = useState<string>(MAIN_PORT_TAB);
+  const [targetRegisters, setTargetRegisters] = useState(null);
 
   useEffect(() => {
     setIsDirty(store.isDirty);
@@ -59,21 +62,22 @@ const MbGatePage = observer(() => {
     label: t(`mbgate.labels.register-types.${value}`),
   }));
 
-  const handleOpenSelect = useCallback((option: Option<RegisterTypeSelection>) => {
+  const handleOpenSelect = useCallback((option: Option<RegisterTypeSelection>, registersStore) => {
     if (!option?.value) {
       return;
     }
     setRegisterType(option.value);
-    setConfiguredControls(store.getConfiguredControls());
+    setTargetRegisters(registersStore);
+    setConfiguredControls(store.getConfiguredControls(registersStore));
     setIsSelectOpen(true);
   }, [store]);
 
   const handleConfirmSelect = useCallback(
     (selectedControls: string[]) => {
-      store.addControls(selectedControls, registerType);
+      store.addControls(selectedControls, registerType, targetRegisters);
       setIsSelectOpen(false);
     },
-    [store, registerType],
+    [store, registerType, targetRegisters],
   );
 
   const handleCloseSelect = useCallback(() => {
@@ -82,7 +86,7 @@ const MbGatePage = observer(() => {
 
   const buildRegistersForm = (param, paramName: string) => {
     if (paramName === 'registers') {
-      const allConfigured = store.checkAllControlsConfigured();
+      const allConfigured = store.checkAllControlsConfigured(param);
       return (
         <fieldset>
           <legend className="mbgate-registersHeader">
@@ -95,7 +99,7 @@ const MbGatePage = observer(() => {
               ariaLabel={t('mbgate.buttons.add')}
               isDisabled={allConfigured}
               isButton
-              onChange={handleOpenSelect}
+              onChange={(option: Option<RegisterTypeSelection>) => handleOpenSelect(option, param)}
             />
             {allConfigured && (
               <Alert variant="info" size="small" withIcon={false}>
@@ -150,6 +154,17 @@ const MbGatePage = observer(() => {
           </div>
         ),
       },
+      ...store.additionalPorts.map((port, index) => ({
+        id: additionalPortTab(index),
+        label: (
+          <div className="mbgate-portTab">
+            <span className="mbgate-portTabName">
+              {port.params.name?.value || t('mbgate.labels.additional-port', { number: index + 1 })}
+            </span>
+            <span className="mbgate-portTabDetails">{formatPortBinding(port.params.modbus?.value)}</span>
+          </div>
+        ),
+      })),
       {
         id: SETTINGS_TAB,
         label: (
@@ -194,6 +209,17 @@ const MbGatePage = observer(() => {
                       {MakeFormFields([['modbus', params.modbus], ['registers', params.registers]])}
                     </div>
                   </TabContent>
+                  {store.additionalPorts.map((port, index) => (
+                    <TabContent key={index} activeTab={activeTab} tabId={additionalPortTab(index)}>
+                      <div className="form-content">
+                        {MakeFormFields([
+                          ['name', port.params.name],
+                          ['modbus', port.params.modbus],
+                          ['registers', port.params.registers],
+                        ])}
+                      </div>
+                    </TabContent>
+                  ))}
                   <TabContent activeTab={activeTab} tabId={SETTINGS_TAB}>
                     <div className="form-content">
                       {MakeFormFields([['debug', params.debug], ['mqtt', params.mqtt]])}

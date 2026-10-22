@@ -46,18 +46,25 @@ export class MbGateStore {
     }
   }
 
-  getConfiguredControls(): string[] {
-    const registers = this.paramsStore.value['registers'];
-    return Object.values(registers).flatMap((registerTypeArray: any) =>
+  get additionalPorts(): any[] {
+    return this.paramsStore.params?.['additional_ports']?.items ?? [];
+  }
+
+  getConfiguredControls(registersStore = this.paramsStore.params['registers']): string[] {
+    return Object.values(registersStore.value).flatMap((registerTypeArray: any) =>
       registerTypeArray.map((register: Register) => register['topic']),
     );
   }
 
-  addControls(selectedControls: string[], registerType: RegisterTypeSelection = 'auto') {
+  addControls(
+    selectedControls: string[],
+    registerType: RegisterTypeSelection = 'auto',
+    registersStore = this.paramsStore.params['registers'],
+  ) {
     if (!selectedControls?.length) {
       return;
     }
-    const registers = this.paramsStore.value['registers'];
+    const registers = registersStore.value;
     let newRegs: AllRegisters = {
       coils: [],
       discretes: [],
@@ -83,17 +90,14 @@ export class MbGateStore {
     this.#mergeRegs(registers, newRegs, 'holdings');
     this.#mergeRegs(registers, newRegs, 'inputs');
 
-    this.paramsStore.params['registers'].setValue(registers);
+    registersStore.setValue(registers);
   }
 
-  checkAllControlsConfigured(): boolean {
-    if (!this.paramsStore?.value) {
+  checkAllControlsConfigured(registersStore = this.paramsStore.params?.['registers']): boolean {
+    if (!registersStore) {
       return false;
     }
-    const registers = this.paramsStore.value['registers'];
-    const configuredControls = Object.values(registers).flatMap((arr: any) =>
-      arr.map((reg: Register) => reg['topic']),
-    );
+    const configuredControls = this.getConfiguredControls(registersStore);
     return Array.from(this.#devicesStore.filteredDevices.values()).every(
       (device: Device) => Array.from(device.cells).every((cellId) => configuredControls.includes(cellId)),
     );

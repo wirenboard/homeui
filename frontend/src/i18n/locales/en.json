@@ -578,6 +578,7 @@
       "labels": {
          "no-controls": "All available channels are already configured",
          "main-port": "Main port",
+         "additional-port": "Port {{number}}",
          "settings": "General settings",
          "select-channels-to": {
             "auto": "Select channels",
