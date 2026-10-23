@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.271.0) stable; urgency=medium
+
+  * Show DALI device info and picture in the device settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 23 Oct 2026 16:45:49 +0500
+
 wb-mqtt-homeui (2.270.0) stable; urgency=medium
 
   * Allow choosing the register type when adding channels on the MQTT to Modbus gateway page

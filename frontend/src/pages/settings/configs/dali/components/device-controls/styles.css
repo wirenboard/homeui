@@ -1,4 +1,4 @@
-/* Flush with the toolbar above and the settings header below, the three read as one header. */
+/* Flush with the row above (toolbar or device info) and the settings header below, together they read as one header. */
 .daliDeviceControls-pinnedControls {
     /* Holds the absolute chevron. */
     position: relative;
@@ -164,6 +164,10 @@
 
 .daliDeviceControls-pinnedControlsCell .deviceCell-name {
     display: none;
+}
+
+.daliDeviceControls-pinnedControlsCell .deviceCell-withSelect {
+    max-width: none;
 }
 
 .daliDeviceControls-cell .deviceCell-columns {

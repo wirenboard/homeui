@@ -18,6 +18,7 @@ from urllib.parse import unquote, urlparse
 
 import bcrypt
 
+from . import dali_images
 from .cert import (
     CertificateCheckingThread,
     remove_nginx_https_config,
@@ -1042,6 +1043,8 @@ def main():
         os.remove(args.socket_file)
     except OSError:
         pass
+    dali_images.start_server(dali_images.DEFAULT_SOCKET_FILE, args.debug)
+
     server = UnixSocketHttpServer((args.socket_file), WebRequestHandler)
     os.chmod(args.socket_file, 0o662)
     server.serve_forever()
