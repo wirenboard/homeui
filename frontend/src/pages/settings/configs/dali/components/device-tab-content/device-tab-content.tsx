@@ -98,16 +98,14 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
   const settingsForm = (
     <>
       {!store.isLoading && wrongSchemeInstances(store.objectStore?.value).length > 0 && (
-        <Alert variant="warn">
-          <div className="dali-schemeWarning">
-            <span>{t('dali.labels.event-scheme-warning')}</span>
-            <Button
-              label={t('dali.buttons.fix-event-schemes')}
-              variant="warn"
-              isLoading={isFixingSchemes}
-              onClick={fixEventSchemes}
-            />
-          </div>
+        <Alert variant="warn" className="alert-withButton">
+          <span>{t('dali.labels.event-scheme-warning')}</span>
+          <Button
+            label={t('dali.buttons.fix-event-schemes')}
+            variant="warn"
+            isLoading={isFixingSchemes}
+            onClick={fixEventSchemes}
+          />
         </Alert>
       )}
       {store.isLoading ? (

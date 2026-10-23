@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.270.1) stable; urgency=medium
+
+  * Fix the button of the DALI event addressing scheme warning being placed
+    below the text instead of beside it
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 23 Oct 2026 12:16:39 +0000
+
 wb-mqtt-homeui (2.270.0) stable; urgency=medium
 
   * Allow choosing the register type when adding channels on the MQTT to Modbus gateway page
