@@ -142,6 +142,14 @@
   font-family: var(--font);
 }
 
+.dropdown__menu {
+  overflow: hidden;
+}
+
+.dropdown__menu-list {
+  border-radius: var(--input-border-radius);
+}
+
 .dropdown__option--is-disabled:not(.dropdown__option--is-selected) {
   background: var(--light-gray-color);
   cursor: not-allowed !important;
@@ -170,9 +178,6 @@
   border-color: var(--danger-color);
 }
 
-/* Picked up by json-editor's has-error class on the surrounding form-group so
-   the dropdown shows the same red border as native form-controls on validation
-   failure. */
 .has-error .dropdown__control,
 .has-error .dropdown__control:hover {
   border-color: var(--danger-color);

@@ -1,3 +1,11 @@
+.mbgate-addMenu .dropdown__menu {
+    max-width: none !important;
+}
+
+.mbgate-addMenu .dropdown__option {
+    white-space: nowrap;
+}
+
 .mbgate-registersHeader {
     all: unset;
     width: 100%;

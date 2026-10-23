@@ -75,19 +75,26 @@ export default defineConfig(({ mode }: ConfigEnv) => {
     server: {
       port: 8080,
       open: true,
-      proxy: {
-        ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
-          + '|api/dashboards|api/fonts|fonts|api/integrations/alice|dali-images)']: {
-          target: env.MQTT_BROKER_URI,
-          changeOrigin: true,
-          ws: true,
-        },
-        '/api/terminal': {
-          target: env.MQTT_BROKER_URI,
-          changeOrigin: true,
-          ws: true,
-        },
-      },
+      proxy: controllerProxy(env.MQTT_BROKER_URI),
+    },
+    preview: {
+      proxy: controllerProxy(env.MQTT_BROKER_URI),
     },
   };
 });
+
+function controllerProxy(target: string) {
+  return {
+    ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
+      + '|api/dashboards|api/fonts|fonts|api/integrations/alice|dali-images)']: {
+      target,
+      changeOrigin: true,
+      ws: true,
+    },
+    '/api/terminal': {
+      target,
+      changeOrigin: true,
+      ws: true,
+    },
+  };
+}

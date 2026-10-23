@@ -88,7 +88,11 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
           {hideCopy ? (
             <div className={classNames('deviceCell-value', 'deviceCell-text', 'deviceCell-noClick')}>
               {cell.isEnum
-                ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+                ? (
+                  <div className="deviceCell-text deviceCell-textTruncate">
+                    {cell.getEnumName(cell.value as string)}
+                  </div>
+                )
                 : (
                   <div>
                     <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
@@ -118,7 +122,11 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
                 trigger="click"
               >
                 {cell.isEnum
-                  ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+                  ? (
+                    <div className="deviceCell-text deviceCell-textTruncate">
+                      {cell.getEnumName(cell.value as string)}
+                    </div>
+                  )
                   : (
                     <div>
                       <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (

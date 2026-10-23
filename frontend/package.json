@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:perf": "vite build && playwright test -c playwright.config.ts",
     "lint": "npx eslint --cache --cache-location .eslintcache",
     "lint:fix": "npx eslint --fix",
     "check:types": "tsc --noEmit"
@@ -73,6 +74,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "10.4.0",
+    "@playwright/test": "1.63.0",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@types/lodash": "4.17.24",
@@ -84,6 +86,8 @@
     "@vitejs/plugin-react": "6.0.2",
     "@vitest/eslint-plugin": "1.6.23",
     "@wirenboard/eslint": "1.7.0",
+    "aedes": "1.2.0",
+    "aedes-server-factory": "0.2.1",
     "autoprefixer": "10.5.0",
     "dotenv": "17.4.2",
     "eslint": "9.39.1",

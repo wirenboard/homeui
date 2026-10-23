@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { documentation } from '@/common/links';
 import { Confirm, useConfirm } from '@/components/confirm';
+import { SearchBar } from '@/components/search-bar';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { AddDeviceModal } from './components/add-device-modal';
@@ -16,6 +18,7 @@ import './styles.css';
 
 const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnectedDevice }: ConfigEditorPageProps) => {
   const { t, i18n } = useTranslation();
+  const [ searchQuery, setSearchQuery ] = useState('');
   const [ showCopyDeviceModal, isCopyTabOpened, handleCopyTab, handleCopyTabClose ] = useConfirm<any>();
   const [ showAddDeviceModal, isAddDeviceOpened, handleAddDevice, handleAddDeviceClose ] = useConfirm<any>();
   const [ showAddPortModal, isAddPortOpened, handleAddPort, handleAddPortClose ] = useConfirm<any>();
@@ -27,6 +30,17 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
     handleRereadConfigClose,
   ] = useConfirm<any>();
 
+  useEffect(() => {
+    if (pageStore.pendingAddDeviceRequest) {
+      pageStore.clearAddDeviceRequest();
+      pageStore.addDevice(showAddDeviceModal);
+    }
+  }, [pageStore.pendingAddDeviceRequest]);
+
+  const isMobile = pageStore.tabs.mobileModeStore.inMobileMode;
+  const showSearch = !pageStore.tabs.isEmpty
+    && (!isMobile || pageStore.tabs.mobileModeStore.tabsPanelIsActive);
+
   return (
     <>
       <PageLayout
@@ -36,17 +50,36 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
         errors={pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []}
         isLoading={pageStore.loading || pageStore.saving}
         loadingOptions={pageStore.saving ? { overlay: true, showActions: true } : undefined}
+        titleArea={isMobile && showSearch && (
+          <SearchBar
+            value={searchQuery}
+            placeholder={t('device-manager.labels.search')}
+            ariaLabel={t('device-manager.labels.search')}
+            onChange={setSearchQuery}
+          />
+        )}
         actions={
           (!pageStore.loading) && (
-            <HeaderButtons
-              allowSave={pageStore.allowSave}
-              isSaving={pageStore.saving}
-              allowAddDevice={pageStore.tabs.hasPortTabs}
-              mobileModeStore={pageStore.tabs.mobileModeStore}
-              onSave={() => pageStore.save()}
-              onAddDevice={() => pageStore.addDevice(showAddDeviceModal)}
-              onAddWbDevice={onAddWbDevice}
-            />
+            <>
+              {!isMobile && showSearch && (
+                <SearchBar
+                  value={searchQuery}
+                  placeholder={t('device-manager.labels.search')}
+                  ariaLabel={t('device-manager.labels.search')}
+                  onChange={setSearchQuery}
+                />
+              )}
+              <HeaderButtons
+                allowSave={pageStore.allowSave}
+                isSaving={pageStore.saving}
+                allowAddDevice={pageStore.tabs.hasPortTabs}
+                mobileModeStore={pageStore.tabs.mobileModeStore}
+                onSave={() => pageStore.save()}
+                onAddDevice={() => pageStore.addDevice(showAddDeviceModal)}
+                onAddWbDevice={onAddWbDevice}
+                onAddPort={() => pageStore.addPort(showAddPortModal)}
+              />
+            </>
           )
         }
       >
@@ -55,14 +88,13 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             <PageTabs
               tabs={pageStore.tabs.items}
               selectedIndex={pageStore.tabs.selectedTabIndex}
-              showButtons={!pageStore.loading}
               deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
               mobileModeStore={pageStore.tabs.mobileModeStore}
+              searchQuery={searchQuery}
               onSelect={(index) => pageStore.tabs.onSelectTab(index)}
               onDeleteTab={() => pageStore.deleteTab(showDeleteModal)}
               onDeletePortDevices={() => pageStore.deletePortDevices(showDeleteModal)}
               onCopyTab={() => pageStore.copyTab(showCopyDeviceModal)}
-              onAddPort={() => pageStore.addPort(showAddPortModal)}
               onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
               onSearchDisconnectedDevice={onSearchDisconnectedDevice}
               onUpdateFirmware={() => pageStore.updateFirmware()}

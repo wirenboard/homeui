@@ -4,7 +4,9 @@ import { makeParameterStoreFromJsonSchema } from '@/components/json-editor/forms
 import { type ConfigsStore } from '@/stores/configs';
 import { type DevicesStore, type Device } from '@/stores/devices';
 import { RegSpace } from './reg-space';
-import type { AllRegisters, Register } from './types';
+import type { AllRegisters, Register, RegisterType, RegisterTypeSelection } from './types';
+
+const COIL_CONTROL_TYPES = ['switch', 'alarm', 'pushbutton'];
 
 export class MbGateStore {
   public paramsStore: any = {};
@@ -51,12 +53,11 @@ export class MbGateStore {
     );
   }
 
-  addControls(selectedControls: string[]) {
+  addControls(selectedControls: string[], registerType: RegisterTypeSelection = 'auto') {
     if (!selectedControls?.length) {
       return;
     }
     const registers = this.paramsStore.value['registers'];
-    const coilTypes = ['switch', 'alarm', 'pushbutton'];
     let newRegs: AllRegisters = {
       coils: [],
       discretes: [],
@@ -66,17 +67,14 @@ export class MbGateStore {
 
     selectedControls.forEach((cellId: string) => {
       const cell = this.#devicesStore.cells.get(cellId);
+      const arrayType = registerType === 'auto' ? this.#getDefaultRegisterType(cell) : registerType;
 
-      if (coilTypes.includes(cell.type)) {
-        const arrayType = cell.readOnly ? 'discretes' : 'coils';
+      if (arrayType === 'coils' || arrayType === 'discretes') {
         newRegs[arrayType].push(this.#makeSingleBitRegisterBinding(cellId));
+      } else if (cell.type === 'text') {
+        newRegs[arrayType].push(this.#makeWordRegisterBinding(cellId, 'varchar'));
       } else {
-        const arrayType = cell.readOnly ? 'inputs' : 'holdings';
-        if (cell.type === 'text') {
-          newRegs[arrayType].push(this.#makeWordRegisterBinding(cellId, 'varchar'));
-        } else {
-          newRegs[arrayType].push(this.#makeWordRegisterBinding(cellId, 'signed'));
-        }
+        newRegs[arrayType].push(this.#makeWordRegisterBinding(cellId, 'signed'));
       }
     });
 
@@ -107,6 +105,13 @@ export class MbGateStore {
 
   get allowSave() {
     return this.isDirty && !this.paramsStore.hasErrors;
+  }
+
+  #getDefaultRegisterType(cell: { type: string; readOnly: boolean }): RegisterType {
+    if (COIL_CONTROL_TYPES.includes(cell.type)) {
+      return cell.readOnly ? 'discretes' : 'coils';
+    }
+    return cell.readOnly ? 'inputs' : 'holdings';
   }
 
   #makeWordRegisterBinding(topic: string, format: Register['format']) {

@@ -26,7 +26,7 @@ export const CellText = observer((
 
       {cell.value && cell.readOnly && (
         hideCopy ? (
-          <div className="deviceCell-text deviceCell-textStatic deviceCell-noClick">
+          <div className="deviceCell-text deviceCell-textTruncate deviceCell-textStatic deviceCell-noClick">
             {cell.getEnumName(cell.value as string)}
           </div>
         ) : (
@@ -35,7 +35,10 @@ export const CellText = observer((
             placement="top-end"
             trigger="click"
           >
-            <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
+            <div
+              className="deviceCell-text deviceCell-textTruncate"
+              onClick={() => copyToClipboard(cell.value as string)}
+            >
               {cell.getEnumName(cell.value as string)}
             </div>
           </Tooltip>
