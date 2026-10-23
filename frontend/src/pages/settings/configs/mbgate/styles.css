@@ -1,3 +1,92 @@
+.mbgate {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.mbgate-tabList {
+    width: 20%;
+    max-width: 250px;
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+.mbgate-tabContent {
+    flex-grow: 1;
+    min-width: 0;
+    border: 1px solid var(--border-color);
+    background: var(--container-background-hover);
+    padding: 8px 18px;
+}
+
+.mbgate-mobile .mbgate-tabList {
+    width: 100%;
+    max-width: none;
+    margin-right: 0;
+}
+
+.mbgate-mobile .mbgate-tabContent {
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.mbgate-mobile .tabs-buttonSelected {
+    border-right: 0 !important;
+}
+
+.mbgate-portHeader {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.mbgate-portTab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.mbgate-portTabName {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+}
+
+.mbgate-portTabWarn {
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    color: var(--danger-color);
+}
+
+.mbgate-portConflict {
+    margin-bottom: 12px;
+}
+
+.mbgate-portTabDetails {
+    color: var(--gray-color);
+    font-size: var(--font-size-small);
+}
+
+.mbgate-settingsTab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.mbgate-settingsTabIcon {
+    width: 16px;
+    height: 16px;
+}
+
+.mbgate-settingsTabIcon path {
+    fill: var(--gray-color);
+    color: var(--gray-color);
+}
+
 .mbgate-addMenu .dropdown__menu {
     max-width: none !important;
 }

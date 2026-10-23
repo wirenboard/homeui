@@ -11,13 +11,52 @@ vi.mock('@/components/json-editor/forms', () => ({
 import { MbGateStore } from './page-store';
 import type { AllRegisters, Register } from './types';
 
+const emptyRegisters = (): AllRegisters => ({ coils: [], discretes: [], holdings: [], inputs: [] });
+
+function makeRegistersStore(registers: AllRegisters = emptyRegisters()) {
+  return { value: registers, setValue: vi.fn() };
+}
+
+function makePortStore(modbus: Record<string, any>, registers: AllRegisters = emptyRegisters(), name = '') {
+  return {
+    params: {
+      name: { value: name },
+      modbus: { value: modbus },
+      registers: makeRegistersStore(registers),
+    },
+    setValue: vi.fn(),
+  };
+}
+
+// MbGateStore makes paramsStore deeply observable, so mocks must work through `this`
+// and added ports are tracked outside of the store
+function makePortsStore(ports: ReturnType<typeof makePortStore>[] = []) {
+  const addedPorts: ReturnType<typeof makePortStore>[] = [];
+  return {
+    items: ports,
+    getAddedPort: (index: number) => addedPorts[index],
+    add: vi.fn(function (this: any) {
+      const port = makePortStore(undefined);
+      addedPorts.push(port);
+      this.items.push(port);
+    }),
+    remove: vi.fn(function (this: any, index: number) {
+      this.items.splice(index, 1);
+    }),
+  };
+}
+
 function makeParamsStore(
-  registers: AllRegisters = { coils: [], discretes: [], holdings: [], inputs: [] },
+  registers: AllRegisters = emptyRegisters(),
+  modbus: Record<string, any> = { host: '*', port: 502 },
+  additionalPorts: ReturnType<typeof makePortStore>[] = [],
 ) {
   return {
     value: { registers },
     params: {
-      registers: { setValue: vi.fn() },
+      modbus: { value: modbus },
+      registers: makeRegistersStore(registers),
+      additional_ports: makePortsStore(additionalPorts),
       mqtt: {
         params: {
           keepalive: { setStrict: vi.fn(), setDefaultText: vi.fn() },
@@ -289,10 +328,25 @@ describe('MbGateStore', () => {
   });
 
   describe('checkAllControlsConfigured', () => {
-    test('returns false when no value', () => {
+    test('returns false when no params', () => {
       const store = new MbGateStore(configsStore as any, devicesStore as any);
       store.paramsStore = { value: null };
       expect(store.checkAllControlsConfigured()).toBe(false);
+    });
+
+    test('checks controls of the given port only', () => {
+      devicesStore = makeDevicesStore({}, [
+        ['dev1', { cells: new Set(['dev1/c1']) }],
+      ]);
+      const port = makePortStore({ host: '*', port: 503 });
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = makeParamsStore(
+        { ...emptyRegisters(), coils: [makeReg({ topic: 'dev1/c1' })] },
+        { host: '*', port: 502 },
+        [port],
+      );
+      expect(store.checkAllControlsConfigured()).toBe(true);
+      expect(store.checkAllControlsConfigured(port.params.registers)).toBe(false);
     });
 
     test('returns true when all cells configured', () => {
@@ -339,6 +393,121 @@ describe('MbGateStore', () => {
 
       store.paramsStore = { ...makeParamsStore(), isDirty: true, hasErrors: true };
       expect(store.allowSave).toBe(false);
+    });
+
+    test('allowSave is false when ports conflict', () => {
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = {
+        ...makeParamsStore(emptyRegisters(), { host: '*', port: 502 }, [makePortStore({ host: '*', port: 502 })]),
+        isDirty: true,
+      };
+      expect(store.allowSave).toBe(false);
+    });
+  });
+
+  describe('additional ports', () => {
+    test('additionalPorts is empty without params', () => {
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      expect(store.additionalPorts).toEqual([]);
+    });
+
+    test('addPort appends TCP port with first free number', () => {
+      const ps = makeParamsStore(emptyRegisters(), { host: '*', port: 502 }, [makePortStore({ host: '*', port: 503 })]);
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      expect(store.addPort()).toBe(1);
+
+      expect(ps.params.additional_ports.add).toHaveBeenCalled();
+      expect(ps.params.additional_ports.getAddedPort(0).setValue).toHaveBeenCalledWith({
+        modbus: { host: '*', port: 504 },
+        registers: emptyRegisters(),
+      });
+    });
+
+    test('addPort uses default port when main port is RTU', () => {
+      const ps = makeParamsStore(emptyRegisters(), { path: '/dev/ttyRS485-1' });
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.addPort();
+
+      expect(ps.params.additional_ports.getAddedPort(0).setValue).toHaveBeenCalledWith(
+        expect.objectContaining({ modbus: { host: '*', port: 502 } }),
+      );
+    });
+
+    test('removePort removes port by index', () => {
+      const ps = makeParamsStore(emptyRegisters(), { host: '*', port: 502 }, [
+        makePortStore({ host: '*', port: 503 }),
+        makePortStore({ host: '*', port: 504 }),
+      ]);
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.removePort(0);
+
+      expect(ps.params.additional_ports.remove).toHaveBeenCalledWith(0);
+      expect(store.additionalPorts).toHaveLength(1);
+    });
+
+    test('addControls adds registers to the given port only', () => {
+      devicesStore = makeDevicesStore({ 'dev/sw': { type: 'switch', readOnly: false } });
+      const port = makePortStore({ host: '*', port: 503 });
+      const ps = makeParamsStore(emptyRegisters(), { host: '*', port: 502 }, [port]);
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = ps;
+
+      store.addControls(['dev/sw'], 'auto', port.params.registers);
+
+      expect(ps.params.registers.setValue).not.toHaveBeenCalled();
+      const regs = port.params.registers.setValue.mock.calls[0][0];
+      expect(regs.coils).toHaveLength(1);
+      expect(regs.coils[0].topic).toBe('dev/sw');
+    });
+
+    test('getConfiguredControls returns topics of the given port', () => {
+      const port = makePortStore({ host: '*', port: 503 }, { ...emptyRegisters(), inputs: [makeReg({ topic: '/p' })] });
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = makeParamsStore(
+        { ...emptyRegisters(), coils: [makeReg({ topic: '/m' })] },
+        { host: '*', port: 502 },
+        [port],
+      );
+      expect(store.getConfiguredControls()).toEqual(['/m']);
+      expect(store.getConfiguredControls(port.params.registers)).toEqual(['/p']);
+    });
+  });
+
+  describe('portConflicts', () => {
+    function conflictsFor(main: Record<string, any>, ...additional: Record<string, any>[]) {
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = makeParamsStore(emptyRegisters(), main, additional.map((modbus) => makePortStore(modbus)));
+      return store.portConflicts;
+    }
+
+    test('no conflicts for different TCP ports', () => {
+      expect(conflictsFor({ host: '*', port: 502 }, { host: '*', port: 503 })).toEqual([[], []]);
+    });
+
+    test('same TCP port on any host conflicts', () => {
+      expect(conflictsFor({ host: '*', port: 502 }, { host: '192.168.1.10', port: 502 })).toEqual([[1], [0]]);
+    });
+
+    test('same TCP port on different specific hosts does not conflict', () => {
+      expect(conflictsFor({ host: '10.0.0.1', port: 502 }, { host: '10.0.0.2', port: 502 })).toEqual([[], []]);
+    });
+
+    test('same RTU device conflicts', () => {
+      expect(conflictsFor(
+        { path: '/dev/ttyRS485-1' },
+        { path: '/dev/ttyRS485-2' },
+        { path: '/dev/ttyRS485-1' },
+      )).toEqual([[2], [], [0]]);
+    });
+
+    test('TCP and RTU ports do not conflict', () => {
+      expect(conflictsFor({ host: '*', port: 502 }, { path: '/dev/ttyRS485-1' })).toEqual([[], []]);
     });
   });
 });
