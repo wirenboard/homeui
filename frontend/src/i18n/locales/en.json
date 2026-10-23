@@ -575,7 +575,8 @@
          "save": "Save",
          "add": "Add",
          "add-port": "Add port",
-         "delete-port": "Delete port"
+         "delete-port": "Delete port",
+         "to-port-list": "To ports list"
       },
       "labels": {
          "no-controls": "All available channels are already configured",

@@ -19,6 +19,22 @@
     padding: 8px 18px;
 }
 
+.mbgate-mobile .mbgate-tabList {
+    width: 100%;
+    max-width: none;
+    margin-right: 0;
+}
+
+.mbgate-mobile .mbgate-tabContent {
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.mbgate-mobile .tabs-buttonSelected {
+    border-right: 0 !important;
+}
+
 .mbgate-portHeader {
     display: flex;
     justify-content: flex-end;
