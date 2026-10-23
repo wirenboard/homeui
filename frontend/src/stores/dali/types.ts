@@ -87,7 +87,6 @@ export interface DeviceConfig {
 export interface DeviceDetailed {
   config: DeviceConfig;
   schema: JsonSchema;
-  name: string;
 }
 
 export interface GetGatewayParams {
