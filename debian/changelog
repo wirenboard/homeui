@@ -1,10 +1,16 @@
-wb-mqtt-homeui (2.272.0) stable; urgency=medium
+wb-mqtt-homeui (2.273.0) stable; urgency=medium
 
   * Stop adding www-data to the mosquitto group: the CGI script that needed
     the broker socket is gone, and the membership gave nginx full access to
     the broker
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Oct 2026 06:55:15 +0000
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Oct 2026 08:14:44 +0000
+
+wb-mqtt-homeui (2.272.0) stable; urgency=medium
+
+  * Add custom device template management
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Oct 2026 09:48:00 +0300
 
 wb-mqtt-homeui (2.271.0) stable; urgency=medium
 
