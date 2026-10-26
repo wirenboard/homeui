@@ -3,13 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { LAPTOP_MAX_WIDTH } from '@/common/breakpoints';
 import { ZoomableImage } from '@/components/zoomable-image';
+import { getDevicePictureUrl } from '@/stores/dali/device-store';
 import type { DeviceInfoPanelProps } from './types';
 import './styles.css';
 
 export const DeviceInfoPanel = ({ description }: DeviceInfoPanelProps) => {
   const { t } = useTranslation();
   const isStacked = useMediaQuery({ maxWidth: LAPTOP_MAX_WIDTH });
-  const imageKey = description.gtin || description.oem_gtin;
+  const pictureUrl = getDevicePictureUrl(description);
   const typeNames = (description.types ?? [])
     .map((type) => t(`dali.device-types.${type}`, { defaultValue: `DT${type}` }));
   const names = [description.brand_name, description.product_name].filter(Boolean);
@@ -29,18 +30,18 @@ export const DeviceInfoPanel = ({ description }: DeviceInfoPanelProps) => {
     { label: t('dali.labels.info-oem-identification-number'), value: description.oem_identification_number },
   ].filter(({ value }) => value !== undefined && value !== null && value !== '');
 
-  if (!names.length && !fields.length && !imageKey) {
+  if (!names.length && !fields.length && !pictureUrl) {
     return null;
   }
 
   return (
     <div className={classNames('daliDeviceInfo', { 'daliDeviceInfo-stacked': isStacked })}>
       <div className="daliDeviceInfo-body">
-        {imageKey && (
+        {pictureUrl && (
           <ZoomableImage
-            key={imageKey}
+            key={pictureUrl}
             className="daliDeviceInfo-picture"
-            src={`/dali-images/${imageKey}.webp`}
+            src={pictureUrl}
             alt={names.join(' ')}
           />
         )}

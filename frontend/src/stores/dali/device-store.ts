@@ -5,6 +5,23 @@ import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/
 import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
 
+// How long the tab waits for the picture, so the text next to it does not jump when it appears.
+const PICTURE_WAIT_MS = 300;
+
+export const getDevicePictureUrl = (description: DaliDeviceDescription): string | null => {
+  const key = description.gtin || description.oem_gtin;
+  return key ? `/dali-images/${key}.webp` : null;
+};
+
+// Loads the picture into the browser cache, resolves on success, failure or timeout.
+const preloadPicture = (url: string) => new Promise<void>((resolve) => {
+  const image = new Image();
+  image.onload = () => resolve();
+  image.onerror = () => resolve();
+  image.src = url;
+  setTimeout(resolve, PICTURE_WAIT_MS);
+});
+
 export class DeviceStore extends BaseItemStore {
   readonly type = ItemType.Device;
 
@@ -50,6 +67,10 @@ export class DeviceStore extends BaseItemStore {
         params.forceReload = true;
       }
       const data = await daliProxy.GetDevice(params);
+      const pictureUrl = getDevicePictureUrl(data.config);
+      if (pictureUrl) {
+        await preloadPicture(pictureUrl);
+      }
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations);
