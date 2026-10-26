@@ -4,6 +4,7 @@ import { createHashRouter } from 'react-router-dom';
 import { APP_NAME, APP_SHORT_NAME } from '@/common/constants';
 import { registerTerminalTab } from '@/components/terminal';
 import { App } from '@/layouts/app';
+import { loadPlugins } from '@/plugins';
 import { deviceManagerProxy, mqttClient } from '@/services';
 import { authStore, UserRole } from '@/stores/auth';
 import { daliGlobalStore } from '@/stores/dali';
@@ -81,6 +82,7 @@ when(() => authStore.isAuthenticated).then(() => {
         rulesStore.subscribeRulesLogs();
         rulesStore.subscribeRuleDebugging();
         registerRulesTab();
+        loadPlugins();
         daliGlobalStore.refresh().catch((err) => {
           console.warn('Failed to load DALI gateways on startup', err);
         });

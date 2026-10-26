@@ -35,6 +35,7 @@ from wb.homeui_backend.main import (
     get_session,
     get_users_handler,
     make_certificate_usable_change_handler,
+    plugins_handler,
     security_check_handler,
     update_https_handler,
     update_user_handler,
@@ -941,3 +942,43 @@ class UpdateHttpsHandlerTest(unittest.TestCase):
                 response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
                 apply_mock.assert_called_once_with(usable)
                 self.assertEqual(response, response_200())
+
+
+class PluginsHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+
+    def _plugin(self, name, manifest):
+        os.makedirs(os.path.join(self.root, name))
+        with open(os.path.join(self.root, name, "manifest.json"), "w", encoding="utf-8") as f:
+            json.dump(manifest, f)
+
+    def _call(self):
+        with patch("wb.homeui_backend.main.PLUGINS_DIR", self.root):
+            response = plugins_handler(MagicMock(), MagicMock())
+        self.assertEqual(response.status, 200)
+        return json.loads(response.body)
+
+    def test_lists_plugins_with_script_urls_and_roles(self):
+        self._plugin("ai-assistant", {"id": "ai-assistant", "script": "main.js", "role": "admin"})
+        self._plugin("clock", {"id": "clock"})
+        self.assertEqual(
+            self._call(),
+            [
+                {"id": "ai-assistant", "script": "/plugins/ai-assistant/main.js", "role": "admin"},
+                {"id": "clock", "script": "/plugins/clock/index.js", "role": "user"},
+            ],
+        )
+
+    def test_skips_broken_or_mismatched_manifests(self):
+        self._plugin("other-name", {"id": "not-the-folder"})
+        self._plugin("escape", {"id": "escape", "script": "../../x.js"})
+        os.makedirs(os.path.join(self.root, "no-manifest"))
+        self.assertEqual(self._call(), [])
+
+    def test_missing_dir_serves_empty_list(self):
+        shutil.rmtree(self.root)
+        os.makedirs(self.root)
+        with patch("wb.homeui_backend.main.PLUGINS_DIR", os.path.join(self.root, "absent")):
+            self.assertEqual(json.loads(plugins_handler(MagicMock(), MagicMock()).body), [])

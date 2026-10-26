@@ -7,6 +7,7 @@ import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
 import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
+import { ruleEditorSlot } from '@/plugins';
 import { authStore, UserRole } from '@/stores/auth';
 import { devicesStore } from '@/stores/devices';
 import { rulesStore } from '@/stores/rules';
@@ -24,6 +25,12 @@ const EditRulePage = observer(() => {
   const params = useParams();
   const navigate = useNavigate();
   const [isEditingTitle, setIsEditingTitle] = useState(!params['*']);
+  const extensions = useMemo(
+    () => [...getExtensions(devicesStore), ...ruleEditorSlot.extensions],
+    [ruleEditorSlot.extensions],
+  );
+
+  useEffect(() => () => ruleEditorSlot.setView(null), []);
 
   const errors = useMemo(() => {
     if (pageLoadError) {
@@ -89,12 +96,17 @@ const EditRulePage = observer(() => {
       errors={errors}
       titleArea={!rule.enabled && <Tag variant="gray">{t('rules.labels.inactive')}</Tag>}
       actions={
-        <Button
-          label={t('rules.buttons.save')}
-          disabled={!rule.name}
-          isLoading={isSaving}
-          onClick={save}
-        />
+        <>
+          {ruleEditorSlot.actions.map((action) => (
+            <Button key={action.id} label={action.label} variant="secondary" onClick={action.onClick} />
+          ))}
+          <Button
+            label={t('rules.buttons.save')}
+            disabled={!rule.name}
+            isLoading={isSaving}
+            onClick={save}
+          />
+        </>
       }
       stickyHeader
       onTitleChange={(title) => rulesStore.setRuleName(title)}
@@ -105,12 +117,13 @@ const EditRulePage = observer(() => {
           text={rule.content}
           errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
           autoFocus={!!params['*']}
-          extensions={getExtensions(devicesStore)}
+          extensions={extensions}
           onChange={(value) => {
             setIsDirty(true);
             rulesStore.setRule(value);
           }}
           onSave={save}
+          onCreateEditor={ruleEditorSlot.setView}
         />
       </div>
     </PageLayout>

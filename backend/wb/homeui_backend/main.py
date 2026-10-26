@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import socketserver
 import subprocess
 import traceback
@@ -60,6 +61,10 @@ CUSTOM_MENU_DIRS = (
     CUSTOM_MENU_DIR,
     "/etc/wb-homeui/custom-menu",
 )
+
+# Web UI plugins: one folder each, with a manifest.json; nginx serves them under /plugins/.
+PLUGINS_DIR = "/usr/share/wb-mqtt-homeui/plugins"
+PLUGIN_ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -825,6 +830,26 @@ def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHa
     return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
 
 
+def plugins_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
+    """Manifests of the installed web UI plugins: id, script URL, required role."""
+    plugins = []
+    try:
+        names = sorted(os.listdir(PLUGINS_DIR))
+    except OSError:
+        names = []
+    for name in names:
+        manifest = load_json_file(os.path.join(PLUGINS_DIR, name, "manifest.json"))
+        if not isinstance(manifest, dict) or manifest.get("id") != name or not PLUGIN_ID_RE.match(name):
+            continue
+        script = manifest.get("script", "index.js")
+        if not isinstance(script, str) or "/" in script or not script.endswith(".js"):
+            continue
+        plugins.append(
+            {"id": name, "script": f"/plugins/{name}/{script}", "role": manifest.get("role", "user")}
+        )
+    return response_200([["Content-type", "application/json"]], json.dumps(plugins))
+
+
 def find_handler(url: str, handlers: dict[str, RequestHandler]) -> Optional[RequestHandler]:
     url_components = urlparse(url).path.split("/")
     for pattern, handler in handlers.items():
@@ -919,6 +944,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/api/dashboards/*/svg": RequestHandler(fn=get_dashboard_svg_handler),
                 "/api/fonts": RequestHandler(fn=get_fonts_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
+                "/ui/plugins": RequestHandler(fn=plugins_handler),
             }
         )
 
