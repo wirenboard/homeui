@@ -5,7 +5,8 @@ import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/
 import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
 
-// How long the tab waits for the picture, so the text next to it does not jump when it appears.
+// The spinner delay of .dali-contentLoader. The picture is waited for only while the spinner is hidden,
+// so it never makes the spinner show up.
 const PICTURE_WAIT_MS = 300;
 
 export const getDevicePictureUrl = (description: DaliDeviceDescription): string | null => {
@@ -14,12 +15,12 @@ export const getDevicePictureUrl = (description: DaliDeviceDescription): string 
 };
 
 // Loads the picture into the browser cache, resolves on success, failure or timeout.
-const preloadPicture = (url: string) => new Promise<void>((resolve) => {
+const preloadPicture = (url: string, waitMs: number) => new Promise<void>((resolve) => {
   const image = new Image();
   image.onload = () => resolve();
   image.onerror = () => resolve();
   image.src = url;
-  setTimeout(resolve, PICTURE_WAIT_MS);
+  setTimeout(resolve, waitMs);
 });
 
 export class DeviceStore extends BaseItemStore {
@@ -61,6 +62,7 @@ export class DeviceStore extends BaseItemStore {
       return;
     }
     this.isLoading = true;
+    const startedAt = Date.now();
     try {
       const params: GetDeviceParams = { deviceId: this.id };
       if (forceReload) {
@@ -69,7 +71,7 @@ export class DeviceStore extends BaseItemStore {
       const data = await daliProxy.GetDevice(params);
       const pictureUrl = getDevicePictureUrl(data.config);
       if (pictureUrl) {
-        await preloadPicture(pictureUrl);
+        await preloadPicture(pictureUrl, PICTURE_WAIT_MS - (Date.now() - startedAt));
       }
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
