@@ -260,4 +260,39 @@ describe('ConsolePanelStore', () => {
       expect(store.activeTabId).toBe('a');
     });
   });
+
+  describe('preferredPosition', () => {
+    const chat = { ...makeTab('chat'), preferredPosition: 'right' as const };
+    const wide = (matches: boolean) => {
+      globalThis.matchMedia = vi.fn().mockReturnValue({ matches }) as any;
+    };
+    afterEach(() => {
+      delete globalThis.matchMedia;
+    });
+
+    test('show() docks the panel where the tab asks, on a wide screen', () => {
+      wide(true);
+      store.registerTab(chat);
+      store.show('chat');
+      expect(store.position).toBe('right');
+      expect(setItemMock).not.toHaveBeenCalledWith('console-panel-position', expect.anything());
+    });
+
+    test('a side the user picked wins', () => {
+      wide(true);
+      getItemMock.mockImplementation((key: string) => (key === 'console-panel-position' ? 'bottom' : null));
+      store = new ConsolePanelStore();
+      store.registerTab(chat);
+      store.show('chat');
+      expect(store.position).toBe('bottom');
+      getItemMock.mockReset();
+    });
+
+    test('a narrow screen keeps the panel at the bottom', () => {
+      wide(false);
+      store.registerTab(chat);
+      store.show('chat');
+      expect(store.position).toBe('bottom');
+    });
+  });
 });

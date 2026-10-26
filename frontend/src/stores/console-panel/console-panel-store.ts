@@ -72,6 +72,17 @@ export class ConsolePanelStore {
     sessionStorage.setItem(SESSION_VISIBLE_KEY, 'true');
     if (tabId) {
       this.setActiveTab(tabId);
+      this.followPreferredPosition(tabId);
+    }
+  }
+
+  /** A tab may ask for a side (a chat reads better on the right); a side the user picked wins. */
+  private followPreferredPosition(tabId: string) {
+    const preferred = this.tabs.find((t) => t.id === tabId)?.preferredPosition;
+    const userPicked = !!localStorage.getItem('console-panel-position');
+    const wide = typeof globalThis.matchMedia !== 'function' || globalThis.matchMedia('(min-width: 769px)').matches;
+    if (preferred && !userPicked && wide) {
+      this.position = preferred;
     }
   }
 
