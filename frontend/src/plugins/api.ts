@@ -10,14 +10,17 @@ const devices = (): DeviceSnapshot[] => [...devicesStore.devices.values()]
   .map((device) => ({
     id: device.id,
     title: device.name,
-    controls: device.visibleCells.map((cell) => ({
-      id: cell.controlId,
-      title: cell.name,
-      type: cell.type,
-      value: cell.value,
-      units: cell.units,
-      readonly: cell.readOnly,
-    })),
+    controls: [...device.cells]
+      .map((cellId) => devicesStore.cells.get(cellId))
+      .filter((cell) => cell && !cell.hidden)
+      .map((cell) => ({
+        id: cell.controlId,
+        title: cell.name,
+        type: cell.type,
+        value: cell.value,
+        units: cell.units,
+        readonly: cell.readOnly,
+      })),
   }));
 
 /** Module namespaces of the libraries plugins share with the app, by import name. */
