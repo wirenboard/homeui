@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.273.0) stable; urgency=medium
+
+  * Require a logged-in user for /ui/menu: the menu lists the configured
+    service gates and their roles, which used to be readable before login
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Oct 2026 08:50:42 +0000
+
 wb-mqtt-homeui (2.272.0) stable; urgency=medium
 
   * Add custom device template management
