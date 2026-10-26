@@ -805,14 +805,20 @@
    },
    "terminal": {
       "title": "Console",
-      "status": {
-         "connected": "Connected",
-         "connecting": "Connecting…",
-         "disconnected": "Disconnected",
-         "error": "Error"
-      },
       "buttons": {
-         "reconnect": "Reconnect"
+         "reconnect": "Reconnect",
+         "reconnect-now": "Reconnect now",
+         "new-session": "New session",
+         "open-here": "Open here"
+      },
+      "reconnecting": "Connection to the console lost, reconnecting…",
+      "stopped": {
+         "session-finished": "Session finished",
+         "slot-taken": "Session closed: the slot was given to another connection",
+         "taken-over": "Session opened in another window"
+      },
+      "notice": {
+         "apt-lock": "A package installation is running in another console session"
       }
    },
    "logs":{

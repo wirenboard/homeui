@@ -21,12 +21,14 @@ setup(
     url="https://github.com/wirenboard/wb-mqtt-homeui",
     packages=[
         "wb.homeui_backend",
+        "wb.homeui_backend.terminal",
     ],
     scripts=[
         "wb-homeui-backend",
         "wb-homeui-users",
         "wb-homeui-gates",
         "wb-terminal-server",
+        "wb-terminal-session",
     ],
     test_suite="tests",
 )
