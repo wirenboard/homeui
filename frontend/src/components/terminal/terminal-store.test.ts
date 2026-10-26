@@ -1,47 +1,7 @@
-/* eslint-disable max-lines */
-
+// @vitest-environment happy-dom
+import { MockWebSocket } from '@/test/mocks/websocket';
 import { TerminalStore } from './terminal-store';
 import { TerminalConnectionState } from './types';
-
-let lastCreatedWs: MockWebSocket;
-
-class MockWebSocket {
-  static OPEN = 1;
-  static CONNECTING = 0;
-  static CLOSED = 3;
-
-  readyState = MockWebSocket.CONNECTING;
-  onopen: (() => void) | null = null;
-  onclose: (() => void) | null = null;
-  onerror: (() => void) | null = null;
-  onmessage: ((event: { data: string }) => void) | null = null;
-  send = vi.fn();
-  close = vi.fn();
-  url: string;
-
-  constructor(url: string) {
-    this.url = url;
-    lastCreatedWs = this;
-  }
-
-  simulateOpen() {
-    this.readyState = MockWebSocket.OPEN;
-    this.onopen?.();
-  }
-
-  simulateClose() {
-    this.readyState = MockWebSocket.CLOSED;
-    this.onclose?.();
-  }
-
-  simulateError() {
-    this.onerror?.();
-  }
-
-  simulateMessage(data: string) {
-    this.onmessage?.({ data });
-  }
-}
 
 vi.stubGlobal('WebSocket', MockWebSocket);
 
@@ -61,6 +21,7 @@ describe('TerminalStore', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    MockWebSocket.reset();
     store = new TerminalStore();
   });
 
@@ -75,32 +36,32 @@ describe('TerminalStore', () => {
     test('sets state to Connecting and creates WebSocket', () => {
       store.connect();
       expect(store.connectionState).toBe(TerminalConnectionState.Connecting);
-      expect(lastCreatedWs.url).toBe('ws://localhost:8080/api/terminal');
+      expect(MockWebSocket.last.url).toBe('ws://localhost:8080/api/terminal');
     });
 
     test('sets state to Connected on WebSocket open', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
       expect(store.connectionState).toBe(TerminalConnectionState.Connected);
       expect(store.isConnected).toBe(true);
     });
 
     test('sets state to Error on WebSocket error', () => {
       store.connect();
-      lastCreatedWs.simulateError();
+      MockWebSocket.last.simulateError();
       expect(store.connectionState).toBe(TerminalConnectionState.Error);
     });
 
     test('sets state to Disconnected on WebSocket close', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
-      lastCreatedWs.simulateClose();
+      MockWebSocket.last.simulateOpen();
+      MockWebSocket.last.simulateClose();
       expect(store.connectionState).toBe(TerminalConnectionState.Disconnected);
     });
 
     test('disconnects previous session before opening new one', () => {
       store.connect();
-      const firstWs = lastCreatedWs;
+      const firstWs = MockWebSocket.last;
       firstWs.simulateOpen();
 
       store.connect();
@@ -108,16 +69,16 @@ describe('TerminalStore', () => {
       expect(store.connectionState).toBe(TerminalConnectionState.Connecting);
     });
 
-    test('calls onReconnect callback when reconnecting', () => {
+    test('calls onReconnect callback on every connect: the server replays its buffer each time', () => {
       const callback = vi.fn();
       store.onReconnect(callback);
 
       store.connect();
-      expect(callback).not.toHaveBeenCalled();
-
-      lastCreatedWs.simulateOpen();
-      store.connect();
       expect(callback).toHaveBeenCalledTimes(1);
+
+      MockWebSocket.last.simulateOpen();
+      store.connect();
+      expect(callback).toHaveBeenCalledTimes(2);
     });
 
     test('calls onConnected callback when WebSocket opens', () => {
@@ -127,7 +88,7 @@ describe('TerminalStore', () => {
       store.connect();
       expect(callback).not.toHaveBeenCalled();
 
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
       expect(callback).toHaveBeenCalledTimes(1);
     });
 
@@ -136,18 +97,18 @@ describe('TerminalStore', () => {
       store.onConnected(callback);
 
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
       expect(callback).toHaveBeenCalledTimes(1);
 
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
       expect(callback).toHaveBeenCalledTimes(2);
     });
 
     test('uses wss: protocol when page is served over https', () => {
       vi.stubGlobal('location', { protocol: 'https:', host: 'example.com' });
       store.connect();
-      expect(lastCreatedWs.url).toBe('wss://example.com/api/terminal');
+      expect(MockWebSocket.last.url).toBe('wss://example.com/api/terminal');
       vi.stubGlobal('location', { protocol: 'http:', host: 'localhost:8080' });
     });
   });
@@ -155,7 +116,7 @@ describe('TerminalStore', () => {
   describe('disconnect', () => {
     test('closes WebSocket and resets state', () => {
       store.connect();
-      const ws = lastCreatedWs;
+      const ws = MockWebSocket.last;
       ws.simulateOpen();
 
       store.disconnect();
@@ -166,7 +127,7 @@ describe('TerminalStore', () => {
 
     test('nullifies onclose to prevent handler firing after manual disconnect', () => {
       store.connect();
-      const ws = lastCreatedWs;
+      const ws = MockWebSocket.last;
       ws.simulateOpen();
 
       store.disconnect();
@@ -184,10 +145,10 @@ describe('TerminalStore', () => {
       const callback = vi.fn();
       store.onData(callback);
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       const encoded = btoa('hello world');
-      lastCreatedWs.simulateMessage(JSON.stringify({ type: 'output', data: encoded }));
+      MockWebSocket.last.simulateMessage({ type: 'output', data: encoded });
 
       expect(callback).toHaveBeenCalledWith('hello world');
     });
@@ -196,10 +157,10 @@ describe('TerminalStore', () => {
       const callback = vi.fn();
       store.onData(callback);
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       const encoded = utf8ToBase64('привет мир');
-      lastCreatedWs.simulateMessage(JSON.stringify({ type: 'output', data: encoded }));
+      MockWebSocket.last.simulateMessage({ type: 'output', data: encoded });
 
       expect(callback).toHaveBeenCalledWith('привет мир');
     });
@@ -208,9 +169,9 @@ describe('TerminalStore', () => {
       const callback = vi.fn();
       store.onData(callback);
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
-      lastCreatedWs.simulateMessage(JSON.stringify({ type: 'resize', cols: 80, rows: 24 }));
+      MockWebSocket.last.simulateMessage({ type: 'resize', cols: 80, rows: 24 });
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -218,9 +179,9 @@ describe('TerminalStore', () => {
       const callback = vi.fn();
       store.onData(callback);
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
-      lastCreatedWs.simulateMessage('not json');
+      MockWebSocket.last.onmessage?.({ data: 'not json' });
       expect(callback).not.toHaveBeenCalled();
     });
   });
@@ -228,20 +189,20 @@ describe('TerminalStore', () => {
   describe('sendInput', () => {
     test('sends base64-encoded input over WebSocket', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       store.sendInput('ls\n');
-      expect(lastCreatedWs.send).toHaveBeenCalledWith(
+      expect(MockWebSocket.last.send).toHaveBeenCalledWith(
         JSON.stringify({ type: 'input', data: btoa('ls\n') }),
       );
     });
 
     test('encodes UTF-8 input correctly', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       store.sendInput('echo привет');
-      const sent = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
+      const sent = JSON.parse(MockWebSocket.last.send.mock.calls[0][0]);
       expect(sent.type).toBe('input');
 
       const binary = atob(sent.data);
@@ -255,17 +216,17 @@ describe('TerminalStore', () => {
     test('does not send when WebSocket is not open', () => {
       store.connect();
       store.sendInput('ls\n');
-      expect(lastCreatedWs.send).not.toHaveBeenCalled();
+      expect(MockWebSocket.last.send).not.toHaveBeenCalled();
     });
   });
 
   describe('sendResize', () => {
     test('sends resize message over WebSocket', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       store.sendResize(120, 40);
-      expect(lastCreatedWs.send).toHaveBeenCalledWith(
+      expect(MockWebSocket.last.send).toHaveBeenCalledWith(
         JSON.stringify({ type: 'resize', cols: 120, rows: 40 }),
       );
     });
@@ -273,7 +234,7 @@ describe('TerminalStore', () => {
     test('does not send when WebSocket is not open', () => {
       store.connect();
       store.sendResize(80, 24);
-      expect(lastCreatedWs.send).not.toHaveBeenCalled();
+      expect(MockWebSocket.last.send).not.toHaveBeenCalled();
     });
   });
 
@@ -386,12 +347,12 @@ describe('TerminalStore', () => {
   describe('sendInput with modifiers', () => {
     test('sends ctrl+c as control code over WebSocket', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       store.toggleCtrl();
       store.sendInput('c');
 
-      const sent = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
+      const sent = JSON.parse(MockWebSocket.last.send.mock.calls[0][0]);
       expect(sent.type).toBe('input');
 
       const binary = atob(sent.data);
@@ -400,19 +361,19 @@ describe('TerminalStore', () => {
 
     test('sends alt+x with ESC prefix over WebSocket', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       store.toggleAlt();
       store.sendInput('x');
 
-      const sent = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
+      const sent = JSON.parse(MockWebSocket.last.send.mock.calls[0][0]);
       const binary = atob(sent.data);
       expect(binary).toBe('\x1bx');
     });
 
     test('resets modifiers after sending', () => {
       store.connect();
-      lastCreatedWs.simulateOpen();
+      MockWebSocket.last.simulateOpen();
 
       store.toggleCtrl();
       store.sendInput('c');

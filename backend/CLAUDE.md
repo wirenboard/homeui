@@ -24,6 +24,10 @@ Entry point `wb/homeui_backend/main.py` (`BaseHTTPRequestHandler`); synchronous,
   atomic writes, and board-config seeding + default reconciliation at startup.
 - `board` — device-tree `of_machine_match` wrapper (board detection), shared with `cert`.
 - `db` — SQLite at `/var/lib/wb-homeui/users.db`.
+- `terminal/` — web terminal: listener `wb-terminal-server` plus a process per session
+  (`wb-terminal-session`); `registry` holds the cross-version contract between them. Session code
+  imports everything at module level: an upgrade replaces files under a running session. See
+  `../docs/web-terminal-sessions.md`.
 - `http_response`, `config_file` — response helpers and config parsing.
 
 ## Environment setup
@@ -49,6 +53,9 @@ PR. All tools read their config from `backend/pyproject.toml`:
 .venv/bin/pylint wb tests           # lint — must pass clean
 .venv/bin/pytest                    # tests (tests/*_test.py) — all green
 ```
+
+`tests/integration/` needs a stand (root, installed `wb-terminal-server`,
+`WB_TERMINAL_INTEGRATION=1`) and skips itself otherwise; see `tests/integration/console.py`.
 
 **Always pass `--src ..` to isort.** The config is only `profile = "black"`, so isort auto-detects
 first-party packages from its source root. Run plainly from `backend/`, it sees `wb/` next to the
