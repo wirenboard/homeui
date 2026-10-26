@@ -22,7 +22,7 @@ import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
 import LayoutRightIcon from '@/assets/icons/layout-right.svg';
 import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
-import { consolePanelStore as store } from '@/stores/console-panel';
+import { consolePanelStore as store, tabLabel } from '@/stores/console-panel';
 import { getOverflowIds } from './get-overflow-ids';
 import './styles.css';
 
@@ -75,7 +75,7 @@ export const ConsolePanel = observer(() => {
     label: tab.closable
       ? (
         <span className="consolePanel-tabLabel">
-          <span className="consolePanel-tabText">{tab.label}</span>
+          <span className="consolePanel-tabText">{tabLabel(tab)}</span>
           <span
             role="button"
             tabIndex={0}
@@ -90,7 +90,7 @@ export const ConsolePanel = observer(() => {
           </span>
         </span>
       )
-      : tab.label,
+      : tabLabel(tab),
   }));
 
   const tabIds = store.tabs.map((t) => t.id).join(',');
@@ -278,7 +278,7 @@ export const ConsolePanel = observer(() => {
                             setIsOverflowMenuOpen(false);
                           }}
                         >
-                          <span className="consolePanel-overflowMenuLabel">{tab.label}</span>
+                          <span className="consolePanel-overflowMenuLabel">{tabLabel(tab)}</span>
                           {tab.closable && (
                             <span
                               role="button"

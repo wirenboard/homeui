@@ -5,7 +5,7 @@ import { RulesConsoleContent, RulesConsoleToolbar } from './rules-console-tab';
 export const registerRulesTab = () => {
   consolePanelStore.registerTab({
     id: 'rules',
-    label: i18n.t('rules-console.title'),
+    label: () => i18n.t('rules-console.title'),
     renderToolbar: () => <RulesConsoleToolbar />,
     renderContent: () => <RulesConsoleContent />,
     closable: false,

@@ -41,6 +41,16 @@ describe('plugin API: rule files', () => {
     expect(window.location.hash).toBe(`#/rules/dir/${encodeURIComponent('свет.js')}`);
   });
 
+  test('onLanguageChange hears the UI switch its language', async () => {
+    const api = await createPluginApi();
+    const { default: i18n } = await import('@/i18n/config');
+    const listener = vi.fn();
+    api.onLanguageChange(listener);
+    await i18n.changeLanguage('ru');
+    expect(listener).toHaveBeenCalledWith('ru');
+    await i18n.changeLanguage('en');
+  });
+
   test('setName names the rule in the store', async () => {
     const api = await createPluginApi();
     api.ruleEditor.setName('hall.js');

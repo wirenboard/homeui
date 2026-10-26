@@ -79,4 +79,7 @@ export const createPluginApi = async (): Promise<PluginApi> => ({
   devices,
   ruleLogs: (count) => rulesStore.logs.slice(-count).map(({ level, payload }) => ({ level, payload })),
   language: () => i18n.language,
+  onLanguageChange: (listener) => {
+    i18n.on('languageChanged', listener);
+  },
 });

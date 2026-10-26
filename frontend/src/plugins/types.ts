@@ -13,7 +13,8 @@ export interface PluginManifest {
 /** A button the plugin adds next to «Save» in the rule editor. */
 export interface RuleEditorAction {
   id: string;
-  label: string;
+  /** A function follows the UI language. */
+  label: string | (() => string);
   onClick: () => void;
 }
 
@@ -65,6 +66,8 @@ export interface PluginApi {
   devices: () => DeviceSnapshot[];
   ruleLogs: (_count: number) => { level: string; payload: string }[];
   language: () => string;
+  /** Called with the new language code when the user switches it. */
+  onLanguageChange: (_listener: (_language: string) => void) => void;
 }
 
 export interface PluginDefinition {

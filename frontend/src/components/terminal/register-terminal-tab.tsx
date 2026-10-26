@@ -10,7 +10,7 @@ export const registerTerminalTab = () => {
 
   consolePanelStore.registerTab({
     id: 'terminal',
-    label: i18n.t('terminal.title'),
+    label: () => i18n.t('terminal.title'),
     renderToolbar: () => <TerminalToolbar />,
     renderContent: () => <TerminalContent />,
     closable: false,

@@ -103,7 +103,12 @@ const EditRulePage = observer(() => {
       actions={
         <>
           {ruleEditorSlot.actions.map((action) => (
-            <Button key={action.id} label={action.label} variant="secondary" onClick={action.onClick} />
+            <Button
+              key={action.id}
+              label={typeof action.label === 'function' ? action.label() : action.label}
+              variant="secondary"
+              onClick={action.onClick}
+            />
           ))}
           <Button
             label={t('rules.buttons.save')}
