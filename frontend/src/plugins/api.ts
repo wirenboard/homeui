@@ -56,7 +56,7 @@ export const createPluginApi = async (): Promise<PluginApi> => ({
       const { initName, name, content, error } = rulesStore.rule;
       return { path: initName, name, content, error };
     },
-    setName: rulesStore.setRuleName,
+    setName: (name) => rulesStore.setRuleName(name),
     save: async () => {
       await ruleEditorSlot.save?.();
       const { error } = rulesStore.rule;

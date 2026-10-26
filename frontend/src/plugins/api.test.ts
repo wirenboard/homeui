@@ -41,6 +41,12 @@ describe('plugin API: rule files', () => {
     expect(window.location.hash).toBe(`#/rules/dir/${encodeURIComponent('свет.js')}`);
   });
 
+  test('setName names the rule in the store', async () => {
+    const api = await createPluginApi();
+    api.ruleEditor.setName('hall.js');
+    expect(rulesMock.setRuleName).toHaveBeenCalledWith('hall.js');
+  });
+
   test('the editor\'s save presses the page\'s «Save» and returns its error', async () => {
     const api = await createPluginApi();
     const pageSave = vi.fn(async () => {
