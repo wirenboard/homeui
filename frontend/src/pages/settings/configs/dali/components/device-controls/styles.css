@@ -1,4 +1,3 @@
-/* Flush with the row above (toolbar or device info) and the settings header below, together they read as one header. */
 .daliDeviceControls-pinnedControls {
     /* Holds the absolute chevron. */
     position: relative;

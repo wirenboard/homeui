@@ -1,5 +1,3 @@
-/* White in both themes, product photos are shot on white. The frame hugs the image.
-   content-box, so max sizes set from outside limit the image, which inherits them. */
 .zoomableImage {
     box-sizing: content-box;
     display: flex;
