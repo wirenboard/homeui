@@ -17,6 +17,11 @@ export interface RuleEditorAction {
   onClick: () => void;
 }
 
+export interface RuleFileError {
+  message: string;
+  line?: number;
+}
+
 export interface DeviceSnapshot {
   id: string;
   title: string;
@@ -37,7 +42,25 @@ export interface PluginApi {
     addAction: (_action: RuleEditorAction) => void;
     /** The open rule editor, or null when no rule is open. */
     readonly view: EditorView | null;
-    readonly rule: { name: string; content: string; error: { message: string; errorLine?: number } | null };
+    /** `path` is empty for a rule not saved yet. */
+    readonly rule: {
+      path: string;
+      name: string;
+      content: string;
+      error: { message: string; errorLine?: number } | null;
+    };
+    setName: (_name: string) => void;
+    /** Press the page's «Save»; resolves with the wb-rules error, if any. */
+    save: () => Promise<RuleFileError | null>;
+  };
+  /** Rule files in /etc/wb-rules, by path relative to it (`light.js`). */
+  rules: {
+    list: () => Promise<{ path: string; enabled: boolean }[]>;
+    load: (_path: string) => Promise<string>;
+    save: (_path: string, _content: string) => Promise<RuleFileError | null>;
+    remove: (_path: string) => Promise<void>;
+    /** Open the file in the rule editor. */
+    open: (_path: string) => void;
   };
   devices: () => DeviceSnapshot[];
   ruleLogs: (_count: number) => { level: string; payload: string }[];

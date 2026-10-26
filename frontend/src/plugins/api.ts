@@ -1,4 +1,5 @@
 import i18n from '@/i18n/config';
+import { editorProxy } from '@/services';
 import { consolePanelStore } from '@/stores/console-panel';
 import { devicesStore } from '@/stores/devices';
 import { rulesStore } from '@/stores/rules';
@@ -52,8 +53,28 @@ export const createPluginApi = async (): Promise<PluginApi> => ({
       return ruleEditorSlot.view;
     },
     get rule() {
-      const { name, content, error } = rulesStore.rule;
-      return { name, content, error };
+      const { initName, name, content, error } = rulesStore.rule;
+      return { path: initName, name, content, error };
+    },
+    setName: rulesStore.setRuleName,
+    save: async () => {
+      await ruleEditorSlot.save?.();
+      const { error } = rulesStore.rule;
+      return error ? { message: error.message, line: error.errorLine ?? undefined } : null;
+    },
+  },
+  rules: {
+    list: async () => (await editorProxy.List()).map(({ virtualPath, enabled }) => ({ path: virtualPath, enabled })),
+    load: async (path) => (await editorProxy.Load({ path })).content ?? '',
+    save: async (path, content) => {
+      const res = await editorProxy.Save({ path, content });
+      return res.error ? { message: res.error, line: res.traceback?.[0]?.line } : null;
+    },
+    remove: async (path) => {
+      await editorProxy.Remove({ path });
+    },
+    open: (path) => {
+      window.location.hash = `#/rules/${path.split('/').map(encodeURIComponent).join('/')}`;
     },
   },
   devices,

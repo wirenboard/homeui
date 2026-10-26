@@ -8,9 +8,15 @@ class RuleEditorSlot {
   public extensions: Extension[] = [];
   public actions: RuleEditorAction[] = [];
   public view: EditorView | null = null;
+  /** The open page's «Save», or null when no rule is open. */
+  public save: (() => Promise<unknown>) | null = null;
 
   constructor() {
-    makeAutoObservable(this, { extensions: observable.ref, view: observable.ref }, { autoBind: true });
+    makeAutoObservable(
+      this,
+      { extensions: observable.ref, view: observable.ref, save: observable.ref },
+      { autoBind: true },
+    );
   }
 
   addExtension(extension: Extension) {
@@ -25,6 +31,10 @@ class RuleEditorSlot {
 
   setView(view: EditorView | null) {
     this.view = view;
+  }
+
+  setSave(save: (() => Promise<unknown>) | null) {
+    this.save = save;
   }
 }
 

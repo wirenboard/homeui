@@ -30,7 +30,10 @@ const EditRulePage = observer(() => {
     [ruleEditorSlot.extensions],
   );
 
-  useEffect(() => () => ruleEditorSlot.setView(null), []);
+  useEffect(() => () => {
+    ruleEditorSlot.setView(null);
+    ruleEditorSlot.setSave(null);
+  }, []);
 
   const errors = useMemo(() => {
     if (pageLoadError) {
@@ -84,6 +87,8 @@ const EditRulePage = observer(() => {
       }
     }
   });
+
+  useEffect(() => ruleEditorSlot.setSave(save), [save]);
 
   return (
     <PageLayout
