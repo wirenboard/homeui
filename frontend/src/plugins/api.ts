@@ -21,18 +21,19 @@ const devices = (): DeviceSnapshot[] => [...devicesStore.devices.values()]
   }));
 
 /** Module namespaces of the libraries plugins share with the app, by import name. */
-const loadLibs = async () => {
-  const names = ['react', 'react/jsx-runtime', 'mobx', 'mobx-react-lite', '@codemirror/state', '@codemirror/view'];
-  const modules = await Promise.all([
-    import('react'),
-    import('react/jsx-runtime'),
-    import('mobx'),
-    import('mobx-react-lite'),
-    import('@codemirror/state'),
-    import('@codemirror/view'),
-  ]);
-  return Object.fromEntries(names.map((name, i) => [name, modules[i]]));
+const SHARED_LIBS = {
+  react: () => import('react'),
+  'react/jsx-runtime': () => import('react/jsx-runtime'),
+  mobx: () => import('mobx'),
+  'mobx-react-lite': () => import('mobx-react-lite'),
+  '@codemirror/state': () => import('@codemirror/state'),
+  '@codemirror/view': () => import('@codemirror/view'),
+  '@codemirror/language': () => import('@codemirror/language'),
 };
+
+const loadLibs = async () => Object.fromEntries(
+  await Promise.all(Object.entries(SHARED_LIBS).map(async ([name, load]) => [name, await load()])),
+);
 
 export const createPluginApi = async (): Promise<PluginApi> => ({
   version: 1,
