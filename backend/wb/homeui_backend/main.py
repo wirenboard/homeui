@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import os
+import secrets
 import socketserver
 import subprocess
 import traceback
@@ -74,6 +75,12 @@ def make_password_hash(password: str) -> str:
 
 def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+
+
+# The password of a login that does not exist is checked against this hash, so that a failed login
+# takes the same time whether the login exists or not: the response time would otherwise reveal
+# which logins exist.
+UNKNOWN_LOGIN_PASSWORD_HASH = make_password_hash(secrets.token_hex(16))
 
 
 def make_id_cookie(session: Session) -> cookies.SimpleCookie:
@@ -269,7 +276,12 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     user = context.users_storage.get_user_by_login(login)
 
-    if user is None or not check_password(form.get("password"), user.pwd_hash):
+    # Checked first, for an unknown login too, so that the response time does not reveal
+    # whether the login exists
+    if (
+        not check_password(form.get("password"), user.pwd_hash if user else UNKNOWN_LOGIN_PASSWORD_HASH)
+        or user is None
+    ):
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         return response_401()
 
