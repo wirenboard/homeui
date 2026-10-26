@@ -4,7 +4,7 @@ import { createHashRouter } from 'react-router-dom';
 import { APP_NAME, APP_SHORT_NAME } from '@/common/constants';
 import { registerTerminalTab } from '@/components/terminal';
 import { App } from '@/layouts/app';
-import { loadPlugins } from '@/plugins';
+import { loadPlugins, setPluginRouter } from '@/plugins';
 import { deviceManagerProxy, mqttClient } from '@/services';
 import { authStore, UserRole } from '@/stores/auth';
 import { daliGlobalStore } from '@/stores/dali';
@@ -50,7 +50,9 @@ polyfillsReady
   .then((isRedirectingToHttps) => {
     if (!isRedirectingToHttps) {
       uiStore.setHttpsSetupPhase(HttpsSetupPhase.Done);
-      root.render(<App router={createHashRouter(routes)} />);
+      const router = createHashRouter(routes);
+      setPluginRouter(router);
+      root.render(<App router={router} />);
     }
   })
   .catch((err) => {

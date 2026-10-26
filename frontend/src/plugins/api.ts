@@ -3,6 +3,7 @@ import { editorProxy } from '@/services';
 import { consolePanelStore } from '@/stores/console-panel';
 import { devicesStore } from '@/stores/devices';
 import { rulesStore } from '@/stores/rules';
+import { navigate } from './navigation';
 import { ruleEditorSlot } from './rule-editor-slot';
 import type { DeviceSnapshot, PluginApi } from './types';
 
@@ -73,9 +74,7 @@ export const createPluginApi = async (): Promise<PluginApi> => ({
     remove: async (path) => {
       await editorProxy.Remove({ path });
     },
-    open: (path) => {
-      window.location.hash = `#/rules/${path.split('/').map(encodeURIComponent).join('/')}`;
-    },
+    open: (path) => navigate(`/rules/${path.split('/').map(encodeURIComponent).join('/')}`),
   },
   devices,
   ruleLogs: (count) => rulesStore.logs.slice(-count).map(({ level, payload }) => ({ level, payload })),
