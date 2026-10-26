@@ -116,6 +116,7 @@ const DeviceManagerPage = observer(() => {
       <ScanPage
         scanType={scanType}
         pageStore={scanType === 'new' ? store.newDevicesScanPageStore : store.searchDisconnectedScanPageStore}
+        onAddDeviceManually={scanType === 'new' ? () => store.cancelScanToAddDeviceManually() : undefined}
       />
     );
   }
