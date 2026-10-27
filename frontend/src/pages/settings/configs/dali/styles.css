@@ -120,16 +120,6 @@
     display: none;
 }
 
-/* The event-scheme warning: explanation and its one-click fix on one line,
-   wrapping on narrow screens. */
-.dali-schemeWarning {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
 .dali-tabToolbar {
     flex-shrink: 0;
     margin: calc(-1 * var(--dali-inset)) calc(-1 * var(--dali-inset)) 0;
