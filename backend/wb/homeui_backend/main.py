@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import grp
 import json
 import logging
 import os
@@ -1058,5 +1059,7 @@ def main():
     dali_images.start_server(dali_images.DEFAULT_SOCKET_FILE, args.debug)
 
     server = UnixSocketHttpServer((args.socket_file), WebRequestHandler)
-    os.chmod(args.socket_file, 0o662)
+    # Handlers trust nginx to have checked the session, so only nginx (www-data) may connect.
+    os.chown(args.socket_file, -1, grp.getgrnam("www-data").gr_gid)
+    os.chmod(args.socket_file, 0o660)
     server.serve_forever()
