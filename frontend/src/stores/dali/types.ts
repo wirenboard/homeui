@@ -78,7 +78,21 @@ export interface BusDetailed {
   name: string;
 }
 
-export interface DeviceConfig {
+/** Read-only identification of a device, GetDevice sends it inside the config. */
+export interface DaliDeviceDescription {
+  /** DALI device type numbers, DT6 is 6. */
+  types?: number[];
+  brand_name?: string;
+  product_name?: string;
+  gtin?: number;
+  identification_number?: number | string;
+  firmware_version?: string;
+  hardware_version?: string;
+  oem_gtin?: number;
+  oem_identification_number?: number | string;
+}
+
+export interface DeviceConfig extends DaliDeviceDescription {
   name?: string;
   mqtt_id?: string;
   groups?: boolean[];
