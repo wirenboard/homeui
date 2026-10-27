@@ -92,14 +92,15 @@ export interface DaliDeviceDescription {
   oem_identification_number?: number | string;
 }
 
+export interface DeviceConfig extends DaliDeviceDescription {
+  name?: string;
+  mqtt_id?: string;
+  groups?: boolean[];
+}
+
 export interface DeviceDetailed {
-  config: DaliDeviceDescription & {
-    mqtt_id?: string;
-    groups?: boolean[];
-  };
+  config: DeviceConfig;
   schema: JsonSchema;
-  name: string;
-  groups: boolean[];
 }
 
 export interface GetGatewayParams {
@@ -171,7 +172,7 @@ export interface DaliProxy {
   GetBus(params: GetBusParams): Promise<BusDetailed>;
   SetBus(params: SetBusParams): Promise<void>;
   GetDevice(params: GetDeviceParams): Promise<DeviceDetailed>;
-  SetDevice(params: SetDeviceParams): Promise<DeviceDetailed>;
+  SetDevice(params: SetDeviceParams): Promise<DeviceConfig>;
   GetGroup(params: GetGroupParams): Promise<GroupReply>;
   SetGroup(params: SetGroupParams): Promise<GroupDetailed>;
   GetList(): Promise<Gateway[]>;
