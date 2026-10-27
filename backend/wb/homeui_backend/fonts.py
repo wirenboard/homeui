@@ -45,7 +45,7 @@ class FontsStore:
         return {"name": filename, "size": len(data)}
 
     def delete_font(self, filename: str) -> bool:
-        path = os.path.join(self._fonts_dir, filename)
+        path = os.path.join(self._fonts_dir, os.path.basename(filename))
         try:
             os.remove(path)
             return True
