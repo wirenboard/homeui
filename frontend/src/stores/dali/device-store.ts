@@ -79,7 +79,7 @@ export class DeviceStore extends BaseItemStore {
       this.setError(null);
       runInAction(() => {
         this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
-        this.label = data.name || this.label;
+        this.label = data.config.name || this.label;
         this.mqttId = data.config.mqtt_id ?? null;
         this.description = data.config;
         this.updateGroups(data.config.groups);
