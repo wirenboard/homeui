@@ -12,6 +12,18 @@ class OpenDbTest(unittest.TestCase):
         self.tmp_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp_dir, ignore_errors=True)
 
+    def test_new_database_is_readable_only_by_owner(self):
+        db_file = os.path.join(self.tmp_dir, "users.db")
+        open_db(db_file).close()
+        self.assertEqual(os.stat(db_file).st_mode & 0o777, 0o600)
+
+    def test_existing_world_readable_database_is_restricted_to_owner(self):
+        db_file = os.path.join(self.tmp_dir, "users.db")
+        open_db(db_file).close()
+        os.chmod(db_file, 0o644)
+        open_db(db_file).close()
+        self.assertEqual(os.stat(db_file).st_mode & 0o777, 0o600)
+
     def test_recreates_non_sqlite_database_behind_symlink(self):
         """
         A power-cut-damaged database is removed from persistent storage and recreated.

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import argparse
+import grp
 import json
 import logging
 import os
+import secrets
 import socketserver
 import subprocess
 from dataclasses import dataclass
@@ -17,6 +19,7 @@ from urllib.parse import unquote, urlparse
 
 import bcrypt
 
+from . import dali_images
 from .cert import (
     CertificateCheckingThread,
     remove_nginx_https_config,
@@ -73,6 +76,12 @@ def make_password_hash(password: str) -> str:
 
 def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+
+
+# The password of a login that does not exist is checked against this hash, so that a failed login
+# takes the same time whether the login exists or not: the response time would otherwise reveal
+# which logins exist.
+UNKNOWN_LOGIN_PASSWORD_HASH = make_password_hash(secrets.token_hex(16))
 
 
 def make_id_cookie(session: Session) -> cookies.SimpleCookie:
@@ -268,7 +277,12 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     user = context.users_storage.get_user_by_login(login)
 
-    if user is None or not check_password(form.get("password"), user.pwd_hash):
+    # Checked first, for an unknown login too, so that the response time does not reveal
+    # whether the login exists
+    if (
+        not check_password(form.get("password"), user.pwd_hash if user else UNKNOWN_LOGIN_PASSWORD_HASH)
+        or user is None
+    ):
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         return response_401()
 
@@ -1044,6 +1058,10 @@ def main():
         os.remove(args.socket_file)
     except OSError:
         pass
+    dali_images.start_server(dali_images.DEFAULT_SOCKET_FILE, args.debug)
+
     server = UnixSocketHttpServer((args.socket_file), WebRequestHandler)
-    os.chmod(args.socket_file, 0o662)
+    # Handlers trust nginx to have checked the session, so only nginx (www-data) may connect.
+    os.chown(args.socket_file, -1, grp.getgrnam("www-data").gr_gid)
+    os.chmod(args.socket_file, 0o660)
     server.serve_forever()
