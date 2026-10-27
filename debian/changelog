@@ -1,8 +1,8 @@
 wb-mqtt-homeui (2.273.0) stable; urgency=medium
 
-  * Serve diagnostic archives and uploaded files only to an admin, and keep
-    a firmware upload in the uploads directory whatever file name the form
-    gives
+  * Serve diagnostic archives only to an admin, stop serving the uploads
+    directory, and keep a firmware upload in the uploads directory whatever
+    file name the form gives
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 08:04:24 +0000
 
