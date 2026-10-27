@@ -1,8 +1,23 @@
-wb-mqtt-homeui (2.271.0) stable; urgency=medium
+wb-mqtt-homeui (2.273.0) stable; urgency=medium
 
   * Show DALI device info and picture in the device settings
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 23 Oct 2026 16:45:49 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.272.0) stable; urgency=medium
+
+  * Add custom device template management
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Oct 2026 09:48:00 +0300
+
+wb-mqtt-homeui (2.271.0) stable; urgency=medium
+
+  * Web console asks for the system login and password instead of opening a
+    root shell
+  * Web console sessions survive a page reload, a lost connection and a
+    package upgrade started from the console
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Oct 2026 12:00:00 +0500
 
 wb-mqtt-homeui (2.270.0) stable; urgency=medium
 
