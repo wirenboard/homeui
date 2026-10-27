@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.273.0) stable; urgency=medium
+
+  * Deny the user and operator roles access to the wb-cloud-agent device and
+    to the cloud link controls, so that they cannot replace the links shown
+    to an admin
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 08:00:07 +0000
+
 wb-mqtt-homeui (2.272.0) stable; urgency=medium
 
   * Add custom device template management
