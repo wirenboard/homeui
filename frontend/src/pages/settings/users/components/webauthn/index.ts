@@ -1,1 +1,0 @@
-export { WebAuthnSettings } from './webauthn';

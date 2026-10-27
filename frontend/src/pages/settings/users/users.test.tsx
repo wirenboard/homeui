@@ -25,8 +25,7 @@ const { storeMock, authMock, webauthnMock } = vi.hoisted(() => ({
     me: { id: 'u1', autologin: false },
   },
   webauthnMock: {
-    getWebAuthnConfig: vi.fn(async () => ({ domains: ['wb.example.com'], https_ready: true })),
-    setWebAuthnConfig: vi.fn(async (domains: string[]) => ({ domains, https_ready: true })),
+    getWebAuthnConfig: vi.fn(async () => ({ enabled: true, rp_id: 'wb.example.com' })),
   },
 }));
 
@@ -144,7 +143,7 @@ const makeUser = (id: string, login: string, type = 'user') => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  webauthnMock.getWebAuthnConfig.mockResolvedValue({ domains: ['wb.example.com'], https_ready: true });
+  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, rp_id: 'wb.example.com' });
   authMock.hasRights.mockReturnValue(true);
   authMock.areUsersConfigured = true;
   authMock.users = [
@@ -278,8 +277,8 @@ describe('UsersPage', () => {
     expect(screen.getByTestId('passkeys').getAttribute('data-user-id')).toBe('u2');
   });
 
-  test('disables the passkeys button when no WebAuthn domains are configured', async () => {
-    webauthnMock.getWebAuthnConfig.mockResolvedValue({ domains: [], https_ready: true });
+  test('disables the passkeys button when WebAuthn is not enabled for this address', async () => {
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false, rp_id: null });
     render(<UsersPage />);
 
     await waitFor(() => {

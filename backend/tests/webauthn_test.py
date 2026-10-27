@@ -1,6 +1,9 @@
 import hashlib
 import sqlite3
+import subprocess
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from cryptography.hazmat.primitives import hashes
@@ -20,8 +23,13 @@ from wb.homeui_backend.webauthn import (
     WebAuthnChallengeStore,
     WebAuthnChallengeType,
     WebAuthnService,
-    is_valid_domain,
+    active_cloud_rp_ids,
+    cloud_rp_id,
+    discover_cloud_providers,
+    is_cloud_tunnel_active,
     json_dumps,
+    lan_rp_id,
+    match_rp_id,
 )
 from wb.homeui_backend.webauthn_storage import WebAuthnCredentialsStorage
 
@@ -45,13 +53,14 @@ def storage_fixture():
 def test_credentials_storage_lifecycle(storage):
     credential_data = make_credential()
 
-    added = storage.add_credential("user-id", "MacBook Touch ID", credential_data, 1)
+    added = storage.add_credential("user-id", "MacBook Touch ID", "wb.example.com", credential_data, 1)
     loaded = storage.get_credentials_by_user("user-id")
 
     assert len(loaded) == 1
     assert loaded[0].credential_id == added.credential_id
     assert loaded[0].credential_data == credential_data
     assert loaded[0].name == "MacBook Touch ID"
+    assert loaded[0].domain == "wb.example.com"
     assert loaded[0].sign_count == 1
     assert loaded[0].last_used_at is None
 
@@ -67,12 +76,13 @@ def test_credentials_storage_lifecycle(storage):
 
 def test_get_credential_by_id_finds_owner(storage):
     credential_data = make_credential()
-    storage.add_credential("user-id", "MacBook Touch ID", credential_data, 1)
+    storage.add_credential("user-id", "MacBook Touch ID", "wb.example.com", credential_data, 1)
 
     found = storage.get_credential_by_id(credential_data.credential_id)
 
     assert found is not None
     assert found.user_id == "user-id"
+    assert found.domain == "wb.example.com"
     assert found.credential_data == credential_data
 
 
@@ -83,14 +93,14 @@ def test_get_credential_by_id_unknown(storage):
 def test_has_any_credentials(storage):
     assert storage.has_any_credentials() is False
 
-    storage.add_credential("user-id", "MacBook Touch ID", make_credential(), 1)
+    storage.add_credential("user-id", "MacBook Touch ID", "wb.example.com", make_credential(), 1)
 
     assert storage.has_any_credentials() is True
 
 
 def test_credentials_storage_deletes_all_credentials_for_user(storage):
-    storage.add_credential("user-id", "First", make_credential(b"first"), 0)
-    storage.add_credential("user-id", "Second", make_credential(b"second"), 0)
+    storage.add_credential("user-id", "First", "wb.example.com", make_credential(b"first"), 0)
+    storage.add_credential("user-id", "Second", "wb.example.com", make_credential(b"second"), 0)
 
     storage.delete_credentials_by_user("user-id")
 
@@ -289,6 +299,7 @@ def test_registration_and_authentication_ceremonies(storage):
     )
 
     assert registered.credential_id == credential_data.credential_id
+    assert registered.domain == rp_id
     assert authenticated_user_id == user.user_id
     assert authenticated_credential.credential_id == credential_data.credential_id
     assert storage.get_credentials_by_user(user.user_id)[0].sign_count == 1
@@ -316,38 +327,14 @@ def test_authentication_stale_sign_counter(storage):
     assert storage.get_credentials_by_user(user.user_id)[0].sign_count == 5
 
 
-@pytest.mark.parametrize(
-    "domain,expected",
-    [
-        ("wb.example.com", True),
-        ("other.example.net", True),
-        ("a.b.c.example.com", True),
-        ("WB.Example.com", True),
-        ("  wb.example.com  ", True),
-        ("wb.example.com.", True),
-        ("", False),
-        ("   ", False),
-        ("localhost", False),
-        ("192.168.1.1", False),
-        ("::1", False),
-        ("not a domain", False),
-        ("-bad.example.com", False),
-        ("bad-.example.com", False),
-        ("https://wb.example.com", False),
-        ("wb.example.com/path", False),
-    ],
-)
-def test_is_valid_domain(domain, expected):
-    assert is_valid_domain(domain) is expected
-
-
-def test_related_origin_accepted_for_authentication(storage):
-    """A credential registered against the canonical rp_id authenticates from a related
-    (non-canonical) origin too -- the whole point of Related Origin Requests."""
-    rp_id = "wb.example.com"
-    canonical_origin = "https://wb.example.com"
-    related_origin = "https://related.example.net"
-    service = WebAuthnService(rp_id, canonical_origin, storage, related_origins=[related_origin])
+def test_credential_registered_on_one_lan_subdomain_authenticates_from_another(storage):
+    """The whole point of rp_id being the registrable-domain parent: a passkey registered via
+    one LAN-IP-mapped subdomain of `{sn}.ip.wirenboard.com` keeps authenticating from a
+    different one, with no Related Origin Requests involved."""
+    rp_id = "sn123.ip.wirenboard.com"
+    registration_origin = "https://192-168-1-39.sn123.ip.wirenboard.com"
+    login_origin = "https://10-200-200-1.sn123.ip.wirenboard.com"
+    service = WebAuthnService(rp_id, registration_origin, storage)
     user = User("user-id", "admin", "hash", UserType.ADMIN, False)
     private_key = ec.generate_private_key(ec.SECP256R1())
     credential_data = AttestedCredentialData.create(
@@ -355,25 +342,145 @@ def test_related_origin_accepted_for_authentication(storage):
         b"credential-id",
         ES256.from_cryptography_key(private_key.public_key()),
     )
-    complete_registration(service, user, credential_data, canonical_origin, rp_id)
+    complete_registration(service, user, credential_data, registration_origin, rp_id)
 
     authenticated_user_id, authenticated_credential = complete_authentication(
-        service, user, credential_data, private_key, (rp_id, related_origin)
+        service, user, credential_data, private_key, (rp_id, login_origin)
     )
 
     assert authenticated_user_id == user.user_id
     assert authenticated_credential.credential_id == credential_data.credential_id
 
 
-def test_origin_outside_canonical_and_related_set_is_rejected(storage):
-    """An origin that is neither the canonical one nor a configured related origin must still
-    fail the ceremony, exactly like today without Related Origin Requests configured."""
+def test_authentication_rejects_credential_registered_under_a_different_domain(storage):
+    """Defense-in-depth: even though Fido2Server's own rp_id check would likely already catch
+    a true cross-domain mismatch, a credential whose stored domain doesn't match the current
+    service's rp_id must still be rejected explicitly."""
     rp_id = "wb.example.com"
-    canonical_origin = "https://wb.example.com"
+    origin = "https://wb.example.com"
+    service = WebAuthnService(rp_id, origin, storage)
+    user = User("user-id", "admin", "hash", UserType.ADMIN, False)
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    credential_data = make_credential()
+    complete_registration(service, user, credential_data, origin, rp_id)
+    # Simulate the credential having been registered under the other domain class.
+    storage.db_connection.execute(
+        "UPDATE webauthn_credentials SET domain = ? WHERE credential_id = ?",
+        ("wb.http.wirenboard.cloud", credential_data.credential_id),
+    )
+    storage.db_connection.commit()
+
+    with pytest.raises(ValueError, match="different domain"):
+        complete_authentication(service, user, credential_data, private_key, (rp_id, origin))
+
+
+def test_accepts_origin_allows_any_https_subdomain_of_rp_id(storage):
     service = WebAuthnService(
-        rp_id, canonical_origin, storage, related_origins=["https://related.example.net"]
+        "sn123.ip.wirenboard.com", "https://192-168-1-39.sn123.ip.wirenboard.com", storage
     )
 
-    assert service.accepts_origin(canonical_origin) is True
-    assert service.accepts_origin("https://related.example.net") is True
+    assert service.accepts_origin("https://192-168-1-39.sn123.ip.wirenboard.com") is True
+    assert service.accepts_origin("https://10-200-200-1.sn123.ip.wirenboard.com") is True
+    assert service.accepts_origin("https://sn123.ip.wirenboard.com") is True
     assert service.accepts_origin("https://unrelated.example.org") is False
+    assert service.accepts_origin("http://192-168-1-39.sn123.ip.wirenboard.com") is False
+
+
+@pytest.mark.parametrize(
+    "sn,expected",
+    [
+        ("sn123", "sn123.ip.wirenboard.com"),
+        ("  Mixed-Case-SN  ", "mixed-case-sn.ip.wirenboard.com"),
+    ],
+)
+def test_lan_rp_id(sn, expected):
+    assert lan_rp_id(sn) == expected
+
+
+def test_cloud_rp_id():
+    assert cloud_rp_id("Mixed-Case-SN", "wirenboard.cloud") == "mixed-case-sn.http.wirenboard.cloud"
+
+
+@pytest.mark.parametrize(
+    "host,candidates,expected",
+    [
+        ("sn123.ip.wirenboard.com", ["sn123.ip.wirenboard.com"], "sn123.ip.wirenboard.com"),
+        (
+            "192-168-1-39.sn123.ip.wirenboard.com",
+            ["sn123.ip.wirenboard.com"],
+            "sn123.ip.wirenboard.com",
+        ),
+        (
+            "sn123.http.wirenboard.cloud",
+            ["sn123.ip.wirenboard.com", "sn123.http.wirenboard.cloud"],
+            "sn123.http.wirenboard.cloud",
+        ),
+        ("10.200.200.1", ["sn123.ip.wirenboard.com"], None),
+        ("unrelated.example.org", ["sn123.ip.wirenboard.com"], None),
+        # A domain that merely ends with the candidate's characters, not an actual subdomain
+        # of it, must not match.
+        ("evilsn123.ip.wirenboard.com", ["sn123.ip.wirenboard.com"], None),
+        ("anything", [], None),
+    ],
+)
+def test_match_rp_id(host, candidates, expected):
+    assert match_rp_id(host, candidates) == expected
+
+
+def write_frpc_conf(providers_dir: Path, provider: str, *, http_section=True, type_="tcp", local_port="80"):
+    provider_dir = providers_dir / provider
+    provider_dir.mkdir(parents=True, exist_ok=True)
+    lines = ["[common]", "server_addr = example.com", ""]
+    if http_section:
+        lines += ["[http]", f"type = {type_}", f"local_port = {local_port}", ""]
+    (provider_dir / "frpc.conf").write_text("\n".join(lines), encoding="utf-8")
+
+
+def test_discover_cloud_providers_filters_to_http_port_80_tunnels(tmp_path):
+    write_frpc_conf(tmp_path, "wirenboard.cloud")
+    write_frpc_conf(tmp_path, "other-service", local_port="8080")
+    write_frpc_conf(tmp_path, "no-http-section", http_section=False)
+    (tmp_path / "not-a-dir.txt").write_text("x", encoding="utf-8")
+
+    with patch("wb.homeui_backend.webauthn.CLOUD_PROVIDERS_DIR", str(tmp_path)):
+        assert discover_cloud_providers() == ["wirenboard.cloud"]
+
+
+def test_discover_cloud_providers_missing_directory_returns_empty():
+    with patch("wb.homeui_backend.webauthn.CLOUD_PROVIDERS_DIR", "/this/does/not/exist"):
+        assert not discover_cloud_providers()
+
+
+@pytest.mark.parametrize(
+    "stdout,returncode,expected",
+    [
+        ("active\n", 0, True),
+        ("inactive\n", 3, False),
+        ("unknown\n", 4, False),
+    ],
+)
+def test_is_cloud_tunnel_active_reflects_systemctl_output(stdout, returncode, expected):
+    completed = subprocess.CompletedProcess(args=[], returncode=returncode, stdout=stdout, stderr="")
+    with patch("wb.homeui_backend.webauthn.subprocess.run", return_value=completed) as run_mock:
+        assert is_cloud_tunnel_active("wirenboard.cloud") is expected
+    run_mock.assert_called_once()
+    assert run_mock.call_args.args[0] == [
+        "/usr/bin/systemctl",
+        "is-active",
+        "wb-cloud-agent-frpc@wirenboard.cloud.service",
+    ]
+
+
+def test_is_cloud_tunnel_active_degrades_on_subprocess_error():
+    """Missing systemctl binary, a timeout, a renamed unit, ... must report "not active" --
+    this is an internal wb-cloud-agent detail, not a public contract, so it must never raise."""
+    with patch("wb.homeui_backend.webauthn.subprocess.run", side_effect=OSError("no such file")):
+        assert is_cloud_tunnel_active("wirenboard.cloud") is False
+
+
+def test_active_cloud_rp_ids_only_includes_providers_with_an_active_tunnel():
+    with (
+        patch("wb.homeui_backend.webauthn.discover_cloud_providers", return_value=["a", "b"]),
+        patch("wb.homeui_backend.webauthn.is_cloud_tunnel_active", side_effect=lambda p: p == "b"),
+    ):
+        assert active_cloud_rp_ids("SN123") == ["sn123.http.b"]

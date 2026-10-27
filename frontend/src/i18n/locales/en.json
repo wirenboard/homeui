@@ -847,13 +847,13 @@
          "passkey-name": "Device name",
          "passkey-name-hint": "The name is just for your convenience, to tell keys apart. The passkey itself will be created next, in a system dialog.",
          "passkey-created": "Created",
+         "passkey-domain": "Domain",
          "passkey-last-used": "Last used",
          "passkey-never-used": "Never",
          "passkeys-empty": "No passkeys have been registered for this user.",
          "confirm-delete-passkey": "Are you sure you want to delete the passkey <0>{{name}}</0>?",
          "passkeys-unavailable": "Passkeys require a supported browser and a secure HTTPS connection.",
-         "passkeys-not-configured": "Passkeys aren't set up for this controller yet. An admin can add a domain in Settings → Users → Passkeys / WebAuthn.",
-         "passkeys-wrong-domain": "Passkeys aren't available from this address. Open HomeUI through one of the configured domains (Settings → Users → Passkeys / WebAuthn) to manage them.",
+         "passkeys-wrong-domain": "Passkeys aren't available from this address. Open HomeUI through its secure HTTPS address, or through an active cloud connection, to manage them.",
          "role-user-desc": "view dashboards, history and MQTT channels",
          "role-operator-desc": "all User permissions + create and edit dashboards",
          "role-admin-desc": "full access: settings, rules, user management, firmware updates, archive downloads"
@@ -1026,28 +1026,12 @@
          "upload-font": "Upload font",
          "delete-font": "Delete",
          "no-fonts": "No fonts uploaded",
-         "fonts": "Fonts for SVG dashboards",
-         "webauthn-settings": "Domains for passkeys",
-         "webauthn-needs-https": "Passkeys require HTTPS to be enabled above first",
-         "webauthn-domains-empty": "No domains configured yet. Passkeys stay disabled until at least one domain is added.",
-         "webauthn-new-domain": "Add one more domain",
-         "webauthn-confirm-heading": "Remove this address?",
-         "webauthn-confirm-remove-primary": "Removing \"{{domain}}\" invalidates every passkey currently registered, for every user — they will all need to register new ones. Continue?"
-      },
-      "buttons": {
-         "webauthn-add-domain": "Add domain",
-         "webauthn-remove-domain": "Remove domain",
-         "webauthn-confirm-continue": "Yes, continue"
+         "fonts": "Fonts for SVG dashboards"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
          "get-https-status": "Failed to get HTTPS status: {{error}}",
-         "get-webauthn-status": "Failed to get WebAuthn status: {{error}}",
-         "font-upload": "Font upload failed",
-         "setup-webauthn": "Failed to update passkey configuration: {{error}}",
-         "webauthn-domain-empty": "Enter a domain name.",
-         "webauthn-domain-ip": "Enter a domain name, not a bare IP address.",
-         "webauthn-domain-duplicate": "This domain is already configured."
+         "font-upload": "Font upload failed"
       }
    },
    "mqtt": {

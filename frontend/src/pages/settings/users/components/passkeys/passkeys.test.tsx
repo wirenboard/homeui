@@ -6,7 +6,7 @@ import { Passkeys } from './passkeys';
 const { webauthnMock } = vi.hoisted(() => ({
   webauthnMock: {
     canUseWebAuthn: vi.fn(() => true),
-    getWebAuthnConfig: vi.fn(async () => ({ enabled: true, domains: ['wb.example.com'] })),
+    getWebAuthnConfig: vi.fn(async () => ({ enabled: true, rp_id: 'wb.example.com' })),
     getPasskeys: vi.fn(async () => []),
     registerPasskey: vi.fn(async (_userId: string, name: string) => (
       { id: 'new-id', name, created_at: '2026-01-01T00:00:00Z' }
@@ -88,7 +88,7 @@ function getRow(name: string) {
 beforeEach(() => {
   vi.clearAllMocks();
   webauthnMock.canUseWebAuthn.mockReturnValue(true);
-  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, domains: ['wb.example.com'] });
+  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, rp_id: 'wb.example.com' });
   webauthnMock.getPasskeys.mockResolvedValue([]);
   webauthnMock.registerPasskey.mockImplementation(
     async (_userId: string, name: string) => ({ id: 'new-id', name, created_at: '2026-01-01T00:00:00Z' }),
@@ -98,18 +98,8 @@ beforeEach(() => {
 });
 
 describe('Passkeys', () => {
-  test('explains that nothing is configured yet when no domains exist at all', async () => {
-    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false, domains: [] });
-    render(<Passkeys userId="user-1" />);
-    await waitFor(() => {
-      expect(screen.getByText('users.labels.passkeys-not-configured')).toBeDefined();
-    });
-  });
-
-  test('explains that passkeys are configured but not available from this address', async () => {
-    webauthnMock.getWebAuthnConfig.mockResolvedValue({
-      enabled: false, domains: ['other.example.com'],
-    });
+  test('explains that passkeys are not available from this address when WebAuthn is disabled', async () => {
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false, rp_id: null });
     render(<Passkeys userId="user-1" />);
     await waitFor(() => {
       expect(screen.getByText('users.labels.passkeys-wrong-domain')).toBeDefined();
@@ -249,7 +239,7 @@ describe('Passkeys', () => {
 
   test('renders existing passkeys with a never-used fallback', async () => {
     webauthnMock.getPasskeys.mockResolvedValue([
-      { id: '1', name: 'Laptop', created_at: '2026-01-01T00:00:00Z' },
+      { id: '1', name: 'Laptop', domain: 'wb.example.com', created_at: '2026-01-01T00:00:00Z' },
     ]);
     render(<Passkeys userId="user-1" />);
     await waitFor(() => {
@@ -259,9 +249,23 @@ describe('Passkeys', () => {
     expect(within(row).getByText('users.labels.passkey-never-used')).toBeDefined();
   });
 
+  test('shows the domain each passkey is registered for', async () => {
+    webauthnMock.getPasskeys.mockResolvedValue([
+      { id: '1', name: 'Laptop', domain: 'c40abcde.ip.wirenboard.com', created_at: '2026-01-01T00:00:00Z' },
+      { id: '2', name: 'Phone', domain: 'c40abcde.http.wirenboard.cloud', created_at: '2026-01-02T00:00:00Z' },
+    ]);
+    render(<Passkeys userId="user-1" />);
+    await waitFor(() => {
+      expect(screen.getByText('Laptop')).toBeDefined();
+    });
+
+    expect(within(getRow('Laptop')).getByText('c40abcde.ip.wirenboard.com')).toBeDefined();
+    expect(within(getRow('Phone')).getByText('c40abcde.http.wirenboard.cloud')).toBeDefined();
+  });
+
   test('deleting a passkey removes it from the list after confirmation', async () => {
     webauthnMock.getPasskeys.mockResolvedValue([
-      { id: '1', name: 'Laptop', created_at: '2026-01-01T00:00:00Z' },
+      { id: '1', name: 'Laptop', domain: 'wb.example.com', created_at: '2026-01-01T00:00:00Z' },
     ]);
     render(<Passkeys userId="user-1" />);
     await waitFor(() => screen.getByText('Laptop'));

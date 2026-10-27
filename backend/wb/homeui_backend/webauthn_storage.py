@@ -8,10 +8,14 @@ from fido2.webauthn import AttestedCredentialData
 
 
 @dataclass(frozen=True)
-class WebAuthnCredential:
+class WebAuthnCredential:  # pylint: disable=too-many-instance-attributes  # one field per stored column
     credential_id: bytes
     user_id: str
     name: str
+    # The RP-ID domain (LAN or a specific cloud provider's) the credential was registered
+    # under -- used for display and as a defense-in-depth check at login time (see
+    # WebAuthnService.complete_authentication).
+    domain: str
     credential_data: AttestedCredentialData
     sign_count: int
     created_at: datetime
@@ -22,10 +26,11 @@ class WebAuthnCredentialsStorage:
     def __init__(self, db_connection):
         self.db_connection = db_connection
 
-    def add_credential(
+    def add_credential(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         user_id: str,
         name: str,
+        domain: str,
         credential_data: AttestedCredentialData,
         sign_count: int,
     ) -> WebAuthnCredential:
@@ -34,13 +39,14 @@ class WebAuthnCredentialsStorage:
         cursor.execute(
             (
                 "INSERT INTO webauthn_credentials "
-                "(credential_id, user_id, name, credential_data, sign_count, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?)"
+                "(credential_id, user_id, name, domain, credential_data, sign_count, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)"
             ),
             (
                 credential_data.credential_id,
                 user_id,
                 name,
+                domain,
                 bytes(credential_data),
                 sign_count,
                 int(now.timestamp()),
@@ -51,6 +57,7 @@ class WebAuthnCredentialsStorage:
             credential_data.credential_id,
             user_id,
             name,
+            domain,
             credential_data,
             sign_count,
             now,
@@ -61,7 +68,8 @@ class WebAuthnCredentialsStorage:
         cursor = self.db_connection.cursor()
         cursor.execute(
             (
-                "SELECT credential_id, user_id, name, credential_data, sign_count, created_at, last_used_at "
+                "SELECT credential_id, user_id, name, domain, credential_data, sign_count, "
+                "created_at, last_used_at "
                 "FROM webauthn_credentials WHERE user_id = ? ORDER BY created_at"
             ),
             (user_id,),
@@ -77,7 +85,8 @@ class WebAuthnCredentialsStorage:
         cursor = self.db_connection.cursor()
         cursor.execute(
             (
-                "SELECT credential_id, user_id, name, credential_data, sign_count, created_at, last_used_at "
+                "SELECT credential_id, user_id, name, domain, credential_data, sign_count, "
+                "created_at, last_used_at "
                 "FROM webauthn_credentials WHERE credential_id = ?"
             ),
             (credential_id,),
@@ -110,14 +119,15 @@ class WebAuthnCredentialsStorage:
     @staticmethod
     def _from_row(row) -> WebAuthnCredential:
         last_used_at = None
-        if row[6] is not None:
-            last_used_at = datetime.fromtimestamp(row[6], tz=timezone.utc)
+        if row[7] is not None:
+            last_used_at = datetime.fromtimestamp(row[7], tz=timezone.utc)
         return WebAuthnCredential(
             bytes(row[0]),
             row[1],
             row[2],
-            AttestedCredentialData(bytes(row[3])),
-            row[4],
-            datetime.fromtimestamp(row[5], tz=timezone.utc),
+            row[3],
+            AttestedCredentialData(bytes(row[4])),
+            row[5],
+            datetime.fromtimestamp(row[6], tz=timezone.utc),
             last_used_at,
         )

@@ -15,7 +15,7 @@ import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { EditUserModal } from '@/pages/settings/users/components/edit-user';
 import { Passkeys } from '@/pages/settings/users/components/passkeys';
-import { WebAuthnSettings } from '@/pages/settings/users/components/webauthn';
+import { getWebAuthnConfig } from '@/services/webauthn';
 import { authStore, UserRole } from '@/stores/auth';
 import { useAsyncAction } from '@/utils/async-action';
 import { store } from './page-store';
@@ -26,7 +26,6 @@ const UsersPage = observer(() => {
   const [deletedUserId, setDeletedUserId] = useState('');
   const [passkeysUserId, setPasskeysUserId] = useState('');
   const [canUsePasskeys, setCanUsePasskeys] = useState(true);
-  const [webauthnError, setWebauthnError] = useState('');
   const [ confirm, isOpened, handleConfirm, handleClose ] = useConfirm<any>();
   const [ editedUser, setEditedUser ] = useState<any>();
 
@@ -41,10 +40,11 @@ const UsersPage = observer(() => {
     store.showEnableHttpsConfirmModal = confirm;
   }, []);
 
-  const errors = [
-    ...store.errors,
-    ...(webauthnError ? [{ variant: 'danger', text: webauthnError }] : []),
-  ];
+  useEffect(() => {
+    getWebAuthnConfig()
+      .then((config) => setCanUsePasskeys(config.enabled))
+      .catch(() => setCanUsePasskeys(false));
+  }, []);
 
   const [save, isSaving] = useAsyncAction(async (data) => {
     if (editedUser.id) {
@@ -67,7 +67,7 @@ const UsersPage = observer(() => {
       infoLink={documentation[i18n.language]?.users}
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
-      errors={errors}
+      errors={store.errors}
       actions={
         <Button
           label={t('users.buttons.add')}
@@ -130,10 +130,10 @@ const UsersPage = observer(() => {
                       id={`passkeys-${user.login}`}
                       text={canUsePasskeys
                         ? t('users.buttons.passkeys')
-                        : t('users.labels.passkeys-not-configured')}
+                        : t('users.labels.passkeys-wrong-domain')}
                       aria-label={canUsePasskeys
                         ? t('users.buttons.passkeys')
-                        : t('users.labels.passkeys-not-configured')}
+                        : t('users.labels.passkeys-wrong-domain')}
                     >
                       <Button
                         size="small"
@@ -198,13 +198,6 @@ const UsersPage = observer(() => {
           </div>
         </dl>
       </Alert>
-
-      <div className="users-webauthn">
-        <WebAuthnSettings
-          onError={setWebauthnError}
-          onDomainsChange={(domains) => setCanUsePasskeys(domains.length > 0)}
-        />
-      </div>
 
       {editedUser && (
         <EditUserModal

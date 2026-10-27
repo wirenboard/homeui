@@ -86,11 +86,6 @@ export const getWebAuthnConfig = async () => {
   return data;
 };
 
-export const setWebAuthnConfig = async (domains: string[]) => {
-  const { data } = await request.patch<WebAuthnConfig>('/auth/webauthn/config', { domains });
-  return data;
-};
-
 /**
  * Classifies a thrown WebAuthn ceremony error (from `navigator.credentials.get()`/`create()`, or
  * our own synthetic "cancelled" errors around a null result) so callers can show an accurate

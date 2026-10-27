@@ -24,7 +24,6 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
   const [credentials, setCredentials] = useState<PasskeyCredential[]>([]);
   const [name, setName] = useState('');
   const [isEnabled, setIsEnabled] = useState(false);
-  const [hasDomainsConfigured, setHasDomainsConfigured] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
   const [credentialToDelete, setCredentialToDelete] = useState<PasskeyCredential>();
@@ -34,7 +33,6 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
   const [loadCredentials, isLoading] = useAsyncAction(async () => {
     const config = await getWebAuthnConfig();
     setIsEnabled(config.enabled);
-    setHasDomainsConfigured(!!config.domains?.length);
     if (config.enabled) {
       setCredentials(await getPasskeys(userId));
     }
@@ -98,9 +96,7 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
     return (
       <section className="passkeys">
         <Alert variant="warn">
-          {hasDomainsConfigured
-            ? t('users.labels.passkeys-wrong-domain')
-            : t('users.labels.passkeys-not-configured')}
+          {t('users.labels.passkeys-wrong-domain')}
         </Alert>
       </section>
     );
@@ -154,14 +150,16 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
       {credentials.length ? (
         <Table>
           <TableRow isHeading>
-            <TableCell width="35%">{t('users.labels.passkey-name')}</TableCell>
-            <TableCell width="30%">{t('users.labels.passkey-created')}</TableCell>
-            <TableCell width="30%">{t('users.labels.passkey-last-used')}</TableCell>
+            <TableCell width="25%">{t('users.labels.passkey-name')}</TableCell>
+            <TableCell width="25%">{t('users.labels.passkey-domain')}</TableCell>
+            <TableCell width="25%">{t('users.labels.passkey-created')}</TableCell>
+            <TableCell width="25%">{t('users.labels.passkey-last-used')}</TableCell>
             <TableCell width={70} />
           </TableRow>
           {credentials.map((credential) => (
             <TableRow key={credential.id}>
               <TableCell ellipsis>{credential.name}</TableCell>
+              <TableCell ellipsis>{credential.domain}</TableCell>
               <TableCell>{formatDate(credential.created_at)}</TableCell>
               <TableCell>{formatDate(credential.last_used_at)}</TableCell>
               <TableCell align="right">

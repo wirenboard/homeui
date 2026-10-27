@@ -5,8 +5,7 @@ export {
   deletePasskey,
   getPasskeys,
   getWebAuthnConfig,
-  registerPasskey,
-  setWebAuthnConfig
+  registerPasskey
 } from './webauthn';
 export type {
   PasskeyCredential,

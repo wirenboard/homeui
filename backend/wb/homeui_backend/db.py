@@ -13,6 +13,7 @@ def create_webauthn_credentials_table(con: sqlite3.Connection) -> None:
             "credential_id BLOB PRIMARY KEY NOT NULL, "
             "user_id TEXT NOT NULL, "
             "name TEXT NOT NULL, "
+            "domain TEXT NOT NULL, "
             "credential_data BLOB NOT NULL, "
             "sign_count INTEGER NOT NULL DEFAULT 0, "
             "created_at INTEGER NOT NULL, "

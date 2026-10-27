@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
-import ipaddress
+import configparser
 import json
+import logging
+import os
 import re
 import secrets
+import subprocess  # nosec B404 - needed to run systemctl is-active, matching gates.py's pattern
 import threading
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -31,25 +34,109 @@ MAX_CREDENTIAL_NAME_LENGTH = 80
 # python-fido2 1.2 keeps this parser behind a compatibility feature flag.
 fido2.features.webauthn_json_mapping.enabled = True
 
-_DOMAIN_LABEL_RE = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
+LAN_RP_ID_SUFFIX = "ip.wirenboard.com"
+
+CLOUD_PROVIDERS_DIR = "/var/lib/wb-cloud-agent/providers"
+CLOUD_FRPC_HTTP_SECTION = "http"
+CLOUD_FRPC_HTTP_TYPE = "tcp"
+CLOUD_FRPC_HTTP_LOCAL_PORT = "80"
+CLOUD_TUNNEL_STATUS_TIMEOUT_S = 5
+
+# wb-cloud-agent provider directory names end up in an rp_id/domain string; restrict to
+# plausible DNS-label characters so a stray/malicious directory can't smuggle anything odd in.
+_CLOUD_PROVIDER_NAME_RE = re.compile(r"^[A-Za-z0-9.-]+$")
 
 
-def is_valid_domain(value: str) -> bool:
-    """A syntactically valid DNS domain name: not blank/whitespace, not a bare IP literal,
-    dotted labels that are each a valid DNS label. Used to validate admin-entered WebAuthn
-    domains (the canonical rp_id and each related domain)."""
-    domain = value.strip().rstrip(".")
-    if not domain or len(domain) > 253:
-        return False
+def lan_rp_id(sn: str) -> str:
+    """The LAN relying-party domain: the parent of the ACME wildcard cert domain
+    (`cert.py: make_domain_name`). WebAuthn allows an rp_id to be a registrable-domain parent
+    of the actual origin, so any LAN-IP-mapped subdomain of this is automatically the same
+    relying party -- no admin domain list, no Related Origin Requests."""
+    return f"{sn.strip().lower()}.{LAN_RP_ID_SUFFIX}"
+
+
+def cloud_rp_id(sn: str, provider: str) -> str:
+    """The cloud relying-party domain for one wb-cloud-agent provider: the provider's
+    `[http]` FRP tunnel is a raw TCP passthrough to local port 80, so the browser's original
+    Host header (this domain) survives unchanged all the way to local nginx."""
+    return f"{sn.strip().lower()}.http.{provider}"
+
+
+def _provider_has_http_tunnel(provider_dir: str) -> bool:
+    """A provider only counts as a homeui cloud candidate if its frpc.conf declares an
+    `[http]` tunnel proxying to local port 80 -- other tunnels (unrelated internal services)
+    don't expose the web UI at all."""
+    parser = configparser.ConfigParser()
     try:
-        ipaddress.ip_address(domain)
+        if not parser.read(os.path.join(provider_dir, "frpc.conf")):
+            return False
+        section = parser[CLOUD_FRPC_HTTP_SECTION]
+        return (
+            section.get("type", "").strip() == CLOUD_FRPC_HTTP_TYPE
+            and section.get("local_port", "").strip() == CLOUD_FRPC_HTTP_LOCAL_PORT
+        )
+    except Exception as e:  # pylint: disable=broad-exception-caught  # frpc.conf's format isn't ours to trust
+        logging.debug("Ignoring wb-cloud-agent provider at %s: %s", provider_dir, e)
         return False
-    except ValueError:
-        pass
-    labels = domain.split(".")
-    if len(labels) < 2:
+
+
+def discover_cloud_providers() -> list[str]:
+    """Provider names under `/var/lib/wb-cloud-agent/providers` that expose a homeui-facing
+    `[http]` tunnel. Never raises: a missing/unreadable providers directory just means "no
+    cloud candidates", not an error."""
+    try:
+        entries = sorted(os.listdir(CLOUD_PROVIDERS_DIR))
+    except OSError as e:
+        logging.debug("wb-cloud-agent providers directory unavailable: %s", e)
+        return []
+    providers = []
+    for entry in entries:
+        if not _CLOUD_PROVIDER_NAME_RE.match(entry):
+            continue
+        provider_dir = os.path.join(CLOUD_PROVIDERS_DIR, entry)
+        if os.path.isdir(provider_dir) and _provider_has_http_tunnel(provider_dir):
+            providers.append(entry)
+    return providers
+
+
+def is_cloud_tunnel_active(provider: str) -> bool:
+    """Shells out to `systemctl is-active`, matching the existing subprocess-calling
+    convention in gates.py (`nginx -t` / `systemctl reload`). This depends on a
+    wb-cloud-agent-internal unit naming convention, not its public contract, so any failure
+    (missing binary, unexpected output, a renamed unit, ...) must degrade to "not active",
+    never raise -- the timeout guards against a hung call blocking this request indefinitely,
+    unlike gates.py's one-off startup/toggle calls."""
+    try:
+        result = subprocess.run(  # nosec B603 - argv is fixed except for a regex-filtered provider name
+            ["/usr/bin/systemctl", "is-active", f"wb-cloud-agent-frpc@{provider}.service"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=CLOUD_TUNNEL_STATUS_TIMEOUT_S,
+        )
+    except (OSError, subprocess.SubprocessError) as e:
+        logging.debug("Could not check wb-cloud-agent-frpc@%s.service status: %s", provider, e)
         return False
-    return all(_DOMAIN_LABEL_RE.match(label) for label in labels)
+    return result.stdout.strip() == "active"
+
+
+def active_cloud_rp_ids(sn: str) -> list[str]:
+    return [
+        cloud_rp_id(sn, provider)
+        for provider in discover_cloud_providers()
+        if is_cloud_tunnel_active(provider)
+    ]
+
+
+def match_rp_id(host: str, candidates: Sequence[str]) -> Optional[str]:
+    """The candidate domain whose registrable scope covers `host`: either `host` is exactly
+    the candidate, or it's a subdomain of it (the LAN case: any `*.{candidate}` IP-mapped
+    hostname)."""
+    normalized_host = host.strip().lower().rstrip(".")
+    for candidate in candidates:
+        if normalized_host == candidate or normalized_host.endswith(f".{candidate}"):
+            return candidate
+    return None
 
 
 class WebAuthnChallengeType(Enum):
@@ -111,7 +198,10 @@ class WebAuthnService:
         rp_id: str,
         origin: str,
         credentials_storage: WebAuthnCredentialsStorage,
-        related_origins: Sequence[str] = (),
+        # Caller-supplied so a persistent store can be shared across the short-lived
+        # per-request WebAuthnService instances main.py builds (one per Host-resolved rp_id) --
+        # a challenge from begin_*() must still be found by complete_*() on a later request.
+        challenges: Optional[WebAuthnChallengeStore] = None,
     ):
         normalized_rp_id = rp_id.strip().lower().rstrip(".")
         normalized_origin = origin.strip().rstrip("/")
@@ -127,19 +217,25 @@ class WebAuthnService:
             raise ValueError("WebAuthn origin must not contain a path, query, or fragment")
         self.rp_id = normalized_rp_id
         self.origin = normalized_origin
-        self.related_origins = tuple(o.strip().rstrip("/") for o in related_origins)
         self.credentials_storage = credentials_storage
-        self.challenges = WebAuthnChallengeStore()
+        self.challenges = challenges if challenges is not None else WebAuthnChallengeStore()
         self.server = Fido2Server(
             PublicKeyCredentialRpEntity(id=rp_id, name="Wiren Board"),
             verify_origin=self.accepts_origin,
         )
 
     def accepts_origin(self, request_origin: str) -> bool:
-        """True for the canonical origin or any configured related origin (Related Origin
-        Requests). Passed to `Fido2Server` as `verify_origin`; exposed publicly so it can be
+        """True for an HTTPS origin whose host is this service's rp_id itself or any subdomain
+        of it -- WebAuthn's registrable-domain rule for an rp_id that is a parent of the real
+        origin. This is what lets a passkey registered via one LAN-IP-mapped subdomain of
+        `{sn}.ip.wirenboard.com` keep authenticating from a different one, with no related-origin
+        list. Passed to `Fido2Server` as `verify_origin`; exposed publicly so it can be
         unit-tested directly."""
-        return request_origin == self.origin or request_origin in self.related_origins
+        parsed = urlparse(request_origin)
+        if parsed.scheme != "https":
+            return False
+        host = (parsed.hostname or "").lower().rstrip(".")
+        return host == self.rp_id or host.endswith(f".{self.rp_id}")
 
     def begin_registration(self, user: User) -> dict[str, Any]:
         credentials = self.credentials_storage.get_credentials_by_user(user.user_id)
@@ -171,6 +267,7 @@ class WebAuthnService:
         return self.credentials_storage.add_credential(
             user.user_id,
             normalized_name,
+            self.rp_id,
             auth_data.credential_data,
             auth_data.counter,
         )
@@ -196,6 +293,11 @@ class WebAuthnService:
         credential = self.credentials_storage.get_credential_by_id(authentication.id)
         if credential is None:
             raise ValueError("Unknown credential")
+        if credential.domain != self.rp_id:
+            # Belt-and-braces: Fido2Server's own rp_id check below would likely already catch
+            # a true cross-domain mismatch, but this makes the intent explicit and doesn't
+            # depend on that library behavior.
+            raise ValueError("Credential was registered for a different domain")
         self.server.authenticate_complete(challenge.state, [credential.credential_data], response)
         new_sign_count = authentication.response.authenticator_data.counter
         if credential.sign_count > 0 and new_sign_count > 0:
@@ -218,6 +320,7 @@ class WebAuthnService:
         return {
             "id": websafe_encode(credential.credential_id),
             "name": credential.name,
+            "domain": credential.domain,
             "created_at": credential.created_at.isoformat(),
             "last_used_at": credential.last_used_at.isoformat() if credential.last_used_at else None,
         }

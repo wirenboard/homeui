@@ -8,7 +8,6 @@ import {
   getPasskeys,
   getWebAuthnConfig,
   registerPasskey,
-  setWebAuthnConfig,
 } from './webauthn';
 
 vi.mock('@/utils/request', () => import('@/test/mocks/request'));
@@ -76,35 +75,6 @@ describe('getWebAuthnConfig', () => {
 
     expect(requestMock.get).toHaveBeenCalledWith('/auth/webauthn/config');
     expect(config).toEqual({ enabled: true, rp_id: 'wb.example.com' });
-  });
-});
-
-describe('setWebAuthnConfig', () => {
-  test('PATCHes the full domain list as-is, in order', async () => {
-    const config = {
-      enabled: true,
-      rp_id: 'wb.example.com',
-      origin: 'https://wb.example.com',
-      domains: ['wb.example.com', 'related.example.com'],
-      has_credentials: true,
-      https_ready: true,
-    };
-    requestMock.patch.mockResolvedValue({ data: config });
-
-    const result = await setWebAuthnConfig(['wb.example.com', 'related.example.com']);
-
-    expect(requestMock.patch).toHaveBeenCalledWith('/auth/webauthn/config', {
-      domains: ['wb.example.com', 'related.example.com'],
-    });
-    expect(result).toEqual(config);
-  });
-
-  test('sends an empty domain list as-is, to disable WebAuthn entirely', async () => {
-    requestMock.patch.mockResolvedValue({ data: { enabled: false } });
-
-    await setWebAuthnConfig([]);
-
-    expect(requestMock.patch).toHaveBeenCalledWith('/auth/webauthn/config', { domains: [] });
   });
 });
 
@@ -257,7 +227,7 @@ describe('registerPasskey', () => {
 
 describe('getPasskeys', () => {
   test('fetches the given user\'s credentials', async () => {
-    const credentials = [{ id: '1', name: 'Key', created_at: '2026-01-01' }];
+    const credentials = [{ id: '1', name: 'Key', domain: 'wb.example.com', created_at: '2026-01-01' }];
     requestMock.get.mockResolvedValue({ data: credentials });
 
     const result = await getPasskeys('user-1');

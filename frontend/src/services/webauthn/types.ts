@@ -11,11 +11,7 @@ export interface WebAuthnConfig {
   enabled: boolean;
   rp_id?: string | null;
   origin?: string | null;
-  /** Ordered: the first entry is the current relying-party domain, the rest are Related
-   * Origin Request domains. Order is the only notion of "primary" — there is no separate flag. */
-  domains?: string[];
   has_credentials?: boolean;
-  https_ready?: boolean;
 }
 
 /**
@@ -39,6 +35,7 @@ export interface WebAuthnCeremony {
 export interface PasskeyCredential {
   id: string;
   name: string;
+  domain: string;
   created_at: string;
   last_used_at?: string;
 }

@@ -13,7 +13,7 @@ from email.utils import formatdate, parsedate_to_datetime
 from http import cookies
 from http.server import BaseHTTPRequestHandler
 from sys import argv
-from typing import Any, Callable, ClassVar, Optional
+from typing import Any, Callable, Optional
 from urllib.parse import unquote, urlparse
 
 import bcrypt
@@ -51,7 +51,14 @@ from .rate_limiter import RateLimiter
 from .security import SecurityCheckingThread
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
-from .webauthn import WebAuthnService, is_valid_domain, json_dumps
+from .webauthn import (
+    WebAuthnChallengeStore,
+    WebAuthnService,
+    active_cloud_rp_ids,
+    json_dumps,
+    lan_rp_id,
+    match_rp_id,
+)
 from .webauthn_storage import WebAuthnCredentialsStorage
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
@@ -189,7 +196,6 @@ def validate_update_user_request(request: dict) -> None:
 
 @dataclass
 class WebRequestHandlerContext:  # pylint: disable=too-many-instance-attributes
-    webauthn_service: ClassVar[Optional[WebAuthnService]] = None
     sn: str
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
@@ -316,90 +322,51 @@ def read_json_request(request: BaseHTTPRequestHandler) -> dict:
 
 def webauthn_request_host(request: BaseHTTPRequestHandler) -> str:
     """The domain the request itself arrived on (port stripped, lowercased). nginx forwards the
-    original `Host` header for `/auth/webauthn/config`, so `enabled` can be scoped to it."""
+    original `Host` header on every WebAuthn endpoint, so the right rp_id candidate can be
+    matched per request."""
     host = request.headers.get("Host", "")
     return host.split(":", 1)[0].strip().lower()
 
 
-def build_webauthn_service(
-    config: Config, credentials_storage: WebAuthnCredentialsStorage
+def webauthn_domain_candidates(context: WebRequestHandlerContext) -> list[str]:
+    """Every RP-ID domain currently valid for this controller, computed fresh on every call --
+    nothing is persisted or admin-managed. The LAN parent domain while local HTTPS is enabled
+    and usable, plus one per wb-cloud-agent provider with an active `[http]` tunnel."""
+    candidates = []
+    if effective_https_enabled(WebRequestHandler.config, context.certificate_thread):
+        candidates.append(lan_rp_id(context.sn))
+    candidates.extend(active_cloud_rp_ids(context.sn))
+    return candidates
+
+
+def resolve_webauthn_service(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> Optional[WebAuthnService]:
-    """(Re)builds the live WebAuthnService from the persisted domain list: None when WebAuthn is
-    fully disabled (no canonical domain configured), else bound to the canonical rp_id with every
-    other configured domain accepted as a Related Origin Request."""
-    canonical = config.get_canonical_webauthn_domain()
-    if canonical is None:
+    """Builds a WebAuthnService scoped to whichever domain candidate the request's Host falls
+    under (exact match or any subdomain) -- None when it falls under neither, meaning WebAuthn
+    isn't available for this address."""
+    host = webauthn_request_host(request)
+    rp_id = match_rp_id(host, webauthn_domain_candidates(context))
+    if rp_id is None:
         return None
-    related_origins = [f"https://{domain}" for domain in config.get_related_webauthn_domains()]
-    return WebAuthnService(canonical, f"https://{canonical}", credentials_storage, related_origins)
+    return WebAuthnService(
+        rp_id,
+        f"https://{host}",
+        WebRequestHandler.webauthn_credentials_storage,
+        WebRequestHandler.webauthn_challenges,
+    )
 
 
 def webauthn_config_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    config = WebRequestHandler.config
-    domains = config.get_webauthn_domains()
-    https_ready = effective_https_enabled(config, context.certificate_thread)
+    service = resolve_webauthn_service(request, context)
     res = {
-        "enabled": https_ready and webauthn_request_host(request) in domains,
-        "rp_id": context.webauthn_service.rp_id if context.webauthn_service is not None else None,
-        "origin": context.webauthn_service.origin if context.webauthn_service is not None else None,
-        "domains": domains,
+        "enabled": service is not None,
+        "rp_id": service.rp_id if service is not None else None,
+        "origin": service.origin if service is not None else None,
         "has_credentials": WebRequestHandler.webauthn_credentials_storage.has_any_credentials(),
-        "https_ready": https_ready,
     }
-    return response_200([["Content-type", "application/json"]], json.dumps(res))
-
-
-def parse_webauthn_domains_request(raw_domains: Any) -> list[str]:
-    """Parses+validates a PATCH /auth/webauthn/config body's `domains` list, raising ValueError
-    with a human-readable message on the first problem found. Order is the only notion of
-    priority: the first entry is the canonical relying-party domain, the rest are Related
-    Origin Request domains — there is no separate "is canonical" flag to get out of sync."""
-    if not isinstance(raw_domains, list):
-        raise ValueError("domains must be a list")
-    parsed = []
-    seen_domains = set()
-    for domain in raw_domains:
-        if not isinstance(domain, str) or not is_valid_domain(domain):
-            raise ValueError(f"Invalid domain: {domain!r}")
-        normalized_domain = domain.strip().rstrip(".").lower()
-        if normalized_domain in seen_domains:
-            raise ValueError(f"Duplicate domain: {normalized_domain}")
-        seen_domains.add(normalized_domain)
-        parsed.append(normalized_domain)
-    return parsed
-
-
-def webauthn_update_config_handler(
-    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
-) -> HttpResponse:
-    form, error = read_json_object_body(request)
-    if error is not None:
-        return error
-    try:
-        domains = parse_webauthn_domains_request(form.get("domains"))
-    except ValueError as e:
-        return response_400(str(e))
-    config = WebRequestHandler.config
-    if domains and not effective_https_enabled(config, context.certificate_thread):
-        return response_400("HTTPS must be enabled and usable before configuring WebAuthn")
-    config.set_webauthn_domains(domains)
-    new_service = build_webauthn_service(config, WebRequestHandler.webauthn_credentials_storage)
-    WebRequestHandler.webauthn_service = new_service
-    WebRequestHandlerContext.webauthn_service = new_service
-    return webauthn_config_handler(request, context)
-
-
-def well_known_webauthn_handler(
-    _request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext
-) -> HttpResponse:
-    """Related Origin Requests config file: the canonical domain's browser fetches this to
-    learn which other origins it should also accept this rp_id's credentials from. Always a
-    valid (possibly empty) response so the endpoint's presence doesn't itself leak whether
-    WebAuthn is configured."""
-    related = WebRequestHandler.config.get_related_webauthn_domains()
-    res = {"origins": [f"https://{domain}" for domain in related]}
     return response_200([["Content-type", "application/json"]], json.dumps(res))
 
 
@@ -425,7 +392,8 @@ def resolve_webauthn_target_user(
 def webauthn_registration_options_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    if context.webauthn_service is None:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
         return response_404()
     if context.session is None:
         return response_401()
@@ -437,14 +405,15 @@ def webauthn_registration_options_handler(
         return error
     return response_200(
         [["Content-type", "application/json"]],
-        json_dumps(context.webauthn_service.begin_registration(user)),
+        json_dumps(service.begin_registration(user)),
     )
 
 
 def webauthn_registration_complete_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    if context.webauthn_service is None:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
         return response_404()
     if context.session is None:
         return response_401()
@@ -456,7 +425,7 @@ def webauthn_registration_complete_handler(
         return error
     try:
         form = read_json_request(request)
-        credential = context.webauthn_service.complete_registration(
+        credential = service.complete_registration(
             user,
             form.get("challenge_id", ""),
             form.get("name", ""),
@@ -467,29 +436,31 @@ def webauthn_registration_complete_handler(
         return response_400("WebAuthn registration failed")
     return response_201(
         [["Content-type", "application/json"]],
-        json.dumps(context.webauthn_service.credential_to_dict(credential)),
+        json.dumps(service.credential_to_dict(credential)),
     )
 
 
 def webauthn_authentication_options_handler(
-    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    if context.webauthn_service is None:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
         return response_404()
     # No login lookup: the client discovers its own resident credentials for this
     # rp_id, so this response never depends on (and can't leak) which logins exist.
-    res = context.webauthn_service.begin_authentication()
+    res = service.begin_authentication()
     return response_200([["Content-type", "application/json"]], json_dumps(res))
 
 
 def webauthn_authentication_complete_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    if context.webauthn_service is None:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
         return response_404()
     try:
         form = read_json_request(request)
-        user_id, _credential = context.webauthn_service.complete_authentication(
+        user_id, _credential = service.complete_authentication(
             form.get("challenge_id", ""), form.get("response", {})
         )
         user = context.users_storage.get_user_by_id(user_id)
@@ -514,8 +485,9 @@ def webauthn_authentication_complete_handler(
 def webauthn_credentials_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    if context.webauthn_service is None:
-        return response_404()
+    # Listing/managing your own passkey inventory doesn't need a live ceremony rp_id, so it's
+    # not gated on the current Host matching a domain candidate (unlike the four endpoints
+    # above): it works the same from any address, same as the rest of account management.
     if context.session is None:
         return response_401()
     target_user_id = webauthn_user_id_from_path(request, 6)
@@ -524,18 +496,16 @@ def webauthn_credentials_handler(
     user, error = resolve_webauthn_target_user(context, target_user_id)
     if error is not None:
         return error
-    credentials = context.webauthn_service.list_credentials(user.user_id)
+    credentials = WebRequestHandler.webauthn_credentials_storage.get_credentials_by_user(user.user_id)
     return response_200(
         [["Content-type", "application/json"]],
-        json.dumps([context.webauthn_service.credential_to_dict(item) for item in credentials]),
+        json.dumps([WebAuthnService.credential_to_dict(item) for item in credentials]),
     )
 
 
 def webauthn_delete_credential_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
-    if context.webauthn_service is None:
-        return response_404()
     if context.session is None:
         return response_401()
     parts = urlparse(request.path).path.split("/")
@@ -546,9 +516,9 @@ def webauthn_delete_credential_handler(
     if error is not None:
         return error
     try:
-        deleted = context.webauthn_service.delete_credential(
+        deleted = WebRequestHandler.webauthn_credentials_storage.delete_credential(
             user.user_id,
-            context.webauthn_service.decode_credential_id(credential_id),
+            WebAuthnService.decode_credential_id(credential_id),
         )
     except ValueError:
         return response_400("Invalid credential id")
@@ -650,8 +620,7 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     if user.type == UserType.ADMIN and context.users_storage.count_users_by_type(UserType.ADMIN) == 1:
         return response_400("Can't delete the last admin")
     context.sessions_storage.delete_sessions_by_user(user)
-    if context.webauthn_service is not None:
-        context.webauthn_service.delete_credentials_by_user(user_id)
+    WebRequestHandler.webauthn_credentials_storage.delete_credentials_by_user(user_id)
     context.users_storage.delete_user(user_id)
     return response_204()
 
@@ -1084,8 +1053,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     config: Config
     dashboards_store: DashboardsStore
     fonts_store: FontsStore
-    webauthn_service: Optional[WebAuthnService] = None
     webauthn_credentials_storage: WebAuthnCredentialsStorage
+    # A real instance (not just an annotation): resolve_webauthn_service() builds a fresh,
+    # rp_id-scoped WebAuthnService on every request, so the in-progress ceremony challenges
+    # need a store that outlives any single request -- this class-level singleton is it.
+    webauthn_challenges: WebAuthnChallengeStore = WebAuthnChallengeStore()
 
     def process_response(self, response: HttpResponse) -> None:
         if 200 <= response.status < 300 or response.status == 304:
@@ -1150,7 +1122,6 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/auth/webauthn/config": RequestHandler(fn=webauthn_config_handler),
                 "/auth/webauthn/users/*/credentials": RequestHandler(fn=webauthn_credentials_handler),
-                "/.well-known/webauthn": RequestHandler(fn=well_known_webauthn_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
@@ -1194,7 +1165,6 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             {
                 "/users/*": RequestHandler(fn=update_user_handler),
                 "/api/https": RequestHandler(fn=update_https_handler),
-                "/auth/webauthn/config": RequestHandler(fn=webauthn_update_config_handler),
                 "/api/dashboards/*": RequestHandler(fn=patch_dashboard_handler),
             }
         )
@@ -1268,10 +1238,6 @@ def main():
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
     WebRequestHandler.webauthn_credentials_storage = WebAuthnCredentialsStorage(con)
-    WebRequestHandler.webauthn_service = build_webauthn_service(
-        WebRequestHandler.config, WebRequestHandler.webauthn_credentials_storage
-    )
-    WebRequestHandlerContext.webauthn_service = WebRequestHandler.webauthn_service
     usable_change_handler = make_certificate_usable_change_handler(sn, WebRequestHandler.config)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn,
