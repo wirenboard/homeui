@@ -42,6 +42,7 @@ export interface StringFieldProps {
   formStyle?: CSSProperties;
   min?: number;
   max?: number;
+  ariaLabel?: string;
   onChange: (value: string | number) => void;
 }
 

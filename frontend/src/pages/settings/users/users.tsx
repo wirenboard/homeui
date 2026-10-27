@@ -2,16 +2,20 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
+import KeyIcon from '@/assets/icons/key.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
+import { Dialog } from '@/components/dialog';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { EditUserModal } from '@/pages/settings/users/components/edit-user';
+import { Passkeys } from '@/pages/settings/users/components/passkeys';
+import { getWebAuthnConfig } from '@/services/webauthn';
 import { authStore, UserRole } from '@/stores/auth';
 import { useAsyncAction } from '@/utils/async-action';
 import { store } from './page-store';
@@ -20,6 +24,8 @@ import './styles.css';
 const UsersPage = observer(() => {
   const { t, i18n } = useTranslation();
   const [deletedUserId, setDeletedUserId] = useState('');
+  const [passkeysUserId, setPasskeysUserId] = useState('');
+  const [canUsePasskeys, setCanUsePasskeys] = useState(true);
   const [ confirm, isOpened, handleConfirm, handleClose ] = useConfirm<any>();
   const [ editedUser, setEditedUser ] = useState<any>();
 
@@ -32,6 +38,12 @@ const UsersPage = observer(() => {
   useEffect(() => {
     loadUsers();
     store.showEnableHttpsConfirmModal = confirm;
+  }, []);
+
+  useEffect(() => {
+    getWebAuthnConfig()
+      .then((config) => setCanUsePasskeys(config.enabled))
+      .catch(() => setCanUsePasskeys(false));
   }, []);
 
   const [save, isSaving] = useAsyncAction(async (data) => {
@@ -82,7 +94,7 @@ const UsersPage = observer(() => {
               <TableCell width="50%">
                 {t('users.labels.type')}
               </TableCell>
-              <TableCell width={100} />
+              <TableCell width={140} />
             </TableRow>
 
             {store.users.map((user) => (
@@ -111,6 +123,26 @@ const UsersPage = observer(() => {
                         onClick={() => {
                           setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
                         }}
+                      />
+                    </Tooltip>
+
+                    <Tooltip
+                      id={`passkeys-${user.login}`}
+                      text={canUsePasskeys
+                        ? t('users.buttons.passkeys')
+                        : t('users.labels.passkeys-wrong-domain')}
+                      aria-label={canUsePasskeys
+                        ? t('users.buttons.passkeys')
+                        : t('users.labels.passkeys-wrong-domain')}
+                    >
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        aria-labelledby={`username-${user.login} passkeys-${user.login}`}
+                        icon={<KeyIcon />}
+                        aria-haspopup="dialog"
+                        disabled={!canUsePasskeys}
+                        onClick={() => setPasskeysUserId(user.id)}
                       />
                     </Tooltip>
 
@@ -223,6 +255,20 @@ const UsersPage = observer(() => {
               { name: authStore.users.find((user) => user.id === deletedUserId)?.login })
           }
         </Confirm>
+      )}
+
+      {passkeysUserId && (
+        <Dialog
+          width={760}
+          isOpened={!!passkeysUserId}
+          heading={t('users.labels.passkeys-heading', {
+            login: authStore.users.find((user) => user.id === passkeysUserId)?.login,
+            interpolation: { escapeValue: false },
+          })}
+          onClose={() => setPasskeysUserId('')}
+        >
+          <Passkeys userId={passkeysUserId} />
+        </Dialog>
       )}
     </PageLayout>
   );

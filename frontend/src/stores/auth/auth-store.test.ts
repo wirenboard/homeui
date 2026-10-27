@@ -3,7 +3,12 @@ import AuthStore from './auth-store';
 import { UserRole } from './constants';
 import type { User, UserBody } from './types';
 
+const { authenticateWithPasskeyMock } = vi.hoisted(() => ({
+  authenticateWithPasskeyMock: vi.fn(),
+}));
+
 vi.mock('@/utils/request', () => import('@/test/mocks/request'));
+vi.mock('@/services/webauthn', () => ({ authenticateWithPasskey: authenticateWithPasskeyMock }));
 
 describe('AuthStore', () => {
   let store: AuthStore;
@@ -99,6 +104,29 @@ describe('AuthStore', () => {
       expect(store.userRole).toBe(UserRole.Operator);
       expect(store.isAutologin).toBe(false);
       expect(store.areUsersConfigured).toBe(true);
+    });
+  });
+
+  describe('loginWithPasskey', () => {
+    test('sets user data and returns response', async () => {
+      const data = { user_type: UserRole.Operator, user_id: '2' };
+      authenticateWithPasskeyMock.mockResolvedValue(data);
+
+      const result = await store.loginWithPasskey();
+
+      expect(authenticateWithPasskeyMock).toHaveBeenCalledWith();
+      expect(result).toEqual(data);
+      expect(store.userRole).toBe(UserRole.Operator);
+      expect(store.isAutologin).toBe(false);
+      expect(store.areUsersConfigured).toBe(true);
+    });
+
+    test('propagates a failed passkey authentication without changing state', async () => {
+      store.userRole = UserRole.User;
+      authenticateWithPasskeyMock.mockRejectedValue(new Error('cancelled'));
+
+      await expect(store.loginWithPasskey()).rejects.toThrow('cancelled');
+      expect(store.userRole).toBe(UserRole.User);
     });
   });
 

@@ -1,6 +1,7 @@
 # Runtime dependencies for wb.homeui_backend (third-party only; stdlib omitted).
 bcrypt
 cryptography
+fido2==1.2.0
 requests
 # websockets.server.ServerProtocol (the Sans-I/O layer) exists since 11.0.
 websockets>=11

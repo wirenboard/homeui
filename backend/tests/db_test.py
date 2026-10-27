@@ -38,7 +38,7 @@ class OpenDbTest(unittest.TestCase):
                 row[0]
                 for row in con.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
             ],
-            ["sessions", "users"],
+            ["sessions", "users", "webauthn_credentials"],
         )
         with open(db_target, "rb") as f:
             self.assertNotEqual(f.read(), damaged_content)

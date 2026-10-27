@@ -2,16 +2,27 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import LoginPage from './login';
 
-const { authMock, navigateMock, searchParamsMock } = vi.hoisted(() => ({
+const { authMock, navigateMock, searchParamsMock, webauthnMock } = vi.hoisted(() => ({
   authMock: {
     isAutologin: false,
     login: vi.fn(async () => {}),
+    loginWithPasskey: vi.fn(async () => {}),
   },
   navigateMock: vi.fn(),
   searchParamsMock: new URLSearchParams(),
+  webauthnMock: {
+    canUseWebAuthn: vi.fn(() => false),
+    getWebAuthnConfig: vi.fn(async (): Promise<{ enabled: boolean; has_credentials?: boolean }> => (
+      { enabled: false }
+    )),
+  },
 }));
 
 vi.mock('@/stores/auth', () => ({ authStore: authMock }));
+vi.mock('@/services/webauthn', async () => {
+  const actual = await vi.importActual<any>('@/services/webauthn');
+  return { ...webauthnMock, classifyWebAuthnError: actual.classifyWebAuthnError };
+});
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<any>('react-router-dom');
   return {
@@ -27,6 +38,7 @@ vi.mock('@/common/links', () => ({
   documentation: { en: { main: '#docs', usersUtility: '#forgot' } },
 }));
 vi.mock('@/assets/icons/locale.svg', () => ({ default: () => null }));
+vi.mock('@/assets/icons/key.svg', () => ({ default: () => <span data-testid="key-icon" /> }));
 vi.mock('@/assets/icons/spinner.svg', () => ({
   default: ({ className }: any) => <span data-testid="loader" className={className} />,
 }));
@@ -67,8 +79,8 @@ vi.mock('@/components/password', () => ({
   ),
 }));
 vi.mock('@/components/button', () => ({
-  Button: ({ label, disabled, type, icon }: any) => (
-    <button disabled={disabled} type={type}>{icon}{label}</button>
+  Button: ({ label, disabled, type, icon, onClick, 'aria-label': ariaLabel }: any) => (
+    <button aria-label={ariaLabel} disabled={disabled} type={type} onClick={onClick}>{icon}{label}</button>
   ),
   ButtonLink: ({ label }: any) => <a href="/">{label}</a>,
 }));
@@ -77,6 +89,9 @@ beforeEach(() => {
   vi.clearAllMocks();
   authMock.isAutologin = false;
   authMock.login.mockResolvedValue(undefined);
+  authMock.loginWithPasskey.mockResolvedValue(undefined);
+  webauthnMock.canUseWebAuthn.mockReturnValue(false);
+  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false });
   vi.stubGlobal('localStorage', {
     getItem: vi.fn(() => 'en'),
     setItem: vi.fn(),
@@ -216,6 +231,37 @@ describe('LoginPage', () => {
     await waitFor(() => expect(screen.queryByTestId('loader')).toBeNull());
   });
 
+  test('disables (but does not spin) the passkey button while password login is in progress', async () => {
+    webauthnMock.canUseWebAuthn.mockReturnValue(true);
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+    let resolveLogin: () => void;
+    authMock.login.mockImplementation(() => new Promise((r) => (resolveLogin = r)));
+    render(<LoginPage />);
+    const passkeyBtn = await waitFor(() => screen.getByLabelText('login.buttons.passkey') as HTMLButtonElement);
+    fireEvent.change(document.getElementById('username')!, { target: { value: 'u' } });
+    fireEvent.change(document.getElementById('password')!, { target: { value: 'p' } });
+    fireEvent.submit(document.querySelector('form')!);
+    await waitFor(() => expect(screen.getByTestId('loader')).toBeDefined());
+    expect(passkeyBtn.disabled).toBe(true);
+    resolveLogin!();
+  });
+
+  test('disables (but does not spin) the submit button while passkey login is in progress', async () => {
+    webauthnMock.canUseWebAuthn.mockReturnValue(true);
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+    let resolvePasskeyLogin: () => void;
+    authMock.loginWithPasskey.mockImplementation(() => new Promise((r) => (resolvePasskeyLogin = r)));
+    render(<LoginPage />);
+    fireEvent.change(document.getElementById('username')!, { target: { value: 'u' } });
+    fireEvent.change(document.getElementById('password')!, { target: { value: 'p' } });
+    const passkeyBtn = await waitFor(() => screen.getByLabelText('login.buttons.passkey'));
+    fireEvent.click(passkeyBtn);
+    const submitBtn = await waitFor(() => screen.getByText('login.buttons.login') as HTMLButtonElement);
+    expect(submitBtn.disabled).toBe(true);
+    expect(screen.queryByTestId('loader')).toBeNull();
+    resolvePasskeyLogin!();
+  });
+
   test('shows auto-login button when isAutologin', () => {
     authMock.isAutologin = true;
     render(<LoginPage />);
@@ -250,5 +296,124 @@ describe('LoginPage', () => {
     expect(localStorage.setItem).toHaveBeenCalledWith('language', 'ru');
     // lets the handler's i18n.changeLanguage() await and its trailing setLanguage() settle inside act()
     await waitFor(() => {});
+  });
+
+  describe('passkey login', () => {
+    test('hides the passkey button when the browser cannot use WebAuthn', async () => {
+      render(<LoginPage />);
+      await waitFor(() => {
+        expect(webauthnMock.canUseWebAuthn).toHaveBeenCalled();
+      });
+      expect(webauthnMock.getWebAuthnConfig).not.toHaveBeenCalled();
+      expect(screen.queryByLabelText('login.buttons.passkey')).toBeNull();
+    });
+
+    test('hides the passkey button when WebAuthn is supported but disabled on the backend', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false });
+      render(<LoginPage />);
+      await waitFor(() => {
+        expect(webauthnMock.getWebAuthnConfig).toHaveBeenCalled();
+      });
+      expect(screen.queryByLabelText('login.buttons.passkey')).toBeNull();
+    });
+
+    test('hides the passkey button when the config request fails', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockRejectedValue(new Error('network error'));
+      render(<LoginPage />);
+      await waitFor(() => {
+        expect(webauthnMock.getWebAuthnConfig).toHaveBeenCalled();
+      });
+      expect(screen.queryByLabelText('login.buttons.passkey')).toBeNull();
+    });
+
+    test('hides the passkey button when WebAuthn is enabled but no passkeys are registered yet', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: false });
+      render(<LoginPage />);
+      await waitFor(() => {
+        expect(webauthnMock.getWebAuthnConfig).toHaveBeenCalled();
+      });
+      expect(screen.queryByLabelText('login.buttons.passkey')).toBeNull();
+    });
+
+    test('shows the passkey button when WebAuthn is supported, enabled, and at least one passkey exists', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      render(<LoginPage />);
+      await waitFor(() => {
+        expect(screen.getByLabelText('login.buttons.passkey')).toBeDefined();
+      });
+    });
+
+    test('renders the passkey button as a compact icon before the login button, inside the form', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      render(<LoginPage />);
+      const btn = await waitFor(() => screen.getByLabelText('login.buttons.passkey'));
+      const loginBtn = screen.getByText('login.buttons.login');
+
+      expect(screen.getByTestId('key-icon')).toBeDefined();
+      expect(btn.closest('form')).not.toBeNull();
+      expect(btn.closest('.login-actions')).toBe(loginBtn.closest('.login-actions'));
+      expect(
+        btn.compareDocumentPosition(loginBtn) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    });
+
+    test('does not require a login to be entered before enabling the passkey button', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      render(<LoginPage />);
+      const btn = await waitFor(() => screen.getByLabelText('login.buttons.passkey') as HTMLButtonElement);
+
+      expect(btn.disabled).toBe(false);
+    });
+
+    test('calls authStore.loginWithPasskey with no login and navigates on success', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      render(<LoginPage />);
+      const btn = await waitFor(() => screen.getByLabelText('login.buttons.passkey'));
+
+      fireEvent.click(btn);
+
+      await waitFor(() => {
+        expect(authMock.loginWithPasskey).toHaveBeenCalledWith();
+        expect(navigateMock).toHaveBeenCalledWith('/', { replace: true });
+      });
+    });
+
+    test('shows the error alert when passkey login fails, without calling password login', async () => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      authMock.loginWithPasskey.mockRejectedValue(new Error('WebAuthn authentication cancelled'));
+      render(<LoginPage />);
+      const btn = await waitFor(() => screen.getByLabelText('login.buttons.passkey'));
+
+      fireEvent.click(btn);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('alert')).toBeDefined();
+      });
+      expect(authMock.login).not.toHaveBeenCalled();
+      expect(navigateMock).not.toHaveBeenCalled();
+    });
+
+    test.each([
+      { error: new DOMException('denied', 'NotAllowedError'), message: 'login.errors.passkey-cancelled' },
+      { error: new DOMException('bad origin', 'SecurityError'), message: 'login.errors.passkey-unsupported-origin' },
+      { error: new Error('network error'), message: 'login.errors.passkey-failed' },
+    ])('shows "$message" for a classified passkey failure', async ({ error, message }) => {
+      webauthnMock.canUseWebAuthn.mockReturnValue(true);
+      webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true, has_credentials: true });
+      authMock.loginWithPasskey.mockRejectedValue(error);
+      render(<LoginPage />);
+      const btn = await waitFor(() => screen.getByLabelText('login.buttons.passkey'));
+      fireEvent.click(btn);
+      await waitFor(() => expect(screen.getByText(message)).toBeDefined());
+      expect(screen.queryByText('login.errors.failed')).toBeNull();
+    });
   });
 });

@@ -66,18 +66,29 @@ class Config:
         else:
             self._read_config(users_storage)
 
+    def is_https_enabled(self) -> bool:
+        return self.enable_https
+
+    def set_https_enabled(self, enabled: bool) -> None:
+        self.enable_https = enabled
+        self._persist()
+
+    # --- Private ---
+
     def _create_config(self, users_storage: UsersStorage) -> None:
         logging.info("Creating config file")
         # If there are users configured and config is missing,
         # it is a transition from previous package versions.
-        # Enable HTTPS, as it was always enabled in previous versions
+        # Enable HTTPS, as it was always enabled in previous versions.
         self.enable_https = users_storage.has_users()
         atomic_write_json(CONFIG_FILE, {ENABLE_HTTPS_TAG: self.enable_https})
 
     def _read_config(self, users_storage: UsersStorage) -> None:
+        self._read_https_flag(users_storage)
+
+    def _read_https_flag(self, users_storage: UsersStorage) -> None:
         try:
             self.enable_https = load_https_flag()
-            return
         except Exception as e:  # pylint: disable=broad-exception-caught
             # Config file doesn't exist or is broken,
             # disable certificate update only if no users are configured
@@ -88,16 +99,12 @@ class Config:
                     str(e),
                 )
                 self.enable_https = True
-                return
-            logging.error(
-                "Disabling HTTPS since config file is missing or "
-                "broken and there are no configured users: %s",
-                str(e),
-            )
+            else:
+                logging.error(
+                    "Disabling HTTPS since config file is missing or "
+                    "broken and there are no configured users: %s",
+                    str(e),
+                )
 
-    def is_https_enabled(self) -> bool:
-        return self.enable_https
-
-    def set_https_enabled(self, enabled: bool) -> None:
-        self.enable_https = enabled
+    def _persist(self) -> None:
         atomic_write_json(CONFIG_FILE, {ENABLE_HTTPS_TAG: self.enable_https})

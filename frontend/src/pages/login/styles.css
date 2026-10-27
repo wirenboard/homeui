@@ -116,6 +116,17 @@
     margin: -6px 0;
 }
 
+.login-passkeyButton {
+    padding: 0;
+    width: var(--form-element-medium-height);
+    flex-shrink: 0;
+}
+
+.login-passkeyButton .button-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
 .login-languageWrapper {
     display: flex;
 }

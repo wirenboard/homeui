@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react-lite';
-import { useState, type SubmitEvent } from 'react';
+import { useEffect, useState, type SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import KeyIcon from '@/assets/icons/key.svg';
 import LocaleIcon from '@/assets/icons/locale.svg';
 import LoaderIcon from '@/assets/icons/spinner.svg';
 import { APP_NAME, LOGO } from '@/common/constants';
@@ -11,6 +12,8 @@ import { Button, ButtonLink } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
+import { Tooltip } from '@/components/tooltip';
+import { canUseWebAuthn, classifyWebAuthnError, getWebAuthnConfig } from '@/services/webauthn';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
@@ -37,28 +40,61 @@ const LoginPage = observer(() => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [login, setLogin] = useState('');
-  const [isShowError, setIsShowError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingAction, setLoadingAction] = useState<'password' | 'passkey' | null>(null);
   const [password, setPassword] = useState('');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
+  const [isWebAuthnEnabled, setIsWebAuthnEnabled] = useState(false);
+  const [hasPasskeys, setHasPasskeys] = useState(false);
 
-  const onSubmit = async (ev: SubmitEvent<HTMLFormElement>) => {
-    ev.preventDefault();
+  useEffect(() => {
+    if (!canUseWebAuthn()) {
+      return;
+    }
+    getWebAuthnConfig()
+      .then((config) => {
+        setIsWebAuthnEnabled(config.enabled);
+        setHasPasskeys(!!config.has_credentials);
+      })
+      .catch(() => setIsWebAuthnEnabled(false));
+  }, []);
+
+  const finishLogin = async (
+    action: 'password' | 'passkey', authenticate: () => Promise<unknown>,
+  ) => {
     try {
-      setIsShowError(false);
-      setIsLoading(true);
-      await authStore.login({ login, password });
+      setErrorMessage(null);
+      setLoadingAction(action);
+      await authenticate();
       const externalReturn = getSafeExternalReturn();
       if (externalReturn) {
         window.location.assign(externalReturn);
         return;
       }
       navigate(searchParams.get('returnState') ?? '/', { replace: true });
-    } catch {
-      setIsShowError(true);
+    } catch (err) {
+      if (action === 'passkey') {
+        switch (classifyWebAuthnError(err)) {
+          case 'cancelled':
+            setErrorMessage(t('login.errors.passkey-cancelled'));
+            break;
+          case 'unsupported-origin':
+            setErrorMessage(t('login.errors.passkey-unsupported-origin'));
+            break;
+          default:
+            setErrorMessage(t('login.errors.passkey-failed'));
+        }
+      } else {
+        setErrorMessage(t('login.errors.failed'));
+      }
     } finally {
-      setIsLoading(false);
+      setLoadingAction(null);
     }
+  };
+
+  const onSubmit = async (ev: SubmitEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    await finishLogin('password', () => authStore.login({ login, password }));
   };
 
   const onChangeLanguageHandler = async (lang: string) => {
@@ -67,10 +103,18 @@ const LoginPage = observer(() => {
     setLanguage(lang);
   };
 
+  const onPasskeyLogin = async () => {
+    await finishLogin('passkey', () => authStore.loginWithPasskey());
+  };
+
   const languageOptions: Option<string>[] = [
     { label: 'English', value: 'en' },
     { label: 'Русский', value: 'ru' },
   ];
+
+  const isPasswordLoading = loadingAction === 'password';
+  const isPasskeyLoading = loadingAction === 'passkey';
+  const isAnyLoading = loadingAction !== null;
 
   return (
     <section className="login">
@@ -86,7 +130,6 @@ const LoginPage = observer(() => {
       <fieldset className="login-wrapper">
         <form className="login-form" onSubmit={onSubmit}>
           <div className="login-fields">
-
             <label className="login-label" htmlFor="username">
               {t('login.labels.login')}
               <Input
@@ -114,8 +157,8 @@ const LoginPage = observer(() => {
               />
             </label>
 
-            {!!isShowError && (
-              <Alert variant="danger" withIcon={false}>{t('login.errors.failed')}</Alert>
+            {!!errorMessage && (
+              <Alert variant="danger" withIcon={false}>{errorMessage}</Alert>
             )}
             <a
               className="login-link login-passwordLink"
@@ -136,11 +179,26 @@ const LoginPage = observer(() => {
               />
             )}
 
+            {isWebAuthnEnabled && hasPasskeys && (
+              <Tooltip text={t('login.buttons.passkey')}>
+                <Button
+                  className="login-passkeyButton"
+                  type="button"
+                  variant="secondary"
+                  aria-label={t('login.buttons.passkey')}
+                  disabled={isAnyLoading}
+                  isLoading={isPasskeyLoading}
+                  icon={<KeyIcon />}
+                  onClick={onPasskeyLogin}
+                />
+              </Tooltip>
+            )}
+
             <Button
               className="login-button"
               type="submit"
-              disabled={isLoading || !login || !password}
-              icon={isLoading && <LoaderIcon className="login-loader" />}
+              disabled={isAnyLoading || !login || !password}
+              icon={isPasswordLoading && <LoaderIcon className="login-loader" />}
               label={t('login.buttons.login')}
             />
           </div>
