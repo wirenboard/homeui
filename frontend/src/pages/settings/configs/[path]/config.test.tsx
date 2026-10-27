@@ -218,23 +218,25 @@ describe('ConfigPage', () => {
     });
   });
 
-  test('onChange calls setContent when content differs', () => {
+  test('onChange calls setContent when content differs', async () => {
     renderPage();
     fireEvent.click(screen.getByTestId('trigger-change'));
     expect(configsStoreMock.setContent).toHaveBeenCalledWith({
       changed: true,
     });
     expect(preventLeaveMock.setIsDirty).toHaveBeenCalledWith(true);
+    await waitFor(() => {});
   });
 
-  test('onChange skips when path does not match store', () => {
+  test('onChange skips when path does not match store', async () => {
     configsStoreMock.path = '/different/path';
     renderPage();
     fireEvent.click(screen.getByTestId('trigger-change'));
     expect(configsStoreMock.setContent).not.toHaveBeenCalled();
+    await waitFor(() => {});
   });
 
-  test('onChange skips when config has no content', () => {
+  test('onChange skips when config has no content', async () => {
     configsStoreMock.config = {
       configPath: '/etc/wb/test.conf',
       schema: {},
@@ -243,5 +245,6 @@ describe('ConfigPage', () => {
     renderPage();
     fireEvent.click(screen.getByTestId('trigger-change'));
     expect(configsStoreMock.setContent).not.toHaveBeenCalled();
+    await waitFor(() => {});
   });
 });

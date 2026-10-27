@@ -1,5 +1,6 @@
 export { ArrayStore } from './array-store';
 export { BooleanStore } from './boolean-store';
+export { ExactNumberStore } from './exact-number-store';
 export { ByteArrayStore } from './byte-array-store';
 export { loadJsonSchema } from './json-schema-loader';
 export { MistypedValue } from './mistyped-value';

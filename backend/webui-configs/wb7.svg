@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" id="svg2" xml:space="preserve" viewBox="0 0 580 550" sodipodi:docname="Demo SVG Dashboard_3.svg" inkscape:version="1.2.2 (b0a8486541, 2022-12-01)" style="">
+<svg
+  sodipodi:docname="wb7_1.svg"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  version="1.1"
+  id="svg2"
+  xml:space="preserve"
+  viewBox="0 0 580 550"
+  inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+  style="">
   <defs id="defs6">
     <clipPath clipPathUnits="userSpaceOnUse" id="clipPath26">
       <path d="M 0,0 H 301.0408 V 266.849 H 0 Z" id="path24"/>
@@ -261,13 +273,13 @@
         </g>
       </g>
     </g>
-    <path d="M 72.537426,253.94572 H 134.8674 V 206.27641 H 72.537426 Z" style="fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.794442;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path72"/>
-    <g id="g74" transform="matrix(1.401379,0,0,1.401379,5.4684585,-112.70045)">
+    <path d="M 72.537426,254.82424 H 134.8674 V 207.15493 H 72.537426 Z" style="fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.794442;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path72"/>
+    <g id="g74" transform="matrix(1.401379,0,0,1.401379,5.4684585,-111.82193)">
       <path d="m 73.0973,255.6252 2.6719,0.2452 -1.6645,-3.4305 4.5397,-7.1784 -8.3528,0.1879 -3.1839,7.9416 -1.9375,-0.0264 2.8604,-7.7006 -2.5469,-0.0181 -3.9855,10.0692 6.9917,0.0839 1.6191,-3.2187 1.4681,-0.0227 z" style="fill:#fff5af;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.2835;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path76"/>
       <path d="m 70.5949,249.8604 3.2853,-0.0422 1.1996,-2.2476 -3.4426,0.0606 z" style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.216;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path78"/>
     </g>
-    <path d="M 137.28772,253.94572 H 199.6177 V 206.27683 H 137.28772 Z" style="fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.794442;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path80"/>
-    <g id="g82" transform="matrix(1.401379,0,0,1.401379,1.1062439,-112.70045)">
+    <path d="M 137.28772,254.82424 H 199.6177 V 207.15535 H 137.28772 Z" style="fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.794442;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path80"/>
+    <g id="g82" transform="matrix(1.401379,0,0,1.401379,1.1062439,-111.82193)">
       <path d="m 122.4147,255.6255 2.672,0.2452 -1.6645,-3.4308 4.5397,-7.1781 -8.3529,0.1879 -3.1839,7.9415 -1.9374,-0.0263 2.8604,-7.7006 -2.5469,-0.0182 -3.9855,10.0693 6.9916,0.0839 1.6192,-3.2188 1.468,-0.0226 z" style="fill:#fff5af;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.2835;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path84"/>
       <path d="m 119.9123,249.8604 3.2854,-0.0422 1.1996,-2.2476 -3.4427,0.0609 z" style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#1a1a18;stroke-width:0.216;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1" id="path86"/>
     </g>
@@ -934,11 +946,11 @@
     <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:12px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text1892" x="330.02197" y="-39.768543" class="" data-svg-param-id="f17d2ea9253a">
       <tspan sodipodi:role="line" id="tspan1890" x="330.02197" y="-39.768543" style="font-size:12px;stroke-width:1.40138">0.0.0</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:7.35724px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text5003" x="104.13123" y="-212.65852" class="" data-svg-param-id="f17d2ea56874">
-      <tspan sodipodi:role="line" id="tspan5001" x="104.13123" y="-212.65852" style="font-size:7.35724px;text-align:center;text-anchor:middle;stroke-width:1.40138">000.000.000.000</tspan>
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:7.35724px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text5003" x="104.13123" y="-213.53706" class="" data-svg-param-id="f17d2ea56874">
+      <tspan sodipodi:role="line" id="tspan5001" x="104.13123" y="-213.53706" style="font-size:7.35724px;text-align:center;text-anchor:middle;stroke-width:1.40138">000.000.000.000</tspan>
     </text>
-    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:7.35724px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text29583" x="168.88155" y="-212.65852" class="" data-svg-param-id="f17d2ea5876d">
-      <tspan sodipodi:role="line" id="tspan29581" x="168.88155" y="-212.65852" style="font-size:7.35724px;text-align:center;text-anchor:middle;stroke-width:1.40138">000.000.000.000</tspan>
+    <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:7.35724px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;writing-mode:lr-tb;fill:#1a1a18;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text29583" x="168.88155" y="-213.53706" class="" data-svg-param-id="f17d2ea5876d">
+      <tspan sodipodi:role="line" id="tspan29581" x="168.88155" y="-213.53706" style="font-size:7.35724px;text-align:center;text-anchor:middle;stroke-width:1.40138">000.000.000.000</tspan>
     </text>
     <text transform="scale(1,-1)" style="font-variant:normal;font-weight:normal;font-size:9.75px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu-Regular;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.40138" id="text29587" x="130.20895" y="103.35901" class="" data-svg-param-id="f17d2ea96e32">
       <tspan sodipodi:role="line" id="tspan29585" x="130.20895" y="103.35901" style="font-size:9.75px;text-align:end;text-anchor:end;stroke-width:1.40138">000.000.000.000</tspan>

@@ -13,6 +13,16 @@
     min-width: 0;
 }
 
+.deviceCell > .wb-tooltip-container {
+    width: auto;
+    flex-shrink: 1;
+}
+
+.deviceCell-value .wb-tooltip-container {
+    width: 100%;
+    overflow: hidden;
+}
+
 .deviceCell a {
     flex-shrink: 0;
 }
@@ -35,6 +45,11 @@
 .deviceCell-columns {
     flex-direction: column;
     align-items: flex-start;
+}
+
+/* Without it a slider's caption sits 3px above the neighbouring rows. */
+.deviceCell-columns .deviceCell-name {
+    min-height: 26px;
 }
 
 .deviceCell-name {
@@ -85,11 +100,16 @@
     justify-content: flex-end;
 }
 
+.deviceCell-textWrapper:not(.deviceCell-isCompact),
 .deviceCell-withSelect {
-    max-width: 50%;
+    justify-content: flex-end;
+}
+
+.deviceCell-withSelect {
     display: flex;
     flex-grow: 1;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     gap: 6px;
     align-items: center;
 }
@@ -97,7 +117,8 @@
 .deviceCell-textWrapper {
     display: flex;
     flex-grow: 1;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     gap: 6px;
     align-items: center;
 }
@@ -105,10 +126,20 @@
 .deviceCell-text {
     overflow-x: auto;
     text-align: right;
-    max-width: 260px;
     flex-grow: 1;
     font-size: var(--font-size-small);
     cursor: pointer;
+}
+
+.deviceCell-textTruncate {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.deviceCell-textStatic {
+    flex-grow: 0;
 }
 
 .deviceCell-text::-webkit-scrollbar {
@@ -133,7 +164,9 @@
 
 .deviceCell-value {
     justify-items: end;
-    flex-shrink: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
     cursor: pointer;
 }
 
@@ -167,4 +200,9 @@
 .deviceCell:hover .deviceCell-historyLink,
 .deviceCell:focus-within .deviceCell-historyLink {
     min-width: 18px;
+}
+
+/* Below Operator rights there's no click-to-copy, so the pointer cursor would be misleading. */
+.deviceCell-noClick {
+    cursor: default;
 }

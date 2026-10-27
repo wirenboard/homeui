@@ -313,8 +313,8 @@ class MqttClient {
   }
 
   #checkAuth(): void {
-    authStore.checkAuth().catch(() => {
-      if (!authStore.isAuthenticated) {
+    authStore.checkAuth().catch((err) => {
+      if (err?.status === 401 && !authStore.isAuthenticated) {
         if (this.#worker) {
           this.#worker.postMessage({ type: 'disconnect' });
           this.#worker.terminate();

@@ -1,3 +1,4 @@
+import { ExactNumber } from './exact-number';
 import { reverseTransformNumber, transformNumber } from './one-wire-number';
 
 describe('transformNumber', () => {
@@ -32,5 +33,27 @@ describe('reverseTransformNumber', () => {
 describe('round-trip', () => {
   test.each([1, 255, 0x28ff6b5a631604])('transformNumber ↔ reverseTransformNumber for %i', (n) => {
     expect(reverseTransformNumber(transformNumber(n))).toBe(n);
+  });
+});
+
+describe('one-wire-number above Number.MAX_SAFE_INTEGER', () => {
+  const id = '36028797018963969'; // 0x80000000000001, rounds to ...970 as a number
+
+  test('transformNumber converts an exact decimal ID to w1 format without rounding', () => {
+    expect(transformNumber(ExactNumber.parse(id))).toBe('01-800000000000');
+  });
+
+  test('reverseTransformNumber returns an ExactNumber that stringifies exactly', () => {
+    const result = reverseTransformNumber('01-800000000000');
+    expect(result).toBeInstanceOf(ExactNumber);
+    expect(JSON.stringify({ id: result })).toBe(`{"id":${id}}`);
+  });
+
+  test('round trip keeps the largest 56-bit ID', () => {
+    expect(transformNumber(reverseTransformNumber('ff-ffffffffffff'))).toBe('ff-ffffffffffff');
+  });
+
+  test('transformNumber accepts the exact decimal text Cell keeps', () => {
+    expect(transformNumber(id)).toBe('01-800000000000');
   });
 });

@@ -11,6 +11,7 @@ import { ChartColors } from './chart-colors';
 import { ChartTraits } from './chart-traits';
 import { splitDate } from './date';
 import { decode, encodeControls } from './history-url';
+import { findTimeShifts, joinWithGaps, middleOfRange, shiftedRanges, splitByShifts } from './time-shifts';
 import {
   type ChartsControl,
   ChartType, type HistoryValue,
@@ -220,11 +221,12 @@ export default class HistoryStore {
   }
 
   createMainChart(chart: ChartTraits, lineColor: string, axisName: string): PlotlyData {
+    const shifts = findTimeShifts(chart.xValues);
     return {
       name: chart.channelName,
-      x: chart.xValues,
-      y: chart.yValues,
-      text: chart.text,
+      x: joinWithGaps(splitByShifts(chart.xValues, shifts)),
+      y: joinWithGaps(splitByShifts(chart.yValues, shifts)),
+      text: joinWithGaps(splitByShifts(chart.text, shifts)),
       type: 'scatter',
       mode: 'lines+markers',
       marker: { size: 3 },
@@ -239,10 +241,14 @@ export default class HistoryStore {
   }
 
   createErrorChart(chart: ChartTraits, fillColor: string, axisName: string): PlotlyData {
+    // every stretch between clock shifts is filled as a polygon of its own
+    const shifts = findTimeShifts(chart.xValues);
+    const minErrors = splitByShifts(chart.minErrors, shifts);
     return {
       name: `Δ ${chart.channelName}`,
-      x: [...chart.xValues, ...[...chart.xValues].reverse()],
-      y: [...chart.maxErrors, ...[...chart.minErrors].reverse()],
+      x: joinWithGaps(splitByShifts(chart.xValues, shifts).map((times) => [...times, ...[...times].reverse()])),
+      y: joinWithGaps(splitByShifts(chart.maxErrors, shifts)
+        .map((max, i) => [...max, ...[...minErrors[i]].reverse()])),
       type: 'scatter',
       fill: 'toself',
       fillcolor: fillColor,
@@ -351,8 +357,38 @@ export default class HistoryStore {
       this.makeUpTimeAxisTicks({ ...layout, yaxis: layout.yaxis2 });
     }
 
+    this.markTimeShifts(layout);
     layout.height = 450 + config.length * 19;
     return { config, layout };
+  }
+
+  markTimeShifts(layout: Partial<PlotlyLayout>) {
+    const ranges = this.charts.flatMap((chart) => shiftedRanges(chart.xValues, findTimeShifts(chart.xValues)));
+    if (!ranges.length) {
+      return;
+    }
+    layout.shapes = ranges.map(([from, to]) => ({
+      type: 'rect',
+      xref: 'x',
+      yref: 'paper',
+      x0: from,
+      x1: to,
+      y0: 0,
+      y1: 1,
+      fillcolor: 'rgba(120, 120, 120, 0.06)',
+      line: { width: 0 },
+      layer: 'below',
+    }));
+    layout.annotations = ranges.map((range) => ({
+      xref: 'x',
+      yref: 'paper',
+      x: middleOfRange(range),
+      y: 1,
+      yanchor: 'bottom',
+      text: i18n.t('history.labels.time_shift'),
+      showarrow: false,
+      font: { size: 10 },
+    }));
   }
 
   calculateTable(config: PlotlyData[]) {
@@ -369,12 +405,15 @@ export default class HistoryStore {
     });
 
     const dataMaps = config.map((ctrl) => {
-      const xValues = ctrl.x as Date[];
+      const xValues = ctrl.x as Array<Date | null>;
       const yValues = ctrl.y as number[];
       const textValues = ctrl.text as string[];
       const map = new Map<number, { y: number; text: string }>();
 
       xValues?.forEach((x, i) => {
+        if (x === null) { // a gap inserted at a clock shift
+          return;
+        }
         const val = x.valueOf();
         dates.add(val);
         map.set(val, { y: yValues?.[i], text: textValues?.[i] });

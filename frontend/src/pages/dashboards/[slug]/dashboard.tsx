@@ -6,6 +6,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import EditIcon from '@/assets/icons/edit.svg';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
 import FullScreenIcon from '@/assets/icons/full-screen.svg';
+import SettingsIcon from '@/assets/icons/settings.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
@@ -16,6 +17,7 @@ import { ColumnsWrapper, useMaxColumns, MIN_COLUMN_WIDTH } from '@/components/co
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
+import { DashboardEdit } from '@/pages/dashboards/index/components/dashboard-edit';
 import { authStore, UserRole } from '@/stores/auth';
 import { dashboardsStore } from '@/stores/dashboards';
 import { devicesStore } from '@/stores/devices';
@@ -31,12 +33,13 @@ const DashboardPage = observer(() => {
   const params = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { dashboards, widgets, isLoading } = dashboardsStore;
+  const { dashboards, widgets, isLoading, updateDashboard } = dashboardsStore;
   const hasEditRights = authStore.hasRights(UserRole.Operator);
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
+  const [isEditDashboardOpened, setIsEditDashboardOpened] = useState(false);
   const [isEditLayout, setIsEditLayout] = useState(false);
   const [draftWidgets, setDraftWidgets] = useState<string[][] | null>(null);
   const [draftColumnCount, setDraftColumnCount] = useState<number | null>(null);
@@ -103,6 +106,9 @@ const DashboardPage = observer(() => {
     setIsEditLayout(false);
   }, [dashboard, draftWidgets, draftColumnCount]);
 
+  const hideHistory = dashboard?.options?.showHistory === false;
+  const hideCopy = !authStore.hasRights(UserRole.Operator);
+
   const renderWidget = useCallback((widgetId: string) => {
     const widget = widgets.get(widgetId);
     if (!widget) return null;
@@ -122,6 +128,8 @@ const DashboardPage = observer(() => {
                 isReadOnly={cell.readOnly}
                 isCompact={widget.compact}
                 extra={cell.extra}
+                hideHistory={hideHistory}
+                hideCopy={hideCopy}
               />
             ) : cell.type === 'separator' ? (
               <div className="dashboard-separator">
@@ -134,7 +142,7 @@ const DashboardPage = observer(() => {
         ))}
       </Card>
     );
-  }, [widgets, cells, actions]);
+  }, [widgets, cells, actions, hideHistory, hideCopy]);
 
   const columnItems = useMemo(() => {
     if (!dashboard) return undefined;
@@ -177,6 +185,20 @@ const DashboardPage = observer(() => {
                 variant="secondary"
                 onClick={startEditLayout}
               />
+            )}
+            {hasEditRights && !isFullscreen && !isEditLayout && (
+              <Tooltip
+                text={t('dashboard.buttons.edit-dashboard')}
+                placement="bottom-start"
+              >
+                <Button
+                  icon={<SettingsIcon/>}
+                  variant="secondary"
+                  aria-haspopup="dialog"
+                  aria-label={t('dashboard.buttons.edit-dashboard')}
+                  onClick={() => setIsEditDashboardOpened(true)}
+                />
+              </Tooltip>
             )}
             {isEditLayout && (
               <>
@@ -299,6 +321,23 @@ const DashboardPage = observer(() => {
           onSave={(data) => {
             widgets.get(editingWidgetId).save(data);
             setEditingWidgetId(null);
+          }}
+        />
+      )}
+
+      {isEditDashboardOpened && (
+        <DashboardEdit
+          dashboard={dashboard}
+          dashboards={Array.from(dashboards.values())}
+          isOpened
+          onClose={() => setIsEditDashboardOpened(false)}
+          onSave={async (data) => {
+            const previousId = dashboard.id;
+            await updateDashboard(previousId, data);
+            setIsEditDashboardOpened(false);
+            if (data.id !== previousId && dashboards.has(data.id)) {
+              navigate(`/dashboards/${data.id}`);
+            }
           }}
         />
       )}

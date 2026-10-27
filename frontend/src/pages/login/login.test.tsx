@@ -228,6 +228,7 @@ describe('LoginPage', () => {
       expect(screen.getByTestId('loader')).toBeDefined();
     });
     resolveLogin!();
+    await waitFor(() => expect(screen.queryByTestId('loader')).toBeNull());
   });
 
   test('disables (but does not spin) the passkey button while password login is in progress', async () => {
@@ -288,11 +289,13 @@ describe('LoginPage', () => {
     expect(screen.getByText('Русский')).toBeDefined();
   });
 
-  test('language change updates localStorage', () => {
+  test('language change updates localStorage', async () => {
     render(<LoginPage />);
     const langSelect = screen.getByLabelText('login.buttons.choose-language');
     fireEvent.change(langSelect, { target: { value: 'ru' } });
     expect(localStorage.setItem).toHaveBeenCalledWith('language', 'ru');
+    // lets the handler's i18n.changeLanguage() await and its trailing setLanguage() settle inside act()
+    await waitFor(() => {});
   });
 
   describe('passkey login', () => {

@@ -1,12 +1,13 @@
 import { makeObservable, computed, observable, action, runInAction } from 'mobx';
 import { compareFirmware, firmwareIsNewerOrEqual } from '@/stores/device-manager';
-import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
+import { type JsonSchema, ExactNumberStore, getDefaultValue } from '@/stores/json-schema-editor';
+import { type ExactNumber, exactNumberEquals, isNumberOrExact } from '@/utils/exact-number';
 import { W1_ID_FORMAT } from '@/utils/one-wire-number';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
 
 export class WbDeviceParameterEditorVariant {
-  public store: NumberStore;
+  public store: ExactNumberStore;
   public readonly fw: string | undefined;
   public readonly condition: string | undefined;
   public isSupportedByFirmware: boolean = true;
@@ -17,7 +18,7 @@ export class WbDeviceParameterEditorVariant {
 
   constructor(
     parameter: WbDeviceTemplateParameter,
-    valueFromUserDefinedConfig: number | undefined,
+    valueFromUserDefinedConfig: number | ExactNumber | undefined,
     otherParameters: Map<string, WbDeviceParameterEditor>,
     conditions: Conditions) {
 
@@ -26,7 +27,7 @@ export class WbDeviceParameterEditorVariant {
       jsonSchema.format = W1_ID_FORMAT;
     }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
-    this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
+    this.store = new ExactNumberStore(jsonSchema, initialValueToSet, parameter.required);
     this.fw = parameter.fw;
     this.condition = parameter.condition;
     this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
@@ -53,6 +54,7 @@ export class WbDeviceParameterEditorVariant {
       const param = this._otherParameters.get(dep);
       if (param !== undefined && param.isEnabledByCondition) {
         const value = param.value;
+        // ExactNumber is left out like in wb-mqtt-serial, which passes only int32 values to conditions
         return (typeof value === 'number') ? value : undefined;
       }
       return undefined;
@@ -225,11 +227,11 @@ export class WbDeviceParameterEditor {
   }
 
   setFromDeviceRegister(value: unknown, isForce?: boolean) {
-    if ((!this.isSetInUserDefinedConfig || isForce) && typeof value === 'number') {
+    if ((!this.isSetInUserDefinedConfig || isForce) && isNumberOrExact(value)) {
       this.variants.forEach((variant) => {
         variant.store.setValue(value);
         variant.store.commit();
-        if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
+        if (!this.isSetInDeviceRegisters && !exactNumberEquals(value, getDefaultValue(variant.store.schema))) {
           runInAction(() => {
             this.isSetInDeviceRegisters = true;
             if (isForce) {
@@ -277,7 +279,7 @@ export class WbDeviceParameterEditor {
       this.isSetInUserDefinedConfig = true;
     }
     this.isSetInDeviceRegisters = false;
-    const value = this.variants[activeVariantIndex].store.value as number;
+    const value = this.variants[activeVariantIndex].store.value;
     this.variants.forEach((variant) => {
       variant.store.setAnyUserInputIsDirty(false);
       variant.store.setDoNotShowInvalidValue(false);

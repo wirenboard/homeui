@@ -12,3 +12,9 @@
     color: var(--danger-color);
     margin-top: 8px;
 }
+
+.dashboardEdit-switch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

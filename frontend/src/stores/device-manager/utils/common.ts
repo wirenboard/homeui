@@ -55,20 +55,19 @@ function getSerialNumberForDeviceSetupRPCCall(device: ScannedDevice): number | u
   if (!device?.gotByFastScan) {
     return;
   }
-  let numberSn: bigint;
-  try {
-    numberSn = BigInt(device.sn);
-  } catch {
+  // sn is uint32_t in wb-mqtt-serial, so a number holds it and the MAP addition below exactly
+  let numberSn = Number(device.sn);
+  if (!Number.isInteger(numberSn)) {
     return;
   }
   // In a fast modbus call we must use in sn parameter the same value as in 270, 271 registers
   // For MAP devices sn occupies 25 bits in 270, 271 registers and the rest most significant bits are set to 1
   const re = new RegExp('\\S*MAP\\d+\\S*');
   if (re.test(device.type)) {
-    numberSn = numberSn + BigInt('4261412864'); // 0xFE000000
+    numberSn = numberSn + 0xFE000000;
   }
   // Specifying SN will result fast modbus request
-  return Number(numberSn);
+  return numberSn;
 }
 
 const getDeviceSetupParams = (

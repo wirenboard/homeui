@@ -222,4 +222,43 @@ describe('createRpcProxy', () => {
       vi.useRealTimers();
     });
   });
+
+  describe('reviver', () => {
+    const reviver = vi.fn((key: string, value: unknown) => (key === 'value' ? 'revived' : value));
+
+    beforeEach(() => {
+      reviver.mockClear();
+    });
+
+    // Answers the last sent request with { value: 1 }
+    function reply() {
+      getStickyHandler()({
+        topic: mqttMock.send.mock.calls.at(-1)[0] + '/reply',
+        payload: JSON.stringify({ id: getLastCallId(), result: { value: 1 } }),
+      });
+    }
+
+    test('parses the reply with the method reviver', async () => {
+      const proxy = createRpcProxy('svc', [{ name: 'WithReviver', reviver }, 'Plain']);
+      const promise = proxy.WithReviver();
+      reply();
+
+      await expect(promise).resolves.toEqual({ value: 'revived' });
+      expect(reviver).toHaveBeenCalled();
+    });
+
+    test('a method without reviver parses the reply as usual after a call with reviver', async () => {
+      const proxy = createRpcProxy('svc', [{ name: 'WithReviver', reviver }, 'Plain']);
+      const withReviver = proxy.WithReviver();
+      reply();
+      await withReviver;
+      reviver.mockClear();
+
+      const promise = proxy.Plain();
+      reply();
+
+      await expect(promise).resolves.toEqual({ value: 1 });
+      expect(reviver).not.toHaveBeenCalled();
+    });
+  });
 });

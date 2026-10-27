@@ -2,7 +2,7 @@
 import { authStoreMock } from '@/test/mocks/auth-store';
 import { makeDashboard } from '@/test/mocks/dashboard';
 import { dashboardsStoreMock } from '@/test/mocks/dashboards-store';
-import { render, screen, fireEvent, within, act } from '@/test/render';
+import { render, screen, fireEvent, within, act, waitFor } from '@/test/render';
 import DashboardList from './dashboard-list';
 
 const navigateMock = vi.fn();
@@ -249,12 +249,12 @@ describe('DashboardList', () => {
       expect(screen.getByText('dashboards.prompt.delete-title')).toBeDefined();
     });
 
-    test('confirming deletion calls dashboard.delete()', () => {
+    test('confirming deletion calls dashboard.delete()', async () => {
       renderList();
       const d1 = store.dashboards.get('d1')! as any;
       fireEvent.click(getDeleteButton('Main'));
       fireEvent.click(screen.getByText('dashboards.buttons.delete'));
-      expect(d1.delete).toHaveBeenCalledOnce();
+      await waitFor(() => expect(d1.delete).toHaveBeenCalledOnce());
     });
 
     test('cancelling deletion does not call delete', () => {

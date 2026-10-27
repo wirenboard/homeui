@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
+import legacy from '@vitejs/plugin-legacy';
 import react from '@vitejs/plugin-react';
 import { parse } from 'dotenv';
 import { type ConfigEnv, loadEnv } from 'vite';
@@ -14,9 +15,10 @@ export default defineConfig(({ mode }: ConfigEnv) => {
     plugins: [
       react(),
       svgr({ include: '**/*.svg' }),
+      legacy({ modernPolyfills: true }),
     ] as any[],
     build: {
-      sourcemap: true,
+      sourcemap: false,
       chunkSizeWarningLimit: 1100,
       minify: 'oxc' as const,
       rolldownOptions: {
@@ -24,19 +26,14 @@ export default defineConfig(({ mode }: ConfigEnv) => {
           codeSplitting: {
             groups: [
               {
-                name: 'plotly',
-                test: /[\\/]node_modules[\\/](plotly\.js-basic-dist-min|plotly\.js-locales|react-plotly\.js)[\\/]/,
-                priority: 25,
+                name: 'react',
+                test: /[\\/]node_modules[\\/](react|react-dom|mobx|mobx-react-lite)[\\/]/,
+                priority: 30,
               },
               {
                 name: 'react-ui-libs',
-                test: /[\\/]node_modules[\\/](react-select|react-responsive|react-responsive-carousel)[\\/]/,
+                test: /[\\/]node_modules[\\/](react-select|react-responsive)[\\/]/,
                 priority: 20,
-              },
-              {
-                name: 'react',
-                test: /[\\/]node_modules[\\/](react|react-dom|mobx|mobx-react-lite)[\\/]/,
-                priority: 15,
               },
               {
                 name: 'codemirror',
@@ -78,19 +75,26 @@ export default defineConfig(({ mode }: ConfigEnv) => {
     server: {
       port: 8080,
       open: true,
-      proxy: {
-        ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
-          + '|api/dashboards|api/fonts|fonts|api/integrations/alice)']: {
-          target: env.MQTT_BROKER_URI,
-          changeOrigin: true,
-          ws: true,
-        },
-        '/api/terminal': {
-          target: env.MQTT_BROKER_URI,
-          changeOrigin: true,
-          ws: true,
-        },
-      },
+      proxy: controllerProxy(env.MQTT_BROKER_URI),
+    },
+    preview: {
+      proxy: controllerProxy(env.MQTT_BROKER_URI),
     },
   };
 });
+
+function controllerProxy(target: string) {
+  return {
+    ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
+      + '|api/dashboards|api/fonts|fonts|api/integrations/alice|dali-images)']: {
+      target,
+      changeOrigin: true,
+      ws: true,
+    },
+    '/api/terminal': {
+      target,
+      changeOrigin: true,
+      ws: true,
+    },
+  };
+}

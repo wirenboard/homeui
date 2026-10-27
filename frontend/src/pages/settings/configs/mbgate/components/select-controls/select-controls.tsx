@@ -87,6 +87,7 @@ export const SelectControls = ({
   isOpen,
   configuredControls,
   devicesStore,
+  registerType,
   onConfirm,
   onClose,
 }: SelectControlProps) => {
@@ -123,7 +124,7 @@ export const SelectControls = ({
     <Confirm
       isOpened={isOpen}
       width={650}
-      heading={t('mbgate.labels.select-channels')}
+      heading={t(`mbgate.labels.select-channels-to.${registerType}`)}
       acceptLabel={t('mbgate.buttons.add')}
       closeCallback={onClose}
       confirmCallback={handleConfirm}

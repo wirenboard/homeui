@@ -37,6 +37,8 @@ const deviceMethods: Completion[] = [
     { label: 'isControlExists', type: 'function', detail: '(name: string): boolean' },
   ),
   { label: 'isVirtual', type: 'function', detail: '(): boolean', apply: 'isVirtual()' },
+  { label: 'getDriverId', type: 'function', detail: '(): string', apply: 'getDriverId()' },
+  { label: 'remove', type: 'function', detail: '(): void', apply: 'remove()' },
   snippetCompletion(
     'setError("${1:msg}")',
     { label: 'setError', type: 'function', detail: '(msg: string)' },

@@ -124,6 +124,7 @@ The schema subset the editor currently renders. Verified against `store-builder.
   - `dali-white` — a tunable-white slider.
   - `dali-tc` — a colour-temperature slider. The user edits Kelvin, the value is stored as
     mirek.
+- `dali-on-off` — an object-level editor for a DALI on/off block.
 - `wb-byte-array` — an editor for a byte-array value (`ByteArrayStore`).
 - `wb-serial-int`, `wb-int-address` — an integer / address kept as a string to simplify input.
   The builder converts a numeric value to a string and uses the `oneOf[0]` subschema.

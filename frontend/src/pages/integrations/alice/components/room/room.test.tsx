@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Room } from './room';
 
 const { aliceMock } = vi.hoisted(() => ({
@@ -66,7 +66,7 @@ vi.mock('@/components/confirm', () => ({
     ) : null,
 }));
 vi.mock('@/components/table', () => ({
-  Table: ({ children }: any) => <table>{children}</table>,
+  Table: ({ children }: any) => <table><tbody>{children}</tbody></table>,
   TableRow: ({ children, onClick, 'aria-label': al }: any) => (
     <tr aria-label={al} onClick={onClick}>{children}</tr>
   ),
@@ -190,6 +190,7 @@ describe('Room', () => {
       fireEvent.click(screen.getByLabelText('alice.buttons.delete-room'));
       fireEvent.click(screen.getByTestId('confirm-yes'));
       expect(aliceMock.deleteRoom).toHaveBeenCalledWith('room1');
+      await waitFor(() => expect(screen.queryByTestId('confirm-dialog')).toBeNull());
     });
 
     test('delete for unsaved room calls onDelete directly', () => {

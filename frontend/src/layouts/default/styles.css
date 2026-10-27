@@ -34,11 +34,8 @@
     }
 
     @media(max-width: 1200px) {
-        padding: 12px 2px 12px 12px;
-
-        @-moz-document url-prefix() {
-            padding-right: 14px;
-        }
+        padding: 12px;
+        scrollbar-gutter: auto;
     }
 }
 
