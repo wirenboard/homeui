@@ -8,6 +8,13 @@ if [ "$1" = "configure" ] && dpkg --compare-versions "$2" lt 2.219.1~; then
     fi
 fi
 
+# Earlier versions added www-data to the mosquitto group for a CGI script that read the
+# broker socket; the script is gone, and the membership gave nginx and every CGI script
+# full access to the broker. Drop it on controllers where it was already applied.
+if [ "$1" = "configure" ] && id -nG www-data | tr ' ' '\n' | grep -qx mosquitto; then
+    gpasswd -d www-data mosquitto >/dev/null || true
+fi
+
 # The HTTPS key used to be created world-readable
 if [ "$1" = "configure" ] && [ -f /etc/ssl/sslip.key ]; then
     chmod 0600 /etc/ssl/sslip.key
