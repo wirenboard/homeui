@@ -28,6 +28,7 @@ Code-style rules for `frontend/`. The repo-wide **agent workflow rules** live in
   the scenario (what's set up, what's exercised, what's expected). Trivial one-liners
   (single assertion against a pure function) don't need it; anything with multi-step setup
   or non-obvious expectations does. Co-locate tests as `*.test.ts(x)`.
+- **No comments in CSS** — never write comments in `.css` files.
 - **Class member ordering** — within a class, order members as:
   1. `constructor` and other dunder-like setup (`makeAutoObservable`, etc.).
   2. Public observables, `@computed` getters, and actions — the store's external API.

@@ -78,14 +78,29 @@ export interface BusDetailed {
   name: string;
 }
 
+/** Read-only identification of a device, GetDevice sends it inside the config. */
+export interface DaliDeviceDescription {
+  /** DALI device type numbers, DT6 is 6. */
+  types?: number[];
+  brand_name?: string;
+  product_name?: string;
+  gtin?: number;
+  identification_number?: number | string;
+  firmware_version?: string;
+  hardware_version?: string;
+  oem_gtin?: number;
+  oem_identification_number?: number | string;
+}
+
+export interface DeviceConfig extends DaliDeviceDescription {
+  name?: string;
+  mqtt_id?: string;
+  groups?: boolean[];
+}
+
 export interface DeviceDetailed {
-  config: {
-    mqtt_id?: string;
-    groups?: boolean[];
-  };
+  config: DeviceConfig;
   schema: JsonSchema;
-  name: string;
-  groups: boolean[];
 }
 
 export interface GetGatewayParams {
@@ -157,7 +172,7 @@ export interface DaliProxy {
   GetBus(params: GetBusParams): Promise<BusDetailed>;
   SetBus(params: SetBusParams): Promise<void>;
   GetDevice(params: GetDeviceParams): Promise<DeviceDetailed>;
-  SetDevice(params: SetDeviceParams): Promise<DeviceDetailed>;
+  SetDevice(params: SetDeviceParams): Promise<DeviceConfig>;
   GetGroup(params: GetGroupParams): Promise<GroupReply>;
   SetGroup(params: SetGroupParams): Promise<GroupDetailed>;
   GetList(): Promise<Gateway[]>;
