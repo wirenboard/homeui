@@ -12,6 +12,7 @@ import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 import { useAsyncAction } from '@/utils/async-action';
 import { DeviceControlsDesktop, DeviceControlsMobile, GearErrorStatus } from '../device-controls';
+import { DeviceInfoPanel } from '../device-info';
 import { ResetConfirm } from './reset-confirm';
 import type { InstanceConfig, ResetMode } from './types';
 import './styles.css';
@@ -95,6 +96,8 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     </div>
   );
 
+  const infoPanel = store.description && <DeviceInfoPanel description={store.description} />;
+
   const settingsForm = (
     <>
       {!store.isLoading && wrongSchemeInstances(store.objectStore?.value).length > 0 && (
@@ -147,7 +150,10 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
             </FormButtonGroup>
           </div>
         </div>
-        <div className="dali-tabBody">{settingsForm}</div>
+        <div className="dali-tabBody">
+          {infoPanel}
+          {settingsForm}
+        </div>
         <DeviceControlsMobile mqttId={store.mqttId} isDisabled={store.isLoading} />
         {resetConfirm}
       </>
@@ -165,6 +171,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
           </FormButtonGroup>
         </div>
       </div>
+      {infoPanel}
       <DeviceControlsDesktop mqttId={store.mqttId} isDisabled={store.isLoading}>
         <div className="dali-settingsHeader">
           <h3 className="dali-settingsTitle">{t('dali.labels.device-settings')}</h3>
