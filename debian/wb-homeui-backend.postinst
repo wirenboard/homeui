@@ -8,6 +8,11 @@ if [ "$1" = "configure" ] && dpkg --compare-versions "$2" lt 2.219.1~; then
     fi
 fi
 
+# The HTTPS key used to be created world-readable
+if [ "$1" = "configure" ] && [ -f /etc/ssl/sslip.key ]; then
+    chmod 0600 /etc/ssl/sslip.key
+fi
+
 systemctl --system daemon-reload >/dev/null || true
 
 deb-systemd-invoke try-restart mosquitto || true
