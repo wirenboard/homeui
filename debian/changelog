@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.281.0) stable; urgency=medium
+
+  * Make the private key of the HTTPS certificate readable only by root
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 23:30:00 +0500
+
 wb-mqtt-homeui (2.280.0) stable; urgency=medium
 
   * Serve diagnostic archives only to an admin, stop serving the uploads
