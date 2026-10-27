@@ -39,3 +39,20 @@ describe('CellValue display of integers a number cannot hold exactly', () => {
     expect((screen.getByRole('spinbutton') as HTMLInputElement).value).toBe('36028797018963969');
   });
 });
+
+describe('CellValue display of a read-only value', () => {
+  test('markup in a text value is shown as text, not inserted into the page', () => {
+    const { container } = render(
+      <CellValue cell={makeCell('text', '<img src=x onerror="alert(1)">')} hideHistory hideCopy />,
+    );
+    expect(screen.getByText('<img src=x onerror="alert(1)">')).toBeInTheDocument();
+    expect(container.querySelector('img')).toBeNull();
+  });
+
+  test('digit groups of a number are separated by spacer elements', () => {
+    const { container } = render(<CellValue cell={makeCell('value', '1234567')} hideHistory hideCopy />);
+    const valueSpan = container.querySelector('.deviceCell-space').parentElement;
+    expect(valueSpan.textContent).toBe('1234567');
+    expect(valueSpan.querySelectorAll('.deviceCell-space')).toHaveLength(2);
+  });
+});

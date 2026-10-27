@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.273.0) stable; urgency=medium
+
+  * Show text values of read-only controls as text: markup in a value is no
+    longer inserted into the page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 07:58:24 +0000
+
 wb-mqtt-homeui (2.272.0) stable; urgency=medium
 
   * Add custom device template management
