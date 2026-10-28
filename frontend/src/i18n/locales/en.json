@@ -19,6 +19,7 @@
          "columns-auto": "Auto"
       },
       "buttons": {
+         "zoom-picture": "Open the picture full size",
          "close": "Close",
          "apply": "Apply",
          "add": "Add",
@@ -1107,6 +1108,29 @@
       }
    },
    "dali": {
+      "device-types": {
+         "0": "fluorescent lamp (DT0)",
+         "1": "self contained emergency lighting (DT1)",
+         "2": "discharge lamps (DT2)",
+         "3": "low voltage halogen lamps (DT3)",
+         "4": "supply voltage controller for incandescent lamps (DT4)",
+         "5": "conversion from digital signal into DC voltage (DT5)",
+         "6": "LED modules (DT6)",
+         "7": "switching function (DT7)",
+         "8": "colour control (DT8)",
+         "9": "sequencer (DT9)",
+         "15": "load referencing (DT15)",
+         "16": "thermal gear protection (DT16)",
+         "17": "dimming curve selection (DT17)",
+         "19": "centrally supplied emergency operation (DT19)",
+         "20": "demand response (DT20)",
+         "21": "thermal lamp protection (DT21)",
+         "23": "non replaceable lamp source (DT23)",
+         "49": "integrated power supply (DT49)",
+         "50": "memory bank 1 extension (DT50)",
+         "51": "energy reporting device (DT51)",
+         "52": "diagnostics and maintenance (DT52)"
+      },
       "title": "DALI devices",
       "placeholders": {
          "address-filter": "Filter by address"
@@ -1165,6 +1189,13 @@
          "state-on": "on",
          "state-off": "off",
          "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
+         "info-types": "Type",
+         "info-gtin": "GTIN",
+         "info-identification-number": "Identification Number",
+         "info-firmware": "Firmware",
+         "info-hardware": "Hardware",
+         "info-oem-gtin": "OEM GTIN",
+         "info-oem-identification-number": "OEM ID",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

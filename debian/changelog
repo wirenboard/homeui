@@ -1,9 +1,92 @@
-wb-mqtt-homeui (2.273.0) stable; urgency=medium
+wb-mqtt-homeui (2.283.0) stable; urgency=medium
 
   * Show the result of an SVG dashboard read binding as text: markup in a
     channel value is no longer inserted into the dashboard
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 07:59:22 +0000
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.282.0) stable; urgency=medium
+
+  * Answer unhandled backend errors with a plain 500 and log the traceback
+    instead of sending it to the client; reject malformed /api/https and
+    /api/dashboards bodies with 400
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 23:45:00 +0500
+
+wb-mqtt-homeui (2.281.0) stable; urgency=medium
+
+  * Make the private key of the HTTPS certificate readable only by root
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 23:30:00 +0500
+
+wb-mqtt-homeui (2.280.0) stable; urgency=medium
+
+  * Serve diagnostic archives only to an admin, stop serving the uploads
+    directory, and keep a firmware upload in the uploads directory whatever
+    file name the form gives
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 23:00:00 +0500
+
+wb-mqtt-homeui (2.279.0) stable; urgency=medium
+
+  * Deny the user and operator roles access to the wb-cloud-agent device and
+    to the cloud link controls, so that they cannot replace the links shown
+    to an admin
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 22:00:00 +0500
+
+wb-mqtt-homeui (2.278.0) stable; urgency=medium
+
+  * Make the users and sessions database readable only by root
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 21:00:00 +0500
+
+wb-mqtt-homeui (2.277.0) stable; urgency=medium
+
+  * Let only nginx connect to the backend socket, and keep font deletion
+    inside the fonts directory
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 20:00:00 +0500
+
+wb-mqtt-homeui (2.276.1) stable; urgency=medium
+
+  * Fix the button of the DALI event addressing scheme warning being placed
+    below the text instead of beside it
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 19:00:00 +0500
+
+wb-mqtt-homeui (2.276.0) stable; urgency=medium
+
+  * Take the same time to refuse a login whether or not the login exists, so
+    that the response time does not reveal which logins exist
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 18:00:00 +0500
+
+wb-mqtt-homeui (2.275.0) stable; urgency=medium
+
+  * Stop adding www-data to the mosquitto group: the CGI script that needed
+    the broker socket is gone, and the membership gave nginx full access to
+    the broker
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 17:00:00 +0500
+
+wb-mqtt-homeui (2.274.0) stable; urgency=medium
+
+  * Hide the nginx version from the Server header and error pages
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 16:00:00 +0500
+
+wb-mqtt-homeui (2.273.1) stable; urgency=medium
+
+  * Fix the DALI device name in the tree not updating after its settings are reloaded
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 14:00:00 +0500
+
+wb-mqtt-homeui (2.273.0) stable; urgency=medium
+
+  * Show DALI device info and picture in the device settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 12:00:00 +0500
 
 wb-mqtt-homeui (2.272.0) stable; urgency=medium
 

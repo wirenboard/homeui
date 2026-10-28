@@ -18,6 +18,8 @@ from .board import of_machine_match
 CERT_REQUEST_URL = "https://acme.wirenboard.com/api/v1/issue"
 SSL_CERT_PATH = "/etc/ssl/sslip.pem"
 SSL_CERT_KEY_PATH = "/etc/ssl/sslip.key"
+# Only nginx's master process (root) reads the key.
+SSL_CERT_KEY_MODE = 0o600
 KEYSPEC_WB7_WB8 = "ATECCx08:00:02:C0:00"
 KEYSPEC_WB6 = "ATECCx08:00:04:C0:00"
 DEVICE_ORIGINAL_CERT = "/etc/ssl/certs/device_bundle.crt.pem"
@@ -77,7 +79,9 @@ def read_or_generate_private_key(file_name: str) -> rsa.RSAPrivateKey:
         public_exponent=65537,
         key_size=2048,
     )
-    with open(file_name, "wb") as file:
+    fd = os.open(file_name, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, SSL_CERT_KEY_MODE)
+    os.fchmod(fd, SSL_CERT_KEY_MODE)
+    with os.fdopen(fd, "wb") as file:
         file.write(
             private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
