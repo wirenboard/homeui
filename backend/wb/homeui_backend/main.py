@@ -944,7 +944,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": RequestHandler(fn=add_user_handler),
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
-                "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
+                "/api/https/request_cert": RequestHandler(
+                    fn=https_request_cert_handler, rate_per_minute_limit=5
+                ),
                 "/api/fonts": RequestHandler(fn=upload_font_handler),
             }
         )
