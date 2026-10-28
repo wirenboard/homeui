@@ -1,5 +1,5 @@
 import type { CompletionContext, CompletionSource } from '@codemirror/autocomplete';
-import { syntaxTree } from '@codemirror/language';
+import { ensureSyntaxTree, syntaxTree } from '@codemirror/language';
 import type { SyntaxNode } from '@lezer/common';
 
 const getCallName = (args: SyntaxNode | null, context: CompletionContext) => {
@@ -11,7 +11,9 @@ const getCallName = (args: SyntaxNode | null, context: CompletionContext) => {
 };
 
 export const makeRuleTopicsSource = (topics: string[]): CompletionSource => (context) => {
-  let node: SyntaxNode | null = syntaxTree(context.state).resolveInner(context.pos, -1);
+  // The initial parse has a 20 ms budget and may stop before the cursor, so finish it here.
+  let node: SyntaxNode | null = (ensureSyntaxTree(context.state, context.pos, 200) ?? syntaxTree(context.state))
+    .resolveInner(context.pos, -1);
   while (node && !['ArgList', 'Property', 'ArrayExpression'].includes(node.name)) {
     if (node.name === 'LineComment' || node.name === 'BlockComment') {
       return null;

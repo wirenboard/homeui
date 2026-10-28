@@ -268,4 +268,14 @@ describe('SvgView', () => {
       expect(onSwitch).not.toHaveBeenCalled();
     });
   });
+
+  describe('read handler with markup in the value', () => {
+    test('a channel value with markup is shown as text, not inserted into the svg', () => {
+      const vals = observable.map({ 'dev/temp': '<img src=x onerror="alert(1)">' });
+      const params = [{ id: 'label', read: { enable: true, channel: 'dev/temp', value: 'val' } }];
+      const { container } = renderView({ params, values: vals });
+      expect(container.querySelector('#label tspan')!.textContent).toBe('<img src=x onerror="alert(1)">');
+      expect(container.querySelector('img')).toBeNull();
+    });
+  });
 });

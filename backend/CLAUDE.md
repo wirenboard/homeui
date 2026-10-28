@@ -22,6 +22,9 @@ Entry point `wb/homeui_backend/main.py` (`BaseHTTPRequestHandler`); synchronous,
   endpoints (`GET/PUT /api/dashboards` for the collection, `GET /api/dashboards/<id>/svg` for the
   lazy markup, and `PUT`/`PATCH`/`DELETE /api/dashboards/<id>` for one dashboard's lifecycle),
   atomic writes, and board-config seeding + default reconciliation at startup.
+- `dali_images` — DALI device pictures (`GET /dali-images/<gtin>.webp`) fetched from
+  fw-releases.wirenboard.com. Runs its own threaded server on
+  `/tmp/wb-homeui-dali-images.socket`, so a slow host never blocks `/auth/check`; nginx caches it.
 - `board` — device-tree `of_machine_match` wrapper (board detection), shared with `cert`.
 - `db` — SQLite at `/var/lib/wb-homeui/users.db`.
 - `terminal/` — web terminal: listener `wb-terminal-server` plus a process per session

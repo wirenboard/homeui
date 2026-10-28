@@ -22,10 +22,12 @@ from wb.homeui_backend.http_response import (
 from wb.homeui_backend.main import (
     CUSTOM_MENU_DIRS,
     MAX_ID_COOKIE_CANDIDATES,
+    UNKNOWN_LOGIN_PASSWORD_HASH,
     RequestHandler,
     WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
+    auth_login_handler,
     auth_who_am_i_handler,
     custom_menu_handler,
     delete_user_handler,
@@ -36,6 +38,7 @@ from wb.homeui_backend.main import (
     get_users_handler,
     make_certificate_usable_change_handler,
     security_check_handler,
+    update_dashboards_handler,
     update_https_handler,
     update_user_handler,
 )
@@ -462,6 +465,64 @@ class DeviceInfoHandlerTests(unittest.TestCase):
                 "rootfs_expanded": True,
             },
         )
+
+
+class AuthLoginHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.request.headers = {}
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.sessions_storage_mock = MagicMock(spec=SessionsStorage)
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=self.users_storage_mock,
+            sessions_storage=self.sessions_storage_mock,
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+        )
+
+    def _post(self, login, password):
+        body = json.dumps({"login": login, "password": password}).encode("utf-8")
+        self.request.headers = {"Content-Length": str(len(body))}
+        self.request.rfile.read.return_value = body
+
+    @patch("wb.homeui_backend.main.check_password", return_value=False)
+    def test_unknown_login_still_checks_a_password(self, check_password_mock):
+        """An unknown login is refused only after a password check against the placeholder hash,
+        so that the response takes as long as for an existing login with a wrong password."""
+        self.users_storage_mock.get_user_by_login.return_value = None
+        self._post("nobody", "secret")
+        response = auth_login_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+        check_password_mock.assert_called_once_with("secret", UNKNOWN_LOGIN_PASSWORD_HASH)
+
+    @patch("wb.homeui_backend.main.check_password", return_value=True)
+    def test_unknown_login_is_refused_even_if_the_placeholder_check_passes(self, _check_password_mock):
+        self.users_storage_mock.get_user_by_login.return_value = None
+        self._post("nobody", "secret")
+        self.assertEqual(auth_login_handler(self.request, self.context), response_401())
+        self.sessions_storage_mock.add_session.assert_not_called()
+
+    @patch("wb.homeui_backend.main.check_password", return_value=False)
+    def test_wrong_password_is_checked_against_the_user_hash(self, check_password_mock):
+        self.users_storage_mock.get_user_by_login.return_value = User(
+            "1", "user1", "hash1", UserType.USER, False
+        )
+        self._post("user1", "wrong")
+        self.assertEqual(auth_login_handler(self.request, self.context), response_401())
+        check_password_mock.assert_called_once_with("wrong", "hash1")
+
+    @patch("wb.homeui_backend.main.check_password", return_value=True)
+    def test_right_password_opens_a_session(self, _check_password_mock):
+        user = User("1", "user1", "hash1", UserType.USER, False)
+        self.users_storage_mock.get_user_by_login.return_value = user
+        self.sessions_storage_mock.add_session.return_value = Session("s1", user, datetime.now(timezone.utc))
+        self._post("user1", "right")
+        response = auth_login_handler(self.request, self.context)
+        self.assertEqual(response.status, 200)
+        self.sessions_storage_mock.add_session.assert_called_once_with(user)
 
 
 class UpdateUserHandlerTest(unittest.TestCase):
@@ -941,3 +1002,59 @@ class UpdateHttpsHandlerTest(unittest.TestCase):
                 response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
                 apply_mock.assert_called_once_with(usable)
                 self.assertEqual(response, response_200())
+
+
+class ProcessRequestErrorTest(unittest.TestCase):
+    def test_handler_exception_is_logged_and_hidden_from_client(self):
+        """A handler raising an unexpected exception: the client gets a plain 500 without the
+        traceback (it would reveal file paths, line numbers and the interpreter version), and
+        the traceback is written to the log instead."""
+        handler = RequestHandlerRateLimitKeyTest._handler()
+        handler.process_response = MagicMock()
+        handler.command = "GET"
+        handler.path = "/users"
+        handlers = {"/users": RequestHandler(fn=MagicMock(side_effect=RuntimeError("/secret/path.py")))}
+
+        with patch("wb.homeui_backend.main.get_session", return_value=None), self.assertLogs(
+            level="ERROR"
+        ) as logs:
+            handler.process_request(handlers)
+
+        response = handler.process_response.call_args.args[0]
+        self.assertEqual(response.status, 500)
+        self.assertNotIn("Traceback", response.body)
+        self.assertNotIn("/secret/path.py", response.body)
+        self.assertIn("RuntimeError: /secret/path.py", "\n".join(logs.output))
+
+
+class UpdateHttpsHandlerValidationTest(unittest.TestCase):
+    def test_non_bool_enabled_is_rejected_with_400(self):
+        """PATCH /api/https with an "enabled" that is not a boolean: 400 and the config is
+        left untouched, instead of a TypeError escaping into a 500."""
+        config = MagicMock()
+        request = MagicMock()
+        body = json.dumps({"enabled": "x"})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+
+        with patch.object(WebRequestHandler, "config", config, create=True):
+            response = update_https_handler(request, MagicMock())
+
+        self.assertEqual(response.status, 400)
+        config.set_https_enabled.assert_not_called()
+
+
+class UpdateDashboardsHandlerTest(unittest.TestCase):
+    def test_non_list_dashboards_is_rejected_with_400(self):
+        """PUT /api/dashboards with a "dashboards" that is not a list: 400 before the store is
+        touched, instead of a TypeError escaping into a 500."""
+        request = MagicMock()
+        body = json.dumps({"dashboards": 5})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+        context = MagicMock()
+
+        response = update_dashboards_handler(request, context)
+
+        self.assertEqual(response.status, 400)
+        context.dashboards_store.replace_collection.assert_not_called()
