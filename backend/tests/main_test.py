@@ -800,30 +800,30 @@ class GetRequiredUserTypeTest(unittest.TestCase):
                 self.assertEqual(get_required_user_type(request), expected)
 
 
+def make_handler():
+    handler = WebRequestHandler.__new__(WebRequestHandler)
+    handler.rate_limiter = RateLimiter()
+    handler.users_storage = MagicMock(spec=UsersStorage)
+    handler.sessions_storage = MagicMock(spec=SessionsStorage)
+    handler.certificate_thread = MagicMock()
+    handler.security_check_thread = MagicMock()
+    handler.dashboards_store = MagicMock()
+    handler.fonts_store = MagicMock()
+    handler.sn = ""
+    return handler
+
+
 class RequestHandlerRateLimitKeyTest(unittest.TestCase):
     """The per-endpoint rate limit must key on the parsed path, not the raw request
     target. Requests differing only by query string have to share one bucket, so a
     client can't bypass the limit (nor grow RateLimiter.calls unbounded) by varying
     ?params. Guards the urlparse() key normalisation in _request_handler."""
 
-    @staticmethod
-    def _handler():
-        handler = WebRequestHandler.__new__(WebRequestHandler)
-        handler.rate_limiter = RateLimiter()
-        handler.users_storage = MagicMock(spec=UsersStorage)
-        handler.sessions_storage = MagicMock(spec=SessionsStorage)
-        handler.certificate_thread = MagicMock()
-        handler.security_check_thread = MagicMock()
-        handler.dashboards_store = MagicMock()
-        handler.fonts_store = MagicMock()
-        handler.sn = ""
-        return handler
-
     def test_query_string_variants_share_one_bucket(self):
         """Three GETs to /auth/check differing only by ?nonce against a limit of 2:
         they collapse onto a single bucket, so the third is throttled (429)."""
         limit = 2
-        handler = self._handler()
+        handler = make_handler()
         handler.process_response = MagicMock()
         handlers = {
             "/auth/check": RequestHandler(
@@ -1009,7 +1009,7 @@ class ProcessRequestErrorTest(unittest.TestCase):
         """A handler raising an unexpected exception: the client gets a plain 500 without the
         traceback (it would reveal file paths, line numbers and the interpreter version), and
         the traceback is written to the log instead."""
-        handler = RequestHandlerRateLimitKeyTest._handler()
+        handler = make_handler()
         handler.process_response = MagicMock()
         handler.command = "GET"
         handler.path = "/users"
