@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.284.1) stable; urgency=medium
 
-  * Limit certificate requests from the web interface to three per minute,
+  * Limit certificate requests from the web interface to five per minute,
     so repeated calls no longer flood the certificate service
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 15:00:00 +0500

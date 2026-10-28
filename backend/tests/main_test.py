@@ -842,21 +842,21 @@ class RequestHandlerRateLimitKeyTest(unittest.TestCase):
         self.assertEqual(list(handler.rate_limiter.calls), ["/auth/check"])
 
     def test_request_cert_is_throttled_for_all_clients(self):
-        """Four POSTs to /api/https/request_cert from different clients within a minute:
-        the first three reach the certificate thread, the fourth gets 429 and does not."""
+        """Six POSTs to /api/https/request_cert from different clients within a minute:
+        the first five reach the certificate thread, the sixth gets 429 and does not."""
         handler = self._handler()
         handler.process_response = MagicMock()
         handler.path = "/api/https/request_cert"
 
         statuses = []
         with patch("wb.homeui_backend.main.get_session", return_value=None):
-            for client in range(4):
+            for client in range(6):
                 handler.headers = {"X-Real-IP": f"192.0.2.{client}"}
                 handler.do_POST()
                 statuses.append(handler.process_response.call_args.args[0].status)
 
-        self.assertEqual(statuses, [200, 200, 200, 429])
-        self.assertEqual(handler.certificate_thread.request_certificate.call_count, 3)
+        self.assertEqual(statuses, [200, 200, 200, 200, 200, 429])
+        self.assertEqual(handler.certificate_thread.request_certificate.call_count, 5)
 
 
 class CustomMenuHandlerTest(unittest.TestCase):
