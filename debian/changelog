@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.285.0) stable; urgency=medium
+
+  * Show the Integrations and Rules menu sections to any role that can see at
+    least one of their items: items without requiredRole there stay
+    admin-only, so a gate menu item with "role": "operator" is now visible to
+    operators
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 16:00:00 +0500
+
 wb-mqtt-homeui (2.284.0) stable; urgency=medium
 
   * Show text values of read-only controls as text: markup in a value is no
