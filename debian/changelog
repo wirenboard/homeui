@@ -16,14 +16,14 @@ wb-mqtt-homeui (2.284.0) stable; urgency=medium
   * Show text values of read-only controls as text: markup in a value is no
     longer inserted into the page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 14:00:00 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 09:24:12 +0500
 
 wb-mqtt-homeui (2.283.0) stable; urgency=medium
 
   * Show the result of an SVG dashboard read binding as text: markup in a
     channel value is no longer inserted into the dashboard
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 12:00:00 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 09:20:22 +0500
 
 wb-mqtt-homeui (2.282.0) stable; urgency=medium
 
