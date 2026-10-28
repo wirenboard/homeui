@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.282.0) stable; urgency=medium
+
+  * Answer unhandled backend errors with a plain 500 and log the traceback
+    instead of sending it to the client; reject malformed /api/https and
+    /api/dashboards bodies with 400
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Oct 2026 23:45:00 +0500
+
 wb-mqtt-homeui (2.281.0) stable; urgency=medium
 
   * Make the private key of the HTTPS certificate readable only by root

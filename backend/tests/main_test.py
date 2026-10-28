@@ -38,6 +38,7 @@ from wb.homeui_backend.main import (
     get_users_handler,
     make_certificate_usable_change_handler,
     security_check_handler,
+    update_dashboards_handler,
     update_https_handler,
     update_user_handler,
 )
@@ -1001,3 +1002,59 @@ class UpdateHttpsHandlerTest(unittest.TestCase):
                 response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
                 apply_mock.assert_called_once_with(usable)
                 self.assertEqual(response, response_200())
+
+
+class ProcessRequestErrorTest(unittest.TestCase):
+    def test_handler_exception_is_logged_and_hidden_from_client(self):
+        """A handler raising an unexpected exception: the client gets a plain 500 without the
+        traceback (it would reveal file paths, line numbers and the interpreter version), and
+        the traceback is written to the log instead."""
+        handler = RequestHandlerRateLimitKeyTest._handler()
+        handler.process_response = MagicMock()
+        handler.command = "GET"
+        handler.path = "/users"
+        handlers = {"/users": RequestHandler(fn=MagicMock(side_effect=RuntimeError("/secret/path.py")))}
+
+        with patch("wb.homeui_backend.main.get_session", return_value=None), self.assertLogs(
+            level="ERROR"
+        ) as logs:
+            handler.process_request(handlers)
+
+        response = handler.process_response.call_args.args[0]
+        self.assertEqual(response.status, 500)
+        self.assertNotIn("Traceback", response.body)
+        self.assertNotIn("/secret/path.py", response.body)
+        self.assertIn("RuntimeError: /secret/path.py", "\n".join(logs.output))
+
+
+class UpdateHttpsHandlerValidationTest(unittest.TestCase):
+    def test_non_bool_enabled_is_rejected_with_400(self):
+        """PATCH /api/https with an "enabled" that is not a boolean: 400 and the config is
+        left untouched, instead of a TypeError escaping into a 500."""
+        config = MagicMock()
+        request = MagicMock()
+        body = json.dumps({"enabled": "x"})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+
+        with patch.object(WebRequestHandler, "config", config, create=True):
+            response = update_https_handler(request, MagicMock())
+
+        self.assertEqual(response.status, 400)
+        config.set_https_enabled.assert_not_called()
+
+
+class UpdateDashboardsHandlerTest(unittest.TestCase):
+    def test_non_list_dashboards_is_rejected_with_400(self):
+        """PUT /api/dashboards with a "dashboards" that is not a list: 400 before the store is
+        touched, instead of a TypeError escaping into a 500."""
+        request = MagicMock()
+        body = json.dumps({"dashboards": 5})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+        context = MagicMock()
+
+        response = update_dashboards_handler(request, context)
+
+        self.assertEqual(response.status, 400)
+        context.dashboards_store.replace_collection.assert_not_called()

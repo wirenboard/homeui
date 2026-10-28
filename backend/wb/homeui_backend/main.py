@@ -8,7 +8,6 @@ import os
 import secrets
 import socketserver
 import subprocess
-import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from email.utils import formatdate, parsedate_to_datetime
@@ -504,15 +503,13 @@ def get_https_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandl
 
 
 def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
-    try:
-        length = int(request.headers.get("Content-Length", 0))
-        form = json.loads(request.rfile.read(length).decode("utf-8"))
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        return response_400(str(e))
+    form, error = read_json_object_body(request)
+    if error is not None:
+        return error
     https_enabled = form.get("enabled")
     if https_enabled is not None:
         if not isinstance(https_enabled, bool):
-            raise TypeError("Invalid enabled field")
+            return response_400("Invalid enabled field")
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
@@ -627,6 +624,8 @@ def update_dashboards_handler(
     new_config, error = read_json_object_body(request)
     if error is not None:
         return error
+    if not isinstance(new_config.get("dashboards", []), list):
+        return response_400("dashboards must be a list")
     context.dashboards_store.replace_collection(new_config)
     return response_200()
 
@@ -911,8 +910,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def process_request(self, handlers: dict[str, RequestHandler]) -> None:
         try:
             response = self._request_handler(handlers)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            response = response_500(f"{e}\n{traceback.format_exc()}")
+        except Exception:  # pylint: disable=broad-exception-caught
+            # The traceback goes to the journal only: sent to the client it would reveal
+            # file paths, line numbers and the interpreter version.
+            logging.exception("Unhandled error while processing %s %s", self.command, self.path)
+            response = response_500("Internal server error")
         self.process_response(response)
 
     def do_GET(self) -> None:  # pylint: disable=invalid-name
