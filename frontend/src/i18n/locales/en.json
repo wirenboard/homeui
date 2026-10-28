@@ -907,6 +907,7 @@
          "passkey-last-used": "Last used",
          "passkey-never-used": "Never",
          "passkeys-empty": "No passkeys have been registered for this user.",
+         "passkeys-duplicate-warning": "This user already has a passkey, which works from any address on this network. Registering another one for a different device is fine, but doing it again on the same device may silently break the existing one.",
          "confirm-delete-passkey": "Are you sure you want to delete the passkey <0>{{name}}</0>?",
          "passkeys-unavailable": "Passkeys require a supported browser and a secure HTTPS connection.",
          "passkeys-wrong-domain": "Passkeys aren't available from this address. Open HomeUI through its secure HTTPS address, or through an active cloud connection, to manage them.",

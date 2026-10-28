@@ -118,6 +118,11 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
         <Alert variant="warn">{t('users.labels.passkeys-unavailable')}</Alert>
       ) : (
         <div className="passkeys-add">
+          {!!credentials.length && (
+            <Alert variant="warn" size="small">
+              {t('users.labels.passkeys-duplicate-warning')}
+            </Alert>
+          )}
           <label className="passkeys-label" htmlFor="passkey-name">
             {t('users.labels.passkey-name')}
           </label>
