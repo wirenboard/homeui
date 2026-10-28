@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.283.0) stable; urgency=medium
+
+  * Show the result of an SVG dashboard read binding as text: markup in a
+    channel value is no longer inserted into the dashboard
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 12:00:00 +0500
+
 wb-mqtt-homeui (2.282.0) stable; urgency=medium
 
   * Answer unhandled backend errors with a plain 500 and log the traceback
