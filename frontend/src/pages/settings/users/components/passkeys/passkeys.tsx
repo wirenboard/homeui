@@ -117,39 +117,41 @@ export const Passkeys = ({ userId }: PasskeysProps) => {
       {!canUseWebAuthn() ? (
         <Alert variant="warn">{t('users.labels.passkeys-unavailable')}</Alert>
       ) : (
-        <div className="passkeys-add">
+        <>
           {!!credentials.length && (
             <Alert variant="warn" size="small">
               {t('users.labels.passkeys-duplicate-warning')}
             </Alert>
           )}
-          <label className="passkeys-label" htmlFor="passkey-name">
-            {t('users.labels.passkey-name')}
-          </label>
-          <Input
-            className="passkeys-input"
-            id="passkey-name"
-            ariaLabel={t('users.labels.passkey-name')}
-            value={name}
-            isFullWidth
-            onChange={(value) => setName(String(value))}
-            onEnter={() => {
-              if (name.trim()) {
-                addCredential();
-              }
-            }}
-          />
-          <Button
-            className="passkeys-register"
-            label={t('users.buttons.add-passkey')}
-            disabled={!name.trim()}
-            isLoading={isAdding}
-            onClick={addCredential}
-          />
-          <span className="passkeys-hint">
-            {t('users.labels.passkey-name-hint')}
-          </span>
-        </div>
+          <div className="passkeys-add">
+            <label className="passkeys-label" htmlFor="passkey-name">
+              {t('users.labels.passkey-name')}
+            </label>
+            <Input
+              className="passkeys-input"
+              id="passkey-name"
+              ariaLabel={t('users.labels.passkey-name')}
+              value={name}
+              isFullWidth
+              onChange={(value) => setName(String(value))}
+              onEnter={() => {
+                if (name.trim()) {
+                  addCredential();
+                }
+              }}
+            />
+            <Button
+              className="passkeys-register"
+              label={t('users.buttons.add-passkey')}
+              disabled={!name.trim()}
+              isLoading={isAdding}
+              onClick={addCredential}
+            />
+            <span className="passkeys-hint">
+              {t('users.labels.passkey-name-hint')}
+            </span>
+          </div>
+        </>
       )}
 
       {credentials.length ? (
