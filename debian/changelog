@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.284.1) stable; urgency=medium
+
+  * Limit certificate requests from the web interface to three per minute,
+    so repeated calls no longer flood the certificate service
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Oct 2026 15:00:00 +0500
+
 wb-mqtt-homeui (2.284.0) stable; urgency=medium
 
   * Show text values of read-only controls as text: markup in a value is no

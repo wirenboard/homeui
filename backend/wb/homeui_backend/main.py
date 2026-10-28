@@ -944,7 +944,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": RequestHandler(fn=add_user_handler),
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
-                "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
+                # No auth by design (HTTPS setup runs before users exist). One shared bucket,
+                # not per client: it caps requests to the WB certificate service as a whole.
+                "/api/https/request_cert": RequestHandler(
+                    fn=https_request_cert_handler, rate_per_minute_limit=3
+                ),
                 "/api/fonts": RequestHandler(fn=upload_font_handler),
             }
         )
