@@ -443,3 +443,47 @@ describe('DeviceSettingsObjectStore.setFromDeviceRegisters', () => {
     expect(store.value.p1).toBe(1);
   });
 });
+
+describe('DeviceSettingsObjectStore with condition variants of different enums (mode==1: 0..2, mode==2: 0..1)', () => {
+  const parameters: WbDeviceTemplateParameter[] = [
+    { id: 'mode', title: 'Mode', enum: [1, 2], default: 2 },
+    { id: 'p1', title: 'P1', enum: [0, 1, 2], default: 0, condition: 'mode==1', dependencies: ['mode'] },
+    { id: 'p1', title: 'P1', enum: [0, 1], default: 0, condition: 'mode==2', dependencies: ['mode'] },
+  ];
+
+  it('reports an error when a device value does not fit the variant enabled by the user', () => {
+    const store = makeStore(parameters);
+    store.setFromDeviceRegisters({ mode: 1, p1: 2 }, '1.0');
+
+    getActiveStore(store, 'mode').setValue(2);
+
+    const param = getParam(store, 'p1');
+    expect(param.hasErrors).toBe(true);
+    expect(param.hasBadValueFromRegisters).toBe(false);
+    expect(store.hasErrors).toBe(true);
+  });
+
+  it('reports a bad value from registers without an error while the user changed nothing', () => {
+    const store = makeStore(parameters);
+    store.setFromDeviceRegisters({ mode: 2, p1: 2 }, '1.0');
+
+    const param = getParam(store, 'p1');
+    expect(param.hasErrors).toBe(false);
+    expect(param.hasBadValueFromRegisters).toBe(true);
+    expect(store.hasErrors).toBe(false);
+  });
+
+  it.each([
+    ['the second', parameters],
+    ['the first', [parameters[0], parameters[2], parameters[1]]],
+  ])('reports an error for a bad value from a forced read, the active variant is %s in the template', (_, params) => {
+    const store = makeStore(params, { mode: 2, p1: 1 });
+    store.setFromDeviceRegisters({ mode: 2, p1: 2 }, '1.0', true);
+
+    const param = getParam(store, 'p1');
+    expect(param.hasErrors).toBe(true);
+    expect(param.hasBadValueFromRegisters).toBe(false);
+    expect(param.shouldStoreInConfig).toBe(false);
+    expect(store.hasErrors).toBe(true);
+  });
+});

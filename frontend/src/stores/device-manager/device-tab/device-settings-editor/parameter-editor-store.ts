@@ -137,7 +137,7 @@ export class WbDeviceParameterEditor {
     }
     const activeVariantStore = this.variants[activeVariantIndex].store;
     if (this.isSetInDeviceRegisters) {
-      return activeVariantStore.isDirty && activeVariantStore.hasErrors;
+      return this._isChangedByUser(activeVariantIndex) && activeVariantStore.hasErrors;
     }
     return activeVariantStore.hasErrors;
   }
@@ -151,7 +151,7 @@ export class WbDeviceParameterEditor {
       return false;
     }
     const activeVariantStore = this.variants[activeVariantIndex].store;
-    return !activeVariantStore.isDirty && activeVariantStore.hasErrors;
+    return !this._isChangedByUser(activeVariantIndex) && activeVariantStore.hasErrors;
   }
 
   get value() {
@@ -231,7 +231,7 @@ export class WbDeviceParameterEditor {
       this.variants.forEach((variant) => {
         variant.store.setValue(value);
         variant.store.commit();
-        if (!this.isSetInDeviceRegisters && !exactNumberEquals(value, getDefaultValue(variant.store.schema))) {
+        if (!exactNumberEquals(value, getDefaultValue(variant.store.schema))) {
           runInAction(() => {
             this.isSetInDeviceRegisters = true;
             if (isForce) {
@@ -286,6 +286,13 @@ export class WbDeviceParameterEditor {
       variant.store.setValue(value);
       variant.store.commit();
     });
+  }
+
+  // A device value that became invalid after the user changed a parameter of its condition
+  // is the user's error, not a bad value from registers
+  private _isChangedByUser(activeVariantIndex: number) {
+    const activeVariant = this.variants[activeVariantIndex];
+    return activeVariant.store.isDirty || activeVariant.hasDirtyDependency;
   }
 
   private _getEnabledVariantsOldestFirst() {
