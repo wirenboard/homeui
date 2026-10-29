@@ -11,6 +11,10 @@ Code-style rules for `frontend/`. The repo-wide **agent workflow rules** live in
 
 ## Code Style & Notes
 
+- **Comment only unclear scenarios** — don't write comments that restate what the code does;
+  concise, well-chosen naming of constants/functions/variables should already make that clear.
+  Write a comment only for the WHY when it's genuinely non-obvious: a hidden constraint, a
+  subtle invariant, a workaround for a specific bug, behavior that would surprise a reader.
 - **Types live in `types.ts`** — each component / store / page-feature directory keeps **all** its
   `interface` / `type` / `enum` declarations in a co-located `types.ts`, imported via `./types`
   (the established pattern across the codebase). This includes component `*Props` and types used
@@ -28,6 +32,11 @@ Code-style rules for `frontend/`. The repo-wide **agent workflow rules** live in
   the scenario (what's set up, what's exercised, what's expected). Trivial one-liners
   (single assertion against a pure function) don't need it; anything with multi-step setup
   or non-obvious expectations does. Co-locate tests as `*.test.ts(x)`.
+- **Tests must be warning-free** — a test must print zero console warnings/errors (e.g. React
+  "not wrapped in act(...)", invalid DOM nesting in a shallow mock, a ref passed to a
+  non-`forwardRef` mock), not just pass its assertions. `npm test`'s default reporter hides
+  this output even when everything is green — see the verification pipeline in `CLAUDE.md`
+  for how to check and fix. Don't silence the warning; fix the root cause.
 - **No comments in CSS** — never write comments in `.css` files.
 - **Class member ordering** — within a class, order members as:
   1. `constructor` and other dunder-like setup (`makeAutoObservable`, etc.).

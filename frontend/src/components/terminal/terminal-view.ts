@@ -1,9 +1,9 @@
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
-import { Terminal } from 'xterm';
+import { Terminal } from '@xterm/xterm';
 import { terminalStore } from './terminal-store';
 import { TerminalConnectionState } from './types';
-import 'xterm/css/xterm.css';
+import '@xterm/xterm/css/xterm.css';
 
 function createTerminal() {
   return new Terminal({
