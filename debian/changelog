@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.284.6) stable; urgency=medium
+
+  * Hide the up/down spin buttons on number input fields
+  * Fix the password field's masking dots rendering oversized in Firefox
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Oct 2026 17:28:00 +0300
+
 wb-mqtt-homeui (2.284.5) stable; urgency=medium
 
   * Fix json editor's autocomplete data reinit
