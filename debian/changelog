@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.284.3) stable; urgency=medium
+
+  * Fix the range slider rendering with no value before its control's value arrives over MQTT
+  * Update frontend dependencies to versions without known vulnerabilities
+  * Update agent rules
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Oct 2026 11:20:00 +0300
+
 wb-mqtt-homeui (2.284.2) stable; urgency=medium
 
   * Fix a pylint error in the backend tests that failed the build
