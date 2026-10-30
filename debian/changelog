@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.284.8) stable; urgency=medium
+
+  * Fix cell history position
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 30 Oct 2026 16:44:00 +0300
+
 wb-mqtt-homeui (2.284.7) stable; urgency=medium
 
   * Fix device settings validation and Save button for values read from the device
