@@ -11,6 +11,7 @@ import {
   serialDeviceProxy,
   serialPortProxy,
   serialProxy,
+  serialTemplatesProxy,
 } from '@/services';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { useStore } from '@/utils/use-store';
@@ -116,6 +117,7 @@ const DeviceManagerPage = observer(() => {
       <ScanPage
         scanType={scanType}
         pageStore={scanType === 'new' ? store.newDevicesScanPageStore : store.searchDisconnectedScanPageStore}
+        onAddDeviceManually={scanType === 'new' ? () => store.cancelScanToAddDeviceManually() : undefined}
       />
     );
   }
@@ -123,6 +125,7 @@ const DeviceManagerPage = observer(() => {
   return (
     <ConfigEditorPage
       pageStore={store.configEditorPageStore}
+      serialTemplatesProxy={serialTemplatesProxy}
       onAddWbDevice={() => store.addWbDevice()}
       onSearchDisconnectedDevice={() => store.searchDisconnectedDevice()}
     />

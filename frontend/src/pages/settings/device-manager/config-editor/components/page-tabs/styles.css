@@ -24,6 +24,11 @@
     flex-grow: 1;
 }
 
+.deviceManagerPageTabs-empty {
+    color: var(--gray-color);
+    padding: 8px 0;
+}
+
 .deviceManagerPageTabs-listMobile .tabs-buttonSelected {
     border-right: 0 !important;
 }
@@ -40,9 +45,4 @@
     padding: 0;
     border: none;
     background: none;
-}
-
-.deviceManagerPageTabs-addPort {
-    width: 100%;
-    margin-top: 10px;
 }

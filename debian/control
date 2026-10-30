@@ -20,7 +20,7 @@ Build-Depends: debhelper-compat (= 13),
                python3-requests-unixsocket,
                python3-setuptools,
                python3-wb-common,
-               python3-websockets
+               python3-websockets (>= 11.0)
 Homepage: https://github.com/wirenboard/homeui
 
 Package: wb-mqtt-homeui
@@ -29,9 +29,9 @@ Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          wb-homeui-backend (= ${binary:Version})
-Recommends: wb-mqtt-logs (>= 1.2.0),
+Recommends: wb-mqtt-logs (>= 1.7.0~~),
             wb-device-manager,
-            wb-rules (>= 2.37.0~~)
+            wb-rules (>= 2.47.1~~)
 Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3),
         wb-mqtt-db (<< 1.5),
@@ -54,7 +54,7 @@ Depends: ${shlibs:Depends},
          jq,
          curl (>= 8.15.0),
          wb-configs (>= 3.53.3~~),
-         nginx-extras,
+         nginx,
          wb-utils (>= 4.24.0~~),
          python3-bcrypt,
          python3-cryptography,
@@ -62,7 +62,7 @@ Depends: ${shlibs:Depends},
          python3-requests,
          python3-requests-unixsocket,
          python3-wb-common,
-         python3-websockets,
+         python3-websockets (>= 11.0),
          wb-release-info
 Breaks: wb-configs (<< 3.38.0~~),
         wb-mqtt-homeui (<< 2.140.0~~)

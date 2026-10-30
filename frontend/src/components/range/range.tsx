@@ -7,7 +7,8 @@ export const Range = ({
   value, id, isDisabled, min, max, step, units, formatLabel, isInvalid, onChange, onLiveChange, ariaLabel,
   labelPosition = 'bottom',
 }: RangeProps) => {
-  const [proxyValue, setProxyValue] = useState(value);
+  const safeValue = value ?? min ?? 0;
+  const [proxyValue, setProxyValue] = useState(safeValue);
   const [labelWidth, setLabelWidth] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const label = useRef<HTMLDivElement>(null);
@@ -25,8 +26,8 @@ export const Range = ({
   }, [proxyValue, min, max, labelWidth]);
 
   useLayoutEffect(() => {
-    setProxyValue(value);
-  }, [value]);
+    setProxyValue(safeValue);
+  }, [safeValue]);
 
   // No deps: the label width follows its text on every render.
   useLayoutEffect(() => {

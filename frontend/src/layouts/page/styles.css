@@ -17,6 +17,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 8px;
+    padding-top: 12px;
     margin: 0 0 8px;
     border-bottom: 1px solid var(--border-color);
     gap: 12px;
@@ -24,12 +25,8 @@
 
     @media(max-width: 768px) {
         gap: 6px;
+        padding-top: 0;
     }
-}
-
-/* The HMI page wrapper has no padding of its own. */
-.defaultLayout-pageWrapperHmi .page-headerContainer {
-    padding-top: 8px;
 }
 
 .fullscreen .page-headerContainer {
@@ -93,7 +90,9 @@
     flex-direction: column;
     flex-grow: 1;
     padding-inline: 6px;
+    padding-block-start: 6px;
     margin-inline: -6px;
+    margin-block-start: -6px;
 }
 
 .page-contentWrapper {

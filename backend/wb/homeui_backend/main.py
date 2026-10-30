@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
+import grp
 import json
 import logging
 import os
+import secrets
 import socketserver
 import subprocess
-import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from email.utils import formatdate, parsedate_to_datetime
@@ -18,6 +19,7 @@ from urllib.parse import unquote, urlparse
 
 import bcrypt
 
+from . import dali_images
 from .cert import (
     CertificateCheckingThread,
     remove_nginx_https_config,
@@ -74,6 +76,12 @@ def make_password_hash(password: str) -> str:
 
 def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+
+
+# The password of a login that does not exist is checked against this hash, so that a failed login
+# takes the same time whether the login exists or not: the response time would otherwise reveal
+# which logins exist.
+UNKNOWN_LOGIN_PASSWORD_HASH = make_password_hash(secrets.token_hex(16))
 
 
 def make_id_cookie(session: Session) -> cookies.SimpleCookie:
@@ -269,7 +277,12 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     user = context.users_storage.get_user_by_login(login)
 
-    if user is None or not check_password(form.get("password"), user.pwd_hash):
+    # Checked first, for an unknown login too, so that the response time does not reveal
+    # whether the login exists
+    if (
+        not check_password(form.get("password"), user.pwd_hash if user else UNKNOWN_LOGIN_PASSWORD_HASH)
+        or user is None
+    ):
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         return response_401()
 
@@ -490,15 +503,13 @@ def get_https_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandl
 
 
 def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
-    try:
-        length = int(request.headers.get("Content-Length", 0))
-        form = json.loads(request.rfile.read(length).decode("utf-8"))
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        return response_400(str(e))
+    form, error = read_json_object_body(request)
+    if error is not None:
+        return error
     https_enabled = form.get("enabled")
     if https_enabled is not None:
         if not isinstance(https_enabled, bool):
-            raise TypeError("Invalid enabled field")
+            return response_400("Invalid enabled field")
         WebRequestHandler.config.set_https_enabled(https_enabled)
         if https_enabled:
             context.certificate_thread.enable_certificate_update()
@@ -613,6 +624,8 @@ def update_dashboards_handler(
     new_config, error = read_json_object_body(request)
     if error is not None:
         return error
+    if not isinstance(new_config.get("dashboards", []), list):
+        return response_400("dashboards must be a list")
     context.dashboards_store.replace_collection(new_config)
     return response_200()
 
@@ -897,8 +910,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def process_request(self, handlers: dict[str, RequestHandler]) -> None:
         try:
             response = self._request_handler(handlers)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            response = response_500(f"{e}\n{traceback.format_exc()}")
+        except Exception:  # pylint: disable=broad-exception-caught
+            # The traceback goes to the journal only: sent to the client it would reveal
+            # file paths, line numbers and the interpreter version.
+            logging.exception("Unhandled error while processing %s %s", self.command, self.path)
+            response = response_500("Internal server error")
         self.process_response(response)
 
     def do_GET(self) -> None:  # pylint: disable=invalid-name
@@ -928,7 +944,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": RequestHandler(fn=add_user_handler),
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
-                "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
+                "/api/https/request_cert": RequestHandler(
+                    fn=https_request_cert_handler, rate_per_minute_limit=5
+                ),
                 "/api/fonts": RequestHandler(fn=upload_font_handler),
             }
         )
@@ -1042,6 +1060,10 @@ def main():
         os.remove(args.socket_file)
     except OSError:
         pass
+    dali_images.start_server(dali_images.DEFAULT_SOCKET_FILE, args.debug)
+
     server = UnixSocketHttpServer((args.socket_file), WebRequestHandler)
-    os.chmod(args.socket_file, 0o662)
+    # Handlers trust nginx to have checked the session, so only nginx (www-data) may connect.
+    os.chown(args.socket_file, -1, grp.getgrnam("www-data").gr_gid)
+    os.chmod(args.socket_file, 0o660)
     server.serve_forever()

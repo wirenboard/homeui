@@ -19,6 +19,7 @@
          "columns-auto": "Auto"
       },
       "buttons": {
+         "zoom-picture": "Open the picture full size",
          "close": "Close",
          "apply": "Apply",
          "add": "Add",
@@ -181,7 +182,9 @@
          "scanning": "Searching {{-ports}}...",
          "fast-scanning": "Fast scanning in progress {{-ports}}...",
          "extended-modbus": "This device was found by scanning via fast Modbus",
-         "try-normal-scan": "If the required devices are not found, run slow scan. During this time, already configured devices will not be polled or accept commands",
+         "fast-modbus-notice": "Automatic search finds Wiren Board devices and devices from other manufacturers that support the <0 target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://wiki.wirenboard.com/wiki/Fast_Modbus/en\">Fast Modbus</0> protocol.<br/>Other devices can be added manually.",
+         "try-normal-scan": "If the required devices are not found, run slow scan.",
+         "try-normal-scan-caveat": "During this time, already configured devices will not be polled or accept commands.",
          "misconfigured-port": "differs from port settings",
          "duplicate-topic": "There is a device with the same MQTT topic",
          "unknown-device-type": "unknown device type",
@@ -501,7 +504,26 @@
          "delete-title": "Confirmation of deletion",
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
          "not-polled": "The device is not being polled",
-         "user-defined": "Custom"
+         "user-defined": "Custom",
+         "search": "Search devices",
+         "upload-template-title": "Upload template",
+         "upload-template-warning": "The template is saved immediately. If devices already use this template, applying it may re-read their settings from the device and rewrite the configuration.",
+         "upload-template-invalid-json": "The template file is corrupted or is not valid JSON",
+         "upload-template-success": "Template uploaded, the configuration was saved automatically",
+         "delete-template-success": "Custom template deleted",
+         "template-sync-hint": "Parameters read from the device were refreshed per the new template, provided the device is enabled, reachable, and the template reads them from hardware. Otherwise, the previous values are kept.",
+         "template-requires-saved-config": "Save your current configuration changes before uploading or deleting a template",
+         "template-in-use-upload-title": "Template in use",
+         "confirm-template-in-use-upload": "The current configuration contains devices using template \"{{item}}\". Their settings will be displayed using the new template.",
+         "template-in-use-delete-title": "Template in use",
+         "confirm-template-in-use-delete": "The current configuration contains devices using template \"{{item}}\". Deleting it will revert them to the standard template.",
+         "apply-problems-intro-upload": "Applying template \"{{item}}\" may affect devices that already use it:",
+         "apply-problems-intro-delete": "Deleting template \"{{item}}\" may affect devices that already use it:",
+         "apply-problems-disabled": "Already disabled, parameters will not change",
+         "apply-problems-unread": "Could not be read, will keep their previous parameter values",
+         "apply-problems-invalid": "Will end up with an invalid configuration",
+         "apply-problems-invalid-warning": "As long as even one device has an invalid configuration, polling will not start at all, for any device on the controller. It resumes only once the configuration is fixed and saved.",
+         "apply-problems-device": "{{port}} (slave ID {{slaveId}})"
       },
       "buttons": {
          "save": "Save config",
@@ -509,8 +531,8 @@
          "delete": "Delete",
          "delete-port": "Delete port",
          "delete-devices": "Delete all devices",
-         "add-custom-device": "Manually add any device",
-         "add-wb-device": "Find and add Wiren Board devices",
+         "add-custom-device": "Add device manually",
+         "add-wb-device": "Scan devices",
          "add": "Add",
          "copy": "Copy",
          "to-port-list": "To ports and devices list",
@@ -519,7 +541,11 @@
          "update": "Update",
          "parameters": "Parameters",
          "reread-config": "Reread config",
-         "switch-template": "Switch template"
+         "switch-template": "Switch template",
+         "upload-template": "Upload custom template",
+         "delete-template": "Delete custom template",
+         "overwrite-template": "Overwrite",
+         "template-actions": "Template"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -574,9 +600,22 @@
       },
       "labels": {
          "no-controls": "All available channels are already configured",
-         "select-channels": "Select channels",
+         "select-channels-to": {
+            "auto": "Select channels",
+            "discretes": "Select channels for discrete inputs",
+            "coils": "Select channels for coils",
+            "inputs": "Select channels for input registers",
+            "holdings": "Select channels for holding registers"
+         },
          "search-device": "Search device",
-         "search-control": "Search channel"
+         "search-control": "Search channel",
+         "register-types": {
+            "auto": "Automatically by channel type",
+            "discretes": "To discrete inputs",
+            "coils": "To coils",
+            "inputs": "To input registers",
+            "holdings": "To holding registers"
+         }
       }
    },
    "configurations": {
@@ -767,14 +806,20 @@
    },
    "terminal": {
       "title": "Console",
-      "status": {
-         "connected": "Connected",
-         "connecting": "Connecting…",
-         "disconnected": "Disconnected",
-         "error": "Error"
-      },
       "buttons": {
-         "reconnect": "Reconnect"
+         "reconnect": "Reconnect",
+         "reconnect-now": "Reconnect now",
+         "new-session": "New session",
+         "open-here": "Open here"
+      },
+      "reconnecting": "Connection to the console lost, reconnecting…",
+      "stopped": {
+         "session-finished": "Session finished",
+         "slot-taken": "Session closed: the slot was given to another connection",
+         "taken-over": "Session opened in another window"
+      },
+      "notice": {
+         "apt-lock": "A package installation is running in another console session"
       }
    },
    "logs":{
@@ -1063,6 +1108,29 @@
       }
    },
    "dali": {
+      "device-types": {
+         "0": "fluorescent lamp (DT0)",
+         "1": "self contained emergency lighting (DT1)",
+         "2": "discharge lamps (DT2)",
+         "3": "low voltage halogen lamps (DT3)",
+         "4": "supply voltage controller for incandescent lamps (DT4)",
+         "5": "conversion from digital signal into DC voltage (DT5)",
+         "6": "LED modules (DT6)",
+         "7": "switching function (DT7)",
+         "8": "colour control (DT8)",
+         "9": "sequencer (DT9)",
+         "15": "load referencing (DT15)",
+         "16": "thermal gear protection (DT16)",
+         "17": "dimming curve selection (DT17)",
+         "19": "centrally supplied emergency operation (DT19)",
+         "20": "demand response (DT20)",
+         "21": "thermal lamp protection (DT21)",
+         "23": "non replaceable lamp source (DT23)",
+         "49": "integrated power supply (DT49)",
+         "50": "memory bank 1 extension (DT50)",
+         "51": "energy reporting device (DT51)",
+         "52": "diagnostics and maintenance (DT52)"
+      },
       "title": "DALI devices",
       "placeholders": {
          "address-filter": "Filter by address"
@@ -1121,6 +1189,13 @@
          "state-on": "on",
          "state-off": "off",
          "event-scheme-warning": "Some instances use an event addressing scheme that does not name the sending device, so their events cannot update the controls. Switch them to \"device short and instance number\".",
+         "info-types": "Type",
+         "info-gtin": "GTIN",
+         "info-identification-number": "Identification Number",
+         "info-firmware": "Firmware",
+         "info-hardware": "Hardware",
+         "info-oem-gtin": "OEM GTIN",
+         "info-oem-identification-number": "OEM ID",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

@@ -2,6 +2,10 @@ node_modules
 dist
 reviews
 .eslintcache
+test-results
+playwright-report
+blob-report
+playwright/.cache
 *.tgz
 *.tar.*
 .tmp

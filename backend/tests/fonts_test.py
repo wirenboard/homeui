@@ -60,6 +60,13 @@ class FontsStoreTest(unittest.TestCase):
     def test_delete_nonexistent(self):
         self.assertFalse(self.store.delete_font("NoSuchFont.ttf"))
 
+    def test_delete_does_not_leave_fonts_dir(self):
+        outside = os.path.join(self.tmp_dir, "outside.ttf")
+        with open(outside, "wb") as f:
+            f.write(b"data")
+        self.assertFalse(self.store.delete_font("../outside.ttf"))
+        self.assertTrue(os.path.exists(outside))
+
     def test_overwrite(self):
         self.store.save_font("Font.ttf", b"\x00\x01\x00\x00old")
         self.store.save_font("Font.ttf", b"\x00\x01\x00\x00new-data")

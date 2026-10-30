@@ -13,6 +13,16 @@
     min-width: 0;
 }
 
+.deviceCell > .wb-tooltip-container {
+    width: auto;
+    flex-shrink: 1;
+}
+
+.deviceCell-value .wb-tooltip-container {
+    width: 100%;
+    overflow: hidden;
+}
+
 .deviceCell a {
     flex-shrink: 0;
 }
@@ -90,16 +100,16 @@
     justify-content: flex-end;
 }
 
-/* Non-compact only: pin the (fixed-size) history icon + value to the row's right edge. */
-.deviceCell-textWrapper:not(.deviceCell-isCompact) {
+.deviceCell-textWrapper:not(.deviceCell-isCompact),
+.deviceCell-withSelect {
     justify-content: flex-end;
 }
 
 .deviceCell-withSelect {
-    max-width: 50%;
     display: flex;
     flex-grow: 1;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     gap: 6px;
     align-items: center;
 }
@@ -107,7 +117,8 @@
 .deviceCell-textWrapper {
     display: flex;
     flex-grow: 1;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     gap: 6px;
     align-items: center;
 }
@@ -115,18 +126,18 @@
 .deviceCell-text {
     overflow-x: auto;
     text-align: right;
-    max-width: 260px;
     flex-grow: 1;
     font-size: var(--font-size-small);
     cursor: pointer;
 }
 
-/*
- * The copy-to-clipboard (Tooltip) variant of a read-only text value is wrapped in an extra
- * container div, which isn't a flex item and so doesn't grow — the value hugs the history
- * icon. This variant (no Tooltip, e.g. below Operator rights) renders .deviceCell-text
- * directly as a flex child instead, so it must opt out of flex-grow itself to match.
- */
+.deviceCell-textTruncate {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
 .deviceCell-textStatic {
     flex-grow: 0;
 }
@@ -153,8 +164,9 @@
 
 .deviceCell-value {
     justify-items: end;
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
     cursor: pointer;
 }
 

@@ -1,0 +1,5 @@
+{
+  "minFps": 24,
+  "maxLongTaskMs": 300,
+  "maxTimeToStableMs": 15000
+}
