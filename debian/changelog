@@ -1,8 +1,36 @@
-wb-mqtt-homeui (2.284.3) stable; urgency=medium
+wb-mqtt-homeui (2.284.7) stable; urgency=medium
 
   * Fix device settings validation and Save button for values read from the device
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 29 Oct 2026 11:04:00 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 30 Oct 2026 10:24:11 +0500
+
+wb-mqtt-homeui (2.284.6) stable; urgency=medium
+
+  * Hide the up/down spin buttons on number input fields
+  * Fix the password field's masking dots rendering oversized in Firefox
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Oct 2026 17:28:00 +0300
+
+wb-mqtt-homeui (2.284.5) stable; urgency=medium
+
+  * Fix json editor's autocomplete data reinit
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Oct 2026 16:50:00 +0300
+
+wb-mqtt-homeui (2.284.4) stable; urgency=medium
+
+  * Fix the history page sometimes failing to load data when opened directly from a link,
+    before MQTT finished connecting or before the linked control's device was known yet
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Oct 2026 13:22:00 +0300
+
+wb-mqtt-homeui (2.284.3) stable; urgency=medium
+
+  * Fix the range slider rendering with no value before its control's value arrives over MQTT
+  * Update frontend dependencies to versions without known vulnerabilities
+  * Update agent rules
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Oct 2026 11:20:00 +0300
 
 wb-mqtt-homeui (2.284.2) stable; urgency=medium
 
