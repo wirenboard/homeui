@@ -239,3 +239,10 @@ export interface WbDeviceTemplate {
   channels?: WbDeviceTemplateChannel[];
   translations?: TranslationsByLocale;
 }
+
+export enum ParameterValueSource {
+  Default = 'default',
+  Config = 'config',
+  Device = 'device',
+  User = 'user',
+}

@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { MockWebSocket } from '@/test/mocks/websocket';
 import { terminalStore } from './terminal-store';
 import { TerminalContent } from './terminal-tab';
@@ -13,8 +13,10 @@ vi.stubGlobal('location', { protocol: 'http:', host: 'localhost:8080' });
 /** Opens the panel, lets the server name the session and closes the panel again. */
 function openAndClosePanel() {
   const panel = render(<TerminalContent />);
-  MockWebSocket.last.simulateOpen();
-  MockWebSocket.last.simulateMessage({ type: 'session', id: SESSION_ID });
+  act(() => {
+    MockWebSocket.last.simulateOpen();
+    MockWebSocket.last.simulateMessage({ type: 'session', id: SESSION_ID });
+  });
   panel.unmount();
   return panel;
 }
@@ -80,13 +82,17 @@ describe('terminal outliving the console panel', () => {
 
   test('reconnecting after a takeover clears the screen the server is about to replay onto', () => {
     render(<TerminalContent />);
-    MockWebSocket.last.simulateOpen();
-    MockWebSocket.last.simulateMessage({ type: 'session', id: SESSION_ID });
-    MockWebSocket.last.simulateClose(TerminalCloseCode.TakenOver);
+    act(() => {
+      MockWebSocket.last.simulateOpen();
+      MockWebSocket.last.simulateMessage({ type: 'session', id: SESSION_ID });
+      MockWebSocket.last.simulateClose(TerminalCloseCode.TakenOver);
+    });
     const reset = vi.spyOn(terminalStore.terminal, 'reset');
 
     // "Reconnect" on the banner
-    terminalStore.connect();
+    act(() => {
+      terminalStore.connect();
+    });
 
     expect(reset).toHaveBeenCalledTimes(1);
     expect(MockWebSocket.created).toBe(2);
