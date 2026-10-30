@@ -63,7 +63,7 @@ export const MenuItem = ({
     <ul className="menuItem-popupList">
       <FloatingArrow ref={arrowRef} context={context} fill="currentColor" />
 
-      {children.map((item, i) => (
+      {children.filter((item) => item.isShow !== false).map((item, i) => (
         <li className="menuItem-item" key={i}>
           {item.isExternal && item.url ? (
             <a
