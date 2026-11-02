@@ -1231,7 +1231,7 @@
          "first-title": "Build devices for Matter and Yandex Alice",
          "first-text": "Press \"Add\" and choose a WB device, for example WB-MSW or WB-MR6C. Suitable channels are checked automatically. Then name the channels, set their groups and press \"Save\".",
          "channels-count": "Channels: {{count}}",
-         "channels-none": "No channels selected",
+         "channels-none": "No channels",
          "new": "New",
          "changed": "Changed",
          "not-found": "Not found",

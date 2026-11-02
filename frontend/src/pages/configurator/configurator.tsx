@@ -30,6 +30,7 @@ const ConfiguratorPage = observer(() => {
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const isSingleColumn = useMediaQuery({ maxWidth: 990 });
   const buttonSize = isMobile ? 'small' : 'default';
@@ -60,6 +61,10 @@ const ConfiguratorPage = observer(() => {
       layoutRef.current?.scrollIntoView({ block: 'start' });
     }
   }, [isPanelMode]);
+
+  useEffect(() => {
+    statusRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [status]);
 
   const openAdd = (deviceId: string | null, target: Device | null = null) => {
     setAddDeviceId(deviceId);
@@ -192,9 +197,11 @@ const ConfiguratorPage = observer(() => {
         </Alert>
       )}
       {status && (
-        <Alert variant={status.variant} size="small" className="configurator-alert" onClose={() => setStatus(null)}>
-          {status.text}
-        </Alert>
+        <div ref={statusRef}>
+          <Alert variant={status.variant} size="small" className="configurator-alert" onClose={() => setStatus(null)}>
+            {status.text}
+          </Alert>
+        </div>
       )}
 
       {!isPanelMode && <NewDevicesAlert onConfigure={(deviceId) => openAdd(deviceId)} />}
