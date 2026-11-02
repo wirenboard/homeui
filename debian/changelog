@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.248.1-wb104) stable; urgency=medium
 
   * Fix element rotation in SVG dashboards
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 02 Nov 2026 12:41:32 +0000
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 02 Nov 2026 17:41:32 +0500
 
 wb-mqtt-homeui (2.248.1-wb103) stable; urgency=medium
 
