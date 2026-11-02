@@ -9,13 +9,12 @@ import { Confirm, useConfirm } from '@/components/confirm';
 import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { ConfigFormatError, ConfigParseError, configuratorStore } from '@/stores/configurator';
+import { ConfigFormatError, ConfigParseError, configuratorStore, type Device } from '@/stores/configurator';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { AddDialog } from './components/add-dialog';
 import { DeviceList } from './components/device-list';
+import { DevicePanel } from './components/device-panel';
 import { NewDevicesAlert } from './components/new-devices-alert';
-import { OwnDevicePanel } from './components/own-device-panel';
-import { WbDevicePanel } from './components/wb-device-panel';
 import type { ImportFile, PageStatus } from './types';
 import { liveControls, UNESCAPED } from './utils';
 import './styles.css';
@@ -27,10 +26,10 @@ const ConfiguratorPage = observer(() => {
   const [status, setStatus] = useState<PageStatus | null>(null);
   const [isAddOpened, setIsAddOpened] = useState(false);
   const [addDeviceId, setAddDeviceId] = useState<string | null>(null);
+  const [addTarget, setAddTarget] = useState<Device | null>(null);
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
-  const selectionOnAdd = useRef(configuratorStore.selection);
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const isSingleColumn = useMediaQuery({ maxWidth: 990 });
   const buttonSize = isMobile ? 'small' : 'default';
@@ -38,10 +37,11 @@ const ConfiguratorPage = observer(() => {
   const [isClearOpened, setIsClearOpened] = useState(false);
   const [removed, setRemoved] = useState<{ name: string; remove: () => void } | null>(null);
   const [confirmOverwrite, isOverwriteOpened, handleOverwrite, handleOverwriteClose] = useConfirm<any>();
-  const { isDirty, isSaving, isLoading, backendState, selectedWb, selectedOwn } = configuratorStore;
-  const hasDevices = !!(configuratorStore.wbs.length + configuratorStore.own.length);
+  const { isDirty, isSaving, isLoading, backendState, selected } = configuratorStore;
+  const hasDevices = !!configuratorStore.devices.length;
+  const hasNameConflicts = !!configuratorStore.nameConflicts.size;
   // В одну колонку на экране либо список устройств, либо панель выбранного, как в менеджере устройств.
-  const isPanelMode = isSingleColumn && isPanelShown && !!(selectedWb || selectedOwn);
+  const isPanelMode = isSingleColumn && isPanelShown && !!selected;
 
   useEffect(() => {
     configuratorStore.load().catch((error) => {
@@ -61,17 +61,10 @@ const ConfiguratorPage = observer(() => {
     }
   }, [isPanelMode]);
 
-  const openAdd = (deviceId: string | null) => {
-    selectionOnAdd.current = configuratorStore.selection;
+  const openAdd = (deviceId: string | null, target: Device | null = null) => {
     setAddDeviceId(deviceId);
+    setAddTarget(target);
     setIsAddOpened(true);
-  };
-
-  const closeAdd = () => {
-    setIsAddOpened(false);
-    if (configuratorStore.selection !== selectionOnAdd.current) {
-      setIsPanelShown(true);
-    }
   };
 
   const save = async () => {
@@ -129,7 +122,8 @@ const ConfiguratorPage = observer(() => {
     <Button
       size={buttonSize}
       label={t('configurator.buttons.save')}
-      disabled={!isDirty || backendState !== 'available'}
+      disabled={!isDirty || backendState !== 'available' || hasNameConflicts}
+      title={hasNameConflicts ? t('configurator.labels.names-duplicate') : undefined}
       isLoading={isSaving}
       onClick={save}
     />
@@ -153,8 +147,9 @@ const ConfiguratorPage = observer(() => {
         </div>
       ) : (
         <div className="configurator-headerActions">
-          <Tag variant={isDirty ? 'warn' : 'gray'} role="status">
-            {isDirty ? t('configurator.labels.dirty') : t('configurator.labels.clean')}
+          <Tag variant={isDirty || hasNameConflicts ? 'warn' : 'gray'} role="status">
+            {hasNameConflicts && t('configurator.labels.names-duplicate')}
+            {!hasNameConflicts && (isDirty ? t('configurator.labels.dirty') : t('configurator.labels.clean'))}
           </Tag>
           {isDirty && (
             <Button
@@ -181,7 +176,8 @@ const ConfiguratorPage = observer(() => {
             size={buttonSize}
             variant="secondary"
             label={t('configurator.buttons.export')}
-            disabled={!hasDevices}
+            disabled={!hasDevices || hasNameConflicts}
+            title={hasNameConflicts ? t('configurator.labels.names-duplicate') : undefined}
             onClick={exportConfig}
           />
           {saveButton}
@@ -201,7 +197,7 @@ const ConfiguratorPage = observer(() => {
         </Alert>
       )}
 
-      {!isPanelMode && <NewDevicesAlert onConfigure={openAdd} />}
+      {!isPanelMode && <NewDevicesAlert onConfigure={(deviceId) => openAdd(deviceId)} />}
 
       <div ref={layoutRef} className="configurator-layout">
         {!isPanelMode && (
@@ -214,21 +210,14 @@ const ConfiguratorPage = observer(() => {
 
         {(!isSingleColumn || isPanelMode || !hasDevices) && (
           <div className="configurator-editor">
-            {selectedWb && (
-              <WbDevicePanel
-                key={selectedWb.id}
-                wb={selectedWb}
-                onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeWb(selectedWb.id) })}
+            {selected ? (
+              <DevicePanel
+                key={selected.id}
+                item={selected}
+                onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeDevice(selected.id) })}
+                onAddRows={() => openAdd(null, selected)}
               />
-            )}
-            {selectedOwn && (
-              <OwnDevicePanel
-                key={selectedOwn.id}
-                item={selectedOwn}
-                onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeOwn(selectedOwn.id) })}
-              />
-            )}
-            {!selectedWb && !selectedOwn && (
+            ) : (
               <Card
                 heading={hasDevices ? t('configurator.labels.select-device') : t('configurator.labels.first-title')}
               >
@@ -239,7 +228,13 @@ const ConfiguratorPage = observer(() => {
         )}
       </div>
 
-      <AddDialog isOpened={isAddOpened} initialDeviceId={addDeviceId} onClose={closeAdd} />
+      <AddDialog
+        isOpened={isAddOpened}
+        initialDeviceId={addDeviceId}
+        target={addTarget}
+        onAdded={() => setIsPanelShown(true)}
+        onClose={() => setIsAddOpened(false)}
+      />
 
       <Confirm
         isOpened={!!removed}

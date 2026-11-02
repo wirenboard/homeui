@@ -110,10 +110,6 @@
     font-weight: 600;
 }
 
-.configurator-status {
-    margin: 0;
-}
-
 .configurator-switches {
     display: flex;
     flex-wrap: wrap;
@@ -202,13 +198,6 @@
     }
 }
 
-.configurator-tilesPanel {
-    margin-bottom: 8px;
-    padding: var(--content-gap);
-    background: var(--background-accent-color);
-    border-radius: var(--container-border-radius);
-}
-
 .configurator-tiles {
     display: flex;
     flex-direction: column;
@@ -251,8 +240,7 @@
     padding: var(--content-gap);
 }
 
-.configurator-addNew > p,
-.configurator-tilesPanel > p {
+.configurator-addNew > p {
     margin: 0 0 var(--content-gap);
 }
 

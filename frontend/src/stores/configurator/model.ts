@@ -4,15 +4,14 @@ import type {
   Config,
   ConfigDevice,
   ConfigService,
+  Device,
   DeviceRow,
   Draft,
   EditorModel,
   LiveControls,
   OrigBinding,
-  OwnDevice,
   ParsedConfig,
   RoleId,
-  WbDevice,
 } from './types';
 
 export const topicOf = (deviceId: string, controlId: string) => `/devices/${deviceId}/controls/${controlId}`;
@@ -40,31 +39,24 @@ export const stable = (value: unknown): string => {
 
 export const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-// Роль, привязанная к контролу key (у строки устройства WB — её основная роль).
-export const boundRole = (row: DeviceRow, key: string): RoleId | undefined =>
-  (Object.keys(row.bind) as RoleId[]).find((role) => row.bind[role] === key);
-
-// Сервисы строки: основная роль первой, остальные в порядке типа. ownKey — контрол строки устройства WB.
-export const rowServices = (row: DeviceRow, ownKey?: string) => {
-  if (!row.type) {
-    return { list: [], missing: [] };
-  }
+// Сервисы строки: привязанные роли в порядке описания типа и обязательные роли без привязки.
+export const rowServices = (row: DeviceRow) => {
   const roles = findType(row.type).roles.map(([role]) => role).filter((role) => row.bind[role]);
-  const primary = ownKey ? boundRole(row, ownKey) : roles[0];
-  const ordered = primary ? [primary, ...roles.filter((role) => role !== primary)] : roles;
   return {
-    list: ordered.map((role) => ({ role, key: row.bind[role] })),
+    list: roles.map((role) => ({ role, key: row.bind[role] })),
     missing: requiredRoles(row.type, row.bind).filter((role) => !row.bind[role]),
   };
 };
 
+// Название карточки так, как оно пишется в module; '' у безымянной карточки без строк.
+export const moduleName = (device: Pick<Device, 'name' | 'rows'>) =>
+  device.name.trim() || (device.rows.length ? `own-${device.rows[0].did}` : '');
+
 const isRole = (role: unknown): role is RoleId => typeof role === 'string' && role in ROLES;
 
-// Конфиг -> модель. В карточку устройства WB попадает запись, у которой все каналы из одного
-// MQTT-устройства и module совпадает с ним; прочее собирается в созданные по module.
+// Конфиг -> модель: записи собираются в устройства по module, нераспознанные — в raw.
 export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
-  const wbs: WbDevice[] = [];
-  const own: OwnDevice[] = [];
+  const devices: Device[] = [];
   const raw: unknown[] = [];
   const orig: ParsedConfig['orig'] = {};
   const mixed: Record<string, boolean> = {};
@@ -92,7 +84,6 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     const unit = services.find((item) => ROLES[item.role as RoleId]?.unit)?.service.unit;
     const matter = !!device.adapter_settings?.matter;
     const alice = !!device.adapter_settings?.alice;
-    const firstDev = services[0].topic.dev;
     const bind: DeviceRow['bind'] = {};
     services.forEach((item) => {
       bind[item.role as RoleId] = `${item.topic.dev}/${item.topic.ctl}`;
@@ -102,37 +93,19 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
       ...(unit ? { unit } : {}),
     };
 
-    if (services.every((item) => item.topic.dev === firstDev) && device.module === firstDev) {
-      // Основная роль записана первой; её контрол — ключ строки.
-      const ownControl = services[0].topic.ctl;
-      let wb = wbs.find((item) => item.id === firstDev);
-      if (!wb) {
-        wb = { id: firstDev, matter, alice, channels: {} };
-        wbs.push(wb);
-      } else if (wb.matter !== matter || wb.alice !== alice) {
-        mixed[firstDev] = true;
-      }
-      if (wb.channels[ownControl]) {
-        raw.push(device);
-        return;
-      }
-      wb.channels[ownControl] = row;
-      return;
-    }
-
     const name = String(device.module || '').trim();
-    const id = `own:${name}`;
-    let ownDevice = own.find((item) => item.id === id);
-    if (!ownDevice) {
-      ownDevice = { id, name, matter, alice, rows: [] };
-      own.push(ownDevice);
-    } else if (ownDevice.matter !== matter || ownDevice.alice !== alice) {
+    const id = `module:${name}`;
+    let target = devices.find((item) => item.id === id);
+    if (!target) {
+      target = { id, name, matter, alice, rows: [] };
+      devices.push(target);
+    } else if (target.matter !== matter || target.alice !== alice) {
       mixed[id] = true;
     }
-    ownDevice.rows.push(row);
+    target.rows.push(row);
   });
 
-  return { wbs, own, raw, orig, mixed };
+  return { devices, raw, orig, mixed };
 };
 
 const toNumber = (value: unknown): number | undefined => {
@@ -204,28 +177,20 @@ export const toConfig = (
     };
   };
 
-  const addRow = (row: DeviceRow, module: string, matter: boolean, alice: boolean, ownKey?: string) => {
-    const { list, missing } = rowServices(row, ownKey);
-    if (!row.type || missing.length) {
-      drafts.push({ name: row.name, role: missing[0] ?? null });
-      return;
-    }
-    devices.push(makeDevice(
-      row.did, row.name, row.type, module, row.group, matter, alice,
-      list.map(({ role, key }) => [role, ...splitKey(key)]),
-      row.unit,
-    ));
-  };
-
-  model.wbs.forEach((wb) => {
-    Object.entries(wb.channels).forEach(([controlId, row]) => {
-      addRow(row, wb.id, wb.matter, wb.alice, `${wb.id}/${controlId}`);
+  model.devices.forEach((device) => {
+    const module = moduleName(device);
+    device.rows.forEach((row) => {
+      const { list, missing } = rowServices(row);
+      if (missing.length) {
+        drafts.push({ name: row.name, role: missing[0] });
+        return;
+      }
+      devices.push(makeDevice(
+        row.did, row.name, row.type, module, row.group, device.matter, device.alice,
+        list.map(({ role, key }) => [role, ...splitKey(key)]),
+        row.unit,
+      ));
     });
-  });
-
-  model.own.forEach((ownDevice) => {
-    const module = ownDevice.name.trim() || `own-${ownDevice.rows[0]?.did}`;
-    ownDevice.rows.forEach((row) => addRow(row, module, ownDevice.matter, ownDevice.alice));
   });
 
   devices = devices.concat(model.raw as ConfigDevice[]);

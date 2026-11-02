@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 import i18n from '@/i18n/config';
+import type { Device } from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
-import { defaultName, formatValue } from './utils';
+import { defaultName, formatValue, hasLostBinding, liveControls } from './utils';
 
 const cell = (fields: Partial<Cell>) => fields as Cell;
 
@@ -37,5 +38,24 @@ describe('formatValue', () => {
 
   it('appends translated units', () => {
     expect(formatValue(cell({ type: 'value', valueType: 'number', value: 21.5, units: 'deg C' }))).toBe('21.5 °C');
+  });
+});
+
+describe('hasLostBinding', () => {
+  const card = (key: string): Device => ({
+    id: 'd', name: 'd', matter: true, alice: true,
+    rows: [{ did: 10, name: 'K1', type: 'switch', group: '', bind: { on_off: key } }],
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('is false while the bound control is published and true once it is gone', () => {
+    vi.spyOn(liveControls, 'meta').mockImplementation((deviceId, controlId) =>
+      (deviceId === 'relay' && controlId === 'K1' ? { type: 'switch' } : null));
+
+    expect(hasLostBinding(card('relay/K1'))).toBe(false);
+    expect(hasLostBinding(card('relay/K2'))).toBe(true);
   });
 });

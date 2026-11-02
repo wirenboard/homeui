@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { CHANNEL_CLASSES, configuratorStore, ROLES } from '@/stores/configurator';
+import { CHANNEL_CLASSES, configuratorStore, ROLES, splitKey } from '@/stores/configurator';
 import type { NewDevicesAlertProps } from '../types';
 import { classifyCell, deviceControls, deviceTitle, isVirtualDevice, listDevices, UNESCAPED } from '../utils';
 
@@ -22,10 +22,7 @@ export const NewDevicesAlert = observer(({ onConfigure }: NewDevicesAlertProps) 
   const { t } = useTranslation();
   const [dismissed, setDismissed] = useState(readDismissed);
 
-  const configured = new Set([
-    ...configuratorStore.wbs.map((wb) => wb.id),
-    ...Array.from(configuratorStore.usedKeys).map((key) => key.split('/')[0]),
-  ]);
+  const configured = new Set(Array.from(configuratorStore.usedKeys).map((key) => splitKey(key)[0]));
   const devices = listDevices(false).filter((id) => !isVirtualDevice(id)
     && !configured.has(id)
     && !dismissed.includes(id)

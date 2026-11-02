@@ -1,19 +1,20 @@
 import { dump as dumpYaml, load as loadYaml } from 'js-yaml';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { clone, fromConfig, stable, toConfig } from './model';
+import { findType, hasUnit } from './catalog';
+import { clone, fromConfig, moduleName, stable, toConfig } from './model';
 import type {
   BackendState,
   BackendStatus,
   BuiltConfig,
   Config,
+  Device,
   DeviceRow,
+  EditorModel,
   LiveControls,
   NewDeviceRow,
-  OwnDevice,
   ParsedConfig,
   RoleId,
   Selection,
-  WbDevice,
 } from './types';
 
 const STATUS_URL = '/converter-ext/status';
@@ -30,8 +31,7 @@ export class ConfigParseError extends Error {
 export class ConfigFormatError extends Error {}
 
 export default class ConfiguratorStore {
-  wbs: WbDevice[] = [];
-  own: OwnDevice[] = [];
+  devices: Device[] = [];
   raw: unknown[] = [];
   orig: ParsedConfig['orig'] = {};
   mixed: Record<string, boolean> = {};
@@ -40,44 +40,51 @@ export default class ConfiguratorStore {
   isLoading = false;
   isSaving = false;
 
-  private _savedModel = stable({ wbs: [], own: [] });
+  private _savedModel = stable({ devices: [] });
   private _modifiedAt: number | null = null;
   private _savedExtras: Pick<ParsedConfig, 'raw' | 'orig' | 'mixed'> = { raw: [], orig: {}, mixed: {} };
-  // Настройки снятых каналов: вернутся, если канал отметить снова.
-  private _parked: Record<string, DeviceRow> = {};
+  private _newCount = 0;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
   get isDirty() {
-    return stable({ wbs: this.wbs, own: this.own }) !== this._savedModel
+    return stable({ devices: this.devices }) !== this._savedModel
       || stable(this.raw) !== stable(this._savedExtras.raw);
   }
 
-  get savedModel(): { wbs: WbDevice[]; own: OwnDevice[] } {
+  get savedModel(): EditorModel {
     return JSON.parse(this._savedModel);
   }
 
-  get selectedWb() {
-    return this.selection?.kind === 'wb' ? this.wbs.find((wb) => wb.id === this.selection.id) : undefined;
+  get selected() {
+    return this.selection ? this.devices.find((device) => device.id === this.selection.id) : undefined;
   }
 
-  get selectedOwn() {
-    return this.selection?.kind === 'own' ? this.own.find((item) => item.id === this.selection.id) : undefined;
-  }
-
-  // Ключи "device/control" всех каналов, уже занятых в модели.
+  // Ключи "device/control" всех привязок модели.
   get usedKeys(): Set<string> {
     const used = new Set<string>();
-    this.wbs.forEach((wb) => Object.keys(wb.channels).forEach((controlId) => used.add(`${wb.id}/${controlId}`)));
-    [...this.wbs.flatMap((wb) => Object.values(wb.channels)), ...this.own.flatMap((item) => item.rows)]
-      .forEach((row) => Object.values(row.bind).forEach((key) => used.add(key)));
+    this.devices.forEach((device) => device.rows.forEach((row) => {
+      Object.values(row.bind).forEach((key) => used.add(key));
+    }));
     return used;
   }
 
+  // id карточек, чьё название в module совпадает с другой карточкой.
+  get nameConflicts(): Set<string> {
+    const byName = new Map<string, string[]>();
+    this.devices.forEach((device) => {
+      const name = moduleName(device);
+      if (name) {
+        byName.set(name, [...(byName.get(name) ?? []), device.id]);
+      }
+    });
+    return new Set(Array.from(byName.values()).filter((ids) => ids.length > 1).flat());
+  }
+
   build(live: LiveControls): BuiltConfig {
-    return toConfig({ wbs: this.wbs, own: this.own, raw: this.raw }, live, this.orig);
+    return toConfig({ devices: this.devices, raw: this.raw }, live, this.orig);
   }
 
   toYaml(config: Config) {
@@ -112,6 +119,9 @@ export default class ConfiguratorStore {
 
   // Сохраняет конфиг; confirmOverwrite спрашивают, если файл на контроллере менялся после загрузки.
   async save(live: LiveControls, confirmOverwrite: () => Promise<boolean>): Promise<BuiltConfig | null> {
+    if (this.nameConflicts.size) {
+      throw new Error('Device names are not unique');
+    }
     const built = this.build(live);
     this.isSaving = true;
     try {
@@ -129,12 +139,11 @@ export default class ConfiguratorStore {
       }
       const saved = await this._fetchStatus();
       runInAction(() => {
-        this.wbs = this.wbs.filter((wb) => Object.keys(wb.channels).length);
-        this.own = this.own.filter((item) => item.rows.length);
+        this.devices = this.devices.filter((device) => device.rows.length);
         this.orig = fromConfig(built.config).orig;
         this.mixed = {};
         this._modifiedAt = saved?.modified_at ?? null;
-        this._savedModel = stable({ wbs: this.wbs, own: this.own });
+        this._savedModel = stable({ devices: this.devices });
         this._savedExtras = clone({ raw: this.raw, orig: this.orig, mixed: this.mixed });
         this._keepSelection();
       });
@@ -153,12 +162,10 @@ export default class ConfiguratorStore {
       throw new ConfigFormatError();
     }
     const parsed = fromConfig(config);
-    this.wbs = parsed.wbs;
-    this.own = parsed.own;
+    this.devices = parsed.devices;
     this.raw = parsed.raw;
     this.orig = parsed.orig;
     this.mixed = parsed.mixed;
-    this._parked = {};
     this.selection = null;
     this._keepSelection();
     return config.devices.length;
@@ -169,70 +176,89 @@ export default class ConfiguratorStore {
   }
 
   revert() {
-    const saved = this.savedModel;
-    this.wbs = saved.wbs;
-    this.own = saved.own;
+    this.devices = this.savedModel.devices;
     Object.assign(this, clone(this._savedExtras));
-    this._parked = {};
     this._keepSelection();
   }
 
   clearAll() {
-    this.wbs = [];
-    this.own = [];
+    this.devices = [];
     this.selection = null;
   }
 
   nextDid(): number {
     const dids = [
       FIRST_DID - 1,
-      ...this.wbs.flatMap((wb) => Object.values(wb.channels).map((channel) => channel.did)),
-      ...this.own.flatMap((item) => item.rows.map((row) => row.did)),
+      ...this.devices.flatMap((device) => device.rows.map((row) => row.did)),
       ...this.raw.map((device) => Number((device as { did?: number })?.did) || 0),
-      ...Object.values(this._parked).map((row) => row.did),
       ...Object.keys(this.orig).map(Number),
     ];
     return Math.max(...dids) + 1;
   }
 
-  addWb(id: string, rows: Record<string, NewDeviceRow>) {
+  // Занятое название получает суффикс « 2», « 3», ...
+  addDevice(name: string, rows: NewDeviceRow[]): Device {
     const firstDid = this.nextDid();
-    const wb: WbDevice = { id, matter: true, alice: true, channels: {} };
-    Object.entries(rows).forEach(([controlId, row], index) => {
-      wb.channels[controlId] = { ...row, did: firstDid + index, group: '' };
-    });
-    this.wbs.push(wb);
-    this.selection = { kind: 'wb', id };
+    const taken = new Set(this.devices.map(moduleName));
+    let freeName = name;
+    for (let index = 2; name.trim() && taken.has(freeName.trim()); index += 1) {
+      freeName = `${name.trim()} ${index}`;
+    }
+    this._newCount += 1;
+    const device: Device = {
+      id: `new:${this._newCount}`,
+      name: freeName,
+      matter: true,
+      alice: true,
+      rows: rows.map((row, index) => ({ ...row, did: firstDid + index, group: '' })),
+    };
+    this.devices.push(device);
+    this.selection = { id: device.id };
+    return this.selected;
   }
 
-  removeWb(id: string) {
-    this.wbs = this.wbs.filter((wb) => wb.id !== id);
+  // Новые строки встают первыми и наследуют группу последней заполненной.
+  addRows(device: Device, rows: NewDeviceRow[]) {
+    const firstDid = this.nextDid();
+    const lastGroup = device.rows.map((row) => row.group).filter(Boolean).pop() ?? '';
+    device.rows.unshift(...rows.map((row, index) => ({ ...row, did: firstDid + index, group: lastGroup })));
+  }
+
+  removeRow(device: Device, did: number) {
+    device.rows = device.rows.filter((row) => row.did !== did);
+  }
+
+  removeDevice(id: string) {
+    this.devices = this.devices.filter((device) => device.id !== id);
     this._keepSelection();
   }
 
-  setAdapters(target: WbDevice | OwnDevice, adapters: { matter?: boolean; alice?: boolean }) {
+  setName(device: Device, name: string) {
+    device.name = name;
+  }
+
+  setAdapters(target: Device, adapters: { matter?: boolean; alice?: boolean }) {
     Object.assign(target, adapters);
   }
 
-  // Снимает отмеченный канал или отмечает: из снятых или по defaults.
-  toggleChannel(wb: WbDevice, controlId: string, defaults?: NewDeviceRow) {
-    const key = `${wb.id}/${controlId}`;
-    if (wb.channels[controlId]) {
-      this._parked[key] = clone(wb.channels[controlId]);
-      delete wb.channels[controlId];
-      return;
-    }
-    if (this._parked[key]) {
-      wb.channels[controlId] = this._parked[key];
-      delete this._parked[key];
-      return;
-    }
-    const lastGroup = Object.values(wb.channels).map((channel) => channel.group).filter(Boolean).pop() ?? '';
-    wb.channels[controlId] = { ...defaults, did: this.nextDid(), group: lastGroup };
+  updateRow(row: DeviceRow, patch: Partial<Pick<DeviceRow, 'name' | 'group' | 'unit'>>) {
+    Object.assign(row, patch);
   }
 
-  updateRow(row: DeviceRow, patch: Partial<Pick<DeviceRow, 'name' | 'group' | 'unit' | 'type' | 'bind'>>) {
-    Object.assign(row, patch);
+  // Привязка первой роли переходит на role нового типа; роли, которых нет в типе, отбрасываются.
+  changeType(row: DeviceRow, type: string, role: RoleId, name: string) {
+    const roles = findType(type).roles.map(([item]) => item);
+    const [first, ...extra] = findType(row.type).roles.map(([item]) => item).filter((item) => row.bind[item]);
+    const bind: DeviceRow['bind'] = first ? { [role]: row.bind[first] } : {};
+    extra.filter((item) => item !== role && roles.includes(item)).forEach((item) => {
+      bind[item] = row.bind[item];
+    });
+    row.type = type;
+    row.bind = bind;
+    row.name = name;
+    if (!hasUnit(type)) {
+      delete row.unit;
+    }
   }
 
   bindRole(row: DeviceRow, role: RoleId, key: string | null) {
@@ -241,32 +267,6 @@ export default class ConfiguratorStore {
     } else {
       delete row.bind[role];
     }
-  }
-
-  addOwn(name: string, row: NewDeviceRow) {
-    const item: OwnDevice = {
-      id: `own:new:${Date.now()}`, name, matter: true, alice: true, rows: [{ ...row, did: this.nextDid(), group: '' }],
-    };
-    this.own.push(item);
-    this.selection = { kind: 'own', id: item.id };
-  }
-
-  removeOwn(id: string) {
-    this.own = this.own.filter((item) => item.id !== id);
-    this._keepSelection();
-  }
-
-  setOwnName(item: OwnDevice, name: string) {
-    item.name = name;
-  }
-
-  addOwnRow(item: OwnDevice, row: NewDeviceRow) {
-    const lastGroup = item.rows.map((existing) => existing.group).filter(Boolean).pop() ?? '';
-    item.rows.unshift({ ...row, did: this.nextDid(), group: lastGroup });
-  }
-
-  removeOwnRow(item: OwnDevice, did: number) {
-    item.rows = item.rows.filter((row) => row.did !== did);
   }
 
   private async _fetchStatus(): Promise<BackendStatus | null> {
@@ -281,29 +281,20 @@ export default class ConfiguratorStore {
 
   private _apply(parsed: ParsedConfig, modifiedAt: number | null) {
     runInAction(() => {
-      this.wbs = parsed.wbs;
-      this.own = parsed.own;
+      this.devices = parsed.devices;
       this.raw = parsed.raw;
       this.orig = parsed.orig;
       this.mixed = parsed.mixed;
       this._modifiedAt = modifiedAt;
-      this._parked = {};
-      this._savedModel = stable({ wbs: parsed.wbs, own: parsed.own });
+      this._savedModel = stable({ devices: parsed.devices });
       this._savedExtras = clone({ raw: parsed.raw, orig: parsed.orig, mixed: parsed.mixed });
       this._keepSelection();
     });
   }
 
   private _keepSelection() {
-    if (this.selectedWb || this.selectedOwn) {
-      return;
-    }
-    if (this.wbs.length) {
-      this.selection = { kind: 'wb', id: this.wbs[0].id };
-    } else if (this.own.length) {
-      this.selection = { kind: 'own', id: this.own[0].id };
-    } else {
-      this.selection = null;
+    if (!this.selected) {
+      this.selection = this.devices.length ? { id: this.devices[0].id } : null;
     }
   }
 }

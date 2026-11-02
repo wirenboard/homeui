@@ -1,4 +1,4 @@
-import type { OwnDevice, WbDevice } from '@/stores/configurator';
+import type { Device } from '@/stores/configurator';
 
 export interface PageStatus {
   variant: 'success' | 'danger' | 'info';
@@ -13,7 +13,7 @@ export interface TypeChoiceProps {
 }
 
 export interface AdapterSwitchesProps {
-  target: WbDevice | OwnDevice;
+  target: Device;
 }
 
 export interface TypeTilesProps {
@@ -26,21 +26,21 @@ export interface DeviceListProps {
   onSelect: () => void;
 }
 
-export interface WbDevicePanelProps {
-  wb: WbDevice;
+export interface DevicePanelProps {
+  item: Device;
   onRemove: (_name: string) => void;
-}
-
-export interface OwnDevicePanelProps {
-  item: OwnDevice;
-  onRemove: (_name: string) => void;
+  onAddRows: () => void;
 }
 
 export interface AddDialogProps {
   isOpened: boolean;
   onClose: () => void;
-  // устройство, открытое сразу; иначе первое не добавленное
+  // устройство контроллера, открытое сразу; иначе из привязок target
+  // или первое со свободными контролами
   initialDeviceId?: string | null;
+  // карточка, в которую добавляются строки; без неё создаётся новая
+  target?: Device;
+  onAdded?: (_device: Device) => void;
 }
 
 // Выбор канала в диалоге добавления; type '' — тип ещё не выбран.

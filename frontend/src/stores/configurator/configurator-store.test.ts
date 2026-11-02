@@ -24,13 +24,13 @@ describe('ConfiguratorStore.importConfig', () => {
     const store = new ConfiguratorStore();
 
     expect(store.importConfig(yaml)).toBe(2);
-    expect(store.wbs.map((wb) => wb.id)).toEqual(['wb-gpio']);
+    expect(store.devices.map((device) => device.name)).toEqual(['wb-gpio']);
     expect(store.raw).toHaveLength(1);
-    expect(store.selection).toEqual({ kind: 'wb', id: 'wb-gpio' });
+    expect(store.selection).toEqual({ id: 'module:wb-gpio' });
     expect(store.isDirty).toBe(true);
 
     store.revert();
-    expect(store.wbs).toEqual([]);
+    expect(store.devices).toEqual([]);
     expect(store.raw).toEqual([]);
     expect(store.isDirty).toBe(false);
   });
@@ -76,6 +76,57 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const mixedYaml = `
+version: '1.0'
+devices:
+  - did: 10
+    name: A
+    type: switch
+    module: Кухня
+    adapter_settings: { matter: true, alice: true }
+    services:
+      - sid: 1
+        role: on_off
+        binding: { state: /devices/r/controls/K1 }
+  - did: 11
+    name: B
+    type: switch
+    module: Кухня
+    adapter_settings: { matter: false, alice: true }
+    services:
+      - sid: 1
+        role: on_off
+        binding: { state: /devices/r/controls/K2 }
+`;
+
+describe('ConfiguratorStore mixed adapter settings', () => {
+  it('marks a module with different adapter settings on import and clears the mark on revert', () => {
+    const store = new ConfiguratorStore();
+
+    store.importConfig(mixedYaml);
+    expect(store.mixed).toEqual({ 'module:Кухня': true });
+
+    store.revert();
+    expect(store.mixed).toEqual({});
+  });
+
+  it('brings the loaded mark back after revert and clears it after a successful save', async () => {
+    stubBackend({ status: [status({ modified_at: 1 })], config: respond(mixedYaml) });
+    const store = new ConfiguratorStore();
+    await store.load();
+    expect(store.mixed).toEqual({ 'module:Кухня': true });
+
+    store.importConfig(yaml);
+    expect(store.mixed).toEqual({});
+    store.revert();
+    expect(store.mixed).toEqual({ 'module:Кухня': true });
+
+    stubBackend({ status: [status({ modified_at: 1 })] });
+    await store.save(live, async () => true);
+    expect(store.mixed).toEqual({});
+  });
+});
+
 describe('ConfiguratorStore.load', () => {
   it('marks the backend unavailable and starts empty when the status request fails', async () => {
     stubBackend({ status: [new Error('offline')] });
@@ -84,7 +135,7 @@ describe('ConfiguratorStore.load', () => {
     await store.load();
 
     expect(store.backendState).toBe('unavailable');
-    expect(store.wbs).toEqual([]);
+    expect(store.devices).toEqual([]);
     expect(store.isLoading).toBe(false);
   });
 
@@ -116,7 +167,7 @@ describe('ConfiguratorStore.load', () => {
 
     await store.load();
 
-    expect(store.wbs[0].channels.A1_OUT).toMatchObject({ did: 10, type: 'switch', bind: { on_off: 'wb-gpio/A1_OUT' } });
+    expect(store.devices[0].rows[0]).toMatchObject({ did: 10, type: 'switch', bind: { on_off: 'wb-gpio/A1_OUT' } });
     expect(store.raw).toHaveLength(1);
     expect(store.isDirty).toBe(false);
   });
@@ -132,7 +183,7 @@ describe('ConfiguratorStore.save', () => {
 
   it('posts without asking when the file on the controller has not changed since loading', async () => {
     const { store, posts } = await loaded(1, { status: [status({ modified_at: 1 }), status({ modified_at: 2 })] });
-    store.updateRow(store.wbs[0].channels.A1_OUT, { name: 'Насос' });
+    store.updateRow(store.devices[0].rows[0], { name: 'Насос' });
     const confirm = vi.fn(async () => true);
 
     const built = await store.save(live, confirm);
@@ -157,53 +208,158 @@ describe('ConfiguratorStore.save', () => {
     await expect(store.save(live, async () => true)).rejects.toThrow('500 bad schema');
   });
 
-  it('drops devices left without channels after saving', async () => {
+  it('throws and posts nothing while device names conflict', async () => {
+    const { store, posts } = await loaded(1, { status: [status({ modified_at: 1 })] });
+    store.addDevice('Другое', [{ type: 'switch', name: 'K2', bind: { on_off: 'wb-gpio/A2_OUT' } }]);
+    store.setName(store.devices[1], 'wb-gpio');
+
+    await expect(store.save(live, async () => true)).rejects.toThrow();
+    expect(posts).toEqual([]);
+    expect(store.isSaving).toBe(false);
+  });
+
+  it('drops devices left without rows after saving', async () => {
     const { store } = await loaded(1, { status: [status({ modified_at: 1 })] });
-    store.toggleChannel(store.wbs[0], 'A1_OUT');
+    store.removeRow(store.devices[0], 10);
 
     await store.save(live, async () => true);
 
-    expect(store.wbs).toEqual([]);
+    expect(store.devices).toEqual([]);
     expect(store.isDirty).toBe(false);
   });
 });
 
 describe('ConfiguratorStore editing', () => {
-  it('gives new rows dids from 10 up, past imported, unparsed and unchecked ones', () => {
+  const relay = (key: string) => ({ type: 'switch', name: key, bind: { on_off: key } });
+
+  it('gives new rows dids from 10 up, past imported, unparsed and removed ones', () => {
     const store = new ConfiguratorStore();
     expect(store.nextDid()).toBe(10);
 
     store.importConfig(yaml);
-    store.toggleChannel(store.wbs[0], 'A1_OUT');
+    store.removeRow(store.devices[0], 10);
 
     expect(store.nextDid()).toBe(31);
   });
 
-  it('restores an unchecked channel with its settings and gives a new one the last group', () => {
+  it('adds a device with consecutive dids and selects it', () => {
     const store = new ConfiguratorStore();
-    store.addWb('wb-gpio', { A1_OUT: { type: 'switch', name: 'Насос', bind: { on_off: 'wb-gpio/A1_OUT' } } });
-    const wb = store.wbs[0];
-    store.updateRow(wb.channels.A1_OUT, { group: 'Котельная' });
 
-    store.toggleChannel(wb, 'A1_OUT');
-    expect(wb.channels.A1_OUT).toBeUndefined();
-    store.toggleChannel(wb, 'A1_OUT');
-    store.toggleChannel(wb, 'A2_OUT', { type: 'switch', name: 'A2', bind: { on_off: 'wb-gpio/A2_OUT' } });
+    const device = store.addDevice('WB-MR6C 1', [relay('wb-mr6c_1/K1'), relay('wb-mr6c_1/K2')]);
 
-    expect(wb.channels.A1_OUT).toMatchObject({ did: 10, name: 'Насос', group: 'Котельная' });
-    expect(wb.channels.A2_OUT).toMatchObject({ did: 11, group: 'Котельная' });
+    expect(store.devices).toEqual([device]);
+    expect(store.selected).toBe(device);
+    expect(device.rows.map((row) => [row.did, row.group])).toEqual([[10, ''], [11, '']]);
+    expect(store.isDirty).toBe(true);
   });
 
-  it('binds and unbinds an extra role of a row', () => {
+  it('puts added rows first with the group of the last filled row', () => {
     const store = new ConfiguratorStore();
-    store.addOwn('Щит', { type: 'light', name: 'Свет', bind: {} });
-    const row = store.own[0].rows[0];
+    const device = store.addDevice('Щит', [relay('r/K1'), relay('r/K2')]);
+    store.updateRow(device.rows[0], { group: 'Котельная' });
+
+    store.addRows(device, [relay('r/K3'), relay('r/K4')]);
+
+    expect(device.rows.map((row) => [row.did, row.name, row.group])).toEqual([
+      [12, 'r/K3', 'Котельная'],
+      [13, 'r/K4', 'Котельная'],
+      [10, 'r/K1', 'Котельная'],
+      [11, 'r/K2', ''],
+    ]);
+  });
+
+  it('adding a device with a taken name gives the new card a numeric suffix and keeps the first card', () => {
+    const store = new ConfiguratorStore();
+    const first = store.addDevice('WB-MR6C 1', [relay('wb-mr6c_1/K1')]);
+
+    store.addDevice('WB-MR6C 1', [relay('wb-mr6c_1/K2')]);
+    const third = store.addDevice('WB-MR6C 1', [relay('wb-mr6c_1/K3')]);
+
+    expect(store.devices.map((device) => device.name)).toEqual(['WB-MR6C 1', 'WB-MR6C 1 2', 'WB-MR6C 1 3']);
+    expect(first.rows).toEqual([{ did: 10, group: '', ...relay('wb-mr6c_1/K1') }]);
+    expect(store.selected).toBe(third);
+    expect(store.nameConflicts.size).toBe(0);
+  });
+
+  it('marks both cards as conflicting when one is renamed to the name of the other, ignoring spaces only', () => {
+    const store = new ConfiguratorStore();
+    const first = store.addDevice('Кухня', [relay('r/K1')]);
+    const second = store.addDevice('Зал', [relay('r/K2')]);
+
+    store.setName(second, 'кухня');
+    expect(store.nameConflicts.size).toBe(0);
+
+    store.setName(second, ' Кухня ');
+    expect(Array.from(store.nameConflicts)).toEqual([first.id, second.id]);
+
+    store.setName(first, '');
+    store.setName(second, 'own-10');
+    expect(Array.from(store.nameConflicts)).toEqual([first.id, second.id]);
+  });
+
+  it('changes the row type keeping the binding on the primary role, the did and the group', () => {
+    const store = new ConfiguratorStore();
+    const device = store.addDevice('Щит', [
+      { type: 'cover', name: 'Шторы', bind: { position: 'dimmer/Level', on_off: 'dimmer/K1' } },
+      { type: 'number_sensor', name: 'Уровень', unit: 'V', bind: { number: 'msw/level', battery: 'msw/battery' } },
+    ]);
+    store.updateRow(device.rows[0], { group: 'Зал' });
+
+    store.changeType(device.rows[0], 'light', 'brightness', 'Свет');
+    store.changeType(device.rows[1], 'temperature_sensor', 'temperature', 'Температура');
+
+    expect(device.rows).toEqual([
+      { did: 10, group: 'Зал', type: 'light', name: 'Свет', bind: { brightness: 'dimmer/Level', on_off: 'dimmer/K1' } },
+      {
+        did: 11, group: '', type: 'temperature_sensor', name: 'Температура',
+        bind: { temperature: 'msw/level', battery: 'msw/battery' },
+      },
+    ]);
+  });
+
+  it('drops roles the new type does not have', () => {
+    const store = new ConfiguratorStore();
+    const device = store.addDevice('Щит', [
+      { type: 'button', name: 'Кнопка', bind: { press: 'b/a', battery: 'b/bat' } },
+    ]);
+
+    store.changeType(device.rows[0], 'switch', 'on_off', 'Кнопка');
+
+    expect(device.rows[0].bind).toEqual({ on_off: 'b/a' });
+  });
+
+  it('removes a device and moves the selection to the first remaining one', () => {
+    const store = new ConfiguratorStore();
+    const first = store.addDevice('A', [relay('r/K1')]);
+    const second = store.addDevice('B', [relay('r/K2')]);
+
+    store.removeDevice(second.id);
+
+    expect(store.devices).toEqual([first]);
+    expect(store.selected).toBe(first);
+  });
+
+  it('counts usedKeys only by bindings and tracks binding and unbinding of roles', () => {
+    const store = new ConfiguratorStore();
+    store.addDevice('Щит', [{ type: 'light', name: 'Свет', bind: {} }]);
+    const row = store.devices[0].rows[0];
+    expect(store.usedKeys.size).toBe(0);
 
     store.bindRole(row, 'brightness', 'dimmer/Channel 1');
     store.bindRole(row, 'on_off', 'dimmer/K1');
     store.bindRole(row, 'on_off', null);
 
     expect(row.bind).toEqual({ brightness: 'dimmer/Channel 1' });
-    expect(store.usedKeys.has('dimmer/Channel 1')).toBe(true);
+    expect(Array.from(store.usedKeys)).toEqual(['dimmer/Channel 1']);
+  });
+
+  it('renames a device and toggles its adapters', () => {
+    const store = new ConfiguratorStore();
+    const device = store.addDevice('A', [relay('r/K1')]);
+
+    store.setName(device, 'Кухня');
+    store.setAdapters(device, { alice: false });
+
+    expect(device).toMatchObject({ name: 'Кухня', matter: true, alice: false });
   });
 });

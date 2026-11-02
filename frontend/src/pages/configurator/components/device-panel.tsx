@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
@@ -10,30 +9,23 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import {
   CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, rowServices, splitKey, topicOf,
+  type ChannelClass,
   type DeviceRow,
   type RoleId,
 } from '@/stores/configurator';
-import { devicesStore } from '@/stores/devices';
-import type { OwnDevicePanelProps } from '../types';
+import { devicesStore, type Cell } from '@/stores/devices';
+import type { DevicePanelProps } from '../types';
 import {
-  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, roleLabel, TYPE_ICONS,
-  typeName,
-  UNESCAPED,
+  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, liveControls, roleLabel,
+  TYPE_ICONS, typeName, UNESCAPED,
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
-import { TypeTiles } from './type-tiles';
+import { TypeChoice } from './type-choice';
 import { UnitField } from './unit-field';
 
-export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps) => {
+export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelProps) => {
   const { t } = useTranslation();
-  const [isTilesOpened, setIsTilesOpened] = useState(false);
   const devices = listDevices(false);
-
-  const lowerName = item.name.trim().toLowerCase();
-  const isNameTaken = !!lowerName && (
-    Array.from(devicesStore.devices.keys()).some((id) => id.toLowerCase() === lowerName)
-    || configuratorStore.own.some((other) => other.id !== item.id && other.name.trim().toLowerCase() === lowerName)
-  );
 
   const roleOptions = (role: RoleId, current: string): Option<string>[] => {
     const groups: Option<string>[] = devices
@@ -68,12 +60,21 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
     configuratorStore.bindRole(row, role, key);
   };
 
-  const addRow = (typeId: string) => {
-    if (!item.name.trim()) {
-      configuratorStore.setOwnName(item, typeName(typeId));
-    }
-    configuratorStore.addOwnRow(item, { type: typeId, name: typeName(typeId), bind: {} });
-    setIsTilesOpened(false);
+  // Живой контрол первой привязанной роли, если она основная для его класса.
+  const primaryChannel = (row: DeviceRow) => {
+    const role = findType(row.type).roles.map(([typeRole]) => typeRole).find((typeRole) => row.bind[typeRole]);
+    const cell = role && liveControls.meta(...splitKey(row.bind[role])) ? devicesStore.cells.get(row.bind[role]) : null;
+    const cls = cell ? classifyCell(cell).cls : null;
+    return cell && primaryRole(row.type, cls) === role ? { cell, cls } : null;
+  };
+
+  const changeType = (row: DeviceRow, cell: Cell, cls: ChannelClass, typeId: string) => {
+    configuratorStore.changeType(
+      row,
+      typeId,
+      primaryRole(typeId, cls),
+      row.name === defaultName(row.type, cell, cls) ? defaultName(typeId, cell, cls) : row.name,
+    );
   };
 
   return (
@@ -96,8 +97,8 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
           title={t('configurator.labels.device-name')}
           value={item.name}
           placeholder={t('configurator.labels.new-device')}
-          error={isNameTaken ? t('configurator.labels.name-taken') : undefined}
-          onChange={(name) => configuratorStore.setOwnName(item, String(name))}
+          error={configuratorStore.nameConflicts.has(item.id) ? t('configurator.labels.name-taken') : undefined}
+          onChange={(name) => configuratorStore.setName(item, String(name))}
         />
       </div>
       {configuratorStore.mixed[item.id] && (
@@ -116,23 +117,20 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
             variant="secondary"
             icon={<PlusIcon />}
             label={t('configurator.buttons.add-channel')}
-            aria-expanded={isTilesOpened}
-            onClick={() => setIsTilesOpened(!isTilesOpened)}
+            aria-haspopup="dialog"
+            onClick={onAddRows}
           />
         </div>
-        {isTilesOpened && (
-          <div className="configurator-tilesPanel">
-            <p>{t('configurator.labels.choose-type')}</p>
-            <TypeTiles onPick={addRow} />
-          </div>
-        )}
+        {!item.rows.length && <p className="configurator-empty">{t('configurator.labels.channels-none')}</p>}
         <ul className="configurator-channels">
           {item.rows.map((row) => {
-            const type = findType(row.type);
             const { missing } = rowServices(row);
             const TypeIcon = TYPE_ICONS[row.type];
-            const roles = type.roles
+            const roles = findType(row.type).roles
               .filter(([role, isRequired]) => isRequired || row.bind[role] || roleOptions(role, '').length);
+            const primary = primaryChannel(row);
+            const classTypes = primary ? CHANNEL_CLASSES[primary.cls].types : [];
+            const types = !classTypes.length || classTypes.includes(row.type) ? classTypes : [row.type, ...classTypes];
             return (
               <li key={row.did} className="configurator-channel">
                 <div className="configurator-channelHead">
@@ -145,7 +143,7 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
                     variant="secondary"
                     icon={<TrashIcon />}
                     aria-label={t('configurator.buttons.remove-channel', { ...UNESCAPED, name: row.name })}
-                    onClick={() => configuratorStore.removeOwnRow(item, row.did)}
+                    onClick={() => configuratorStore.removeRow(item, row.did)}
                   />
                 </div>
                 <div className="configurator-channelBody">
@@ -168,6 +166,14 @@ export const OwnDevicePanel = observer(({ item, onRemove }: OwnDevicePanelProps)
                       />
                     )}
                   </div>
+                  {types.length > 1 && (
+                    <TypeChoice
+                      types={types}
+                      value={row.type}
+                      ariaLabel={`${t('configurator.labels.type')}: ${row.name}`}
+                      onChange={(typeId) => changeType(row, primary.cell, primary.cls, typeId)}
+                    />
+                  )}
                   {roles.map(([role, isRequired]) => (
                     <div key={role} className="configurator-role">
                       <span className="configurator-choiceLabel">{roleLabel(role)}</span>

@@ -17,8 +17,8 @@ import TypeSwitchIcon from '@/assets/icons/type-switch.svg';
 import TypeTemperatureIcon from '@/assets/icons/type-temperature.svg';
 import i18n from '@/i18n/config';
 import {
-  CHANNEL_CLASSES, classify, primaryRole, ROLES, type ChannelClass, type Classification, type ControlMeta,
-  type LiveControls,
+  CHANNEL_CLASSES, classify, primaryRole, ROLES, splitKey, type ChannelClass, type Classification,
+  type ControlMeta, type Device, type LiveControls,
 } from '@/stores/configurator';
 import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
 
@@ -65,7 +65,7 @@ export const classifyCell = (cell: Cell): Classification => classify(controlMeta
 export const deviceControls = (deviceId: string): Cell[] =>
   devicesStore.getDeviceCells(deviceId).filter((cell) => cell.type !== 'incomplete');
 
-export const isLiveDevice = (deviceId: string) => deviceControls(deviceId).length > 0;
+const isLiveDevice = (deviceId: string) => deviceControls(deviceId).length > 0;
 
 // wb-gpio для homeui служебный, но его входы и выходы — обычные реле и датчики контроллера.
 export const isSystemDevice = (deviceId: string) =>
@@ -89,8 +89,9 @@ export const listDevices = (withSystem: boolean): string[] =>
 
 export const deviceTitle = (deviceId: string) => devicesStore.devices.get(deviceId)?.name || deviceId;
 
-export const deviceLabel = (deviceId: string) =>
-  isLiveDevice(deviceId) && deviceTitle(deviceId) !== deviceId ? `${deviceTitle(deviceId)} (${deviceId})` : deviceId;
+// Хотя бы один привязанный контрол устройства сейчас не публикуется.
+export const hasLostBinding = (device: Device) =>
+  device.rows.some((row) => Object.values(row.bind).some((key) => !liveControls.meta(...splitKey(key))));
 
 export const formatValue = (cell: Cell | undefined): string => {
   if (!cell) {

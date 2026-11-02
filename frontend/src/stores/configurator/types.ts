@@ -124,11 +124,10 @@ export interface Config {
   devices: ConfigDevice[];
 }
 
-// Строка устройства: канал WB или строка созданного; bind — роль → "device/control".
+// Строка устройства приложений: один канал; bind — роль → "device/control".
 export interface DeviceRow {
   did: number;
   name: string;
-  // '' — тип ещё не выбран, строка не экспортируется
   type: string;
   group: string;
   // единицы числового датчика или настройки
@@ -136,18 +135,11 @@ export interface DeviceRow {
   bind: Partial<Record<RoleId, string>>;
 }
 
-// Строка при добавлении устройства: did и группу назначает стор.
+// Строка при добавлении: did и группу назначает стор.
 export type NewDeviceRow = Omit<DeviceRow, 'did' | 'group'>;
 
-// channels: ключ — контрол, ради которого строка заведена.
-export interface WbDevice {
-  id: string;
-  matter: boolean;
-  alice: boolean;
-  channels: Record<string, DeviceRow>;
-}
-
-export interface OwnDevice {
+// Устройство приложений: name пишется в module конфига.
+export interface Device {
   id: string;
   name: string;
   matter: boolean;
@@ -161,8 +153,7 @@ export interface OrigBinding {
 }
 
 export interface EditorModel {
-  wbs: WbDevice[];
-  own: OwnDevice[];
+  devices: Device[];
 }
 
 export interface ParsedConfig extends EditorModel {
@@ -171,10 +162,9 @@ export interface ParsedConfig extends EditorModel {
   mixed: Record<string, boolean>;
 }
 
-// role пуст, если у канала не выбран тип.
 export interface Draft {
   name: string;
-  role: RoleId | null;
+  role: RoleId;
 }
 
 export interface BuiltConfig {
@@ -182,7 +172,7 @@ export interface BuiltConfig {
   drafts: Draft[];
 }
 
-export type Selection = { kind: 'wb' | 'own'; id: string } | null;
+export type Selection = { id: string } | null;
 
 export type BackendState = 'checking' | 'available' | 'unavailable';
 
