@@ -38,7 +38,7 @@
     }
 }
 
-/* Used in SVG dashboard Style bindings */
+/* Used in Style bindings of old SVG dashboards */
 @keyframes rotate {
     to {
         transform: rotate(360deg);
