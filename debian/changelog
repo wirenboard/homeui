@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.285.0) stable; urgency=medium
+
+  * Show the Integrations and Rules menu sections to any role that can see at
+    least one of their items: items without requiredRole there stay
+    admin-only, so a gate menu item with "role": "operator" is now visible to
+    operators
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 02 Nov 2026 11:08:03 +0500
+
 wb-mqtt-homeui (2.284.8) stable; urgency=medium
 
   * Fix cell history position
