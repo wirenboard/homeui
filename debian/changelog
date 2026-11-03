@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.286.0) stable; urgency=medium
+
+  * Support additional ports on the MQTT to Modbus gateway page
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Tue, 03 Nov 2026 11:05:19 +0300
+
 wb-mqtt-homeui (2.285.0) stable; urgency=medium
 
   * Show the Integrations and Rules menu sections to any role that can see at
