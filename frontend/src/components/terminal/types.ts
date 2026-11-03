@@ -5,11 +5,58 @@ export enum TerminalConnectionState {
   Error = 'error',
 }
 
+export enum TerminalClientMessageType {
+  Input = 'input',
+  Resize = 'resize',
+}
+
+export enum TerminalServerMessageType {
+  Output = 'output',
+  Session = 'session',
+  Notice = 'notice',
+}
+
+/**
+ * After these the tab waits for the user. A close without a code (1005, 1006) leaves the session
+ * alive, and the tab reconnects on its own.
+ */
+export enum TerminalCloseCode {
+  SessionFinished = 1000,
+  SlotTaken = 1013,
+  TakenOver = 4001,
+}
+
+export enum TerminalNoticeKind {
+  AptLock = 'apt-lock',
+}
+
+/** `session`: id of the session the notice is about; "Open here" connects to it. */
+export interface TerminalNotice {
+  kind: TerminalNoticeKind;
+  session: string;
+}
+
+export interface TerminalBannerProps {
+  variant: 'info' | 'warn' | 'gray';
+  text: string;
+  actionLabel: string;
+  onAction: () => void;
+}
+
 export interface TerminalMessage {
-  type: 'input' | 'resize' | 'output';
+  type: TerminalClientMessageType;
   data?: string;
   cols?: number;
   rows?: number;
+}
+
+export interface TerminalServerMessage {
+  type: TerminalServerMessageType;
+  /** `output`: base64-encoded bytes. */
+  data?: string;
+  id?: string;
+  kind?: TerminalNoticeKind;
+  session?: string;
 }
 
 export type PrivateKeys = 'ws' | 'onDataCallback' | 'onReconnectCallback' | 'onConnectedCallback'

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
@@ -27,8 +27,14 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
       const digits = Math.max(minimumFractionDigits, cell.fractionDigits);
       return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits: digits })
         .format(cell.value)
-        .replace(/\s/g, '<span class="deviceCell-space"></span>')
-        .replace(',', '.');
+        .replace(',', '.')
+        .split(/\s/)
+        .map((part, index) => (
+          <Fragment key={index}>
+            {index > 0 && <span className="deviceCell-space"></span>}
+            {part}
+          </Fragment>
+        ));
     }
     return cell.value;
   }, [cell.value, cell.fractionDigits, minimumFractionDigits]);
@@ -95,7 +101,7 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
                 )
                 : (
                   <div>
-                    <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                    <span>{formattedValue}</span> {!!cell.units && (
                       <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
                     )}
                   </div>
@@ -129,7 +135,7 @@ export const CellValue = observer(({ cell, isReadOnly, isDisabled, hideHistory, 
                   )
                   : (
                     <div>
-                      <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                      <span>{formattedValue}</span> {!!cell.units && (
                         <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
                       )}
                     </div>

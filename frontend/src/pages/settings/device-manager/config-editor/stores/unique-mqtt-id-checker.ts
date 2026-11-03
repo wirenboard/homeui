@@ -54,6 +54,14 @@ export class UniqueMqttIdChecker {
     this.extractTabItem(deviceTab.mqttId, deviceTab).disposer();
   }
 
+  clear() {
+    Object.values(this.idToTab).forEach((tabItems) => {
+      tabItems.forEach((tabItem) => tabItem.disposer());
+    });
+    this.idToTab = {};
+    this.tabToId.clear();
+  }
+
   updateTab(deviceTab: DeviceTabStore) {
     const id = this.tabToId.get(deviceTab);
     if (id === undefined || id === deviceTab.mqttId) {

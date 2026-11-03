@@ -3,7 +3,7 @@
 import { subDays } from 'date-fns';
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
-import { historyProxy } from '@/services';
+import { historyProxy, mqttClient } from '@/services';
 import { dashboardsStore, type Widget } from '@/stores/dashboards';
 import { type Cell, type Device, devicesStore } from '@/stores/devices';
 import { fixBoolAxes, getAxis } from './axis';
@@ -572,7 +572,8 @@ export default class HistoryStore {
       this.disableUi = false;
       return;
     }
-    historyProxy.get_values(params)
+    mqttClient.whenConnected()
+      .then(() => historyProxy.get_values(params))
       .then((result: LoadHistoryResponse) => {
         runInAction(() => {
           if (loadId !== this.loadId) return;
@@ -648,7 +649,7 @@ export default class HistoryStore {
     this.stopLoadData = false;
     this.loadPending = true;
     this.disableUi = true;
-    this.charts = controlsToLoad.reduce<ChartTraits[]>((acc, control) => {
+    this.charts = controlsToLoad.map((control) => {
       const [deviceId, controlId, widgetId] = control.split('/');
       const chartControl = this.controls.find((item) => {
         if (widgetId) {
@@ -656,12 +657,9 @@ export default class HistoryStore {
         } else {
           return item.controlId === controlId && item.deviceId === deviceId;
         }
-      });
-      if (chartControl) {
-        acc.push(new ChartTraits(chartControl));
-      }
-      return acc;
-    }, []);
+      }) ?? { name: `${deviceId} / ${controlId}`, group: '', deviceId, controlId };
+      return new ChartTraits(chartControl);
+    });
     this.chartConfig = [];
     this.dataPointsMultiple = [];
     this.beforeLoadChunkedHistory(0, undefined, currentLoadId);

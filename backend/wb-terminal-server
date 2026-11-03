@@ -3,10 +3,7 @@
 
 import sys
 
-from wb.homeui_backend.terminal_server import run
+from wb.homeui_backend.terminal.listener import run
 
 if __name__ == "__main__":
-    try:
-        sys.exit(run())
-    except KeyboardInterrupt:
-        pass
+    sys.exit(run())

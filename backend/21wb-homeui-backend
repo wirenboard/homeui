@@ -3,3 +3,4 @@ wb_move /etc/wb-webui.conf
 wb_move /etc/wb-homeui-backend.conf
 wb_move /etc/wb-homeui
 wb_move /var/lib/wb-homeui/fonts
+wb_move /var/cache/nginx/wb-dali-images

@@ -172,6 +172,44 @@ describe('wb-autocomplete editor in a schema that takes channel patterns', () =>
       expect(menuOptions()).toEqual([]);
     },
   );
+
+  test('a later createJSONEditor call with a newly added device is not stuck with the first topics list used in this session', async () => {
+    const updatedTopics = [
+      {
+        label: 'wb-msw',
+        options: [{ value: 'wb-msw/Temperature', label: 'Temperature [wb-msw/Temperature]' }],
+      },
+    ];
+    const element = document.createElement('div');
+    document.body.appendChild(element);
+    let editor;
+    await act(async () => {
+      editor = createJSONEditor(
+        element,
+        historySchema,
+        { channels: ['wb-adc/A1'] },
+        'en',
+        'root',
+        updatedTopics,
+      );
+      await new Promise((resolve) => editor.on('ready', resolve));
+    });
+
+    await typeInto(element, 'wb-msw');
+
+    expect(menuOptions()).toEqual(['Temperature [wb-msw/Temperature]']);
+
+    const input = element.querySelector('input[aria-autocomplete="list"]');
+    await act(async () => {
+      fireEvent.keyDown(input, { key: 'Escape' });
+    });
+    await act(async () => {
+      editor.destroy();
+    });
+    element.remove();
+
+    expect(menuOptions()).toEqual([]);
+  });
 });
 
 describe('wb-autocomplete editor in a schema that forbids channel patterns', () => {

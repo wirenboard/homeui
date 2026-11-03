@@ -72,7 +72,7 @@ export class WbDeviceParameterEditorsGroup {
   }
 
   get isDirty() {
-    return this.parameters.some((param) => param.isDirty)
+    return this.parameters.some((param) => param.isConfigChanged)
       || this.subgroups.some((group) => group.isDirty)
       || this.channels.some((channel) => channel.isDirty);
   }
@@ -265,7 +265,7 @@ export class DeviceSettingsObjectStore {
   }
 
   get hasErrors() {
-    return this.commonParams.hasErrors || this.topLevelGroup.hasErrors || this.customChannels?.hasErrors;
+    return this.commonParams.hasErrors || this.topLevelGroup.hasErrors || (this.customChannels?.hasErrors ?? false);
   }
 
   get hasBadValuesFromRegisters() {
@@ -273,7 +273,7 @@ export class DeviceSettingsObjectStore {
   }
 
   get isDirty() {
-    return this.commonParams.isDirty || this.topLevelGroup.isDirty || this.customChannels?.isDirty;
+    return this.commonParams.isDirty || this.topLevelGroup.isDirty || (this.customChannels?.isDirty ?? false);
   }
 
   get value() : JsonObject | undefined {

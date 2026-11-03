@@ -79,7 +79,6 @@ export const ParamEditor = observer((
   const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
   const hasBadValueFromRegisters = param.hasBadValueFromRegisters;
-  const showError = param.hasErrors && !hasBadValueFromRegisters;
   const activeVariant = param.variants[param.activeVariantIndex];
   let descriptionLines = [];
   if (activeVariant.store.schema.description) {
@@ -97,7 +96,7 @@ export const ParamEditor = observer((
   return (
     <div
       className={classNames('deviceSettingsEditor-parameter', {
-        'wb-jsonEditor-propertyError': showError,
+        'wb-jsonEditor-propertyError': param.hasErrors,
         'deviceSettingsEditor-shouldStoreInConfig': param.shouldStoreInConfig,
         'deviceSettingsEditor-hasBadValueFromRegisters': hasBadValueFromRegisters,
       })}
@@ -109,7 +108,7 @@ export const ParamEditor = observer((
         translator={translator}
         isDisabled={!param.isSupportedByFirmware}
       />
-      {showError && (
+      {param.hasErrors && (
         <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />
       )}
       {hasBadValueFromRegisters && (

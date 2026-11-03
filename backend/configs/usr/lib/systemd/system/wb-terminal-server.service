@@ -7,6 +7,13 @@ Type=simple
 ExecStart=/usr/bin/wb-terminal-server
 Restart=always
 RestartSec=3
+# Each session is a unit of its own (wb-terminal-session-<prefix>.service), outside this
+# cgroup, so stop and restart affect only the listener.
+# The directory of session sockets is the registry: like the sessions, it must outlive the
+# listener.
+RuntimeDirectory=wb-terminal-server
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
 
 [Install]
 WantedBy=multi-user.target

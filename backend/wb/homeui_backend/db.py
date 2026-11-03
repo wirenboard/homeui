@@ -4,6 +4,9 @@ import sqlite3
 
 DB_SCHEMA_VERSION = 2
 
+# The database holds password hashes and session tokens; only the backend (root) reads it.
+DB_FILE_MODE = 0o600
+
 
 def create_tables(con: sqlite3.Connection):
     cursor = con.cursor()
@@ -68,6 +71,7 @@ def update_db(con: sqlite3.Connection, version: int) -> None:
 def create_db(db_file: str) -> sqlite3.Connection:
     os.makedirs(os.path.dirname(db_file), exist_ok=True)
     con = sqlite3.connect(db_file)
+    os.chmod(db_file, DB_FILE_MODE)
     create_tables(con)
     cur = con.cursor()
     cur.execute("PRAGMA user_version = 2")
@@ -83,6 +87,7 @@ def open_db(db_file: str) -> sqlite3.Connection:
         return create_db(db_file)
 
     con = sqlite3.connect(db_file)
+    os.chmod(db_file, DB_FILE_MODE)
     cur = con.cursor()
     cur.execute("PRAGMA user_version")
     version = cur.fetchone()[0]

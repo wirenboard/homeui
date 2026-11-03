@@ -9,6 +9,11 @@
     }
 }
 
+.applyProblems-group ul {
+    list-style: disc;
+    padding-left: 20px;
+}
+
 .page-headerTitleWrapper:has(.searchBar-expanded) > :not(.searchBar) {
     display: none;
 }

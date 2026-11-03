@@ -180,6 +180,7 @@ export class TabsStore {
 
   clear() {
     this.items.splice(0, this.items.length);
+    this.uniqueMqttIdChecker.clear();
     this.hasModifiedStructure = false;
   }
 

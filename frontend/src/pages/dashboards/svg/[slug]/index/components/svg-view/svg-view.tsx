@@ -17,7 +17,7 @@ const setReadHandler = (element, param: ParamProps, values) => {
   const apply = (value) => {
     if (fn) {
       try {
-        el.innerHTML = fn(value);
+        el.textContent = fn(value);
       } catch (e) {
         // Exception in rule
       }

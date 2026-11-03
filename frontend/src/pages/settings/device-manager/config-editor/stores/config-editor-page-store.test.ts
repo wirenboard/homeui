@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
-import { type DeviceTypesStore } from '@/stores/device-manager';
+import { DeviceTabStore, type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
 import { Translator, type JsonSchema } from '@/stores/json-schema-editor';
 import { ConfigEditorPageStore } from './config-editor-page-store';
 import { PortTab, makeSerialPortTabName } from './port-tab-store';
+import { TabType } from './tabs-store';
 
 // A minimal serial device schema whose top-level (template-independent) properties include `sn`,
 // so the serial number survives into editedData just as it does for real wb-mqtt-serial devices.
@@ -149,5 +150,213 @@ describe('ConfigEditorPageStore.addScannedDeviceToConfig serial-number persisten
     expect(portTab.children).toHaveLength(1);
     expect(portTab.children[0].editedData.sn).toBeUndefined();
     expect(portTab.children[0].editedData.slave_id).toBe('5');
+  });
+});
+
+describe('ConfigEditorPageStore template operation state', () => {
+  it('startTemplateOperation sets pending flag', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+
+    store.startTemplateOperation();
+
+    expect(store.templateOperationPending).toBe(true);
+  });
+
+  it('endTemplateOperation clears pending flag', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.startTemplateOperation();
+
+    store.endTemplateOperation();
+
+    expect(store.templateOperationPending).toBe(false);
+  });
+});
+
+describe('ConfigEditorPageStore template affected types and success message', () => {
+  it('startTemplateOperation clears templateAffectedTypes and templateSuccessMessage', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateAffectedTypes(new Set(['wb-map12']));
+    store.setTemplateSuccessMessage('done');
+
+    store.startTemplateOperation();
+
+    expect(store.templateAffectedTypes.size).toBe(0);
+    expect(store.templateSuccessMessage).toBe('');
+  });
+
+  it('clearTemplateSuccessMessage resets templateSuccessMessage to an empty string', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateSuccessMessage('done');
+
+    store.clearTemplateSuccessMessage();
+
+    expect(store.templateSuccessMessage).toBe('');
+  });
+});
+
+describe('ConfigEditorPageStore template warning', () => {
+  it('setTemplateWarning sets the templateWarning text', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+
+    store.setTemplateWarning('unsaved changes');
+
+    expect(store.templateWarning).toBe('unsaved changes');
+  });
+
+  it('clearTemplateWarning resets templateWarning to an empty string', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateWarning('unsaved changes');
+
+    store.clearTemplateWarning();
+
+    expect(store.templateWarning).toBe('');
+  });
+
+  it('startTemplateOperation clears a pending templateWarning', () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateWarning('unsaved changes');
+
+    store.startTemplateOperation();
+
+    expect(store.templateWarning).toBe('');
+  });
+
+  it('save clears the templateWarning once the configuration is saved successfully', async () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.setTemplateWarning('unsaved changes');
+
+    await store.save();
+
+    expect(store.templateWarning).toBe('');
+  });
+
+  it('save leaves the templateWarning in place when saving fails', async () => {
+    const { store } = makeStoreWithPort(makeDeviceTypesStore());
+    store.saveConfigFn = async () => {
+      throw new Error('write failed');
+    };
+    store.setTemplateWarning('unsaved changes');
+
+    await store.save();
+
+    expect(store.templateWarning).toBe('unsaved changes');
+    expect(store.error).not.toBe('');
+  });
+});
+
+describe('ConfigEditorPageStore.reload', () => {
+  const makeReplacementPortTab = (store: ConfigEditorPageStore) => {
+    const newPortTab = new PortTab(
+      { path: '/dev/ttyRS485-1', enabled: true, baud_rate: 9600, parity: 'N', data_bits: 8, stop_bits: 2 },
+      {
+        type: 'object',
+        properties: {
+          path: { type: 'string' },
+          enabled: { type: 'boolean' },
+          baud_rate: { type: 'number' },
+          parity: { type: 'string' },
+          data_bits: { type: 'number' },
+          stop_bits: { type: 'number' },
+        },
+      } as unknown as JsonSchema,
+      makeSerialPortTabName,
+      new Translator(),
+    );
+    newPortTab.addChildren(store.createDeviceTab({ slave_id: '5' }));
+    return newPortTab;
+  };
+
+  it('restores the previously selected tab position and reloads the new device tab there', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    await addSelectedDeviceTab(store, portTab);
+    const selectedIndexBeforeReload = store.tabs.selectedTabIndex;
+    vi.spyOn(store, 'load').mockImplementation(async () => {
+      store.tabs.addPortTab(makeReplacementPortTab(store), true);
+    });
+    const loadContentSpy = vi.spyOn(DeviceTabStore.prototype, 'loadContent');
+
+    await store.reload();
+
+    expect(store.tabs.selectedTabIndex).toBe(selectedIndexBeforeReload);
+    const restoredTab = store.tabs.selectedTab as DeviceTabStore;
+    expect(restoredTab.type).toBe(TabType.Device);
+    expect(loadContentSpy.mock.instances).toContain(restoredTab);
+
+    loadContentSpy.mockRestore();
+  });
+
+  it('does not try to restore a selection when the reloaded config has no tabs', async () => {
+    const { store, portTab } = makeStoreWithPort(makeDeviceTypesStore());
+    await addSelectedDeviceTab(store, portTab);
+    vi.spyOn(store, 'load').mockImplementation(async () => {
+      store.tabs.clear();
+    });
+
+    await expect(store.reload()).resolves.toBeUndefined();
+    expect(store.tabs.items).toHaveLength(0);
+  });
+});
+
+describe('ConfigEditorPageStore.load config-busy retry', () => {
+  const configBusyError = { code: -32000, data: 'config-busy', message: 'Server error' };
+
+  const successResult = () => ({
+    config: { ports: [] } as any,
+    schema: { definitions: {}, properties: {} } as any,
+    deviceTypeGroups: [],
+  });
+
+  const makeStoreWithLoadConfigFn = (loadConfigFn: () => Promise<any>) =>
+    new ConfigEditorPageStore(
+      loadConfigFn,
+      async () => {},
+      () => {},
+      () => {},
+      { setDeviceTypeGroups: vi.fn() } as unknown as DeviceTypesStore,
+      {} as any,
+      {} as any,
+      {} as any,
+    );
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('retries loading on config-busy with escalating delays and recovers once it succeeds', async () => {
+    const loadConfigFn = vi.fn()
+      .mockRejectedValueOnce(configBusyError)
+      .mockRejectedValueOnce(configBusyError)
+      .mockResolvedValueOnce(successResult());
+    const store = makeStoreWithLoadConfigFn(loadConfigFn);
+
+    const loadPromise = store.load();
+    expect(loadConfigFn).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(loadConfigFn).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(loadConfigFn).toHaveBeenCalledTimes(3);
+
+    await loadPromise;
+    expect(store.loading).toBe(false);
+    expect(store.error).toBe('');
+  });
+
+  it('gives up after the max retry count and surfaces a translated config-busy error', async () => {
+    const loadConfigFn = vi.fn().mockRejectedValue(configBusyError);
+    const store = makeStoreWithLoadConfigFn(loadConfigFn);
+
+    const loadPromise = store.load();
+    await vi.advanceTimersByTimeAsync(300 * 1000);
+    await loadPromise;
+
+    expect(loadConfigFn).toHaveBeenCalledTimes(31);
+    expect(store.loading).toBe(false);
+    expect(store.error).toBe('The configuration is being saved, try again later');
   });
 });

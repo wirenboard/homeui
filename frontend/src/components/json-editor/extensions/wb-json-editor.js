@@ -26,9 +26,14 @@ let needOverride = true;
 
 export function createJSONEditor(element, schema, value, locale, root, data) {
   if (needOverride) {
-    overrideJSONEditor(data);
+    overrideJSONEditor();
     needOverride = false;
   }
+  // The wb-autocomplete editor class closes over whatever topics list it's built with,
+  // so it must be re-registered on every call (not just the one-time override above) -
+  // otherwise a device added after the first config editor opened in this session never
+  // shows up in the channel autocomplete until a full page reload.
+  JSONEditor.defaults.editors['wb-autocomplete'] = makeAutocompleteEditor(data);
 
   // Commit changes in text fields immediately.
   // FIXME: should make this an option (and perhaps file a pull request for JSONEditor)
@@ -86,7 +91,7 @@ export function createJSONEditor(element, schema, value, locale, root, data) {
   return new JSONEditor(element, options);
 }
 
-function overrideJSONEditor(data) {
+function overrideJSONEditor() {
   // json-editor reads window.DOMPurify to render HTML in descriptions. Set it here
   // so it applies only when a json-editor is actually created.
   window.DOMPurify = DOMPurify;
@@ -204,7 +209,6 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['roMultiple'] = makeReadonlyOneOfEditor();
   JSONEditor.defaults.editors['merge-default'] = makeMergedDefaultValuesEditor();
   JSONEditor.defaults.editors['edWb'] = makeEditWithDropdownEditor();
-  JSONEditor.defaults.editors['wb-autocomplete'] = makeAutocompleteEditor(data);
   JSONEditor.defaults.editors['collapsible-list'] = makeCollapsibleArrayEditor();
   JSONEditor.defaults.editors['wb-multiple'] = makeCollapsibleMultipleEditor();
   JSONEditor.defaults.editors['wb-object'] = makeObjectEditorWithButtonsOnTop();

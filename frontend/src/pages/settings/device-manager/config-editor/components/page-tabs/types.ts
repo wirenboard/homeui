@@ -9,6 +9,7 @@ export interface PageTabsProps {
   selectedIndex: number;
   deviceTypeSelectOptions: DeviceTypeDropdownOptionGroup[];
   mobileModeStore: MobileModeTabsStore;
+  isUserDefinedTypeFn?: (_type: string) => boolean;
   searchQuery: string;
   onSelect: (_index: number) => boolean;
   onDeleteTab: () => Promise<void>;
@@ -20,4 +21,10 @@ export interface PageTabsProps {
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
   onReadRegisters: (_tab: DeviceTabStore, _isForce: boolean) => void;
+  onDeleteTemplate?: (_deviceType: string) => void;
+  onUploadTemplate?: () => void;
+  templateOperationPending?: boolean;
+  templateHint?: string;
+  onClearTemplateHint?: () => void;
+  templateAffectedTypes?: Set<string>;
 }

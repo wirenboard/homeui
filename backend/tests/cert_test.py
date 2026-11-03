@@ -16,6 +16,7 @@ from wb.homeui_backend.cert import (
     CertificateCheckingThread,
     CertificateState,
     is_certificate_usable,
+    read_or_generate_private_key,
     remove_nginx_https_config,
     save_certificate,
 )
@@ -218,3 +219,21 @@ class CertificateCheckingThreadUsableTransitionsTest(CertFileTestBase):
         )
         self.callback.assert_not_called()
         self.assertTrue(thread.is_certificate_usable())
+
+
+class ReadOrGeneratePrivateKeyTest(unittest.TestCase):
+    def setUp(self):
+        tmp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp_dir)
+        self.key_path = os.path.join(tmp_dir, "sslip.key")
+
+    def test_generated_key_is_readable_only_by_owner(self):
+        read_or_generate_private_key(self.key_path)
+        self.assertEqual(stat.S_IMODE(os.stat(self.key_path).st_mode), 0o600)
+
+    def test_key_replacing_a_world_readable_file_is_readable_only_by_owner(self):
+        with open(self.key_path, "wb") as key_file:
+            key_file.write(b"not a key")
+        os.chmod(self.key_path, 0o644)
+        read_or_generate_private_key(self.key_path)
+        self.assertEqual(stat.S_IMODE(os.stat(self.key_path).st_mode), 0o600)

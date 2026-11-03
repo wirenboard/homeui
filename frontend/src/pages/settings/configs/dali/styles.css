@@ -54,12 +54,19 @@
 }
 
 .dali-contentLoader {
+    animation: dali-contentLoaderAppear 0s 300ms backwards;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+
+@keyframes dali-contentLoaderAppear {
+    from {
+        visibility: hidden;
+    }
+}
 
 /* The part of the tab under the toolbar and the pinned controls, the only one that scrolls.
    Cancels the gap above and runs to the card's edges, so its scrollbar sits there. */
@@ -111,16 +118,6 @@
 .dali .dropdown__control--is-disabled:not(:is(.daliDeviceControls-pinnedControls, .daliDeviceControls, .daliDeviceControls-sheet) *)
 .dropdown__indicator {
     display: none;
-}
-
-/* The event-scheme warning: explanation and its one-click fix on one line,
-   wrapping on narrow screens. */
-.dali-schemeWarning {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
 }
 
 .dali-tabToolbar {

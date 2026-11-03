@@ -32,10 +32,8 @@ describe('DeviceStore', () => {
   describe('load', () => {
     test('fetches device data and updates groups from boolean array', async () => {
       daliProxyMock.GetDevice.mockResolvedValue({
-        config: { groups: [false, true, false, true] },
+        config: { name: 'Updated Lamp', groups: [false, true, false, true] },
         schema: {},
-        name: 'Updated Lamp',
-        groups: [false, true, false, true],
       });
 
       await store.load();

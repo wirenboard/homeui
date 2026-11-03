@@ -38,11 +38,6 @@
     border-color: var(--danger-color);
 }
 
-input[type=number]::-webkit-inner-spin-button {
-    margin-left: 4px;
-    margin-right: -10px;
-}
-
 .input:disabled {
     background: var(--input-background-disabled);
     color: var(--gray-color);
