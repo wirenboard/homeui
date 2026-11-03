@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.285.2) stable; urgency=medium
+
+  * Fix lost records on scroll and live update in the system log page
+
+ -- Ekaterina Volkova <97599621+ekateluv@users.noreply.github.com>  Tue, 03 Nov 2026 13:04:32 +0000
+
 wb-mqtt-homeui (2.285.1) stable; urgency=medium
 
   * Fix element rotation in SVG dashboards
