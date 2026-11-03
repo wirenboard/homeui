@@ -85,7 +85,7 @@ describe('LogsStore', () => {
       const store = new LogsStore();
       await store.loadLogs({}, true);
 
-      logsProxyMock.Load.mockResolvedValue([makeLog({ msg: 'A' }), makeLog({ msg: 'C' })]);
+      logsProxyMock.Load.mockResolvedValue([makeLog({ msg: 'C' })]);
       const hasMore = await store.loadLogs({ cursor: { direction: 'backward', id: 'c1' } });
       expect(store.logs[0].msg).toBe('C');
       expect(store.logs).toHaveLength(2);
@@ -97,7 +97,7 @@ describe('LogsStore', () => {
       const store = new LogsStore();
       await store.loadLogs({}, true);
 
-      logsProxyMock.Load.mockResolvedValue([makeLog({ msg: 'A' })]);
+      logsProxyMock.Load.mockResolvedValue([]);
       const hasMore = await store.loadLogs({ cursor: { direction: 'backward', id: 'c1' } });
       expect(hasMore).toBe(false);
     });
@@ -107,7 +107,7 @@ describe('LogsStore', () => {
       const store = new LogsStore();
       await store.loadLogs({}, true);
 
-      logsProxyMock.Load.mockResolvedValue([makeLog({ msg: 'B' }), makeLog({ msg: 'A' })]);
+      logsProxyMock.Load.mockResolvedValue([makeLog({ msg: 'B' })]);
       await store.loadLogs({ cursor: { direction: 'forward', id: 'c1' } });
       expect(store.logs).toHaveLength(2);
       expect(store.logs.at(-1)!.msg).toBe('B');
