@@ -87,12 +87,10 @@
     color: var(--gray-color);
 }
 
+/* One line per option while the menu fits, wrapped only up to the window edge */
 .mbgate-addMenu .dropdown__menu {
-    max-width: none !important;
-}
-
-.mbgate-addMenu .dropdown__option {
-    white-space: nowrap;
+    width: max-content !important;
+    max-width: var(--dropdown-menu-available-width, 240px) !important;
 }
 
 .mbgate-registersHeader {

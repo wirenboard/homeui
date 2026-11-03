@@ -8,7 +8,9 @@ const { storeMock } = vi.hoisted(() => ({
     error: null as string | null,
     isDirty: false,
     allowSave: false,
+    supportsAdditionalPorts: false,
     additionalPorts: [] as any[],
+    portBindings: [] as any[],
     portConflicts: [] as number[][],
     loadData: vi.fn(),
     save: vi.fn().mockResolvedValue(undefined),
@@ -20,12 +22,20 @@ const { storeMock } = vi.hoisted(() => ({
   },
 }));
 
-function makeParams(modbus: Record<string, any> = { host: '*', port: 502 }) {
-  return { modbus: { value: modbus }, registers: {}, debug: {}, mqtt: {} };
+function makeParams() {
+  return { modbus: {}, registers: {}, debug: {}, mqtt: {}, additional_ports: {} };
 }
 
-function makePort(modbus: Record<string, any>, name = '') {
-  return { params: { name: { value: name }, modbus: { value: modbus }, registers: {} } };
+function makePort(name = '') {
+  return { params: { name: { value: name }, modbus: {}, registers: {} } };
+}
+
+// Sets loaded params with main port bound to TCP *:502 and given additional ports
+function setPorts(...ports: { name?: string; binding: Record<string, any> }[]) {
+  storeMock.paramsStore = { params: makeParams() };
+  storeMock.supportsAdditionalPorts = true;
+  storeMock.additionalPorts = ports.map((port) => makePort(port.name));
+  storeMock.portBindings = [{ isRtu: false, host: '*', port: 502 }, ...ports.map((port) => port.binding)];
 }
 
 vi.mock('@/utils/use-store', () => ({ useStore: () => storeMock }));
@@ -94,7 +104,9 @@ describe('MbGatePage', () => {
     storeMock.error = null;
     storeMock.isDirty = false;
     storeMock.allowSave = false;
+    storeMock.supportsAdditionalPorts = false;
     storeMock.additionalPorts = [];
+    storeMock.portBindings = [];
     storeMock.portConflicts = [];
     storeMock.checkAllControlsConfigured.mockReturnValue(false);
     storeMock.addPort.mockReturnValue(0);
@@ -132,7 +144,7 @@ describe('MbGatePage', () => {
   });
 
   test('renders main port and settings tabs when params loaded', () => {
-    storeMock.paramsStore = { params: makeParams() };
+    setPorts();
     render(<MbGatePage />);
     const tabs = screen.getAllByRole('tab');
     expect(tabs).toHaveLength(2);
@@ -148,22 +160,33 @@ describe('MbGatePage', () => {
   });
 
   test('renders additional port tabs between main port and settings', () => {
-    storeMock.paramsStore = { params: makeParams() };
-    storeMock.additionalPorts = [makePort({ host: '*', port: 503 }, 'SCADA'), makePort({ path: '/dev/ttyRS485-2' })];
+    setPorts(
+      { name: 'SCADA', binding: { isRtu: false, host: '*', port: 503 } },
+      { binding: { isRtu: true, path: '/dev/ttyRS485-2' } },
+      { binding: { isRtu: true } },
+    );
     render(<MbGatePage />);
     const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(4);
+    expect(tabs).toHaveLength(5);
     expect(tabs[1]).toHaveTextContent('SCADA');
     expect(tabs[1]).toHaveTextContent('TCP *:503');
     expect(tabs[2]).toHaveTextContent('mbgate.labels.additional-port');
     expect(tabs[2]).toHaveTextContent('RTU /dev/ttyRS485-2');
-    expect(tabs[3]).toHaveTextContent('mbgate.labels.settings');
+    expect(tabs[3]).toHaveTextContent('RTU');
+    expect(tabs[3]).not.toHaveTextContent('TCP');
+    expect(tabs[4]).toHaveTextContent('mbgate.labels.settings');
+  });
+
+  test('hides add port button when schema has no additional ports', () => {
+    storeMock.paramsStore = { params: makeParams() };
+    render(<MbGatePage />);
+    expect(screen.queryByTestId('btn-mbgate.buttons.add-port')).not.toBeInTheDocument();
   });
 
   test('add port button adds port and opens its tab', () => {
-    storeMock.paramsStore = { params: makeParams() };
+    setPorts();
     storeMock.addPort.mockImplementation(() => {
-      storeMock.additionalPorts = [makePort({ host: '*', port: 503 }, 'New')];
+      storeMock.additionalPorts = [makePort('New')];
       return 0;
     });
     render(<MbGatePage />);
@@ -173,8 +196,7 @@ describe('MbGatePage', () => {
   });
 
   test('deletes additional port after confirmation', () => {
-    storeMock.paramsStore = { params: makeParams() };
-    storeMock.additionalPorts = [makePort({ host: '*', port: 503 }, 'SCADA')];
+    setPorts({ name: 'SCADA', binding: { isRtu: false, host: '*', port: 503 } });
     render(<MbGatePage />);
     fireEvent.click(screen.getAllByRole('tab')[1]);
     fireEvent.click(screen.getByTestId('btn-mbgate.buttons.delete-port'));
@@ -184,14 +206,13 @@ describe('MbGatePage', () => {
   });
 
   test('main port has no delete button', () => {
-    storeMock.paramsStore = { params: makeParams() };
+    setPorts();
     render(<MbGatePage />);
     expect(screen.queryByTestId('btn-mbgate.buttons.delete-port')).not.toBeInTheDocument();
   });
 
   test('shows conflict error on conflicting port', () => {
-    storeMock.paramsStore = { params: makeParams() };
-    storeMock.additionalPorts = [makePort({ host: '*', port: 502 }, 'SCADA')];
+    setPorts({ name: 'SCADA', binding: { isRtu: false, host: '*', port: 502 } });
     storeMock.portConflicts = [[1], [0]];
     render(<MbGatePage />);
     expect(screen.getByTestId('alert')).toHaveTextContent('mbgate.errors.port-conflict');

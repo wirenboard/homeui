@@ -10,11 +10,18 @@ const COIL_CONTROL_TYPES = ['switch', 'alarm', 'pushbutton'];
 const DEFAULT_TCP_PORT = 502;
 const ANY_HOST = ['', '*', '0.0.0.0'];
 
-function isSameBinding(a?: Record<string, any>, b?: Record<string, any>): boolean {
-  if (!a || !b) {
+export interface PortBinding {
+  isRtu: boolean;
+  path?: string;
+  host?: string;
+  port?: number;
+}
+
+function isSameBinding(a?: PortBinding, b?: PortBinding): boolean {
+  if (!a || !b || a.isRtu !== b.isRtu) {
     return false;
   }
-  if (a.path || b.path) {
+  if (a.isRtu) {
     return !!a.path && a.path === b.path;
   }
   const isAnyHost = (host?: string) => ANY_HOST.includes(host ?? '');
@@ -57,6 +64,11 @@ export class MbGateStore {
     } catch (err) {
       this.error = err.message;
     }
+  }
+
+  // Older wb-mqtt-mbgate schemas have no additional_ports
+  get supportsAdditionalPorts(): boolean {
+    return !!this.paramsStore.params?.['additional_ports'];
   }
 
   get additionalPorts(): any[] {
@@ -140,7 +152,7 @@ export class MbGateStore {
 
   // Index 0 is the main port, index i + 1 is additional port i
   get portConflicts(): number[][] {
-    const bindings = this.#portBindings;
+    const bindings = this.portBindings;
     return bindings.map((binding, index) =>
       bindings.reduce<number[]>((conflicts, other, otherIndex) => {
         if (otherIndex !== index && isSameBinding(binding, other)) {
@@ -155,16 +167,21 @@ export class MbGateStore {
     return this.portConflicts.some((conflicts) => conflicts.length);
   }
 
-  get #portBindings(): Record<string, any>[] {
+  // Index 0 is the main port, index i + 1 is additional port i
+  get portBindings(): (PortBinding | undefined)[] {
     if (!this.paramsStore.params) {
       return [];
     }
     return [this.paramsStore.params['modbus'], ...this.additionalPorts.map((port) => port.params.modbus)]
-      .map((binding) => binding?.value);
+      .map((modbusStore) => {
+        // An empty RTU path is omitted from the value, so the mode is taken from the selected form
+        const form = modbusStore?.selectedForm;
+        return form ? { ...form.value, isRtu: !!form.params.path } : undefined;
+      });
   }
 
   #getFreeTcpPort(): number {
-    const usedPorts = this.#portBindings.map((binding) => binding?.port);
+    const usedPorts = this.portBindings.filter((binding) => !binding?.isRtu).map((binding) => binding?.port);
     let port = DEFAULT_TCP_PORT;
     while (usedPorts.includes(port)) {
       port++;

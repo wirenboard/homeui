@@ -17,11 +17,17 @@ function makeRegistersStore(registers: AllRegisters = emptyRegisters()) {
   return { value: registers, setValue: vi.fn() };
 }
 
+// Mimics OneOfStore: the selected form has a param per binding field
+function makeModbusStore(modbus?: Record<string, any>) {
+  const params = Object.fromEntries(Object.entries(modbus ?? {}).map(([key, value]) => [key, { value }]));
+  return { value: modbus, selectedForm: modbus ? { value: modbus, params } : undefined };
+}
+
 function makePortStore(modbus: Record<string, any>, registers: AllRegisters = emptyRegisters(), name = '') {
   return {
     params: {
       name: { value: name },
-      modbus: { value: modbus },
+      modbus: makeModbusStore(modbus),
       registers: makeRegistersStore(registers),
     },
     setValue: vi.fn(),
@@ -54,7 +60,7 @@ function makeParamsStore(
   return {
     value: { registers },
     params: {
-      modbus: { value: modbus },
+      modbus: makeModbusStore(modbus),
       registers: makeRegistersStore(registers),
       additional_ports: makePortsStore(additionalPorts),
       mqtt: {
@@ -508,6 +514,27 @@ describe('MbGateStore', () => {
 
     test('TCP and RTU ports do not conflict', () => {
       expect(conflictsFor({ host: '*', port: 502 }, { path: '/dev/ttyRS485-1' })).toEqual([[], []]);
+    });
+
+    test('RTU ports without device do not conflict', () => {
+      expect(conflictsFor({ path: undefined }, { path: undefined })).toEqual([[], []]);
+    });
+  });
+
+  describe('portBindings', () => {
+    test('RTU port without device is still RTU', () => {
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      store.paramsStore = makeParamsStore(emptyRegisters(), { path: undefined, baud_rate: 9600 });
+      expect(store.portBindings[0]).toEqual({ isRtu: true, path: undefined, baud_rate: 9600 });
+    });
+
+    test('supportsAdditionalPorts is false for schema without additional_ports', () => {
+      const store = new MbGateStore(configsStore as any, devicesStore as any);
+      const ps = makeParamsStore();
+      delete ps.params.additional_ports;
+      store.paramsStore = ps;
+      expect(store.supportsAdditionalPorts).toBe(false);
+      expect(store.additionalPorts).toEqual([]);
     });
   });
 });

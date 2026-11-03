@@ -18,7 +18,7 @@ import {
 } from '@/components/json-editor/forms';
 import { Tabs, TabContent } from '@/components/tabs';
 import { PageLayout } from '@/layouts/page';
-import { MbGateStore } from '@/pages/settings/configs/mbgate/stores/page-store';
+import { MbGateStore, type PortBinding } from '@/pages/settings/configs/mbgate/stores/page-store';
 import {
   REGISTER_TYPE_SELECTIONS,
   type RegisterTypeSelection,
@@ -37,12 +37,12 @@ const SETTINGS_TAB = 'settings';
 
 const additionalPortTab = (index: number) => `port-${index}`;
 
-function formatPortBinding(binding?: Record<string, any>) {
+function formatPortBinding(binding?: PortBinding) {
   if (!binding) {
     return '';
   }
-  if (binding.path) {
-    return `RTU ${binding.path}`;
+  if (binding.isRtu) {
+    return `RTU ${binding.path ?? ''}`;
   }
   return `TCP ${binding.host ?? ''}:${binding.port ?? ''}`;
 }
@@ -174,13 +174,15 @@ const MbGatePage = observer(() => {
 
   const portConflicts = store.portConflicts;
 
-  const renderPortTab = (portNumber: number, binding?: Record<string, any>) => (
+  const portBindings = store.portBindings;
+
+  const renderPortTab = (portNumber: number) => (
     <div className="mbgate-portTab">
       <span className="mbgate-portTabName">
         {getPortName(portNumber)}
         {!!portConflicts[portNumber]?.length && <WarnIcon className="mbgate-portTabWarn" />}
       </span>
-      <span className="mbgate-portTabDetails">{formatPortBinding(binding)}</span>
+      <span className="mbgate-portTabDetails">{formatPortBinding(portBindings[portNumber])}</span>
     </div>
   );
 
@@ -197,11 +199,11 @@ const MbGatePage = observer(() => {
     ? [
       {
         id: MAIN_PORT_TAB,
-        label: renderPortTab(0, params.modbus?.value),
+        label: renderPortTab(0),
       },
-      ...store.additionalPorts.map((port, index) => ({
+      ...store.additionalPorts.map((_port, index) => ({
         id: additionalPortTab(index),
-        label: renderPortTab(index + 1, port.params.modbus?.value),
+        label: renderPortTab(index + 1),
       })),
       {
         id: SETTINGS_TAB,
@@ -232,7 +234,7 @@ const MbGatePage = observer(() => {
             />
           ) : (
             <>
-              {params && (
+              {store.supportsAdditionalPorts && (
                 <Button
                   label={t('mbgate.buttons.add-port')}
                   variant="secondary"
