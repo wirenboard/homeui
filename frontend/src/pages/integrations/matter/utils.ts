@@ -16,24 +16,18 @@ export const groupManualCode = (code: string) => (
 /**
  * The card of the configurator a device belongs to.
  *
- * The configurator puts a device under a WB device when every service of it reads the
- * same MQTT device and the module of the device is that one; everything else is a device
- * the operator composed by hand, kept under its module name. That rule is the
- * configurator's own, so it is applied here, in the frontend, over the plain facts the
- * bridge reports - and not in the bridge, whose wire format would then hold a detail of
- * somebody else's page. See decision Р9 in the design doc of the bridge.
+ * The configurator groups the devices of the config by their module, and the id of a
+ * card is that module with a prefix. The rule is the configurator's own, so it is
+ * applied here, in the frontend, over the plain fact the bridge reports - and not in the
+ * bridge, whose wire format would then hold a detail of somebody else's page. See
+ * decision Р9 in the design doc of the bridge.
  *
  * Null for a device with no module: there is nothing to open, and the page falls back to
  * the configurator without a selection.
  */
-export const configuratorSelection = ({ module, sources }: MatterDevice): Selection => {
-  if (!module) {
-    return null;
-  }
-  return sources.length === 1 && sources[0] === module
-    ? { kind: 'wb', id: module }
-    : { kind: 'own', id: `own:${module}` };
-};
+export const configuratorSelection = ({ module }: MatterDevice): Selection => (
+  module ? { id: `module:${module}` } : null
+);
 
 /**
  * Vendor ids of the ecosystems we have actually seen on a fabric, as keys of the

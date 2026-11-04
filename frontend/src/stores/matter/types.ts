@@ -25,9 +25,6 @@ export interface MatterDevice {
   module: string | null;
   area: string | null;
   roles: string[];
-  // MQTT devices the services of this device read. The page turns them into the card to
-  // open in the configurator, see configuratorSelection.
-  sources: string[];
   // Whether the device became a Matter endpoint. The first slice of the bridge takes
   // on/off devices only, and these say why a device stayed out: the code is what this
   // page puts into words, the sentence is the detail of the service, in English like its

@@ -45,7 +45,6 @@ const WB_DEVICE = {
   module: 'wb-mr6c_21',
   area: 'Kitchen',
   roles: ['on_off'],
-  sources: ['wb-mr6c_21'],
   exposed: true,
   reason_code: null,
   reason: null,
@@ -60,7 +59,6 @@ const OWN_DEVICE = {
   module: 'Boiler',
   area: null,
   roles: ['temperature'],
-  sources: ['wb-m1w2_15'],
   exposed: false,
   reason_code: 'type_unsupported',
   reason: 'type temperature_sensor cannot be exposed yet',
@@ -261,25 +259,23 @@ describe('MatterPage', () => {
     expect(await screen.findByText('matter.labels.state-silent')).toBeInTheDocument();
   });
 
-  it('opens the card of a WB device in the configurator', async () => {
+  it('opens the card of the device in the configurator', async () => {
     // The store of the configurator is the real one: the selection it keeps is what
     // makes its page open on this device, and no file of that page is touched for it.
     render(<MatterPage />);
 
     fireEvent.click(await screen.findByText('Kitchen light'));
 
-    expect(configuratorStore.selection).toEqual({ kind: 'wb', id: 'wb-mr6c_21' });
+    expect(configuratorStore.selection).toEqual({ id: 'module:wb-mr6c_21' });
     expect(navigateMock).toHaveBeenCalledWith('/configurator');
   });
 
-  it('opens a device composed by hand under its own name', async () => {
-    // Its services read a control of another device, so the configurator keeps it as a
-    // device of its own and not under a WB module.
+  it('opens a device whose services read another module under its own module', async () => {
     render(<MatterPage />);
 
     fireEvent.click(await screen.findByText('Boiler'));
 
-    expect(configuratorStore.selection).toEqual({ kind: 'own', id: 'own:Boiler' });
+    expect(configuratorStore.selection).toEqual({ id: 'module:Boiler' });
   });
 
   it('goes to the configurator without a selection when there is no module', async () => {
