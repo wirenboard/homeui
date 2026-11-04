@@ -1431,5 +1431,30 @@
          "availability": "Service channel: device availability",
          "service": "Service channel of the device"
       }
+   },
+   "matter": {
+      "title": "Matter",
+      "labels": {
+         "subtitle": "The controller as a Matter bridge: smart home apps see the devices picked in the configurator",
+         "unavailable": "The wb-mqtt-matter-bridge service is not installed on the controller",
+         "example": "Example",
+         "example-notice": "The pairing code on this page is an example. The real one shows up once wb-mqtt-matter-bridge starts publishing it.",
+         "pairing": "Pairing",
+         "qr-alt": "Matter pairing QR code",
+         "step-app": "Open a smart home app: Apple Home, Google Home, Alice or SmartThings.",
+         "step-add": "Choose to add a device and pick the Matter option.",
+         "step-scan": "Point the camera at the QR code or type the code by hand.",
+         "manual-code": "Manual pairing code",
+         "payload": "Pairing payload",
+         "copied": "Copied to clipboard",
+         "ecosystems": "Connected apps",
+         "ecosystems-empty": "No app is connected yet.",
+         "ecosystems-hint": "Every app pairs with its own code: to add the next one, ask the already connected app for a new code.",
+         "devices-hint": "Devices to publish over Matter are picked on the page",
+         "devices-link": "Device configurator"
+      },
+      "buttons": {
+         "copy": "Copy"
+      }
    }
 }
