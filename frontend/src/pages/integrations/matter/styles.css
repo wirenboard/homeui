@@ -76,13 +76,21 @@
     margin: 0;
 }
 
-.matter-hint,
-.matter-footnote {
-    margin: 8px 0 0;
+.matter-fabrics {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.matter-hint {
+    margin: var(--content-gap) 0 0;
     font-size: var(--font-size-small);
     color: var(--gray-color);
 }
 
-.matter-footnote {
-    margin-top: var(--content-gap);
+/* The row opens the card of the device in the configurator. It is a button and not a
+   link on purpose (the selection is set on the store of that page, which a new tab
+   would not inherit), so the pointer is what says it can be clicked. */
+.matter-deviceRow {
+    cursor: pointer;
 }
