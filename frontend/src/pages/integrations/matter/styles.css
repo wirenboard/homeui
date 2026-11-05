@@ -94,3 +94,30 @@
 .matter-deviceRow {
     cursor: pointer;
 }
+
+.matter-fabric {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.matter-dialogText {
+    margin: 0 0 var(--content-gap);
+    line-height: 1.6;
+}
+
+.matter-dialogText:last-child {
+    margin-bottom: 0;
+}
+
+/* The way out when the app is gone: still readable, but not the first thing the eye
+   lands on in a dialog whose answer is "do it in the app". */
+.matter-dialogWarn {
+    color: var(--gray-color);
+    font-size: var(--font-size-small);
+}
+
+.matter-dialogError {
+    color: var(--danger-color);
+}

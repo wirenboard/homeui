@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { getMatterStatus } from './api';
+import { getMatterStatus, unpairMatterApp } from './api';
 import type { MatterStatus } from './types';
 
 /**
@@ -16,6 +16,10 @@ export default class MatterStore {
   isLoading = true;
   // The service is installed but does not answer: stopped, crashed, or still starting.
   isUnreachable = false;
+  // The app being dropped right now, so the dialog can say so and cannot be used twice.
+  unpairingIndex: number | null = null;
+  // The last attempt did not go through. Cleared when the next one starts.
+  hasUnpairFailed = false;
 
   #timer: ReturnType<typeof setInterval> | null = null;
 
@@ -39,6 +43,28 @@ export default class MatterStore {
         this.isLoading = false;
       });
     }
+  }
+
+  /**
+   * Drops one app. Whatever the request answers, the state is read again right after:
+   * the bridge may have left the fabric and failed to reply, and what /status says is
+   * the truth, not what this call returned.
+   */
+  async unpair(index: number) {
+    this.unpairingIndex = index;
+    this.hasUnpairFailed = false;
+    let ok = true;
+    try {
+      await unpairMatterApp(index);
+    } catch {
+      ok = false;
+    }
+    await this.fetch();
+    runInAction(() => {
+      this.unpairingIndex = null;
+      this.hasUnpairFailed = !ok;
+    });
+    return ok;
   }
 
   /** Reads the state now and keeps it up to date while the tab is visible. */

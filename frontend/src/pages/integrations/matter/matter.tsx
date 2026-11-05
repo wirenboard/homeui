@@ -1,8 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/button';
 import { Card } from '@/components/card';
+import { Confirm } from '@/components/confirm';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
@@ -28,6 +30,8 @@ const MatterPage = observer(() => {
   const isInstalled = uiStore.modules.includes(MODULE_ID);
   const isAdmin = authStore.hasRights(UserRole.Admin);
   const { status, isLoading, isUnreachable } = matterStore;
+  // The app whose "unpair" button was pressed, and so the one the dialog talks about.
+  const [unpairFrom, setUnpairFrom] = useState<MatterFabric | null>(null);
 
   useEffect(() => {
     if (!isInstalled || !isAdmin) {
@@ -157,7 +161,23 @@ const MatterPage = observer(() => {
               : (
                 <ul className="matter-fabrics">
                   {status.fabrics.map((fabric) => (
-                    <li key={fabric.index}>{appName(fabric)}</li>
+                    <li key={fabric.index}>
+                      {/* The row is a box of its own so that the item keeps its bullet:
+                          a flex list item loses the marker. */}
+                      <div className="matter-fabric">
+                        <span>{appName(fabric)}</span>
+                        {/* The button explains instead of acting, because the bridge has
+                            no way to unpair yet. People look for "unpair" here and leave
+                            the page none the wiser when there is nothing to find: better
+                            to meet them with the one way that works. */}
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          label={t('matter.buttons.unpair')}
+                          onClick={() => setUnpairFrom(fabric)}
+                        />
+                      </div>
+                    </li>
                   ))}
                 </ul>
               )}
@@ -207,6 +227,40 @@ const MatterPage = observer(() => {
               .
             </p>
           </Card>
+
+          {/* Unpairing from here works, but it is offered second. The Matter spec has a
+              Leave event on Basic Information for exactly this case ("triggered by
+              factory reset or some other manufacturer specific action") and the bridge
+              emits it, but acting on it is the ecosystem's choice: the Yandex station is
+              not even subscribed to that event - checked on the stand, it watches only
+              the General Diagnostics ones. So the app goes on showing the bridge and its
+              devices until somebody deletes them there by hand. Unpairing in the app
+              leaves no such litter, which is why it comes first in this dialog.
+              See docs/ecosystems.md of wb-mqtt-matter-bridge, Я10 and Я11. */}
+          <Confirm
+            isOpened={unpairFrom !== null}
+            heading={t('matter.labels.unpair-heading')}
+            variant="danger"
+            acceptLabel={t('matter.buttons.unpair-here')}
+            cancelLabel={t('matter.buttons.unpair-close')}
+            isLoading={matterStore.unpairingIndex !== null}
+            closeCallback={() => setUnpairFrom(null)}
+            confirmCallback={async () => {
+              if (unpairFrom && await matterStore.unpair(unpairFrom.index)) {
+                setUnpairFrom(null);
+              }
+            }}
+          >
+            <p className="matter-dialogText">
+              {t('matter.labels.unpair-where', { app: unpairFrom ? appName(unpairFrom) : '' })}
+            </p>
+            <p className="matter-dialogText">{t('matter.labels.unpair-why')}</p>
+            <p className="matter-dialogText">{t('matter.labels.unpair-code')}</p>
+            <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.unpair-here-note')}</p>
+            {matterStore.hasUnpairFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.unpair-failed')}</p>
+            )}
+          </Confirm>
         </>
       )}
     </PageLayout>

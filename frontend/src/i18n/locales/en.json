@@ -1452,6 +1452,12 @@
          "vendor-yandex": "Yandex",
          "app-unknown": "An app that did not give its name (vendor {{vendor}})",
          "ecosystems-hint": "Every app pairs with its own code: to add the next one, ask the already connected app for a new code.",
+         "unpair-heading": "How to unpair an app",
+         "unpair-where": "An app is unpaired in the app itself. In {{app}}, open the card of the bridge, then the settings of the device, and delete it.",
+         "unpair-why": "This is the clean way: the app also clears its own half, the device cards, the groups and the scenarios. The bridge sees it at once, and this page goes back to the pairing code on its own.",
+         "unpair-code": "Unpairing changes the pairing code: a QR code saved earlier stops working, and the new one appears here.",
+         "unpair-here-note": "When the app is gone - deleted, or on an account you no longer have - it can be unpaired from here as well. The app will not be told: the bridge and its devices stay in its list until somebody removes them there by hand.",
+         "unpair-failed": "Unpairing did not go through. The journal of the service says why.",
          "devices": "Devices",
          "devices-empty": "The config has no devices for Matter yet.",
          "column-name": "Device",
@@ -1474,7 +1480,10 @@
          "devices-link": "Device configurator"
       },
       "buttons": {
-         "copy": "Copy"
+         "copy": "Copy",
+         "unpair": "Unpair",
+         "unpair-here": "Unpair here anyway",
+         "unpair-close": "Close"
       }
    }
 }

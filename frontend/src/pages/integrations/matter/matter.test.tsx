@@ -3,7 +3,7 @@ import { runInAction } from 'mobx';
 import { authStore } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { matterStore } from '@/stores/matter';
-import { getMatterStatus } from '@/stores/matter/api';
+import { getMatterStatus, unpairMatterApp } from '@/stores/matter/api';
 import { render, screen, fireEvent, waitFor } from '@/test/render';
 import { copyToClipboard } from '@/utils/clipboard';
 import MatterPage from './matter';
@@ -23,6 +23,7 @@ vi.mock('@/stores/matter/api', async (importOriginal) => ({
   // page uses, not a copy of it written here.
   ...await importOriginal() as Record<string, unknown>,
   getMatterStatus: vi.fn(),
+  unpairMatterApp: vi.fn(),
 }));
 vi.mock('@/utils/clipboard', () => ({ copyToClipboard: vi.fn() }));
 // Only useNavigate: the page is rendered inside a real MemoryRouter, and Link has to
@@ -89,6 +90,8 @@ describe('MatterPage', () => {
     configuratorStore.select(null);
     vi.mocked(authStore.hasRights).mockReturnValue(true);
     vi.mocked(getMatterStatus).mockClear();
+    vi.mocked(unpairMatterApp).mockReset();
+    vi.mocked(unpairMatterApp).mockResolvedValue(undefined as any);
     vi.mocked(getMatterStatus).mockResolvedValue(NOT_PAIRED as any);
     uiMock.modules = ['matter'];
     uiMock.menuItems = [{ id: 'integrations' }];
@@ -96,6 +99,8 @@ describe('MatterPage', () => {
       matterStore.status = null;
       matterStore.isLoading = true;
       matterStore.isUnreachable = false;
+      matterStore.unpairingIndex = null;
+      matterStore.hasUnpairFailed = false;
     });
   });
 
@@ -210,6 +215,56 @@ describe('MatterPage', () => {
     render(<MatterPage />);
 
     expect(await screen.findByText('matter.labels.app-unknown')).toBeInTheDocument();
+  });
+
+  it('names the app side first and only then offers to unpair here', async () => {
+    // The order is the point: unpairing in the app leaves no litter there, unpairing
+    // here does. See docs/ecosystems.md of the bridge, Я10 and Я11.
+    vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
+    render(<MatterPage />);
+
+    fireEvent.click(await screen.findByText('matter.buttons.unpair'));
+
+    expect(await screen.findByText('matter.labels.unpair-heading')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.unpair-where')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.unpair-code')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.unpair-here-note')).toBeInTheDocument();
+    expect(vi.mocked(unpairMatterApp)).not.toHaveBeenCalled();
+  });
+
+  it('unpairs the app the dialog was opened for, and closes', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...PAIRED,
+      fabrics: [{ index: 3, label: 'Yandex', vendor_id: 4911 }],
+    } as any);
+    render(<MatterPage />);
+    fireEvent.click(await screen.findByText('matter.buttons.unpair'));
+
+    fireEvent.click(await screen.findByText('matter.buttons.unpair-here'));
+
+    await waitFor(() => expect(vi.mocked(unpairMatterApp)).toHaveBeenCalledWith(3));
+    await waitFor(() => {
+      expect(screen.queryByText('matter.labels.unpair-heading')).not.toBeInTheDocument();
+    });
+  });
+
+  it('keeps the dialog open and says so when unpairing fails', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
+    vi.mocked(unpairMatterApp).mockRejectedValue(new Error('conflict'));
+    render(<MatterPage />);
+    fireEvent.click(await screen.findByText('matter.buttons.unpair'));
+
+    fireEvent.click(await screen.findByText('matter.buttons.unpair-here'));
+
+    expect(await screen.findByText('matter.labels.unpair-failed')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.unpair-heading')).toBeInTheDocument();
+  });
+
+  it('offers no way to unpair while no app is connected', async () => {
+    render(<MatterPage />);
+    await screen.findByText('matter.labels.ecosystems-empty');
+
+    expect(screen.queryByText('matter.buttons.unpair')).not.toBeInTheDocument();
   });
 
   it('lists the devices of the config, not only how many there are', async () => {
