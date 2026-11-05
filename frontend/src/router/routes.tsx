@@ -13,6 +13,7 @@ const WidgetsPage = lazy(() => import('@/pages/dashboards/widgets'));
 const DevicesPage = lazy(() => import('@/pages/devices'));
 const ConfiguratorPage = lazy(() => import('@/pages/configurator'));
 const AlicePage = lazy(() => import('@/pages/integrations/alice'));
+const MatterPage = lazy(() => import('@/pages/integrations/matter'));
 const HistoryPage = lazy(() => import('@/pages/history'));
 const RulesPage = lazy(() => import('@/pages/rules/index'));
 const RulePage = lazy(() => import('@/pages/rules/[rule]'));
@@ -87,6 +88,10 @@ export const routes: RouteObject[] = [
           {
             path: 'alice',
             element: <AlicePage />,
+          },
+          {
+            path: 'matter',
+            element: <MatterPage />,
           },
         ],
       },
