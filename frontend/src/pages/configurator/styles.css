@@ -57,6 +57,11 @@
     font-weight: 600;
 }
 
+.configurator-listActions {
+    display: flex;
+    gap: 6px;
+}
+
 .configurator-listSection {
     margin-top: var(--content-gap);
 }

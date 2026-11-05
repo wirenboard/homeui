@@ -19,7 +19,9 @@ import { TypeChoice } from './type-choice';
 import { TypeTiles } from './type-tiles';
 import { UnsupportedChannels } from './unsupported-channels';
 
-export const AddDialog = observer(({ isOpened, onClose, initialDeviceId, target, onAdded }: AddDialogProps) => {
+export const AddDialog = observer(({
+  isOpened, onClose, initialDeviceId, target, isEmpty, onAdded,
+}: AddDialogProps) => {
   const { t } = useTranslation();
   const [isTilesShown, setIsTilesShown] = useState(false);
   const [showSystem, setShowSystem] = useState(false);
@@ -41,7 +43,7 @@ export const AddDialog = observer(({ isOpened, onClose, initialDeviceId, target,
     if (!isOpened) {
       return;
     }
-    setIsTilesShown(false);
+    setIsTilesShown(!!isEmpty);
     setPicked({});
     const bound = target?.rows.flatMap((row) => Object.values(row.bind).map((key) => splitKey(key)[0])) ?? [];
     const fromTarget = listDevices(true).find((id) => bound.includes(id) && hasFree(id));
@@ -219,19 +221,22 @@ export const AddDialog = observer(({ isOpened, onClose, initialDeviceId, target,
             && t('configurator.labels.selected-count', { ...UNESCAPED, count: chosen.length })}
         </span>
         <Button variant="secondary" label={t('modal.labels.cancel')} onClick={onClose} />
-        {isTilesShown ? (
+        {isTilesShown && target && (
           <Button
             variant="secondary"
             label={t('configurator.buttons.to-controller-devices')}
             onClick={() => setIsTilesShown(false)}
           />
-        ) : (
+        )}
+        {!isTilesShown && (
           <>
-            <Button
-              variant="secondary"
-              label={t(target ? 'configurator.buttons.empty-channel' : 'configurator.buttons.empty-device')}
-              onClick={() => setIsTilesShown(true)}
-            />
+            {target && (
+              <Button
+                variant="secondary"
+                label={t('configurator.buttons.empty-channel')}
+                onClick={() => setIsTilesShown(true)}
+              />
+            )}
             <Button
               label={t(target ? 'configurator.buttons.add-channels' : 'configurator.buttons.add-device')}
               disabled={!chosen.length || !chosen.every((channel) => channel.choice.type)}

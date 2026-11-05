@@ -27,6 +27,7 @@ const ConfiguratorPage = observer(() => {
   const [isAddOpened, setIsAddOpened] = useState(false);
   const [addDeviceId, setAddDeviceId] = useState<string | null>(null);
   const [addTarget, setAddTarget] = useState<Device | null>(null);
+  const [isAddEmpty, setIsAddEmpty] = useState(false);
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
@@ -66,9 +67,10 @@ const ConfiguratorPage = observer(() => {
     statusRef.current?.scrollIntoView({ block: 'nearest' });
   }, [status]);
 
-  const openAdd = (deviceId: string | null, target: Device | null = null) => {
+  const openAdd = (deviceId: string | null, target: Device | null = null, isEmpty = false) => {
     setAddDeviceId(deviceId);
     setAddTarget(target);
+    setIsAddEmpty(isEmpty);
     setIsAddOpened(true);
   };
 
@@ -210,6 +212,7 @@ const ConfiguratorPage = observer(() => {
         {!isPanelMode && (
           <DeviceList
             onAdd={() => openAdd(null)}
+            onAddEmpty={() => openAdd(null, null, true)}
             onClear={() => setIsClearOpened(true)}
             onSelect={() => setIsPanelShown(true)}
           />
@@ -239,6 +242,7 @@ const ConfiguratorPage = observer(() => {
         isOpened={isAddOpened}
         initialDeviceId={addDeviceId}
         target={addTarget}
+        isEmpty={isAddEmpty}
         onAdded={() => setIsPanelShown(true)}
         onClose={() => setIsAddOpened(false)}
       />

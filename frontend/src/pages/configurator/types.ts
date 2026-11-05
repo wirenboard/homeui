@@ -22,6 +22,7 @@ export interface TypeTilesProps {
 
 export interface DeviceListProps {
   onAdd: () => void;
+  onAddEmpty: () => void;
   onClear: () => void;
   onSelect: () => void;
 }
@@ -40,6 +41,8 @@ export interface AddDialogProps {
   initialDeviceId?: string | null;
   // карточка, в которую добавляются строки; без неё создаётся новая
   target?: Device;
+  // открыть сразу на плитках типов пустого устройства
+  isEmpty?: boolean;
   onAdded?: (_device: Device) => void;
 }
 

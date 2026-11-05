@@ -12,7 +12,7 @@ import { configuratorStore, stable, type Device } from '@/stores/configurator';
 import type { DeviceListProps } from '../types';
 import { hasLostBinding } from '../utils';
 
-export const DeviceList = observer(({ onAdd, onClear, onSelect }: DeviceListProps) => {
+export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const { devices, selection, savedModel } = configuratorStore;
@@ -37,13 +37,23 @@ export const DeviceList = observer(({ onAdd, onClear, onSelect }: DeviceListProp
       heading={t('configurator.labels.devices')}
       variant="secondary"
       indicator={(
-        <Button
-          size="small"
-          icon={<PlusIcon />}
-          label={t('configurator.buttons.add')}
-          aria-haspopup="dialog"
-          onClick={onAdd}
-        />
+        <div className="configurator-listActions">
+          <Button
+            size="small"
+            variant="secondary"
+            label={t('configurator.buttons.add-empty')}
+            title={t('configurator.buttons.empty-device')}
+            aria-haspopup="dialog"
+            onClick={onAddEmpty}
+          />
+          <Button
+            size="small"
+            icon={<PlusIcon />}
+            label={t('configurator.buttons.add')}
+            aria-haspopup="dialog"
+            onClick={onAdd}
+          />
+        </div>
       )}
     >
       <Input
