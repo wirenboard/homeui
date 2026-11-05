@@ -25,7 +25,7 @@ import { UnitField } from './unit-field';
 
 export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelProps) => {
   const { t } = useTranslation();
-  const devices = listDevices(false);
+  const devices = listDevices(true);
 
   const roleOptions = (role: RoleId, current: string): Option<string>[] => {
     const groups: Option<string>[] = devices
