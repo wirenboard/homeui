@@ -5,7 +5,6 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { CollapsiblePanel } from '@/components/collapsible-panel';
 import { Confirm } from '@/components/confirm';
-import { type DropdownProps } from '@/components/dropdown';
 import { BooleanField, OptionsField, PasswordField, StringField } from '@/components/form';
 import { Table, TableRow, TableCell } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
@@ -84,11 +83,7 @@ export const FormCheckbox = observer(({ store }: { store: BooleanStore }) => {
   );
 });
 
-export const FormSelect = observer(({ store, isClearable, size }: {
-  store: OptionsStore;
-  isClearable?: boolean;
-  size?: DropdownProps['size'];
-}) => {
+export const FormSelect = observer(({ store, isClearable }: { store: OptionsStore; isClearable?: boolean }) => {
   const showCaption = useContext(ShowParamCaptionContext);
 
   const findOption = (options, value) => {
@@ -113,7 +108,6 @@ export const FormSelect = observer(({ store, isClearable, size }: {
       error={store.error}
       placeholder={store.placeholder}
       isDisabled={store.readOnly}
-      size={size}
       isSearchable
       onChange={(value) => {
         store.setSelectedOption(findOption(store.options, value));
@@ -122,16 +116,13 @@ export const FormSelect = observer(({ store, isClearable, size }: {
   );
 });
 
-export const FormOneOf = observer(({ store, selectSize }: {
-  store: OneOfStore;
-  selectSize?: DropdownProps['size'];
-}) => (
+export const FormOneOf = observer(({ store }: { store: OneOfStore }) => (
   <ShowParamCaptionContext.Provider value={false}>
     <fieldset style={makeFlexItemStyle(store?.formColumns)}>
       <legend className="form-header">
         <span className="form-caption">{store.optionsStore.name}</span>
         <div>
-          <FormSelect store={store.optionsStore} isClearable={false} size={selectSize} />
+          <FormSelect store={store.optionsStore} isClearable={false} />
         </div>
       </legend>
       {store.selectedForm && <FormEditor param={store.selectedForm} paramName={store.name} />}

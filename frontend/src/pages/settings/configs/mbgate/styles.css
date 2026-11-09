@@ -19,7 +19,6 @@
     padding: 8px 18px;
 }
 
-/* A header opening the tab starts at the same height as the content of other tabs */
 .mbgate-tabContent [role="tabpanel"] > .form-content > fieldset:first-child > .form-header {
     padding-top: 0;
 }
@@ -103,7 +102,6 @@
     color: var(--gray-color);
 }
 
-/* One line per option while the menu fits, wrapped only up to the window edge */
 .mbgate-addMenu .dropdown__menu {
     width: max-content !important;
     max-width: var(--dropdown-menu-available-width, 240px) !important;

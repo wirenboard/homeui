@@ -116,7 +116,6 @@
   max-height: 30px;
 }
 
-/* min-height leaves the option taller than its text, so the text is centered instead of sticking to the top */
 .dropdown-s .dropdown__option {
   display: flex;
   align-items: center;
