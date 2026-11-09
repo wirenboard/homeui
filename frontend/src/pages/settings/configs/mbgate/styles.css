@@ -19,6 +19,11 @@
     padding: 8px 18px;
 }
 
+/* A header opening the tab starts at the same height as the content of other tabs */
+.mbgate-tabContent [role="tabpanel"] > .form-content > fieldset:first-child > .form-header {
+    padding-top: 0;
+}
+
 .mbgate-mobile .mbgate-tabList {
     width: 100%;
     max-width: none;
@@ -35,29 +40,40 @@
     border-right: 0 !important;
 }
 
-.mbgate-portHeader {
+.mbgate-portName {
     display: flex;
-    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 8px;
     margin-bottom: 8px;
+}
+
+.mbgate-portName > .form-content {
+    flex-grow: 1;
 }
 
 .mbgate-portTab {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+}
+
+.mbgate-portTabText {
+    flex-grow: 1;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
+    word-break: break-word;
 }
 
 .mbgate-portTabName {
-    display: flex;
-    align-items: center;
-    gap: 6px;
     font-weight: bold;
 }
 
 .mbgate-portTabWarn {
-    width: 16px;
-    min-width: 16px;
-    height: 16px;
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
     color: var(--danger-color);
 }
 

@@ -1,5 +1,5 @@
 import { type CSSProperties } from 'react';
-import { type Option } from '@/components/dropdown';
+import { type DropdownProps, type Option } from '@/components/dropdown';
 
 export interface FormFieldProps {
   description?: string;
@@ -76,6 +76,7 @@ export interface OptionsFieldProps<T = string | boolean | number | null | unknow
   placeholder?: string;
   isSearchable?: boolean;
   isClearable?: boolean;
+  size?: DropdownProps['size'];
   formStyle?: CSSProperties;
   onChange: (value: T) => void;
 }

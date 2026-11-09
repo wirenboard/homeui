@@ -116,6 +116,12 @@
   max-height: 30px;
 }
 
+/* min-height leaves the option taller than its text, so the text is centered instead of sticking to the top */
+.dropdown-s .dropdown__option {
+  display: flex;
+  align-items: center;
+}
+
 .dropdown-s .dropdown__group-heading + div .dropdown__option {
   padding-left: 16px;
 }

@@ -13,6 +13,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import {
   CustomEditorBuilderContext,
+  FormOneOf,
   MakeFormFields,
   ShowParamCaptionContext,
 } from '@/components/json-editor/forms';
@@ -105,6 +106,9 @@ const MbGatePage = observer(() => {
   }, []);
 
   const buildRegistersForm = (param, paramName: string) => {
+    if (paramName === 'modbus') {
+      return <FormOneOf store={param} selectSize="small" />;
+    }
     if (paramName === 'registers') {
       const allConfigured = store.checkAllControlsConfigured(param);
       return (
@@ -178,11 +182,11 @@ const MbGatePage = observer(() => {
 
   const renderPortTab = (portNumber: number) => (
     <div className="mbgate-portTab">
-      <span className="mbgate-portTabName">
-        {getPortName(portNumber)}
-        {!!portConflicts[portNumber]?.length && <WarnIcon className="mbgate-portTabWarn" />}
-      </span>
-      <span className="mbgate-portTabDetails">{formatPortBinding(portBindings[portNumber])}</span>
+      <div className="mbgate-portTabText">
+        <span className="mbgate-portTabName">{getPortName(portNumber)}</span>
+        <span className="mbgate-portTabDetails">{formatPortBinding(portBindings[portNumber])}</span>
+      </div>
+      {!!portConflicts[portNumber]?.length && <WarnIcon className="mbgate-portTabWarn" />}
     </div>
   );
 
@@ -269,7 +273,11 @@ const MbGatePage = observer(() => {
                   </TabContent>
                   {store.additionalPorts.map((port, index) => (
                     <TabContent key={index} activeTab={activeTab} tabId={additionalPortTab(index)}>
-                      <div className="mbgate-portHeader">
+                      {renderPortConflict(index + 1)}
+                      <div className="mbgate-portName">
+                        <div className="form-content">
+                          {MakeFormFields([['name', port.params.name]])}
+                        </div>
                         <Button
                           label={t('mbgate.buttons.delete-port')}
                           variant="danger"
@@ -277,10 +285,8 @@ const MbGatePage = observer(() => {
                           onClick={() => setPortToDelete(index)}
                         />
                       </div>
-                      {renderPortConflict(index + 1)}
                       <div className="form-content">
                         {MakeFormFields([
-                          ['name', port.params.name],
                           ['modbus', port.params.modbus],
                           ['registers', port.params.registers],
                         ])}
