@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.286.1) stable; urgency=medium
+
+  * Fix lost records on scroll and live update in the system log page
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Tue, 10 Nov 2026 08:18:36 +0000
+
 wb-mqtt-homeui (2.286.0) stable; urgency=medium
 
   * Support additional ports on the MQTT to Modbus gateway page
