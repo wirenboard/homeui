@@ -29,6 +29,15 @@ export default class MatterStore {
 
   #timer: ReturnType<typeof setInterval> | null = null;
 
+  // A tab that comes back shows the state of now, not the state of when it was hidden.
+  // A field and not a method, because addEventListener and removeEventListener have to
+  // be given one and the same function.
+  readonly #onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      void this.fetch();
+    }
+  };
+
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -97,7 +106,7 @@ export default class MatterStore {
         void this.fetch();
       }
     }, POLL_INTERVAL_MS);
-    document.addEventListener('visibilitychange', this.onVisibilityChange);
+    document.addEventListener('visibilitychange', this.#onVisibilityChange);
   }
 
   stopWatching() {
@@ -105,14 +114,7 @@ export default class MatterStore {
       clearInterval(this.#timer);
       this.#timer = null;
     }
-    document.removeEventListener('visibilitychange', this.onVisibilityChange);
-  }
-
-  /** A tab that comes back shows the state of now, not the state of when it was hidden. */
-  onVisibilityChange() {
-    if (document.visibilityState === 'visible') {
-      void this.fetch();
-    }
+    document.removeEventListener('visibilitychange', this.#onVisibilityChange);
   }
 
   async #changeWindow(call: () => Promise<MatterWindow>) {
