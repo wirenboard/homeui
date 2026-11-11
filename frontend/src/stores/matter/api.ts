@@ -1,9 +1,10 @@
 import { request } from '@/utils/request';
 import type { MatterStatus, MatterWindow } from './types';
 
-export const getMatterStatus = async () => request.get<MatterStatus>(
-  '/matter/status',
-).then(({ data }) => data);
+export const getMatterStatus = async () => {
+  const { data } = await request.get<MatterStatus>('/matter/status');
+  return data;
+};
 
 /**
  * The QR code is drawn by the service, so the page only points an img at it. The version
@@ -18,21 +19,22 @@ export const pairingQrUrl = (version: string) => `/matter/pairing.svg?v=${encode
  * The code is not in this answer and must not be: it is served from /status alone, so
  * there is one place that decides whether a credential may be shown.
  */
-export const openMatterWindow = async () => request.post<MatterWindow>(
-  '/matter/pair',
-).then(({ data }) => data);
+export const openMatterWindow = async () => {
+  const { data } = await request.post<MatterWindow>('/matter/pair');
+  return data;
+};
 
 /** Closes the window before its time, and kills the code it was showing. */
-export const closeMatterWindow = async () => request.post<MatterWindow>(
-  '/matter/pair/close',
-).then(({ data }) => data);
+export const closeMatterWindow = async () => {
+  const { data } = await request.post<MatterWindow>('/matter/pair/close');
+  return data;
+};
 
 /**
  * Drops one app. The index is the one /status gave for it, so the page sends back what
  * it was shown. The bridge answers 409 when the app is already gone, which the store
  * treats like any other failure: it reloads the state and the page shows what is true.
  */
-export const unpairMatterApp = async (index: number) => request.post<void>(
-  '/matter/unpair',
-  { index },
-);
+export const unpairMatterApp = async (index: number) => {
+  await request.post<void>('/matter/unpair', { index });
+};
