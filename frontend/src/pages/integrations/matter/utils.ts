@@ -34,12 +34,12 @@ export const configuratorSelection = ({ module }: MatterDevice): Selection => (
  * whose vendor is missing falls back to its number. Needed because Yandex leaves the
  * label of a fabric empty - see docs/ecosystems.md of wb-mqtt-matter-bridge, Я3.
  */
-const KNOWN_VENDORS: Record<number, string> = {
+const KNOWN_VENDORS = new Map<number, string>([
   // 0x132F.
-  4911: 'yandex',
-};
+  [4911, 'yandex'],
+]);
 
-export const vendorKey = (vendorId: number) => KNOWN_VENDORS[vendorId] ?? null;
+export const vendorKey = (vendorId: number) => KNOWN_VENDORS.get(vendorId) ?? null;
 
 /**
  * What is left of an open window, as m:ss. A window that is already over reads 0:00
