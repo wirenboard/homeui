@@ -230,10 +230,6 @@ const MatterPage = observer(() => {
                           a flex list item loses the marker. */}
                       <div className="matter-fabric">
                         <span>{appName(fabric)}</span>
-                        {/* The button explains instead of acting, because the bridge has
-                            no way to unpair yet. People look for "unpair" here and leave
-                            the page none the wiser when there is nothing to find: better
-                            to meet them with the one way that works. */}
                         <Button
                           size="small"
                           variant="secondary"
