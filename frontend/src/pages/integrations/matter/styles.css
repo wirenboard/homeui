@@ -88,9 +88,6 @@
     color: var(--gray-color);
 }
 
-/* The row opens the card of the device in the configurator. It is a button and not a
-   link on purpose (the selection is set on the store of that page, which a new tab
-   would not inherit), so the pointer is what says it can be clicked. */
 .matter-deviceRow {
     cursor: pointer;
 }
@@ -111,8 +108,6 @@
     margin-bottom: 0;
 }
 
-/* The way out when the app is gone: still readable, but not the first thing the eye
-   lands on in a dialog whose answer is "do it in the app". */
 .matter-dialogWarn {
     color: var(--gray-color);
     font-size: var(--font-size-small);
