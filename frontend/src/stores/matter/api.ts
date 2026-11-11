@@ -1,5 +1,5 @@
 import { request } from '@/utils/request';
-import type { MatterStatus } from './types';
+import type { MatterStatus, MatterWindow } from './types';
 
 export const getMatterStatus = async () => request.get<MatterStatus>(
   '/matter/status',
@@ -10,6 +10,22 @@ export const getMatterStatus = async () => request.get<MatterStatus>(
  * keeps the browser from showing the code of a previous pairing out of its cache.
  */
 export const pairingQrUrl = (version: string) => `/matter/pairing.svg?v=${encodeURIComponent(version)}`;
+
+/**
+ * Opens the pairing window, which is the only way the bridge becomes pairable at all:
+ * it comes up closed. Every open issues a new code and kills the previous one.
+ *
+ * The code is not in this answer and must not be: it is served from /status alone, so
+ * there is one place that decides whether a credential may be shown.
+ */
+export const openMatterWindow = async () => request.post<MatterWindow>(
+  '/matter/pair',
+).then(({ data }) => data);
+
+/** Closes the window before its time, and kills the code it was showing. */
+export const closeMatterWindow = async () => request.post<MatterWindow>(
+  '/matter/pair/close',
+).then(({ data }) => data);
 
 /**
  * Drops one app. The index is the one /status gave for it, so the page sends back what

@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { getMatterStatus, unpairMatterApp } from './api';
-import type { MatterStatus } from './types';
+import { closeMatterWindow, getMatterStatus, openMatterWindow, unpairMatterApp } from './api';
+import type { MatterStatus, MatterWindow } from './types';
 
 /**
  * How often the page asks the bridge again. The state changes when somebody scans the
@@ -20,6 +20,12 @@ export default class MatterStore {
   unpairingIndex: number | null = null;
   // The last attempt did not go through. Cleared when the next one starts.
   hasUnpairFailed = false;
+  // The window is being opened or closed right now, so the button cannot be pressed
+  // twice and says it is busy.
+  isChangingWindow = false;
+  // The bridge refused or did not answer. 409 lands here too: it means somebody is
+  // pairing at this very moment, and the page says so rather than pretending.
+  hasWindowFailed = false;
 
   #timer: ReturnType<typeof setInterval> | null = null;
 
@@ -67,6 +73,19 @@ export default class MatterStore {
     return ok;
   }
 
+  /**
+   * Opens the pairing window. Whatever comes back, the state is read again right after:
+   * the window belongs to the bridge, and /status is what the page may believe.
+   */
+  async openWindow() {
+    return this.#changeWindow(openMatterWindow);
+  }
+
+  /** Closes it before its time. */
+  async closeWindow() {
+    return this.#changeWindow(closeMatterWindow);
+  }
+
   /** Reads the state now and keeps it up to date while the tab is visible. */
   startWatching() {
     // The store is a singleton and the page mounts twice under StrictMode, so a second
@@ -94,5 +113,23 @@ export default class MatterStore {
     if (document.visibilityState === 'visible') {
       void this.fetch();
     }
+  }
+
+  async #changeWindow(call: () => Promise<MatterWindow>) {
+    this.isChangingWindow = true;
+    this.hasWindowFailed = false;
+    let ok = true;
+    try {
+      const answer = await call();
+      ok = answer?.ok !== false;
+    } catch {
+      ok = false;
+    }
+    await this.fetch();
+    runInAction(() => {
+      this.isChangingWindow = false;
+      this.hasWindowFailed = !ok;
+    });
+    return ok;
   }
 }

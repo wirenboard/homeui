@@ -121,3 +121,21 @@
 .matter-dialogError {
     color: var(--danger-color);
 }
+
+.matter-windowActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: var(--content-gap);
+}
+
+.matter-countdown {
+    font-size: var(--font-size-small);
+    color: var(--gray-color);
+}
+
+.matter-windowText {
+    margin: 0 0 8px;
+    line-height: 1.6;
+}

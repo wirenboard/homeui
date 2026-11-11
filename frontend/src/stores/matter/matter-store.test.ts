@@ -1,15 +1,22 @@
 // @vitest-environment happy-dom
-import { getMatterStatus } from './api';
+import { closeMatterWindow, getMatterStatus, openMatterWindow } from './api';
 import MatterStore, { POLL_INTERVAL_MS } from './matter-store';
 import type { MatterStatus } from './types';
 
-vi.mock('./api', () => ({ getMatterStatus: vi.fn() }));
+vi.mock('./api', () => ({
+  getMatterStatus: vi.fn(), openMatterWindow: vi.fn(), closeMatterWindow: vi.fn(),
+}));
 
 const STATUS: MatterStatus = {
   version: '1.0.0',
   paired: false,
   fabrics: [],
-  pairing: { manual_code: '23331712339', payload: 'MT:Y.K9042C00KA0648G00', qr_version: 'abcdef12' },
+  pairing: {
+    closes_at: 1762500000000,
+    manual_code: '23331712339',
+    payload: 'MT:Y.K9042C00KA0648G00',
+    qr_version: 'abcdef12',
+  },
   devices: { configured: 2, exposed: 1, skipped: 0, config_error: null, list: [] },
 };
 
@@ -25,6 +32,10 @@ describe('MatterStore', () => {
   beforeEach(() => {
     vi.mocked(getMatterStatus).mockReset();
     vi.mocked(getMatterStatus).mockResolvedValue(STATUS);
+    vi.mocked(openMatterWindow).mockReset();
+    vi.mocked(openMatterWindow).mockResolvedValue({ ok: true, closes_at: 1762500000000 });
+    vi.mocked(closeMatterWindow).mockReset();
+    vi.mocked(closeMatterWindow).mockResolvedValue({ ok: true, closes_at: null });
     store = new MatterStore();
   });
 
@@ -130,5 +141,51 @@ describe('MatterStore', () => {
     setVisibility('visible');
 
     expect(getMatterStatus).not.toHaveBeenCalled();
+  });
+
+  it('opens the window and reads the state back instead of believing its own request', async () => {
+    const ok = await store.openWindow();
+
+    expect(ok).toBe(true);
+    expect(openMatterWindow).toHaveBeenCalledTimes(1);
+    // The window belongs to the bridge, so what /status says is the truth, not what the
+    // call answered.
+    expect(getMatterStatus).toHaveBeenCalledTimes(1);
+    expect(store.isChangingWindow).toBe(false);
+    expect(store.hasWindowFailed).toBe(false);
+  });
+
+  it('reports a refusal, which is what a 409 while somebody is pairing looks like', async () => {
+    vi.mocked(openMatterWindow).mockResolvedValue({ ok: false, closes_at: null });
+
+    const ok = await store.openWindow();
+
+    expect(ok).toBe(false);
+    expect(store.hasWindowFailed).toBe(true);
+    expect(getMatterStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a request that did not go through at all', async () => {
+    vi.mocked(openMatterWindow).mockRejectedValue(new Error('502'));
+
+    expect(await store.openWindow()).toBe(false);
+    expect(store.hasWindowFailed).toBe(true);
+  });
+
+  it('forgets the failure once an attempt works', async () => {
+    vi.mocked(openMatterWindow).mockRejectedValueOnce(new Error('502'));
+    await store.openWindow();
+
+    await store.openWindow();
+
+    expect(store.hasWindowFailed).toBe(false);
+  });
+
+  it('closes the window through the service and rereads the state', async () => {
+    const ok = await store.closeWindow();
+
+    expect(ok).toBe(true);
+    expect(closeMatterWindow).toHaveBeenCalledTimes(1);
+    expect(getMatterStatus).toHaveBeenCalledTimes(1);
   });
 });

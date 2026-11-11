@@ -13,13 +13,31 @@ import { configuratorStore } from '@/stores/configurator';
 import { type MatterDevice, type MatterFabric, matterStore, pairingQrUrl } from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
 import { CopyField } from './components/copy-field';
-import { configuratorSelection, groupManualCode, vendorKey } from './utils';
+import { configuratorSelection, groupManualCode, timeLeft, vendorKey } from './utils';
 import './styles.css';
 
 // The menu entry is shipped by wb-mqtt-matter-bridge itself, so its id in the custom
 // menu is the only sign the frontend has that the service is installed. The route exists
 // in any case, and without this check the page would ask a service that is not there.
 const MODULE_ID = 'matter';
+
+/**
+ * Re-renders once a second while a window is open, so the countdown moves between the
+ * polls of the store. Nothing else needs a clock, so it stops as soon as the window is
+ * closed.
+ */
+const useNow = (isTicking: boolean) => {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!isTicking) {
+      return undefined;
+    }
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [isTicking]);
+  return now;
+};
 
 const MatterPage = observer(() => {
   const { t } = useTranslation();
@@ -32,6 +50,7 @@ const MatterPage = observer(() => {
   const { status, isLoading, isUnreachable } = matterStore;
   // The app whose "unpair" button was pressed, and so the one the dialog talks about.
   const [unpairFrom, setUnpairFrom] = useState<MatterFabric | null>(null);
+  const now = useNow(Boolean(status?.pairing));
 
   useEffect(() => {
     if (!isInstalled || !isAdmin) {
@@ -120,6 +139,31 @@ const MatterPage = observer(() => {
         <>
           <p className="matter-subtitle">{t('matter.labels.subtitle')}</p>
 
+          {/* The bridge comes up with the window closed, so this card has two faces: a
+              button that opens one, and the code while it is open. Pairing starts when
+              a person asks for it and never on its own - see R15 in
+              docs/design-config-and-pairing.md of wb-mqtt-matter-bridge. */}
+          {!status.pairing && (
+            <Card className="matter-card" heading={t('matter.labels.pairing')}>
+              <p className="matter-windowText">
+                {t(status.paired ? 'matter.labels.window-closed-paired' : 'matter.labels.window-closed')}
+              </p>
+              <p className="matter-windowText">{t('matter.labels.window-closed-why')}</p>
+              <div className="matter-windowActions">
+                <Button
+                  variant="primary"
+                  label={t('matter.buttons.open-window')}
+                  isLoading={matterStore.isChangingWindow}
+                  disabled={matterStore.isChangingWindow}
+                  onClick={() => matterStore.openWindow()}
+                />
+                {matterStore.hasWindowFailed && (
+                  <span className="matter-dialogError">{t('matter.labels.window-failed')}</span>
+                )}
+              </div>
+            </Card>
+          )}
+
           {status.pairing && (
             <Card className="matter-card" heading={t('matter.labels.pairing')}>
               <div className="matter-pairing">
@@ -150,6 +194,26 @@ const MatterPage = observer(() => {
                       value={status.pairing.payload}
                     />
                   </div>
+
+                  <div className="matter-windowActions">
+                    <span className="matter-countdown">
+                      {t('matter.labels.window-left', {
+                        left: timeLeft(status.pairing.closes_at, now),
+                      })}
+                    </span>
+                    <Button
+                      size="small"
+                      variant="secondary"
+                      label={t('matter.buttons.close-window')}
+                      isLoading={matterStore.isChangingWindow}
+                      disabled={matterStore.isChangingWindow}
+                      onClick={() => matterStore.closeWindow()}
+                    />
+                  </div>
+                  <p className="matter-hint">{t('matter.labels.window-new-code')}</p>
+                  {matterStore.hasWindowFailed && (
+                    <p className="matter-dialogError">{t('matter.labels.window-failed')}</p>
+                  )}
                 </div>
               </div>
             </Card>

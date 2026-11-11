@@ -5,6 +5,10 @@ export interface MatterFabric {
 }
 
 export interface MatterPairing {
+  // When the window closes, in milliseconds since the epoch. The page counts down to
+  // it: a code with no visible end looks like a code that lasts forever, which is the
+  // thing this whole mechanism exists to stop.
+  closes_at: number;
   // The code to type in by hand, without the grouping dashes the apps print.
   manual_code: string;
   // What the QR code encodes. Shown as text for an app that asks for it.
@@ -12,6 +16,12 @@ export interface MatterPairing {
   // Tag of the payload for the picture URL: the payload itself is a credential and must
   // not end up in a query string.
   qr_version: string;
+}
+
+/** What POST /pair and POST /pair/close answer. Never the code itself. */
+export interface MatterWindow {
+  ok: boolean;
+  closes_at: number | null;
 }
 
 export interface MatterDevice {
@@ -49,7 +59,9 @@ export interface MatterStatus {
   version: string;
   paired: boolean;
   fabrics: MatterFabric[];
-  // Null once the bridge is paired: the pairing window is closed and the code is dead.
+  // Null whenever the pairing window is closed, which is how the bridge comes up: a
+  // controller out of the box is not pairable until somebody opens the window here.
+  // Also null right after pairing, when the window closes on its own.
   pairing: MatterPairing | null;
   devices: MatterDevices;
 }

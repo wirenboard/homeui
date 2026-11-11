@@ -1440,6 +1440,12 @@
          "unreachable": "The wb-mqtt-matter-bridge service does not answer. Check whether it is running.",
          "config-error": "The device config cannot be read: {{error}}",
          "pairing": "Pairing",
+         "window-closed": "The pairing window is closed: apps cannot see the bridge and cannot pair with it.",
+         "window-closed-paired": "The pairing window is closed: no further app can be added right now. The apps already connected go on working.",
+         "window-closed-why": "That is on purpose. The bridge opens only when a person asks it to, or anyone who found the controller on the network first could pair with it. A window lasts 15 minutes.",
+         "window-left": "The window closes in {{left}}",
+         "window-new-code": "The code is a new one, and the previous code has stopped working. Opening the window again will change it once more.",
+         "window-failed": "That did not go through. If an app is pairing right now, try again in a minute; the journal of the service says more.",
          "qr-alt": "Matter pairing QR code",
          "step-app": "Open a smart home app: Apple Home, Google Home, Alice or SmartThings.",
          "step-add": "Choose to add a device and pick the Matter option.",
@@ -1451,7 +1457,7 @@
          "ecosystems-empty": "No app is connected yet.",
          "vendor-yandex": "Yandex",
          "app-unknown": "An app that did not give its name (vendor {{vendor}})",
-         "ecosystems-hint": "Every app pairs with its own code: to add the next one, ask the already connected app for a new code.",
+         "ecosystems-hint": "Every app pairs with its own code. To add the next one, ask an already connected app for a code, or open the window with the button above: the code will be a new one.",
          "unpair-heading": "How to unpair an app",
          "unpair-where": "An app is unpaired in the app itself. In {{app}}, open the card of the bridge, then the settings of the device, and delete it.",
          "unpair-why": "This is the clean way: the app also clears its own half, the device cards, the groups and the scenarios. The bridge sees it at once, and this page goes back to the pairing code on its own.",
@@ -1483,6 +1489,8 @@
          "copy": "Copy",
          "unpair": "Unpair",
          "unpair-here": "Unpair here anyway",
+         "open-window": "Open the pairing window",
+         "close-window": "Close the window",
          "unpair-close": "Close"
       }
    }

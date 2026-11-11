@@ -24,6 +24,8 @@ vi.mock('@/stores/matter/api', async (importOriginal) => ({
   ...await importOriginal() as Record<string, unknown>,
   getMatterStatus: vi.fn(),
   unpairMatterApp: vi.fn(),
+  openMatterWindow: vi.fn(),
+  closeMatterWindow: vi.fn(),
 }));
 vi.mock('@/utils/clipboard', () => ({ copyToClipboard: vi.fn() }));
 // Only useNavigate: the page is rendered inside a real MemoryRouter, and Link has to
@@ -70,7 +72,12 @@ const NOT_PAIRED = {
   version: '1.0.0',
   paired: false,
   fabrics: [],
-  pairing: { manual_code: '23331712339', payload: 'MT:Y.K9042C00KA0648G00', qr_version: 'abcdef12' },
+  pairing: {
+    closes_at: Date.now() + 15 * 60 * 1000,
+    manual_code: '23331712339',
+    payload: 'MT:Y.K9042C00KA0648G00',
+    qr_version: 'abcdef12',
+  },
   devices: {
     configured: 2, exposed: 1, skipped: 0, config_error: null, list: [WB_DEVICE, OWN_DEVICE],
   },
@@ -101,6 +108,8 @@ describe('MatterPage', () => {
       matterStore.isUnreachable = false;
       matterStore.unpairingIndex = null;
       matterStore.hasUnpairFailed = false;
+      matterStore.isChangingWindow = false;
+      matterStore.hasWindowFailed = false;
     });
   });
 
@@ -131,15 +140,17 @@ describe('MatterPage', () => {
     expect(copyToClipboard).toHaveBeenCalledWith('23331712339');
   });
 
-  it('drops the pairing card once the bridge is paired, and names the app', async () => {
+  it('drops the code once the bridge is paired, and names the app', async () => {
     // The pairing window closes with the first pairing and the code stops working, so
-    // the page must not keep it on screen.
+    // the page must not keep it on screen. The card stays, because that is where the
+    // window is opened again for a second app.
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 
     expect(await screen.findByText('Yandex')).toBeInTheDocument();
     expect(screen.queryByAltText('matter.labels.qr-alt')).not.toBeInTheDocument();
-    expect(screen.queryByText('matter.labels.pairing')).not.toBeInTheDocument();
+    expect(screen.queryByText('2333-171-2339')).not.toBeInTheDocument();
+    expect(screen.getByText('matter.buttons.open-window')).toBeInTheDocument();
   });
 
   it('says how many devices the config gives to Matter', async () => {

@@ -1,5 +1,5 @@
 import type { MatterDevice } from '@/stores/matter';
-import { configuratorSelection, groupManualCode } from './utils';
+import { configuratorSelection, groupManualCode, timeLeft } from './utils';
 
 describe('groupManualCode', () => {
   it('groups the short code the way the apps print it', () => {
@@ -41,5 +41,19 @@ describe('configuratorSelection', () => {
 
   it('is nothing when the device has no module to open', () => {
     expect(configuratorSelection(device({ module: null }))).toBe(null);
+  });
+});
+
+describe('timeLeft', () => {
+  it('counts down in minutes and seconds', () => {
+    expect(timeLeft(1000 * 905, 1000 * 5)).toBe('15:00');
+    expect(timeLeft(1000 * 69, 1000 * 5)).toBe('1:04');
+    expect(timeLeft(1000 * 9, 1000 * 5)).toBe('0:04');
+  });
+
+  it('reads zero for a window whose time is up', () => {
+    // The page polls every few seconds, so the clock runs out before the bridge says
+    // the window is gone. A negative countdown in that gap would look like a bug.
+    expect(timeLeft(1000, 60000)).toBe('0:00');
   });
 });

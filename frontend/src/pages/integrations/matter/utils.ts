@@ -43,3 +43,13 @@ const KNOWN_VENDORS: Record<number, string> = {
 };
 
 export const vendorKey = (vendorId: number) => KNOWN_VENDORS[vendorId] ?? null;
+
+/**
+ * What is left of an open window, as m:ss. A window that is already over reads 0:00
+ * rather than a negative number: the page polls every few seconds, so the moment the
+ * clock runs out and the moment the bridge says the window is gone are not the same.
+ */
+export const timeLeft = (closesAt: number, now: number) => {
+  const seconds = Math.max(0, Math.round((closesAt - now) / 1000));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+};
