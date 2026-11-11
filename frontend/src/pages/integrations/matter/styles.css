@@ -2,10 +2,6 @@
     margin: 0 0 var(--content-gap);
 }
 
-.matter-alert {
-    margin-bottom: var(--content-gap);
-}
-
 .matter-card + .matter-card {
     margin-top: var(--content-gap);
 }
