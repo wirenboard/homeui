@@ -36,5 +36,5 @@ export const closeMatterWindow = async () => {
  * treats like any other failure: it reloads the state and the page shows what is true.
  */
 export const unpairMatterApp = async (index: number) => {
-  await request.post<void>('/matter/unpair', { index });
+  await request.post('/matter/unpair', { index });
 };
