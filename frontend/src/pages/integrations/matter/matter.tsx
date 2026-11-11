@@ -288,14 +288,8 @@ const MatterPage = observer(() => {
             </p>
           </Card>
 
-          {/* Unpairing from here works, but it is offered second. The Matter spec has a
-              Leave event on Basic Information for exactly this case ("triggered by
-              factory reset or some other manufacturer specific action") and the bridge
-              emits it, but acting on it is the ecosystem's choice: the Yandex station is
-              not even subscribed to that event - checked on the stand, it watches only
-              the General Diagnostics ones. So the app goes on showing the bridge and its
-              devices until somebody deletes them there by hand. Unpairing in the app
-              leaves no such litter, which is why it comes first in this dialog.
+          {/* Unpairing in the app comes first because unpairing from here leaves the
+              bridge and its devices in that app until somebody deletes them by hand.
               See docs/ecosystems.md of wb-mqtt-matter-bridge, Я10 and Я11. */}
           <Confirm
             isOpened={unpairFrom !== null}

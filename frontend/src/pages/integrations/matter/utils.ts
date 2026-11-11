@@ -30,15 +30,12 @@ export const configuratorSelection = ({ module }: MatterDevice): Selection => (
 );
 
 /**
- * Vendor ids of the ecosystems we have actually seen on a fabric, as keys of the
- * translations. The label of a fabric is filled by the controller of the ecosystem and
- * Yandex leaves it empty, so without this the list of connected apps shows a bullet with
- * nothing next to it. The CSA keeps the full list of vendor ids and matter.js does not
- * ship it, so this map holds only what was observed, and anything else falls back to the
- * number. See docs/ecosystems.md of wb-mqtt-matter-bridge, finding Я3.
+ * Only the vendor ids seen on a live fabric: there is no list to import, and an app
+ * whose vendor is missing falls back to its number. Needed because Yandex leaves the
+ * label of a fabric empty - see docs/ecosystems.md of wb-mqtt-matter-bridge, Я3.
  */
 const KNOWN_VENDORS: Record<number, string> = {
-  // 0x132F, seen on a live Yandex station.
+  // 0x132F.
   4911: 'yandex',
 };
 
