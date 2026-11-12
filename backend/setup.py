@@ -17,7 +17,7 @@ setup(
     maintainer="Wiren Board Team",
     maintainer_email="info@wirenboard.com",
     description="Backend service for Wiren Board web interface",
-    license="MIT",
+    license="MIT-WB",
     url="https://github.com/wirenboard/wb-mqtt-homeui",
     packages=[
         "wb.homeui_backend",
