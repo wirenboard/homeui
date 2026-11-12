@@ -28,7 +28,7 @@
 }
 
 .daliMonitor-rowError {
-    background: color-mix(in srgb, var(--danger-color) 18%, var(--background-color));
+    background: color-mix(in srgb, var(--danger-color) 26%, var(--background-color));
 }
 
 .daliMonitor-time {
