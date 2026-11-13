@@ -1229,5 +1229,284 @@
          "commands": "Commands…",
          "retry": "Retry"
       }
+   },
+   "configurator": {
+      "title": "Device configurator",
+      "labels": {
+         "subtitle": "Devices that smart home apps will see",
+         "devices": "Devices",
+         "search": "Search by name, channel or group",
+         "nothing-found": "Nothing found",
+         "no-devices": "No devices yet",
+         "select-device": "Select a device in the list",
+         "first-title": "Build devices for smart home apps",
+         "first-text": "Press \"Add\" and choose a WB device, for example WB-MSW or WB-MR6C. Suitable channels are checked automatically. Or press \"Manual\" and compose a device of channels from different controller devices. Then name the channels, set their groups and press \"Save\".",
+         "channels-count": "Channels: {{count}}",
+         "channels-none": "No channels",
+         "new": "New",
+         "changed": "Changed",
+         "not-found": "Not found",
+         "mixed-text": "Channels of this device had different app settings. On save, all channels get the switches below.",
+         "show-in-apps": "Show in apps",
+         "no-apps": "No app is selected, channels go nowhere",
+         "adapter-not-installed": "{{title}}: the {{package}} package is not installed on the controller",
+         "adapter-stopped": "{{title}}: the service is not running, devices are not passed on.",
+         "adapter-page": "Open the page",
+         "channels": "Channels",
+         "name-in-apps": "Name in apps",
+         "group": "Group",
+         "no-group": "No group",
+         "type": "Type",
+         "none": "None",
+         "role-required": "A channel for \"{{role}}\" is required, otherwise the device is not exported",
+         "device-name": "Device name",
+         "new-device": "New device",
+         "name-taken": "This name is taken, choose another one",
+         "name-duplicate": "Duplicate name",
+         "names-duplicate": "Duplicate device names",
+         "choose-type": "Choose the channel type",
+         "choose-channel": "Choose a channel",
+         "channel-for-role": "Channel for \"{{role}}\"",
+         "channel-lost": "Channel {{topic}} is not published right now, the binding is kept",
+         "show-channel": "Show channel \"{{name}}\" in apps",
+         "add-title": "Add a device",
+         "add-channels-title": "Add channels",
+         "controller-devices": "Devices on the controller",
+         "service-device": "service",
+         "virtual-device": "virtual",
+         "suitable": "Suitable channels: {{count}}",
+         "suitable-used": "Suitable channels: {{count}}, already used: {{used}}",
+         "show-service": "Show service devices ({{count}})",
+         "add-hint": "Checked channels will appear in apps. You can change them later in the device settings.",
+         "value": "Value: {{value}}",
+         "choose-type-hint": "choose a type",
+         "already-used": "already used",
+         "no-controller-devices": "There are no devices on the controller to add.",
+         "selected-count": "Channels selected: {{count}}",
+         "empty-hint": "An empty device is assembled by hand from channels of different controller devices. Choose the type of the first channel.",
+         "dirty": "Not saved",
+         "clean": "All saved",
+         "saved": "Saved. Devices in config: {{count}}",
+         "saved-drafts": "Saved. Devices in config: {{count}}, incomplete and not saved: {{drafts}}",
+         "conflict-title": "Config on the controller changed",
+         "conflict-prompt": "The config on the controller was changed after this page was opened, for example in another window. Overwrite it?",
+         "remove-title": "Remove device",
+         "remove-prompt": "Remove <0>{{name}}</0> from the configurator? The change takes effect after saving.",
+         "clear-title": "Remove all devices",
+         "clear-prompt": "All devices will be removed from the configurator. The change takes effect after saving.",
+         "value-on": "on",
+         "value-off": "off",
+         "value-button": "button",
+         "save-unavailable": "Saving to the controller is unavailable: the wb-converter-ext service is not installed.",
+         "import-title": "Import config",
+         "import-prompt": "Devices from the file will replace the current list. The controller gets the changes after saving.",
+         "imported": "Devices imported: {{count}}. Check the list and press \"Save\".",
+         "unsupported": "Not suitable for apps ({{count}})",
+         "new-devices": "The controller has devices not yet set up for apps:",
+         "more-devices": "and {{count}} more",
+         "unit": "Units",
+         "unit-placeholder": "Choose or type"
+      },
+      "buttons": {
+         "add": "Add",
+         "add-device": "Add device",
+         "add-channel": "Add channel",
+         "add-channels": "Add channels",
+         "empty-device": "Compose a device by hand from channels of different controller devices",
+         "add-empty": "Manual",
+         "empty-channel": "Empty channel",
+         "save": "Save",
+         "discard": "Discard changes",
+         "to-list": "To device list",
+         "to-controller-devices": "To controller devices",
+         "remove-device": "Remove device",
+         "remove-channel": "Remove channel \"{{name}}\"",
+         "clear-all": "Remove all devices",
+         "overwrite": "Overwrite",
+         "remove": "Remove",
+         "import": "Import",
+         "export": "Export",
+         "configure": "Set up \"{{name}}\""
+      },
+      "errors": {
+         "load": "Failed to load the config: {{error}}",
+         "parse": "File {{path}} on the controller is not valid YAML",
+         "save": "Failed to save the config: {{error}}",
+         "import": "Failed to import {{name}}: {{error}}",
+         "import-format": "the file has no devices list"
+      },
+      "roles": {
+         "on_off": "On/off",
+         "brightness": "Brightness",
+         "color_temperature": "Color temperature",
+         "color": "Color",
+         "position": "Position",
+         "temperature": "Temperature",
+         "humidity": "Humidity",
+         "co2": "CO₂",
+         "illuminance": "Illuminance",
+         "leak": "Leak",
+         "contact": "Contact",
+         "motion": "Motion",
+         "occupancy": "Occupancy",
+         "smoke": "Smoke",
+         "power": "Power",
+         "energy": "Energy",
+         "press": "Press",
+         "battery": "Battery level",
+         "setting": "Numeric setting",
+         "number": "Numeric value"
+      },
+      "types": {
+         "switch": {
+            "name": "Switch",
+            "short": "Switch"
+         },
+         "outlet": {
+            "name": "Outlet",
+            "short": "Outlet"
+         },
+         "light": {
+            "name": "Light",
+            "short": "Light"
+         },
+         "cover": {
+            "name": "Cover",
+            "short": "Cover"
+         },
+         "number_setting": {
+            "name": "Numeric setting",
+            "short": "Setting"
+         },
+         "button": {
+            "name": "Button",
+            "short": "Button"
+         },
+         "temperature_sensor": {
+            "name": "Temperature sensor",
+            "short": "Temperature"
+         },
+         "humidity_sensor": {
+            "name": "Humidity sensor",
+            "short": "Humidity"
+         },
+         "co2_sensor": {
+            "name": "CO₂ sensor",
+            "short": "CO₂"
+         },
+         "illuminance_sensor": {
+            "name": "Illuminance sensor",
+            "short": "Illuminance"
+         },
+         "leak_sensor": {
+            "name": "Leak sensor",
+            "short": "Leak"
+         },
+         "contact_sensor": {
+            "name": "Contact sensor",
+            "short": "Contact"
+         },
+         "motion_sensor": {
+            "name": "Motion sensor",
+            "short": "Motion"
+         },
+         "occupancy_sensor": {
+            "name": "Occupancy sensor",
+            "short": "Occupancy"
+         },
+         "smoke_sensor": {
+            "name": "Smoke sensor",
+            "short": "Smoke"
+         },
+         "number_sensor": {
+            "name": "Numeric sensor",
+            "short": "Number"
+         },
+         "power_sensor": {
+            "name": "Power sensor",
+            "short": "Power"
+         },
+         "energy_meter": {
+            "name": "Energy meter",
+            "short": "Energy"
+         }
+      },
+      "categories": {
+         "control": "Control",
+         "sensors": "Sensors",
+         "energy": "Energy metering"
+      },
+      "why": {
+         "enum": "Mode with a list of values, no type for it",
+         "cmd": "Command button, no type for it",
+         "color_only": "Fits only as a light color",
+         "text": "Text channel",
+         "none": "No suitable type",
+         "battery": "Attached to another channel of the device as its battery level",
+         "availability": "Service channel: device availability",
+         "service": "Service channel of the device"
+      }
+   },
+   "matter": {
+      "title": "Matter",
+      "labels": {
+         "subtitle": "The controller as a Matter bridge: smart home apps see the devices picked in the configurator",
+         "unavailable": "The wb-mqtt-matter-bridge service is not installed on the controller",
+         "unreachable": "The wb-mqtt-matter-bridge service does not answer. Check whether it is running.",
+         "config-error": "The device config cannot be read: {{error}}",
+         "pairing": "Pairing",
+         "window-closed": "The pairing window is closed: apps cannot see the bridge and cannot pair with it.",
+         "window-closed-paired": "The pairing window is closed: no further app can be added right now. The apps already connected go on working.",
+         "window-closed-why": "That is on purpose. The bridge opens only when a person asks it to, or anyone who found the controller on the network first could pair with it. A window lasts 15 minutes.",
+         "window-left": "The window closes in {{left}}",
+         "window-new-code": "The code is a new one, and the previous code has stopped working. Opening the window again will change it once more.",
+         "window-failed": "That did not go through. If an app is pairing right now, try again in a minute; the journal of the service says more.",
+         "qr-alt": "Matter pairing QR code",
+         "step-app": "Open a smart home app: Apple Home, Google Home, Alice or SmartThings.",
+         "step-add": "Choose to add a device and pick the Matter option.",
+         "step-scan": "Point the camera at the QR code or type the code by hand.",
+         "manual-code": "Manual pairing code",
+         "payload": "Pairing payload",
+         "copied": "Copied to clipboard",
+         "ecosystems": "Connected apps",
+         "ecosystems-empty": "No app is connected yet.",
+         "vendor-yandex": "Yandex",
+         "app-unknown": "An app that did not give its name (vendor {{vendor}})",
+         "ecosystems-hint": "Every app pairs with its own code. To add the next one, ask an already connected app for a code, or open the window with the button above: the code will be a new one.",
+         "unpair-heading": "How to unpair an app",
+         "unpair-where": "An app is unpaired in the app itself. In {{app}}, open the card of the bridge, then the settings of the device, and delete it.",
+         "unpair-why": "This is the clean way: the app also clears its own half, the device cards, the groups and the scenarios. The bridge sees it at once, and this page goes back to the pairing code on its own.",
+         "unpair-code": "Unpairing changes the pairing code: a QR code saved earlier stops working, and the new one appears here.",
+         "unpair-here-note": "When the app is gone - deleted, or on an account you no longer have - it can be unpaired from here as well. The app will not be told: the bridge and its devices stay in its list until somebody removes them there by hand.",
+         "unpair-failed": "Unpairing did not go through. The journal of the service says why.",
+         "devices": "Devices",
+         "devices-empty": "The config has no devices for Matter yet.",
+         "column-name": "Device",
+         "column-type": "Type",
+         "column-room": "Room",
+         "column-state": "State",
+         "open-device": "Open {{name}} in the device configurator",
+         "not-exposed": "not given",
+         "reason-type_unsupported": "This device type is not given to Matter yet.",
+         "reason-role_missing": "The device has no channel of the kind Matter needs.",
+         "reason-command_missing": "The bound channel is read-only, so the device cannot be switched.",
+         "reason-build_failed": "The device could not be given to Matter. The journal of the service says why.",
+         "state-on": "On",
+         "state-off": "Off",
+         "state-silent": "no value",
+         "state-silent-hint": "The bound control has not published a value the bridge understands.",
+         "devices-count": "In the config: {{count}} device(s), of which {{exposed}} given to Matter.",
+         "devices-skipped": "Devices skipped: {{count}}. The journal of the service says why.",
+         "devices-hint": "Devices to publish over Matter are picked on the page",
+         "devices-link": "Device configurator"
+      },
+      "buttons": {
+         "copy": "Copy",
+         "unpair": "Unpair",
+         "unpair-here": "Unpair here anyway",
+         "open-window": "Open the pairing window",
+         "close-window": "Close the window",
+         "unpair-close": "Close"
+      }
    }
 }

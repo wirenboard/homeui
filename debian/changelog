@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.287.0) stable; urgency=medium
+
+  * Add the device configurator page (Integrations -> Device configurator)
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Fri, 13 Nov 2026 10:20:01 +0300
+
 wb-mqtt-homeui (2.286.3) stable; urgency=medium
 
   * Fix unreadable error rows in the DALI bus monitor in the dark theme
