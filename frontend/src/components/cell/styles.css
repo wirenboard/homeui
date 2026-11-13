@@ -18,9 +18,17 @@
     flex-shrink: 1;
 }
 
+.deviceCell > .wb-tooltip-container:has(.deviceCell-name) {
+    flex-grow: 1;
+}
+
 .deviceCell-value .wb-tooltip-container {
     width: 100%;
     overflow: hidden;
+}
+
+.wb-tooltip-container:has(.deviceCell-alert) {
+    width: 100%;
 }
 
 .deviceCell a {
@@ -164,9 +172,8 @@
 
 .deviceCell-value {
     justify-items: end;
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-width: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
     cursor: pointer;
 }
 
