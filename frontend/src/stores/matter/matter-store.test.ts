@@ -1,10 +1,15 @@
 // @vitest-environment happy-dom
-import { closeMatterWindow, getMatterStatus, openMatterWindow } from './api';
+import {
+  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow,
+} from './api';
 import MatterStore, { POLL_INTERVAL_MS } from './matter-store';
 import type { MatterStatus } from './types';
 
 vi.mock('./api', () => ({
-  getMatterStatus: vi.fn(), openMatterWindow: vi.fn(), closeMatterWindow: vi.fn(),
+  getMatterStatus: vi.fn(),
+  openMatterWindow: vi.fn(),
+  closeMatterWindow: vi.fn(),
+  changeMatterCode: vi.fn(),
 }));
 
 const STATUS: MatterStatus = {
@@ -187,5 +192,29 @@ describe('MatterStore', () => {
     expect(ok).toBe(true);
     expect(closeMatterWindow).toHaveBeenCalledTimes(1);
     expect(getMatterStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('changes the code only when asked, and never as part of opening a window', async () => {
+    // The code of the controller is stable: an app that remembered it keeps working.
+    // Opening a window must not touch it, or a third-party "Share" screen would start
+    // showing a QR that cannot pair.
+    await store.openWindow();
+
+    expect(changeMatterCode).not.toHaveBeenCalled();
+  });
+
+  it('changes the code through the service and rereads the state', async () => {
+    const ok = await store.changeCode();
+
+    expect(ok).toBe(true);
+    expect(changeMatterCode).toHaveBeenCalledTimes(1);
+    expect(getMatterStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the refusal the bridge gives while a window is open', async () => {
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
+
+    expect(await store.changeCode()).toBe(false);
+    expect(store.hasWindowFailed).toBe(true);
   });
 });
