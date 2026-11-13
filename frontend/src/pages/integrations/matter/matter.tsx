@@ -39,6 +39,9 @@ const useNow = (isTicking: boolean) => {
   return now;
 };
 
+/** The states this page has words for. Anything else is a reading, and is shown as it is. */
+const TRANSLATED_STATES = new Set(['on', 'off']);
+
 const MatterPage = observer(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -50,6 +53,10 @@ const MatterPage = observer(() => {
   const { status, isLoading, isUnreachable } = matterStore;
   // The app whose "unpair" button was pressed, and so the one the dialog talks about.
   const [unpairFrom, setUnpairFrom] = useState<MatterFabric | null>(null);
+  // The "change the code" dialog. A dialog and not a plain button because the act has a
+  // cost the operator cannot see from here: an app that remembered the old code will
+  // offer the wrong one afterwards.
+  const [isChangingCode, setChangingCode] = useState(false);
   const now = useNow(Boolean(status?.pairing));
 
   useEffect(() => {
@@ -114,7 +121,13 @@ const MatterPage = observer(() => {
     if (device.state === null) {
       return <Tag variant="warn" title={t('matter.labels.state-silent-hint')}>{t('matter.labels.state-silent')}</Tag>;
     }
-    return <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{t(`matter.labels.state-${device.state}`)}</Tag>;
+    // Only a switch has a state with a word for it. A sensor puts its reading here, as
+    // the service formatted it ("10.0 C"), and asking for a translation of that printed
+    // the key it could not find - "matter.labels.state-10.0 C" - right in the table.
+    const text = TRANSLATED_STATES.has(device.state)
+      ? t(`matter.labels.state-${device.state}`)
+      : device.state;
+    return <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{text}</Tag>;
   };
 
   const errors = [];
@@ -156,6 +169,16 @@ const MatterPage = observer(() => {
                   isLoading={matterStore.isChangingWindow}
                   disabled={matterStore.isChangingWindow}
                   onClick={() => matterStore.openWindow()}
+                />
+                {/* Only here, with the window closed: the bridge refuses to change the
+                    code under an open window, which runs on the code it was opened
+                    with. Offering the button there would be offering a refusal. */}
+                <Button
+                  size="small"
+                  variant="secondary"
+                  label={t('matter.buttons.new-code')}
+                  disabled={matterStore.isChangingWindow}
+                  onClick={() => setChangingCode(true)}
                 />
                 {matterStore.hasWindowFailed && (
                   <span className="matter-dialogError">{t('matter.labels.window-failed')}</span>
@@ -287,6 +310,28 @@ const MatterPage = observer(() => {
               .
             </p>
           </Card>
+
+          <Confirm
+            isOpened={isChangingCode}
+            heading={t('matter.labels.new-code-heading')}
+            variant="danger"
+            acceptLabel={t('matter.buttons.new-code-confirm')}
+            cancelLabel={t('matter.buttons.new-code-cancel')}
+            isLoading={matterStore.isChangingWindow}
+            closeCallback={() => setChangingCode(false)}
+            confirmCallback={async () => {
+              if (await matterStore.changeCode()) {
+                setChangingCode(false);
+              }
+            }}
+          >
+            <p className="matter-dialogText">{t('matter.labels.new-code-why')}</p>
+            <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.new-code-cost')}</p>
+            <p className="matter-dialogText">{t('matter.labels.new-code-when')}</p>
+            {matterStore.hasWindowFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.new-code-failed')}</p>
+            )}
+          </Confirm>
 
           {/* Unpairing in the app comes first because unpairing from here leaves the
               bridge and its devices in that app until somebody deletes them by hand.

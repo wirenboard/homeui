@@ -2,7 +2,9 @@
 import { runInAction } from 'mobx';
 import { authStore } from '@/stores/auth';
 import { matterStore } from '@/stores/matter';
-import { closeMatterWindow, getMatterStatus, openMatterWindow } from '@/stores/matter/api';
+import {
+  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow,
+} from '@/stores/matter/api';
 import { render, screen, fireEvent, waitFor } from '@/test/render';
 import MatterPage from './matter';
 
@@ -18,6 +20,7 @@ vi.mock('@/stores/matter/api', async (importOriginal) => ({
   getMatterStatus: vi.fn(),
   openMatterWindow: vi.fn(),
   closeMatterWindow: vi.fn(),
+  changeMatterCode: vi.fn(),
 }));
 vi.mock('@/assets/icons/copy.svg', () => ({ default: () => null }));
 
@@ -50,6 +53,8 @@ describe('MatterPage, the pairing window', () => {
     vi.mocked(openMatterWindow).mockResolvedValue({ ok: true, closes_at: Date.now() + 1000 });
     vi.mocked(closeMatterWindow).mockReset();
     vi.mocked(closeMatterWindow).mockResolvedValue({ ok: true, closes_at: null });
+    vi.mocked(changeMatterCode).mockReset();
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: true, closes_at: null });
     uiMock.modules = ['matter'];
     uiMock.menuItems = [{ id: 'integrations' }];
     runInAction(() => {
@@ -101,5 +106,46 @@ describe('MatterPage, the pairing window', () => {
     fireEvent.click(screen.getByText('matter.buttons.close-window'));
 
     await waitFor(() => expect(closeMatterWindow).toHaveBeenCalledTimes(1));
+  });
+
+  it('does not change the code when a window is opened', async () => {
+    // The code belongs to the controller and stays put, so an app that remembered it -
+    // which is where a third-party "Share" screen gets its QR - keeps working.
+    vi.mocked(getMatterStatus).mockResolvedValue(CLOSED as any);
+    render(<MatterPage />);
+
+    fireEvent.click(await screen.findByText('matter.buttons.open-window'));
+
+    await waitFor(() => expect(openMatterWindow).toHaveBeenCalledTimes(1));
+    expect(changeMatterCode).not.toHaveBeenCalled();
+  });
+
+  it('offers to change the code only while the window is closed', async () => {
+    // The bridge refuses under an open window, which runs on the code it was opened
+    // with, so the button would only ever produce a refusal there.
+    vi.mocked(getMatterStatus).mockResolvedValue(CLOSED as any);
+    const page = render(<MatterPage />);
+    expect(await screen.findByText('matter.buttons.new-code')).toBeInTheDocument();
+
+    page.unmount();
+    vi.mocked(getMatterStatus).mockResolvedValue(OPEN as any);
+    render(<MatterPage />);
+
+    expect(await screen.findByText('matter.labels.window-left')).toBeInTheDocument();
+    expect(screen.queryByText('matter.buttons.new-code')).not.toBeInTheDocument();
+  });
+
+  it('asks before changing the code, and says what it costs', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue(CLOSED as any);
+    render(<MatterPage />);
+
+    fireEvent.click(await screen.findByText('matter.buttons.new-code'));
+
+    expect(await screen.findByText('matter.labels.new-code-cost')).toBeInTheDocument();
+    expect(changeMatterCode).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('matter.buttons.new-code-confirm'));
+
+    await waitFor(() => expect(changeMatterCode).toHaveBeenCalledTimes(1));
   });
 });
