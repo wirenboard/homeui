@@ -1456,7 +1456,12 @@
          "window-closed-paired": "The pairing window is closed: no further app can be added right now. The apps already connected go on working.",
          "window-closed-why": "That is on purpose. The bridge opens only when a person asks it to, or anyone who found the controller on the network first could pair with it. A window lasts 15 minutes.",
          "window-left": "The window closes in {{left}}",
-         "window-new-code": "The code is a new one, and the previous code has stopped working. Opening the window again will change it once more.",
+         "window-new-code": "This is the code of this controller. It does not change when the window is opened again, so an app that remembered it keeps working.",
+         "new-code-heading": "Change the pairing code",
+         "new-code-why": "The code of this controller is its own - no two controllers share one - and it stays the same from one window to the next. Change it when it has got out: a screenshot in a ticket, a diagnostic bundle, somebody reading this page over a shoulder.",
+         "new-code-cost": "An app that is already paired keeps working. But an app that remembered the old code - which is what its own \"Share\" screen shows - will offer the wrong one until it is paired again.",
+         "new-code-when": "Close the pairing window first: an open window runs on the code it was opened with.",
+         "new-code-failed": "The code was not changed. The journal of the service says more.",
          "window-failed": "That did not go through. If an app is pairing right now, try again in a minute; the journal of the service says more.",
          "qr-alt": "Matter pairing QR code",
          "step-app": "Open a smart home app: Apple Home, Google Home, Alice or SmartThings.",
@@ -1503,7 +1508,10 @@
          "unpair-here": "Unpair here anyway",
          "open-window": "Open the pairing window",
          "close-window": "Close the window",
-         "unpair-close": "Close"
+         "unpair-close": "Close",
+         "new-code": "Change the code",
+         "new-code-confirm": "Change the code",
+         "new-code-cancel": "Leave it"
       }
    }
 }

@@ -325,6 +325,20 @@ describe('MatterPage', () => {
     expect(await screen.findByText('matter.labels.state-silent')).toBeInTheDocument();
   });
 
+  it('shows the reading of a sensor as it is, with no key around it', async () => {
+    // Only on and off have a translation. A temperature arrives as the text the service
+    // formatted ("10.0 C"), and without a default i18next prints the key it looked for -
+    // which is what the Matter page showed on the stand: "matter.labels.state-10.0 C".
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...NOT_PAIRED,
+      devices: { ...NOT_PAIRED.devices, list: [{ ...WB_DEVICE, state: '10.0 °C' }] },
+    } as any);
+    render(<MatterPage />);
+
+    expect(await screen.findByText('10.0 °C')).toBeInTheDocument();
+    expect(screen.queryByText(/matter\.labels\.state-/)).not.toBeInTheDocument();
+  });
+
   it('opens the card of the device in the configurator', async () => {
     // The store of the configurator is the real one: the selection it keeps is what
     // makes its page open on this device, and no file of that page is touched for it.

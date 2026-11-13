@@ -1,5 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { closeMatterWindow, getMatterStatus, openMatterWindow, unpairMatterApp } from './api';
+import {
+  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, unpairMatterApp,
+} from './api';
 import type { MatterStatus, MatterWindow } from './types';
 
 /**
@@ -93,6 +95,18 @@ export default class MatterStore {
   /** Closes it before its time. */
   async closeWindow() {
     return this.#changeWindow(closeMatterWindow);
+  }
+
+  /**
+   * Replaces the pairing code of this controller.
+   *
+   * Shares isChangingWindow and hasWindowFailed with the two above on purpose: from the
+   * page's side these are the same thing - one request to the bridge about the code,
+   * one busy state, one place a failure is shown - and a third pair of flags would only
+   * be three states to keep in step.
+   */
+  async changeCode() {
+    return this.#changeWindow(changeMatterCode);
   }
 
   /** Reads the state now and keeps it up to date while the tab is visible. */

@@ -14,7 +14,10 @@ export const pairingQrUrl = (version: string) => `/matter/pairing.svg?v=${encode
 
 /**
  * Opens the pairing window, which is the only way the bridge becomes pairable at all:
- * it comes up closed. Every open issues a new code and kills the previous one.
+ * it comes up closed. The code does not change when a window opens: it is this
+ * controller's own code, drawn once and kept, so an app that remembered it - which is
+ * how a third-party "Share" screen draws its QR - keeps working. Replacing it is a
+ * separate, deliberate act: changeMatterCode below.
  *
  * The code is not in this answer and must not be: it is served from /status alone, so
  * there is one place that decides whether a credential may be shown.
@@ -24,9 +27,22 @@ export const openMatterWindow = async () => {
   return data;
 };
 
-/** Closes the window before its time, and kills the code it was showing. */
+/** Closes the window before its time, and the code stops being offered. */
 export const closeMatterWindow = async () => {
   const { data } = await request.post<MatterWindow>('/matter/pair/close');
+  return data;
+};
+
+/**
+ * Draws a new pairing code for this controller. For when the old one has got out - a
+ * screenshot in a ticket, a diagnostic bundle - and not as a matter of routine: an app
+ * that remembered the old code will offer the wrong one afterwards.
+ *
+ * The bridge refuses while a window is open, with a 409 the store treats like any other
+ * failure. The new code is not in this answer either, for the same reason as above.
+ */
+export const changeMatterCode = async () => {
+  const { data } = await request.post<MatterWindow>('/matter/pair/new-code');
   return data;
 };
 
