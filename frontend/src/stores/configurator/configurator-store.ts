@@ -3,6 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { findType, hasUnit } from './catalog';
 import { clone, fromConfig, moduleName, stable, toConfig } from './model';
 import type {
+  Adapter,
   BackendState,
   BackendStatus,
   BuiltConfig,
@@ -21,6 +22,17 @@ const STATUS_URL = '/converter-ext/status';
 const CONFIG_URL = '/converter-ext/config';
 // did 0–9 зарезервированы (корневой узел Matter, bridge aid в HomeKit).
 const FIRST_DID = 10;
+// Пока сервис не прислал реестр адаптеров, обе системы считаются доступными.
+const DEFAULT_ADAPTERS: Adapter[] = [
+  { id: 'matter', title: { ru: 'Matter', en: 'Matter' }, installed: true, active: true },
+  {
+    id: 'alice',
+    title: { ru: 'Яндекс Алиса', en: 'Yandex Alice' },
+    languages: ['ru'],
+    installed: true,
+    active: true,
+  },
+];
 
 export class ConfigParseError extends Error {
   constructor(public path: string) {
@@ -37,6 +49,7 @@ export default class ConfiguratorStore {
   mixed: Record<string, boolean> = {};
   selection: Selection = null;
   backendState: BackendState = 'checking';
+  adapters: Adapter[] = DEFAULT_ADAPTERS;
   isLoading = false;
   isSaving = false;
 
@@ -97,6 +110,9 @@ export default class ConfiguratorStore {
       const status = await this._fetchStatus();
       runInAction(() => {
         this.backendState = status ? 'available' : 'unavailable';
+        if (Array.isArray(status?.adapters)) {
+          this.adapters = status.adapters;
+        }
       });
       if (!status?.has_config) {
         this._apply(fromConfig(null), null);

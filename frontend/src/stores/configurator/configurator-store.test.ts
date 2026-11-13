@@ -363,3 +363,17 @@ describe('ConfiguratorStore editing', () => {
     expect(device).toMatchObject({ name: 'Кухня', matter: true, alice: false });
   });
 });
+
+describe('ConfiguratorStore adapters registry', () => {
+  it('takes the adapters from the backend status and keeps the defaults when the status has none', async () => {
+    const store = new ConfiguratorStore();
+    stubBackend({ status: [respond({ has_config: false })] });
+    await store.load();
+    expect(store.adapters.map(({ id, installed }) => [id, installed])).toEqual([['matter', true], ['alice', true]]);
+
+    const adapters = [{ id: 'matter', package: 'wb-mqtt-matter-bridge', installed: false, active: false }];
+    stubBackend({ status: [respond({ has_config: false, adapters })] });
+    await store.load();
+    expect(store.adapters).toEqual(adapters);
+  });
+});

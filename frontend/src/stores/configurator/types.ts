@@ -176,10 +176,26 @@ export type Selection = { id: string } | null;
 
 export type BackendState = 'checking' | 'available' | 'unavailable';
 
+export type AdapterId = 'matter' | 'alice';
+
+// Запись реестра адаптеров из /converter-ext/status.
+export interface Adapter {
+  id: string;
+  title?: { ru?: string; en?: string };
+  package?: string;
+  service?: string;
+  url?: string;
+  // языки интерфейса, на которых система доступна; без поля — на всех
+  languages?: string[];
+  installed: boolean;
+  active: boolean;
+}
+
 export interface BackendStatus {
   has_config?: boolean;
   parses?: boolean;
   path?: string;
   modified_at?: number;
   device_count?: number;
+  adapters?: Adapter[];
 }
