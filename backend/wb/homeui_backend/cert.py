@@ -49,7 +49,9 @@ def load_certificate(cert_pem_file_name: str) -> x509.Certificate:
 
 
 def has_enough_lifetime(cert: x509.Certificate) -> bool:
-    return (cert.not_valid_after - datetime.datetime.now()).days >= MIN_DAYS_BEFORE_RENEW
+    return (
+        cert.not_valid_after_utc - datetime.datetime.now(datetime.timezone.utc)
+    ).days >= MIN_DAYS_BEFORE_RENEW
 
 
 def is_certificate_usable() -> bool:
