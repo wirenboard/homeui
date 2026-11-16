@@ -3,7 +3,13 @@ wb-mqtt-homeui (2.287.0) stable; urgency=medium
   * Show table settings (e.g. DALI scenes) as cards on mobile
   * Fix DALI device header overflow on mobile: truncate long names, show status as an icon
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 14:11:58 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 16:22:41 +0500
+
+wb-mqtt-homeui (2.286.5) stable; urgency=medium
+
+  * Show icon-only toolbar buttons on the DALI device page on mobile so they fit on one row
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 12:05:01 +0500
 
 wb-mqtt-homeui (2.286.4) stable; urgency=medium
 
