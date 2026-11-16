@@ -101,12 +101,12 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
   const toolbarHeading = (
     <div className="dali-tabToolbar-heading">
       <h2 className="dali-contentTitle">
-        {store.label}
+        <span className="dali-contentTitleName" title={store.label}>{store.label}</span>
         {store.parent && (
           <span className="dali-contentTitleContext">{t('dali.labels.bus', { num: store.parent.index })}</span>
         )}
       </h2>
-      <GearErrorStatus mqttId={store.mqttId} />
+      <GearErrorStatus mqttId={store.mqttId} isIconOnly={isMobile} />
     </div>
   );
 
