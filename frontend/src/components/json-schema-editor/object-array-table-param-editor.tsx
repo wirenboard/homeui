@@ -118,7 +118,10 @@ const ObjectArrayTableEditorMobile = observer(({
             {(itemStore as ObjectStore).params.map((paramStore) => (
               <ParamEditor
                 key={paramStore.key}
-                label={translator.find(paramStore.store.schema.title || paramStore.key, i18n.language)}
+                // A non-compact boolean shows its own title, like in EditorCommonWrapper
+                label={paramStore.store.storeType !== 'boolean' || paramStore.store.schema.options?.compact
+                  ? translator.find(paramStore.store.schema.title || paramStore.key, i18n.language)
+                  : undefined}
                 paramStore={paramStore}
                 rootStore={rootStore}
                 translator={translator}
