@@ -94,6 +94,8 @@ class MqttClient {
       reconnectPeriod: 15000,
       connectTimeout: 15000,
       resubscribe: false,
+      // mqtt.js rebuilds the URL from url.parse(), which strips IPv6 brackets
+      transformWsUrl: () => wsUrl,
     };
     if (user && password) {
       options.username = user;
