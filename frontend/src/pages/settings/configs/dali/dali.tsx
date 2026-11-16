@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -67,7 +68,7 @@ const buildTreeItems = (
 const DaliPage = observer(() => {
   const store = useStore(() => new DaliPageStore(daliGlobalStore));
   const { t, i18n } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 991 });
+  const showTreeWithContent = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
   const selectedItem = store.selectedItem;
 
   const itemStoreMap = new Map<string, ItemStore>();
@@ -76,7 +77,7 @@ const DaliPage = observer(() => {
   useEffect(() => {
     const fetchData = async () => {
       await store.load();
-      if (!isMobile) {
+      if (showTreeWithContent) {
         store.selectItem(store.gateways.at(0) ?? null);
       }
     };
@@ -97,7 +98,7 @@ const DaliPage = observer(() => {
       errors={store.errors}
       actions={
         <>
-          {isMobile && selectedItem && (
+          {!showTreeWithContent && selectedItem && (
             <Button label={t('dali.buttons.return')} variant="secondary" onClick={() => store.selectItem(null)} />
           )}
         </>
@@ -113,7 +114,7 @@ const DaliPage = observer(() => {
         </Alert>
       ) : (
         <div className="dali">
-          {(!isMobile || !selectedItem) && (
+          {(showTreeWithContent || !selectedItem) && (
             <aside className="dali-list">
               <Tree
                 data={data}
@@ -123,7 +124,7 @@ const DaliPage = observer(() => {
               />
             </aside>
           )}
-          {(!isMobile || selectedItem) && (
+          {(showTreeWithContent || selectedItem) && (
             <section className="dali-content">
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>

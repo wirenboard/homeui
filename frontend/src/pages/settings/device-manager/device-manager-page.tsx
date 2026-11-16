@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { serialConfiPath } from '@/common/paths';
 import i18n from '@/i18n/config';
 import {
@@ -21,7 +22,7 @@ import ScanPage from './scan';
 import type { StateTransitions } from './types';
 
 const DeviceManagerPage = observer(() => {
-  const isMobile = useMediaQuery({ maxWidth: 991 });
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
 
   const store = useStore(() => {
     let storeInstance: DeviceManagerPageStore;

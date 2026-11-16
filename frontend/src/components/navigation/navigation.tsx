@@ -8,7 +8,7 @@ import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
 import ConsoleIcon from '@/assets/icons/console.svg';
 import LogoutIcon from '@/assets/icons/logout.svg';
 import MenuIcon from '@/assets/icons/menu.svg';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MIN_LAPTOP_WIDTH } from '@/common/breakpoints';
 import { APP_NAME, HIDE_COMPACT_MENU, LOGO, LOGO_COMPACT } from '@/common/constants';
 import { MenuItem } from '@/components/navigation/components/menu-item';
 import { Tooltip } from '@/components/tooltip';
@@ -26,7 +26,7 @@ export const Navigation = observer(() => {
   const location = useLocation();
   const params = useParams();
   const [searchParams] = useSearchParams();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const showSideMenu = useMediaQuery({ minWidth: MIN_LAPTOP_WIDTH });
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
   const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
   const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
@@ -70,8 +70,8 @@ export const Navigation = observer(() => {
 
   useEffect(() => {
     setIsMobileMenuOpened(false);
-    setIsMenuCompact(isMobile ? false : localStorage.getItem('isMenuCompact') === 'true');
-  }, [isMobile]);
+    setIsMenuCompact(showSideMenu && localStorage.getItem('isMenuCompact') === 'true');
+  }, [showSideMenu]);
 
   const handleLogout = () => {
     setIsMobileMenuOpened(false);

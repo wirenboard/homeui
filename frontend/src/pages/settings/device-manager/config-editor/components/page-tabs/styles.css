@@ -13,7 +13,7 @@
     flex-shrink: 0;
     max-width: 250px;
 
-    @media (max-width: 991px) {
+    @media (--max-mobile-width) {
         width: 100%;
         max-width: unset;
     }

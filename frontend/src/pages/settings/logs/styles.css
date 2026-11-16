@@ -57,7 +57,7 @@
     white-space: nowrap;
 }
 
-@media (max-width: 500px) {
+@media (--max-mobile-width) {
     .logs-grid {
         grid-template-columns: auto 1fr;
     }

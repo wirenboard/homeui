@@ -23,9 +23,12 @@
     gap: 12px;
     flex-wrap: wrap;
 
-    @media(max-width: 768px) {
-        gap: 6px;
+    @media (--max-tablet-width) {
         padding-top: 0;
+    }
+
+    @media (--max-mobile-width) {
+        gap: 6px;
     }
 }
 

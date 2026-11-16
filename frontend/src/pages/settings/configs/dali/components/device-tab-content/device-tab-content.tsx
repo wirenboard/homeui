@@ -6,7 +6,7 @@ import BrushIcon from '@/assets/icons/brush.svg';
 import BulbIcon from '@/assets/icons/bulb.svg';
 import CheckIcon from '@/assets/icons/check.svg';
 import RefreshIcon from '@/assets/icons/refresh.svg';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { FormButtonGroup } from '@/components/form';
@@ -34,7 +34,7 @@ export const wrongSchemeInstances = (config: object | undefined): string[] =>
 
 export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const showIconButtons = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   const [identify, isIdentifying] = useAsyncAction(async () => {
     await store.identify();
   });
@@ -65,9 +65,9 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
   const identifyButton = (
     <Tooltip text={t('dali.labels.identify-tooltip')}>
       <Button
-        label={isMobile ? undefined : t('dali.buttons.identify')}
+        label={showIconButtons ? undefined : t('dali.buttons.identify')}
         aria-label={t('dali.buttons.identify')}
-        icon={isMobile && <BulbIcon />}
+        icon={showIconButtons && <BulbIcon />}
         isLoading={isIdentifying}
         disabled={isBusy}
         onClick={identify}
@@ -75,11 +75,11 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     </Tooltip>
   );
   const resetButton = (
-    <Tooltip text={isMobile ? t('dali.buttons.reset') : undefined}>
+    <Tooltip text={showIconButtons ? t('dali.buttons.reset') : undefined}>
       <Button
-        label={isMobile ? undefined : t('dali.buttons.reset')}
+        label={showIconButtons ? undefined : t('dali.buttons.reset')}
         aria-label={t('dali.buttons.reset')}
-        icon={isMobile && <BrushIcon />}
+        icon={showIconButtons && <BrushIcon />}
         variant="danger"
         disabled={isBusy}
         onClick={() => setIsResetDialogOpen(true)}
@@ -87,11 +87,11 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     </Tooltip>
   );
   const saveButton = (
-    <Tooltip text={isMobile ? t('common.buttons.save') : undefined}>
+    <Tooltip text={showIconButtons ? t('common.buttons.save') : undefined}>
       <Button
-        label={isMobile ? undefined : t('common.buttons.save')}
+        label={showIconButtons ? undefined : t('common.buttons.save')}
         aria-label={t('common.buttons.save')}
-        icon={isMobile && <CheckIcon />}
+        icon={showIconButtons && <CheckIcon />}
         disabled={isBusy || !store.objectStore?.isDirty || store.objectStore.hasErrors}
         onClick={() => store.save()}
       />
@@ -106,7 +106,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
           <span className="dali-contentTitleContext">{t('dali.labels.bus', { num: store.parent.index })}</span>
         )}
       </h2>
-      <GearErrorStatus mqttId={store.mqttId} isIconOnly={isMobile} />
+      <GearErrorStatus mqttId={store.mqttId} isIconOnly={showIconButtons} />
     </div>
   );
 
@@ -148,7 +148,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     />
   );
 
-  if (isMobile) {
+  if (showIconButtons) {
     return (
       <>
         <div className="dali-tabToolbar">

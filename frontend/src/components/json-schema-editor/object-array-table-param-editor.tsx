@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import PlusIcon from '@/assets/icons/plus.svg';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Table, TableRow, TableCell } from '@/components/table';
@@ -137,7 +137,7 @@ const ObjectArrayTableEditorMobile = observer(({
 
 const ObjectArrayTableEditor = observer(({ store, rootStore, translator, editorBuilder } : ArrayEditorProps) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const showCards = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   if (!editorBuilder) {
     return null;
   }
@@ -146,7 +146,7 @@ const ObjectArrayTableEditor = observer(({ store, rootStore, translator, editorB
      store.schema.minItems === undefined ||
      store.schema.maxItems !== store.schema.minItems);
   // A single column fits a phone screen as a table
-  const Editor = isMobile && Object.keys((store.schema.items as JsonSchema).properties).length > 1
+  const Editor = showCards && Object.keys((store.schema.items as JsonSchema).properties).length > 1
     ? ObjectArrayTableEditorMobile
     : ObjectArrayTableEditorDesktop;
   return (

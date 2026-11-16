@@ -39,6 +39,10 @@ npm run lint          # eslint — must pass clean (npm run lint:fix to autofix)
 npm test              # vitest run — all tests green, with zero console warnings/errors
 ```
 
+Before opening a PR (or in an explicitly requested PR review) that touches `src/**/*.css` / `*.tsx`,
+also check the affected pages on the breakpoint sizes: procedure and `npm run screens` in
+`../docs/breakpoints.md`. Not after every edit.
+
 `npm test`'s default reporter hides console output from passing tests — a warning can be silently
 there even when everything is green. Check with `npm test -- --reporter=verbose` (or target the
 changed/new files) and grep for `Warning:`/`stderr |` before calling a test done. Common causes:
@@ -90,6 +94,9 @@ Path alias: `@/` → `src/` (configured in `tsconfig.json`, `vite.config.ts`, `v
   `@testing-library/react`. Setup file `src/test/setup-components.ts`. Co-locate tests as
   `*.test.ts(x)` next to the code. A test must not print console warnings/errors — see the
   verification pipeline above for how to check and the common causes/fixes.
+- Responsive layout: widths come from `src/common/breakpoints.ts` / `breakpoints.css` (`MAX_MOBILE_WIDTH`,
+  `--max-mobile-width`, `--min-tablet-width` etc.), never numbers in `@media` or `useMediaQuery`. Modes, rationale and the sizes to check UI
+  changes on before a PR: `../docs/breakpoints.md`.
 - Device/control modeling lives in `src/stores/devices/` (`Cell`, `Device`, cell-type maps). MQTT
   device/control conventions follow https://github.com/wirenboard/conventions.
 

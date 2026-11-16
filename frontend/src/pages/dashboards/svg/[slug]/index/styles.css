@@ -47,7 +47,7 @@
     }
 }
 
-@media (max-width: 767px) {
+@media (--max-mobile-width) {
     body:not(.hmi) .svgDashboard {
         padding-bottom: 5px;
     }

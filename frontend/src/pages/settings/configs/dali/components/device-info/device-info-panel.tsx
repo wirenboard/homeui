@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import { LAPTOP_MAX_WIDTH } from '@/common/breakpoints';
+import { MAX_LAPTOP_WIDTH } from '@/common/breakpoints';
 import { ZoomableImage } from '@/components/zoomable-image';
 import { getDevicePictureUrl } from '@/stores/dali/device-store';
 import type { DeviceInfoPanelProps } from './types';
@@ -9,7 +9,7 @@ import './styles.css';
 
 export const DeviceInfoPanel = ({ description }: DeviceInfoPanelProps) => {
   const { t } = useTranslation();
-  const isStacked = useMediaQuery({ maxWidth: LAPTOP_MAX_WIDTH });
+  const showPictureAbove = useMediaQuery({ maxWidth: MAX_LAPTOP_WIDTH });
   const pictureUrl = getDevicePictureUrl(description);
   const typeNames = (description.types ?? [])
     .map((type) => t(`dali.device-types.${type}`, { defaultValue: `DT${type}` }));
@@ -35,7 +35,7 @@ export const DeviceInfoPanel = ({ description }: DeviceInfoPanelProps) => {
   }
 
   return (
-    <div className={classNames('daliDeviceInfo', { 'daliDeviceInfo-stacked': isStacked })}>
+    <div className={classNames('daliDeviceInfo', { 'daliDeviceInfo-stacked': showPictureAbove })}>
       <div className="daliDeviceInfo-body">
         {pictureUrl && (
           <ZoomableImage
