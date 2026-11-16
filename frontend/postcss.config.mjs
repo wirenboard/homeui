@@ -1,11 +1,17 @@
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import postcssGlobalData from '@csstools/postcss-global-data';
+import autoprefixer from 'autoprefixer';
+import postcssCustomMedia from 'postcss-custom-media';
 
-module.exports = {
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default {
   plugins: [
-    require('@csstools/postcss-global-data')({
-      files: [path.resolve(__dirname, 'src/common/breakpoints.css')],
+    postcssGlobalData({
+      files: [path.resolve(dirname, 'src/common/breakpoints.css')],
     }),
-    require('postcss-custom-media'),
-    require('autoprefixer'),
+    postcssCustomMedia(),
+    autoprefixer(),
   ],
 };
