@@ -2,6 +2,10 @@ import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import BrushIcon from '@/assets/icons/brush.svg';
+import BulbIcon from '@/assets/icons/bulb.svg';
+import CheckIcon from '@/assets/icons/check.svg';
+import RefreshIcon from '@/assets/icons/refresh.svg';
 import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -61,7 +65,9 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
   const identifyButton = (
     <Tooltip text={t('dali.labels.identify-tooltip')}>
       <Button
-        label={t('dali.buttons.identify')}
+        label={isMobile ? undefined : t('dali.buttons.identify')}
+        aria-label={t('dali.buttons.identify')}
+        icon={isMobile && <BulbIcon />}
         isLoading={isIdentifying}
         disabled={isBusy}
         onClick={identify}
@@ -69,19 +75,27 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     </Tooltip>
   );
   const resetButton = (
-    <Button
-      label={t('dali.buttons.reset')}
-      variant="danger"
-      disabled={isBusy}
-      onClick={() => setIsResetDialogOpen(true)}
-    />
+    <Tooltip text={isMobile ? t('dali.buttons.reset') : undefined}>
+      <Button
+        label={isMobile ? undefined : t('dali.buttons.reset')}
+        aria-label={t('dali.buttons.reset')}
+        icon={isMobile && <BrushIcon />}
+        variant="danger"
+        disabled={isBusy}
+        onClick={() => setIsResetDialogOpen(true)}
+      />
+    </Tooltip>
   );
   const saveButton = (
-    <Button
-      label={t('common.buttons.save')}
-      disabled={isBusy || !store.objectStore?.isDirty || store.objectStore.hasErrors}
-      onClick={() => store.save()}
-    />
+    <Tooltip text={isMobile ? t('common.buttons.save') : undefined}>
+      <Button
+        label={isMobile ? undefined : t('common.buttons.save')}
+        aria-label={t('common.buttons.save')}
+        icon={isMobile && <CheckIcon />}
+        disabled={isBusy || !store.objectStore?.isDirty || store.objectStore.hasErrors}
+        onClick={() => store.save()}
+      />
+    </Tooltip>
   );
 
   const toolbarHeading = (
@@ -142,7 +156,14 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
           <div className="dali-tabToolbar-actions">
             <FormButtonGroup>
               {identifyButton}
-              <Button label={t('dali.buttons.reload-settings')} disabled={isBusy} onClick={() => store.load(true)} />
+              <Tooltip text={t('dali.buttons.reload-settings')}>
+                <Button
+                  aria-label={t('dali.buttons.reload-settings')}
+                  icon={<RefreshIcon />}
+                  disabled={isBusy}
+                  onClick={() => store.load(true)}
+                />
+              </Tooltip>
               {resetButton}
               {saveButton}
             </FormButtonGroup>
