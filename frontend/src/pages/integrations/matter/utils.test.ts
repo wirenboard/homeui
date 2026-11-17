@@ -1,9 +1,9 @@
 import { type TFunction } from 'i18next';
 import type { MatterDevice, MatterFabric } from '@/stores/matter';
-import { LinkState, PairedDateKind } from './types';
+import { FabricLabelSource, LinkState, PairedDateKind } from './types';
 import {
-  appDisplayName, configuratorSelection, detailParts, groupManualCode, isColour, linkState,
-  pairedDateKind, timeLeft, vendorHex,
+  configuratorSelection, detailParts, fabricDisplayLabel, fabricLabelSource, groupManualCode,
+  isColour, linkState, pairedDateKind, replacedFabricLabel, timeLeft, vendorHex,
 } from './utils';
 
 describe('groupManualCode', () => {
@@ -93,39 +93,47 @@ describe('the vendor id as it is written down', () => {
   });
 });
 
-describe('what to call a connected app', () => {
+describe('what to call a connected fabric', () => {
   // Returns the key, like the i18n mock of the page tests, so a test can tell which of
   // the fallbacks was taken.
   const t = ((key: string) => key) as TFunction;
   const fabric = (over: Partial<MatterFabric>): MatterFabric => (
-    { index: 1, label: '', vendor_id: 4911, ...over }
+    { index: 1, adminFabricLabel: '', vendor_id: 4911, ...over }
   );
 
-  it('prefers the name typed on this controller over everything else', () => {
-    expect(appDisplayName(fabric({ alias: 'Hall phone', label: 'Yandex' }), t)).toBe('Hall phone');
+  it('prefers the label typed on this controller over everything else', () => {
+    const typedHere = fabric({ localFabricLabel: 'Hall phone', adminFabricLabel: 'Yandex' });
+
+    expect(fabricDisplayLabel(typedHere, t)).toBe('Hall phone');
+    expect(fabricLabelSource(typedHere)).toBe(FabricLabelSource.Local);
   });
 
-  it('takes the label when there is no name of ours', () => {
-    expect(appDisplayName(fabric({ label: 'Home Assistant' }), t)).toBe('Home Assistant');
+  it('takes the label of the fabric itself when there is none of ours', () => {
+    expect(fabricDisplayLabel(fabric({ adminFabricLabel: 'Home Assistant' }), t)).toBe('Home Assistant');
+    expect(fabricLabelSource(fabric({ adminFabricLabel: 'Home Assistant' }))).toBe(FabricLabelSource.Admin);
   });
 
   it('falls back to a vendor it recognises', () => {
-    expect(appDisplayName(fabric({ vendor_id: 4911 }), t)).toBe('matter.labels.vendor-yandex');
+    expect(fabricDisplayLabel(fabric({ vendor_id: 4911 }), t)).toBe('matter.labels.vendor-yandex');
+    expect(fabricLabelSource(fabric({ vendor_id: 4911 }))).toBe(FabricLabelSource.Vendor);
   });
 
-  it('names an app that gave nothing by its fabric number, which is all it has', () => {
-    // Two such apps have to be tellable apart, or the operator cannot know which one to
-    // remove. Four of nine on our own stand were in this state.
-    expect(appDisplayName(fabric({ index: 15, vendor_id: 0x1037 }), t)).toBe('matter.labels.app-unnamed');
+  it('names a fabric that gave nothing by its number, which is all it has', () => {
+    // Two such fabrics have to be tellable apart, or the operator cannot know which one
+    // to remove. Four of nine on our own stand were in this state.
+    const bare = fabric({ index: 15, vendor_id: 0x1037 });
+
+    expect(fabricDisplayLabel(bare, t)).toBe('matter.labels.fabric-unlabelled');
+    expect(fabricLabelSource(bare)).toBe(FabricLabelSource.None);
   });
 });
 
-describe('when an app paired', () => {
+describe('when a fabric paired', () => {
   it('is a date of its own when the bridge wrote one down', () => {
     expect(pairedDateKind({ paired_at: 1_700_000_000_000 } as MatterFabric, 1)).toBe(PairedDateKind.Dated);
   });
 
-  it('is "before" for an app already paired when the bridge started keeping dates', () => {
+  it('is "before" for a fabric already paired when the bridge started keeping dates', () => {
     // Not a blank: the bridge genuinely does not know the day, and a gap reads like a
     // defect rather than like an honest answer.
     expect(pairedDateKind({} as MatterFabric, 1_700_000_000_000)).toBe(PairedDateKind.Before);
@@ -137,7 +145,7 @@ describe('when an app paired', () => {
   });
 });
 
-describe('whether an app is on the line', () => {
+describe('whether a fabric is on the line', () => {
   it('is online whenever the bridge says a channel is open', () => {
     expect(linkState({ online: true } as MatterFabric)).toBe(LinkState.Online);
   });
@@ -156,5 +164,26 @@ describe('whether an app is on the line', () => {
 
   it('ignores a stale time while a channel is open', () => {
     expect(linkState({ online: true, last_seen: 1 } as MatterFabric)).toBe(LinkState.Online);
+  });
+});
+
+describe('what a label typed here replaced', () => {
+  const t = ((key: string) => key) as TFunction;
+  const fabric = (over: Partial<MatterFabric>): MatterFabric => (
+    { index: 15, adminFabricLabel: '', vendor_id: 0x1037, localFabricLabel: 'Hall phone', ...over }
+  );
+
+  it('is the label of the fabric itself when it had one', () => {
+    expect(replacedFabricLabel(fabric({ adminFabricLabel: 'Yandex' }), t)).toBe('Yandex');
+  });
+
+  it('is the vendor when the fabric set no label but the page knows the vendor', () => {
+    expect(replacedFabricLabel(fabric({ vendor_id: 4911 }), t)).toBe('matter.labels.vendor-yandex');
+  });
+
+  it('is the number when there was nothing else, which is what clearing brings back', () => {
+    // The note has to say what the row would read without our label, so this and the
+    // fallbacks of fabricDisplayLabel have to agree.
+    expect(replacedFabricLabel(fabric({}), t)).toBe('matter.labels.fabric-unlabelled');
   });
 });

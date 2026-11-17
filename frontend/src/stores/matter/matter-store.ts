@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import {
-  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, renameMatterApp,
-  unpairMatterApp,
+  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, setLocalFabricLabel,
+  unpairFabric,
 } from './api';
 import type { MatterStatus, MatterWindow } from './types';
 
@@ -19,16 +19,16 @@ export default class MatterStore {
   isLoading = true;
   // The service is installed but does not answer: stopped, crashed, or still starting.
   isUnreachable = false;
-  // The app being dropped right now, so the dialog can say so and cannot be used twice.
+  // The fabric being dropped right now, so the dialog can say so and cannot be used twice.
   unpairingIndex: number | null = null;
   // The last attempt did not go through. Cleared when the next one starts.
   hasUnpairFailed = false;
-  // The app being renamed right now, so its dialog can say so and cannot be used twice.
-  renamingIndex: number | null = null;
+  // The fabric being labelled right now, so its dialog can say so and cannot be used twice.
+  labellingIndex: number | null = null;
   // Kept apart from hasUnpairFailed rather than shared: the two have separate dialogs
-  // open at separate times, and one flag would show a failed rename inside the unpair
-  // dialog of the next app the operator opens.
-  hasRenameFailed = false;
+  // open at separate times, and one flag would show a failed label inside the unpair
+  // dialog of the next fabric the operator opens.
+  hasLabelFailed = false;
   // The window is being opened or closed right now, so the button cannot be pressed
   // twice and says it is busy.
   isChangingWindow = false;
@@ -70,7 +70,7 @@ export default class MatterStore {
   }
 
   /**
-   * Drops one app. Whatever the request answers, the state is read again right after:
+   * Drops one fabric. Whatever the request answers, the state is read again right after:
    * the bridge may have left the fabric and failed to reply, and what /status says is
    * the truth, not what this call returned.
    */
@@ -79,7 +79,7 @@ export default class MatterStore {
     this.hasUnpairFailed = false;
     let ok = true;
     try {
-      await unpairMatterApp(index);
+      await unpairFabric(index);
     } catch {
       ok = false;
     }
@@ -92,22 +92,22 @@ export default class MatterStore {
   }
 
   /**
-   * Names one app, or clears the name when given an empty one. The state is read again
-   * right after for the same reason as unpair: /status is the truth, not this answer.
+   * Labels one fabric, or clears the label when given an empty value. The state is read
+   * again right after for the same reason as unpair: /status is the truth, not this answer.
    */
-  async rename(index: number, name: string) {
-    this.renamingIndex = index;
-    this.hasRenameFailed = false;
+  async setLocalFabricLabel(index: number, value: string) {
+    this.labellingIndex = index;
+    this.hasLabelFailed = false;
     let ok = true;
     try {
-      await renameMatterApp(index, name);
+      await setLocalFabricLabel(index, value);
     } catch {
       ok = false;
     }
     await this.fetch();
     runInAction(() => {
-      this.renamingIndex = null;
-      this.hasRenameFailed = !ok;
+      this.labellingIndex = null;
+      this.hasLabelFailed = !ok;
     });
     return ok;
   }

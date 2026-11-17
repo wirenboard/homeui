@@ -4,26 +4,32 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import type { MatterFabric } from '@/stores/matter';
-import { type AppsCardProps, LinkState, PairedDateKind } from '../types';
-import { appDisplayName, linkState, pairedDateKind } from '../utils';
-import { AppMenu } from './app-menu';
+import { FabricLabelSource, type FabricsCardProps, LinkState, PairedDateKind } from '../types';
+import {
+  fabricDisplayLabel, fabricLabelSource, linkState, pairedDateKind, replacedFabricLabel,
+} from '../utils';
+import { FabricMenu } from './fabric-menu';
 
 /**
- * The apps paired with this bridge, in columns.
+ * The fabrics paired with this bridge, in columns.
  *
  * Columns and not a list, because the three facts in a row are the same kind of fact for
- * every app and the question people bring here is a comparison between rows: which of
+ * every fabric and the question people bring here is a comparison between rows: which of
  * these is still talking to my house, and which did I add when. A list answers that one
  * row at a time.
  */
-export const AppsCard = ({ fabrics, fabricsSince, onAction }: AppsCardProps) => {
+export const FabricsCard = ({ fabrics, fabricsSince, onAction }: FabricsCardProps) => {
   const { t, i18n } = useTranslation();
   // Matching the rest of the interface rather than inventing a format for this page.
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy, HH:mm' : 'dd/MM/yyyy, HH:mm';
+  // The bound on an unknown pairing has no business carrying minutes: the moment it
+  // names is when this controller started keeping dates, not when anything happened to
+  // the fabric. The year stays, because a bound without one is ambiguous every January.
+  const boundFormat = 'd MMMM yyyy';
   const dateLocale = i18n.language === 'ru' ? ru : enUS;
 
   /**
-   * When an app paired, as an absolute date and time.
+   * When a fabric paired, as an absolute date and time.
    *
    * Absolute, while the column beside it is relative, and that is the rule rather than an
    * oversight: this is a reference fact that gets compared between rows, so it has to
@@ -34,14 +40,16 @@ export const AppsCard = ({ fabrics, fabricsSince, onAction }: AppsCardProps) => 
       case PairedDateKind.Dated:
         return format(fabric.paired_at, dateFormat);
       case PairedDateKind.Before:
-        return t('matter.labels.paired-before', { date: format(fabricsSince, dateFormat) });
+        return t('matter.labels.paired-before', {
+          date: format(fabricsSince, boundFormat, { locale: dateLocale }),
+        });
       default:
         return t('matter.labels.paired-unknown');
     }
   };
 
   /**
-   * Whether an app is on the line, and if not, since when.
+   * Whether a fabric is on the line, and if not, since when.
    *
    * Relative, because the only question here is how fresh it is. The time is missing far
    * more often than it is present - the bridge writes it down only when a channel breaks,
@@ -61,14 +69,33 @@ export const AppsCard = ({ fabrics, fabricsSince, onAction }: AppsCardProps) => 
     }
   };
 
+  /**
+   * What the row says beside the label, when the label alone would be misleading.
+   *
+   * A label typed on this controller is marked with what it replaced, because it exists
+   * nowhere else: an operator comparing this page with the app's own screen has to be
+   * able to see which of the two names is ours. A fabric that set no label at all is
+   * marked too, so that a row showing a bare number does not read as a defect.
+   */
+  const labelNote = (fabric: MatterFabric) => {
+    switch (fabricLabelSource(fabric)) {
+      case FabricLabelSource.Local:
+        return t('matter.labels.fabric-label-instead', { label: replacedFabricLabel(fabric, t) });
+      case FabricLabelSource.None:
+        return t('matter.labels.fabric-no-label');
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Card className="matter-card" heading={t('matter.labels.ecosystems')}>
+    <Card className="matter-card" heading={t('matter.labels.fabrics')}>
       {fabrics.length === 0
-        ? <p className="matter-empty">{t('matter.labels.ecosystems-empty')}</p>
+        ? <p className="matter-empty">{t('matter.labels.fabrics-empty')}</p>
         : (
           <Table isFullWidth>
             <TableRow isHeading>
-              <TableCell>{t('matter.labels.column-app')}</TableCell>
+              <TableCell>{t('matter.labels.column-fabric')}</TableCell>
               <TableCell>{t('matter.labels.column-paired')}</TableCell>
               <TableCell>{t('matter.labels.column-link')}</TableCell>
               <TableCell>
@@ -79,23 +106,26 @@ export const AppsCard = ({ fabrics, fabricsSince, onAction }: AppsCardProps) => 
             {fabrics.map((fabric) => (
               <TableRow key={fabric.index}>
                 <TableCell>
-                  <span className="matter-appName">{appDisplayName(fabric, t)}</span>
+                  <span className="matter-fabricLabel">{fabricDisplayLabel(fabric, t)}</span>
+                  {labelNote(fabric) && (
+                    <span className="matter-fabricNote">{labelNote(fabric)}</span>
+                  )}
                 </TableCell>
                 <TableCell>
-                  <span className="matter-appWhen">{pairedText(fabric)}</span>
+                  <span className="matter-fabricWhen">{pairedText(fabric)}</span>
                 </TableCell>
                 <TableCell>
                   <span
                     className={linkState(fabric) === LinkState.Online
-                      ? 'matter-appLink matter-appLinkOnline'
-                      : 'matter-appLink'}
+                      ? 'matter-fabricLink matter-fabricLinkOnline'
+                      : 'matter-fabricLink'}
                   >
                     {linkText(fabric)}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <AppMenu
-                    appName={appDisplayName(fabric, t)}
+                  <FabricMenu
+                    label={fabricDisplayLabel(fabric, t)}
                     fabric={fabric}
                     onChoose={(action) => onAction(fabric, action)}
                   />
@@ -104,7 +134,7 @@ export const AppsCard = ({ fabrics, fabricsSince, onAction }: AppsCardProps) => 
             ))}
           </Table>
         )}
-      <p className="matter-hint">{t('matter.labels.ecosystems-hint')}</p>
+      <p className="matter-hint">{t('matter.labels.fabrics-hint')}</p>
     </Card>
   );
 };

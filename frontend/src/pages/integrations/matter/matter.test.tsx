@@ -3,7 +3,7 @@ import { runInAction } from 'mobx';
 import { authStore } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { matterStore } from '@/stores/matter';
-import { getMatterStatus, unpairMatterApp } from '@/stores/matter/api';
+import { getMatterStatus, unpairFabric } from '@/stores/matter/api';
 import { render, screen, fireEvent, waitFor } from '@/test/render';
 import { copyToClipboard } from '@/utils/clipboard';
 import MatterPage from './matter';
@@ -23,7 +23,7 @@ vi.mock('@/stores/matter/api', async (importOriginal) => ({
   // page uses, not a copy of it written here.
   ...await importOriginal() as Record<string, unknown>,
   getMatterStatus: vi.fn(),
-  unpairMatterApp: vi.fn(),
+  unpairFabric: vi.fn(),
   openMatterWindow: vi.fn(),
   closeMatterWindow: vi.fn(),
 }));
@@ -87,18 +87,27 @@ const PAIRED = {
   ...NOT_PAIRED,
   paired: true,
   pairing: null,
-  fabrics: [{ index: 1, label: 'Yandex', vendor_id: 4660 }],
+  fabrics: [{ index: 1, adminFabricLabel: 'Yandex', vendor_id: 4660 }],
 };
 
 describe('MatterPage', () => {
+  // The row menu is a shared Popup, and that renders through a portal into
+  // <div class="floating">, which the app shell provides (layouts/app/app.tsx). These
+  // tests render the page without the shell, so the menu would open and draw nothing.
+  beforeEach(() => {
+    const floatingRoot = document.createElement('div');
+    floatingRoot.className = 'floating';
+    document.body.append(floatingRoot);
+  });
+
   beforeEach(() => {
     vi.mocked(copyToClipboard).mockClear();
     navigateMock.mockClear();
     configuratorStore.select(null);
     vi.mocked(authStore.hasRights).mockReturnValue(true);
     vi.mocked(getMatterStatus).mockClear();
-    vi.mocked(unpairMatterApp).mockReset();
-    vi.mocked(unpairMatterApp).mockResolvedValue(undefined as any);
+    vi.mocked(unpairFabric).mockReset();
+    vi.mocked(unpairFabric).mockResolvedValue(undefined as any);
     vi.mocked(getMatterStatus).mockResolvedValue(NOT_PAIRED as any);
     uiMock.modules = ['matter'];
     uiMock.menuItems = [{ id: 'integrations' }];
@@ -140,7 +149,7 @@ describe('MatterPage', () => {
     expect(copyToClipboard).toHaveBeenCalledWith('23331712339');
   });
 
-  it('drops the code once the bridge is paired, and names the app', async () => {
+  it('drops the code once the bridge is paired, and names the fabric', async () => {
     // The pairing window closes with the first pairing and the code stops working, so
     // the page must not keep it on screen. The card stays, because that is where the
     // window is opened again for a second app.
@@ -206,28 +215,28 @@ describe('MatterPage', () => {
     await waitFor(() => expect(getMatterStatus).not.toHaveBeenCalled());
   });
 
-  it('names an app that gave no name of its own', async () => {
+  it('names a fabric that set no label of its own', async () => {
     // Yandex leaves the label of its fabric empty, and a bullet with nothing next to it
     // is what the page showed before. See docs/ecosystems.md of the bridge, finding Я3.
     vi.mocked(getMatterStatus).mockResolvedValue({
       ...PAIRED,
-      fabrics: [{ index: 1, label: '', vendor_id: 4911 }],
+      fabrics: [{ index: 1, adminFabricLabel: '', vendor_id: 4911 }],
     } as any);
     render(<MatterPage />);
 
     expect(await screen.findByText('matter.labels.vendor-yandex')).toBeInTheDocument();
   });
 
-  it('names an app it does not know by its fabric number, which is all it has', async () => {
+  it('names a fabric it does not know by its number, which is all it has', async () => {
     // By the number and not by the vendor: a test vendor id is worn by several different
     // controllers, so it tells two nameless apps apart no better than nothing would.
     vi.mocked(getMatterStatus).mockResolvedValue({
       ...PAIRED,
-      fabrics: [{ index: 1, label: '', vendor_id: 1234 }],
+      fabrics: [{ index: 1, adminFabricLabel: '', vendor_id: 1234 }],
     } as any);
     render(<MatterPage />);
 
-    expect(await screen.findByText('matter.labels.app-unnamed')).toBeInTheDocument();
+    expect(await screen.findByText('matter.labels.fabric-unlabelled')).toBeInTheDocument();
   });
 
   it('names the app side first and only then offers to unpair here', async () => {
@@ -238,28 +247,28 @@ describe('MatterPage', () => {
 
     // Two clicks and not one: unpairing lives behind the row's menu now, because it
     // cannot be undone in the app and a button one row off is a click somebody makes.
-    fireEvent.click(await screen.findByLabelText('matter.buttons.app-actions'));
+    fireEvent.click(await screen.findByLabelText('matter.buttons.fabric-actions'));
     fireEvent.click(screen.getByText('matter.buttons.unpair'));
 
     expect(await screen.findByText('matter.labels.unpair-heading')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.unpair-where')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.unpair-code')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.unpair-here-note')).toBeInTheDocument();
-    expect(vi.mocked(unpairMatterApp)).not.toHaveBeenCalled();
+    expect(vi.mocked(unpairFabric)).not.toHaveBeenCalled();
   });
 
-  it('unpairs the app the dialog was opened for, and closes', async () => {
+  it('unpairs the fabric the dialog was opened for, and closes', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue({
       ...PAIRED,
-      fabrics: [{ index: 3, label: 'Yandex', vendor_id: 4911 }],
+      fabrics: [{ index: 3, adminFabricLabel: 'Yandex', vendor_id: 4911 }],
     } as any);
     render(<MatterPage />);
-    fireEvent.click(await screen.findByLabelText('matter.buttons.app-actions'));
+    fireEvent.click(await screen.findByLabelText('matter.buttons.fabric-actions'));
     fireEvent.click(screen.getByText('matter.buttons.unpair'));
 
     fireEvent.click(await screen.findByText('matter.buttons.unpair-here'));
 
-    await waitFor(() => expect(vi.mocked(unpairMatterApp)).toHaveBeenCalledWith(3));
+    await waitFor(() => expect(vi.mocked(unpairFabric)).toHaveBeenCalledWith(3));
     await waitFor(() => {
       expect(screen.queryByText('matter.labels.unpair-heading')).not.toBeInTheDocument();
     });
@@ -267,9 +276,9 @@ describe('MatterPage', () => {
 
   it('keeps the dialog open and says so when unpairing fails', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
-    vi.mocked(unpairMatterApp).mockRejectedValue(new Error('conflict'));
+    vi.mocked(unpairFabric).mockRejectedValue(new Error('conflict'));
     render(<MatterPage />);
-    fireEvent.click(await screen.findByLabelText('matter.buttons.app-actions'));
+    fireEvent.click(await screen.findByLabelText('matter.buttons.fabric-actions'));
     fireEvent.click(screen.getByText('matter.buttons.unpair'));
 
     fireEvent.click(await screen.findByText('matter.buttons.unpair-here'));
@@ -278,9 +287,9 @@ describe('MatterPage', () => {
     expect(screen.getByText('matter.labels.unpair-heading')).toBeInTheDocument();
   });
 
-  it('offers no way to unpair while no app is connected', async () => {
+  it('offers no way to unpair while no fabric is connected', async () => {
     render(<MatterPage />);
-    await screen.findByText('matter.labels.ecosystems-empty');
+    await screen.findByText('matter.labels.fabrics-empty');
 
     expect(screen.queryByText('matter.buttons.unpair')).not.toBeInTheDocument();
   });

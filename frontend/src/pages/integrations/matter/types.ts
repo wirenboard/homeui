@@ -23,30 +23,42 @@ export enum LinkState {
   Offline = 'offline',
 }
 
-export enum AppMenuAction {
-  Rename = 'rename',
+/**
+ * Which of the four sources the label on screen came from. The page marks the first one,
+ * because a label chosen here should not look like one the app sent, and names the last
+ * one so two unlabelled fabrics can still be told apart.
+ */
+export enum FabricLabelSource {
+  Local = 'local',
+  Admin = 'admin',
+  Vendor = 'vendor',
+  None = 'none',
+}
+
+export enum FabricMenuAction {
+  SetLocalFabricLabel = 'set-local-fabric-label',
   Unpair = 'unpair',
 }
 
-export interface AppMenuProps {
+export interface FabricMenuProps {
   // Shown as the heading of the menu: an overflow menu opens away from its row, and
-  // without it there is nothing saying which app the two actions will hit.
-  appName: string;
+  // without it there is nothing saying which fabric the two actions will hit.
+  label: string;
   fabric: MatterFabric;
-  onChoose: (_action: AppMenuAction) => void;
+  onChoose: (_action: FabricMenuAction) => void;
 }
 
-export interface AppsCardProps {
+export interface FabricsCardProps {
   fabrics: MatterFabric[];
-  // When this controller started keeping pairing dates, for the apps that have no date
+  // When this controller started keeping pairing dates, for the fabrics that have no date
   // of their own. Null or undefined from a service that keeps none.
   fabricsSince?: number | null;
-  onAction: (_fabric: MatterFabric, _action: AppMenuAction) => void;
+  onAction: (_fabric: MatterFabric, _action: FabricMenuAction) => void;
 }
 
-export interface RenameDialogProps {
-  // The app being renamed, or null while the dialog is closed. A snapshot taken when the
-  // menu was used, so a poll of the store cannot change it mid-edit.
+export interface FabricLabelDialogProps {
+  // The fabric being labelled, or null while the dialog is closed. A snapshot taken when
+  // the menu was used, so a poll of the store cannot change it mid-edit.
   fabric: MatterFabric | null;
   onClose: () => void;
 }
