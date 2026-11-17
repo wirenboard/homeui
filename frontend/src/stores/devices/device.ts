@@ -1,0 +1,111 @@
+import { makeAutoObservable } from 'mobx';
+import i18n from '@/i18n/config';
+import type Cell from './cell';
+import { getFoldedDevices, isDefaultSystemDevice } from './helpers';
+import { type DeviceMeta, DeviceType, type NameTranslations } from './types';
+
+type CellResolver = (cellId: string) => Cell | undefined;
+
+export default class Device {
+  public id: string;
+  public cells: Set<string> = new Set();
+  public explicit: boolean = false;
+  public isVisible: boolean = true;
+  public error: string = null;
+  public type: DeviceType;
+  private _name: string;
+  private _nameTranslations: NameTranslations = {};
+  #cellResolver?: CellResolver;
+
+  constructor(id: string, cellResolver?: CellResolver) {
+    this.id = id;
+    this.#cellResolver = cellResolver;
+    this.isVisible = !getFoldedDevices().includes(this.id);
+
+    if (isDefaultSystemDevice(id) || this.isServiceDevice) {
+      this.type = DeviceType.System;
+    }
+
+    makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  get name(): string {
+    return this._nameTranslations[i18n.language] || this._nameTranslations.en || this._name || this.id;
+  }
+
+  set name(value: string) {
+    this._name = value;
+  }
+
+  setMeta(meta: string): void {
+    try {
+      const parsedMeta: DeviceMeta = JSON.parse(meta);
+      this._nameTranslations = parsedMeta.title || {};
+
+      if (Object.values(DeviceType).includes(this.type)) {
+        return;
+      }
+
+      if (parsedMeta.driver === 'wb-rules') {
+        this.type = DeviceType.Virtual;
+      } else if (parsedMeta.driver === 'wb-modbus') {
+        this.type = DeviceType.Modbus;
+      } else if (parsedMeta.driver === 'wb-mqtt-zigbee') {
+        this.type = DeviceType.Zigbee;
+      } else if (parsedMeta.driver === 'wb-mqtt-dali') {
+        this.type = DeviceType.DALI;
+      }
+    } catch (error) {
+      console.error('Invalid meta format:', error);
+    }
+  }
+
+  addCell(cellId: string) {
+    this.cells.add(cellId);
+  }
+
+  removeCell(cellId: string) {
+    this.cells.delete(cellId);
+  }
+
+  get visibleCells(): Cell[] {
+    if (!this.#cellResolver) return [];
+    const result: Cell[] = [];
+    for (const cellId of this.cells) {
+      const cell = this.#cellResolver(cellId);
+      if (cell && !cell.hidden) {
+        result.push(cell);
+      }
+    }
+    result.sort((a, b) => {
+      if (b.order === null) return -1;
+      return (a.order ?? 1) - b.order;
+    });
+    return result;
+  }
+
+  get isServiceDevice(): boolean {
+    return this.id.startsWith('system__');
+  }
+
+  toggleDeviceVisibility() {
+    const foldedDevices = getFoldedDevices();
+    const updatedFoldedDevices = foldedDevices.includes(this.id)
+      ? foldedDevices.filter((deviceId: string) => deviceId !== this.id)
+      : [...foldedDevices, this.id];
+    localStorage.setItem('foldedDevices', JSON.stringify(updatedFoldedDevices));
+    this.isVisible = foldedDevices.includes(this.id);
+  }
+
+  getControls(): string[] {
+    return [...this.cells].map((item) => item.replace(`${this.id}/`, ''));
+  }
+
+  setExplicit(explicit: boolean) {
+    this.explicit = explicit;
+  }
+
+  setError(error: string) {
+    this.error = error;
+  }
+}

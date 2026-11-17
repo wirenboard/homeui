@@ -1,0 +1,218 @@
+import { observer } from 'mobx-react-lite';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import CheckIcon from '@/assets/icons/check.svg';
+import CopyIcon from '@/assets/icons/copy.svg';
+import EditIcon from '@/assets/icons/edit.svg';
+import TrashIcon from '@/assets/icons/trash.svg';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Cell } from '@/components/cell';
+import { Drawer } from '@/components/drawer';
+import { Dropdown, type Option } from '@/components/dropdown';
+import { TabContent, Tabs, useTabs } from '@/components/tabs';
+import { Tooltip } from '@/components/tooltip';
+import { Widget } from '@/stores/dashboards';
+import { WidgetDelete } from '../widget-delete';
+import { WidgetEdit } from '../widget-edit';
+import type { WidgetAddProps } from './types';
+import './styles.css';
+
+export const WidgetAdd = observer(({
+  widgets,
+  dashboard,
+  cells,
+  topics,
+  isOpened,
+  onClose,
+}: WidgetAddProps) => {
+  const { t } = useTranslation();
+  const [widgetId, setWidgetId] = useState(Array.from(widgets.keys()).at(0));
+  const [isEditing, setIsEditing] = useState<boolean | 'new'>(false);
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+
+  const widgetList = useMemo(() => {
+    return Array.from(widgets.values()).map((widget) => ({ id: widget.id, label: widget.name }));
+  }, [widgets.keys()]);
+
+  const { activeTab, onTabChange } = useTabs({
+    defaultTab: widgetId,
+    items: widgetList,
+    onAfterTabChange: (id) => {
+      setWidgetId(id);
+    },
+  });
+
+  useEffect(() => {
+    if (widgetId !== 'new') {
+      setIsEditing(false);
+    }
+  }, [widgetId]);
+
+  const deleteWidget = (() => {
+    setWidgetId(Array.from(widgets.keys()).at(0));
+    widgets.get(widgetId).delete(widgetId);
+    setIsConfirmDelete(false);
+  });
+
+  const copyWidget = () => {
+    const copiedWidgetId = widgets.get(widgetId).copy();
+    setWidgetId(copiedWidgetId);
+  };
+
+  const createWidget = () => {
+    setIsEditing('new');
+  };
+
+  return (
+    <>
+      <Drawer
+        className="widgetAdd"
+        isOpened={isOpened}
+        width={{ 0: 750, 1200: 850, 1600: 1050 }}
+        heading={t('widget.labels.add')}
+        onClose={onClose}
+      >
+        <div className="widgetAdd-container">
+          <aside className="widgetAdd-aside">
+            <Button
+              className="widgetAdd-createButton"
+              label={t('widget.buttons.create-widget')}
+              aria-haspopup="dialog"
+              onClick={createWidget}
+            />
+
+            <h4 className="widgetAdd-heading">{t('widget.labels.available')}</h4>
+            <Tabs
+              className="widgetAdd-tabs"
+              activeTab={activeTab}
+              items={widgetList}
+              onTabChange={onTabChange}
+            />
+            <Dropdown
+              value={widgetList.find((widget) => widget.id === widgetId).id}
+              className="widgetAdd-dropdown"
+              placeholder={t('widget.labels.available')}
+              options={widgetList.map((widget) => ({ label: widget.label, value: widget.id }))}
+              isSearchable
+              onChange={(option: Option<string>) => {
+                setWidgetId(option.value);
+              }}
+            />
+          </aside>
+
+          <div>
+
+            {Array.from(widgets.values()).map((widget) => (
+              <TabContent className="widgetAdd-preview" tabId={widget.id} activeTab={activeTab} key={widget.id}>
+                <div className="widgetAdd-previewHeader">
+                  <h4 className="widgetAdd-headingPreview">{t('widget.labels.preview')}</h4>
+                  <div className="widgetAdd-actions">
+                    <Tooltip text={t('widget.buttons.delete')} placement="bottom">
+                      <Button
+                        variant="danger"
+                        size="small"
+                        aria-label={t('widget.buttons.delete')}
+                        icon={<TrashIcon />}
+                        aria-haspopup="dialog"
+                        onClick={() => setIsConfirmDelete(true)}
+                      />
+                    </Tooltip>
+                    <Tooltip text={t('widget.buttons.copy')} placement="bottom">
+                      <Button
+                        size="small"
+                        aria-label={t('widget.buttons.copy')}
+                        icon={<CopyIcon />}
+                        onClick={copyWidget}
+                      />
+                    </Tooltip>
+                    <Tooltip text={t('widget.buttons.edit')} placement="bottom">
+                      <Button
+                        size="small"
+                        aria-label={t('widget.buttons.edit')}
+                        icon={<EditIcon />}
+                        aria-haspopup="dialog"
+                        onClick={() => setIsEditing(!isEditing)}
+                      />
+                    </Tooltip>
+                    <Button
+                      label={dashboard?.hasWidget(widget.id)
+                        ? t('widget.buttons.exists-on-dashboard')
+                        : t('widget.buttons.add')}
+                      icon={dashboard?.hasWidget(widget.id) && <CheckIcon />}
+                      size="small"
+                      disabled={dashboard?.hasWidget(widget.id)}
+                      onClick={() => dashboard.addWidget(widget.id)}
+                    />
+                  </div>
+                </div>
+
+                <div className="widgetAdd-content">
+                  <Card
+                    className="widgetAdd-card"
+                    heading={widget.name}
+                    key={widget.id}
+                    isBodyVisible
+                  >
+                    {widget.cells.map((cell, i) => (
+                      <Fragment key={cell.id || i}>
+                        {cells.has(cell.id) ? (
+                          <Cell
+                            cell={cells.get(cell.id)}
+                            name={cell.name}
+                            isReadOnly={cell.readOnly}
+                            isCompact={widgets.get(widgetId).compact}
+                            extra={cell.extra}
+                          />
+                        ) : cell.type === 'separator' ? (
+                          <div className="dashboard-separator">
+                            {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                          </div>
+                        )
+                          : cell.name || 'nosuchcell'
+                        }
+                      </Fragment>
+                    ))}
+                  </Card>
+                </div>
+
+                {!!widget.description && (
+                  <div className="widgetAdd-description">{widget.description}</div>
+                )}
+              </TabContent>
+            ))}
+          </div>
+        </div>
+      </Drawer>
+
+      {isEditing && (
+        <WidgetEdit
+          widget={isEditing === 'new'
+            ? { id: '', name: '', description: '', cells: [], compact: false } as any
+            : widgets.get(widgetId)}
+          cells={cells}
+          topics={topics}
+          isOpened={!!isEditing}
+          onClose={() => {
+            setIsEditing(false);
+          }}
+          onSave={(data) => {
+            (widgets.get(widgetId) ?? new Widget(data)).save(data);
+            setIsEditing(false);
+            setWidgetId(data.id);
+          }}
+        />
+      )}
+
+      {isConfirmDelete && widgets.get(widgetId) && (
+        <WidgetDelete
+          isOpened={isConfirmDelete}
+          name={widgets.get(widgetId).name}
+          associatedDashboards={widgets.get(widgetId).associatedDashboards}
+          onClose={() => setIsConfirmDelete(false)}
+          onDelete={deleteWidget}
+        />
+      )}
+    </>
+  );
+});

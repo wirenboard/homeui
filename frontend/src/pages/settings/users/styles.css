@@ -1,0 +1,26 @@
+.users-autologin {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  max-width: 350px;
+}
+
+.users-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.users-rolesList {
+  margin-top: 12px;
+}
+
+.users-rolesItem dt,
+.users-rolesItem dd {
+  display: inline;
+  margin: 0;
+}
+
+.users-rolesItem dt::after {
+  content: ' — ';
+}

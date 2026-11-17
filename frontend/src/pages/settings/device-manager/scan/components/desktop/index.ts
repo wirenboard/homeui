@@ -1,0 +1,1 @@
+export { DevicesTable } from './desktop';

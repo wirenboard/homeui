@@ -1,0 +1,66 @@
+.form-fieldDescription {
+    color: var(--gray-color);
+}
+
+.form-descriptionText {
+    display: inline-block;
+    margin-top: 5px;
+    margin-bottom: 0;
+    flex-basis: 100%;
+    white-space: pre-wrap;
+}
+
+.form-defaultText {
+    padding: .1em .3em;
+    display: inline-block;
+    white-space: break-spaces;
+    color: var(--text-color);
+    background-color: var(--light-gray-color);
+    border-radius: 6px;
+}
+
+.form-errorText {
+    margin: 6px 0 0;
+    color: var(--danger-color);
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.form-errorText input[type="text"],
+.form-errorText input[type="number"] {
+    border-color: var(--danger-color);
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-buttonGroup {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.form-fieldGroup .card-title{
+    font-size: var(--font-size-large);
+}
+
+.form-fieldGroup .card-body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-fieldGroup {
+    max-width: unset;
+    width: unset;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.form-fieldSwitch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

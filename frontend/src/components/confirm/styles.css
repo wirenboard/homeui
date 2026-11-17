@@ -1,0 +1,21 @@
+.confirm-content {
+    font-size: var(--font-size-medium);
+    padding: 4px 16px 16px;
+    max-height: calc(100dvh - (62px + 80px)); /* header height + Y offset */
+    overflow: auto;
+}
+
+.confirm-actions {
+    margin-top: 16px;
+    display: flex;
+    padding: 16px;
+    gap: 12px;
+    justify-content: flex-end;
+    background: var(--border-color);
+    border-bottom-left-radius: var(--input-border-radius);
+    border-bottom-right-radius: var(--input-border-radius);
+}
+
+.confirm-action {
+    min-width: 80px;
+}

@@ -1,0 +1,15 @@
+.collapsiblePanel-container {
+  width: 100%;
+}
+
+.collapsiblePanel-label {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.collapsiblePanel-button {
+  margin-bottom: 8px;
+}

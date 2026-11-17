@@ -1,0 +1,1 @@
+export { CommonSettings } from './common';

@@ -1,0 +1,7 @@
+.mqtt-value {
+    max-width: 160px;
+    width: max-content;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: break-spaces;
+}

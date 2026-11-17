@@ -1,0 +1,79 @@
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Table, TableCell, TableRow } from '@/components/table';
+import { Tooltip } from '@/components/tooltip';
+import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
+import { type ConfigListItem, configsStore, WB_JSON_EDITOR } from '@/stores/configs';
+import { copyToClipboard } from '@/utils/clipboard';
+import './styles.css';
+
+const ConfigsPage = observer(() => {
+  const { t, i18n } = useTranslation();
+  const hasRights = authStore.hasRights(UserRole.Admin);
+
+  useEffect(() => {
+    if (hasRights) {
+      configsStore.getList();
+    }
+  }, [hasRights]);
+
+  const getUrl = (config: ConfigListItem) => {
+    const encodePath = (path: string) => path.replace(/\//g, '~2F');
+
+    // wb-json-editor is a renderer choice on the generic page
+    return config.editor && config.editor !== WB_JSON_EDITOR
+      ? `/settings/configs/${config.editor}`
+      : `/settings/configs/${encodePath(config.schemaPath)}`;
+  };
+
+  return (
+    <PageLayout
+      title={t('configurations.title')}
+      hasRights={hasRights}
+      isLoading={!configsStore.configs.length}
+    >
+      <Table>
+        <TableRow isHeading>
+          <TableCell>
+            {t('configurations.labels.title')}
+          </TableCell>
+          <TableCell>
+            {t('configurations.labels.file')}
+          </TableCell>
+        </TableRow>
+
+        {configsStore.configs.map((config, i) => (
+          <TableRow
+            url={getUrl(config)}
+            aria-label={config.titleTranslations?.[i18n.language] || config.title}
+            key={config.configPath + i}
+          >
+            <TableCell>
+              {config.titleTranslations?.[i18n.language] || config.title}
+            </TableCell>
+            <TableCell>
+              <div
+                className="configs-itemPath"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  copyToClipboard(config.configPath);
+                }}
+              >
+                <Tooltip
+                  text={t('configurations.labels.copy')}
+                  trigger="click"
+                >
+                  {config.configPath}
+                </Tooltip>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </Table>
+    </PageLayout>
+  );
+});
+
+export default ConfigsPage;

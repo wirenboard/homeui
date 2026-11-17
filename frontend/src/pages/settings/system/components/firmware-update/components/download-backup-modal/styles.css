@@ -1,0 +1,5 @@
+.downloadBackupModal-footer {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 12px;
+}

@@ -1,0 +1,5 @@
+# Configuration for Wiren Board Homeui web-interface
+# Place your custom configuration to /etc/nginx/includes/default.wb.d/*.conf
+# Change listen settings in /etc/nginx/includes/default.wb.d/listen.conf
+
+include /usr/share/wb-mqtt-homeui/nginx/default.conf;

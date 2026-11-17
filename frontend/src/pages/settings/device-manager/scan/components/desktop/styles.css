@@ -1,0 +1,29 @@
+.devicesTable {
+    margin-bottom: 24px;
+}
+
+.devicesTable-checkboxWrapper .form-fieldSwitch {
+    font-weight: bold;
+}
+
+.deviceRow-titleCell {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.deviceRow-notSelectable {
+    color: var(--gray-color);
+}
+
+.alreadyConfigured-devicesHeader {
+    font-weight: bold;
+    background-color: var(--border-color);
+}
+
+.alreadyConfigured-wrapper {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}

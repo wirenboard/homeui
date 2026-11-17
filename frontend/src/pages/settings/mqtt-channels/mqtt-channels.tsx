@@ -1,0 +1,126 @@
+import { observer } from 'mobx-react-lite';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { documentation } from '@/common/links';
+import { SearchBar } from '@/components/search-bar';
+import { Table, TableCell, TableRow } from '@/components/table';
+import { PageLayout } from '@/layouts/page';
+import { type Cell, devicesStore } from '@/stores/devices';
+import { CellRow } from './components/cell-row';
+import type { MqttChannelsSortColumn, SortDirection } from './types';
+import './styles.css';
+
+const getTopic = (cell: Cell) => `/devices/${cell.deviceId}/controls/${cell.controlId}`;
+
+const compareStrings = (first: string, second: string) => first.localeCompare(second);
+const compareValues = (first: unknown, second: unknown) => {
+  if (typeof first === 'number' && typeof second === 'number') {
+    return first - second;
+  }
+  return compareStrings(String(first ?? ''), String(second ?? ''));
+};
+
+const MqttChannelsPage = observer(() => {
+  const { t, i18n } = useTranslation();
+  const [search, setSearch] = useState('');
+  const [sortColumn, setSortColumn] = useState<MqttChannelsSortColumn>('id');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  const toggleSort = (column: MqttChannelsSortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection((direction) => (direction === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+    setSortColumn(column);
+    setSortDirection('asc');
+  };
+
+  const getSortProps = (column: MqttChannelsSortColumn, label: string) => ({
+    onSort: () => toggleSort(column),
+    isActive: column === sortColumn,
+    direction: column === sortColumn ? sortDirection : undefined,
+    label,
+  });
+
+  const cells = devicesStore.filteredCells;
+
+  const sortedCells = useMemo(() => {
+    const sorted = [...cells];
+    sorted.sort((a, b) => {
+      const multiplier = sortDirection === 'asc' ? 1 : -1;
+      const primaryComparison = (() => {
+        switch (sortColumn) {
+          case 'type':
+            return compareStrings(a.type, b.type);
+          case 'topic':
+            return compareStrings(getTopic(a), getTopic(b));
+          case 'value':
+            return compareValues(a.value, b.value);
+          case 'status':
+            return compareStrings(
+              a.error ? 'error' : 'ok',
+              b.error ? 'error' : 'ok',
+            );
+          case 'id':
+          default:
+            return compareStrings(a.id, b.id);
+        }
+      })();
+
+      if (primaryComparison !== 0) {
+        return primaryComparison * multiplier;
+      }
+
+      return compareStrings(a.id, b.id) * multiplier;
+    });
+    return sorted;
+  }, [cells, sortColumn, sortDirection]);
+
+  const filteredCells = useMemo(() =>
+    sortedCells.filter((item) => item.id?.includes(search)
+      || item.type?.includes(search)
+      || String(item.value)?.includes(search)),
+  [sortedCells, search]);
+
+  return (
+    <PageLayout
+      title={t('mqtt.title')}
+      infoLink={documentation[i18n.language]?.mqtt}
+      actions={
+        <SearchBar
+          value={search}
+          placeholder={t('mqtt.labels.search')}
+          onChange={setSearch}
+        />
+      }
+      hasRights
+    >
+
+      <Table isFullWidth>
+        <TableRow isHeading>
+          <TableCell sort={getSortProps('id', `${t('mqtt.labels.device')} ${t('mqtt.labels.control')}`)}>
+            {t('mqtt.labels.device')}/{t('mqtt.labels.control')}
+          </TableCell>
+          <TableCell sort={getSortProps('type', t('mqtt.labels.type'))}>
+            {t('mqtt.labels.type')}
+          </TableCell>
+          <TableCell sort={getSortProps('topic', t('mqtt.labels.topic'))}>
+            {t('mqtt.labels.topic')}
+          </TableCell>
+          <TableCell sort={getSortProps('value', t('mqtt.labels.value'))}>
+            {t('mqtt.labels.value')}
+          </TableCell>
+          <TableCell sort={getSortProps('status', t('mqtt.labels.status'))} width={110} align="right">
+            {t('mqtt.labels.status')}
+          </TableCell>
+        </TableRow>
+
+        {filteredCells.map((cell) => (
+          <CellRow key={cell.id} cell={cell} />
+        ))}
+      </Table>
+    </PageLayout>
+  );
+});
+
+export default MqttChannelsPage;

@@ -1,0 +1,38 @@
+import { JSONEditor } from '@wirenboard/json-editor';
+import isObject from 'lodash/isObject';
+import merge from 'lodash/merge';
+
+// The editor merges default value to a value passed to setValue function
+// and also removes all default values from result.
+// It can be used to show editors for all possible object's properties even if they are not set.
+export function makeMergedDefaultValuesEditor() {
+  return class extends JSONEditor.defaults.editors['object'] {
+    setValue(value, initial) {
+      value = merge({}, this.getDefault(), value);
+      super.setValue(value, initial);
+    }
+
+    getValue() {
+      let subtractValue = function (v1, v2) {
+        if (!isObject(v1) || !isObject(v2)) {
+          return;
+        }
+        Object.entries(v2).forEach(([k, v]) => {
+          if (v1.hasOwnProperty(k)) {
+            if (v1[k] === v) {
+              delete v1[k];
+            } else {
+              subtractValue(v1[k], v);
+              if (isObject(v1[k]) && Object.keys(v1[k]).length === 0) {
+                delete v1[k];
+              }
+            }
+          }
+        });
+      };
+      let value = super.getValue();
+      subtractValue(value, this.getDefault());
+      return value;
+    }
+  };
+}
