@@ -1483,7 +1483,7 @@
          "column-paired": "Paired",
          "column-link": "Link",
          "column-actions": "Actions",
-         "paired-before": "before {{date}}",
+         "paired-before": "before {{- date}}",
          "paired-unknown": "unknown",
          "link-online": "on the line",
          "link-quiet": "quiet, last seen {{ago}}",

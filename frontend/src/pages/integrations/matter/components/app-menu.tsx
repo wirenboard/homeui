@@ -48,7 +48,7 @@ export const AppMenu = ({ appName, fabric, onChoose }: AppMenuProps) => {
   };
 
   return (
-    <div className="matter-appMenu" ref={root}>
+    <div className={isOpen ? 'matter-appMenu matter-appMenuOpen' : 'matter-appMenu'} ref={root}>
       <Button
         size="small"
         variant="secondary"

@@ -93,6 +93,20 @@ describe('AppsCard', () => {
     expect(screen.queryByText('matter.buttons.rename')).not.toBeInTheDocument();
   });
 
+  it('lifts the open menu above the rows below it', () => {
+    // The table component sets `.wb-tableCell * { z-index: 1 }`, which flattens every
+    // descendant of a cell to the same layer; paint order then falls back to the DOM, and
+    // the menu of one row ended up under the buttons of the rows below. The class is what
+    // the stylesheet hangs a higher z-index on, with enough specificity to win.
+    render(<AppsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+    const holder = menuButton().closest('.matter-appMenu');
+    expect(holder).not.toHaveClass('matter-appMenuOpen');
+
+    fireEvent.click(menuButton());
+
+    expect(holder).toHaveClass('matter-appMenuOpen');
+  });
+
   it('closes the menu on Escape, like every other popup on the page', () => {
     render(<AppsCard fabrics={[fabric()]} onAction={vi.fn()} />);
     fireEvent.click(menuButton());

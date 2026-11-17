@@ -105,6 +105,10 @@
     display: inline-block;
 }
 
+.wb-tableCell .matter-appMenuOpen {
+    z-index: 20;
+}
+
 .matter-appMenuPopup {
     position: absolute;
     top: calc(100% + 4px);
