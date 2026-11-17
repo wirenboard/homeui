@@ -132,6 +132,11 @@
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+
+    @media (--min-tablet-width) {
+        flex-wrap: nowrap;
+        gap: 24px;
+    }
 }
 
 .dali-tabToolbar-actions {
@@ -141,6 +146,10 @@
 .dali-tabToolbar-actions .form-buttonGroup {
     flex-wrap: wrap;
     justify-content: flex-start;
+
+    @media (--min-tablet-width) {
+        flex-wrap: nowrap;
+    }
 }
 
 .dali-contentTitle {

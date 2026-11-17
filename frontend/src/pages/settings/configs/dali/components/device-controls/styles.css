@@ -319,11 +319,33 @@
     height: 30px;
     padding-top: 0;
     padding-bottom: 0;
+
+    @media (--min-tablet-width) {
+        height: 22px;
+        padding: 0 8px 0 6px;
+        gap: 4px;
+        border-radius: 6px;
+        line-height: 22px;
+    }
 }
 
 .daliGearErrorStatus .alertMessage-icon {
     width: 18px;
     height: 18px;
+
+    @media (--min-tablet-width) {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+.daliGearErrorStatus .alertMessage-content {
+    @media (--min-tablet-width) {
+        max-width: 11em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 }
 
 .daliGearErrorStatus .deviceCell {

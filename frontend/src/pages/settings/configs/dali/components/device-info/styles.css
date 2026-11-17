@@ -12,14 +12,13 @@
 
 .daliDeviceInfo-body {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .daliDeviceInfo-picture {
     flex: none;
-    max-width: 226px;
-    max-height: 106px;
+    max-height: 80px;
 }
 
 .daliDeviceInfo-text {
@@ -76,13 +75,111 @@
     overflow-wrap: anywhere;
 }
 
-.daliDeviceInfo-stacked .daliDeviceInfo-body {
+.dali-tabToolbar:has(+ .daliDeviceInfo-compact) {
+    padding-bottom: 4px;
+}
+
+.daliDeviceInfo-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding-top: 0;
+    padding-bottom: 8px;
+    white-space: nowrap;
+}
+
+.daliDeviceInfo-compactName,
+.daliDeviceInfo-compactTypes {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.daliDeviceInfo-compactName {
+    font-weight: 600;
+}
+
+.daliDeviceInfo-compactTypes {
+    flex-shrink: 1000;
+    color: var(--gray-color);
+}
+
+.button.button-outlined.daliDeviceInfo-infoButton {
+    height: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: var(--gray-color);
+}
+
+.button-s.daliDeviceInfo-infoButton .button-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.dialog.daliDeviceInfoDialog {
+    width: fit-content;
+    max-width: min(1500px, calc(100% - 32px));
+}
+
+.daliDeviceInfoDialog .dialog-content {
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
+}
+
+.daliDeviceInfoDialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+}
+
+.daliDeviceInfoDialog-left .daliDeviceInfoDialog-body {
+    flex-direction: row;
+}
+
+.daliDeviceInfoDialog-picture {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.daliDeviceInfoDialog-picture img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.daliDeviceInfoDialog-loading {
+    display: none;
+}
+
+.daliDeviceInfoDialog .daliDeviceInfo-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.daliDeviceInfoDialog-text {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.daliDeviceInfo-stacked .daliDeviceInfo-picture {
-    max-width: none;
-    max-height: 80px;
+.daliDeviceInfoDialog-types {
+    margin: 0;
+}
+
+.daliDeviceInfoDialog-left .daliDeviceInfoDialog-text {
+    flex: none;
+    align-self: center;
+    width: 400px;
+}
+
+.daliDeviceInfoDialog-left .daliDeviceInfo-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }

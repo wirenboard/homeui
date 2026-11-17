@@ -19,7 +19,7 @@ export const GearErrorStatus = observer(({ mqttId, isIconOnly }: GearErrorStatus
         <Tooltip text={status.name} trigger="click" autoClose={false} placement="bottom-end">
           {content}
         </Tooltip>
-      ) : content}
+      ) : <Tooltip text={status.name}>{content}</Tooltip>}
     </div>
   );
 });

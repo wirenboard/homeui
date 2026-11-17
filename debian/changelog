@@ -1,8 +1,14 @@
+wb-mqtt-homeui (2.289.0) stable; urgency=medium
+
+  * DALI: compact device info on tablets and laptops, full info opens in a dialog
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Nov 2026 16:53:14 +0500
+
 wb-mqtt-homeui (2.288.0) stable; urgency=medium
 
   * Improve web UI layout on tablets and small laptops
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 19:01:45 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Nov 2026 16:42:50 +0500
 
 wb-mqtt-homeui (2.287.2) stable; urgency=medium
 
