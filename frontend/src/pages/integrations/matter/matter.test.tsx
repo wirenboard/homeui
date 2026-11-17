@@ -218,14 +218,16 @@ describe('MatterPage', () => {
     expect(await screen.findByText('matter.labels.vendor-yandex')).toBeInTheDocument();
   });
 
-  it('falls back to the vendor number for an app it does not know', async () => {
+  it('names an app it does not know by its fabric number, which is all it has', async () => {
+    // By the number and not by the vendor: a test vendor id is worn by several different
+    // controllers, so it tells two nameless apps apart no better than nothing would.
     vi.mocked(getMatterStatus).mockResolvedValue({
       ...PAIRED,
       fabrics: [{ index: 1, label: '', vendor_id: 1234 }],
     } as any);
     render(<MatterPage />);
 
-    expect(await screen.findByText('matter.labels.app-unknown')).toBeInTheDocument();
+    expect(await screen.findByText('matter.labels.app-unnamed')).toBeInTheDocument();
   });
 
   it('names the app side first and only then offers to unpair here', async () => {
@@ -234,7 +236,10 @@ describe('MatterPage', () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 
-    fireEvent.click(await screen.findByText('matter.buttons.unpair'));
+    // Two clicks and not one: unpairing lives behind the row's menu now, because it
+    // cannot be undone in the app and a button one row off is a click somebody makes.
+    fireEvent.click(await screen.findByLabelText('matter.buttons.app-actions'));
+    fireEvent.click(screen.getByText('matter.buttons.unpair'));
 
     expect(await screen.findByText('matter.labels.unpair-heading')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.unpair-where')).toBeInTheDocument();
@@ -249,7 +254,8 @@ describe('MatterPage', () => {
       fabrics: [{ index: 3, label: 'Yandex', vendor_id: 4911 }],
     } as any);
     render(<MatterPage />);
-    fireEvent.click(await screen.findByText('matter.buttons.unpair'));
+    fireEvent.click(await screen.findByLabelText('matter.buttons.app-actions'));
+    fireEvent.click(screen.getByText('matter.buttons.unpair'));
 
     fireEvent.click(await screen.findByText('matter.buttons.unpair-here'));
 
@@ -263,7 +269,8 @@ describe('MatterPage', () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     vi.mocked(unpairMatterApp).mockRejectedValue(new Error('conflict'));
     render(<MatterPage />);
-    fireEvent.click(await screen.findByText('matter.buttons.unpair'));
+    fireEvent.click(await screen.findByLabelText('matter.buttons.app-actions'));
+    fireEvent.click(screen.getByText('matter.buttons.unpair'));
 
     fireEvent.click(await screen.findByText('matter.buttons.unpair-here'));
 
@@ -337,6 +344,52 @@ describe('MatterPage', () => {
 
     expect(await screen.findByText('10.0 °C')).toBeInTheDocument();
     expect(screen.queryByText(/matter\.labels\.state-/)).not.toBeInTheDocument();
+  });
+
+  it('shows the brightness of a lamp beside its state, not inside it', async () => {
+    // Two fields and not one string: the tag is translated by a dictionary and a
+    // reading is not, so "on" stays translatable while "50 %" stays a number.
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...NOT_PAIRED,
+      devices: {
+        ...NOT_PAIRED.devices,
+        list: [{
+          ...WB_DEVICE, type: 'light', roles: ['on_off', 'brightness'], state: 'on', detail: '50 %',
+        }],
+      },
+    } as any);
+    render(<MatterPage />);
+
+    expect(await screen.findByText('matter.labels.state-on')).toBeInTheDocument();
+    expect(screen.getByText('50 %')).toBeInTheDocument();
+  });
+
+  it('names the roles the bridge does not carry, in the words of the configurator', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...NOT_PAIRED,
+      devices: {
+        ...NOT_PAIRED.devices,
+        list: [{
+          ...WB_DEVICE, type: 'light', roles: ['on_off', 'color'], state: 'on', ignored_roles: ['color'],
+        }],
+      },
+    } as any);
+    render(<MatterPage />);
+
+    expect(await screen.findByText('matter.labels.ignored-roles')).toBeInTheDocument();
+  });
+
+  it('survives a service too old to send the new fields', async () => {
+    // The page and the service are different packages and arrive apart. An older
+    // service says nothing about brightness, and that must read as "nothing to add".
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...NOT_PAIRED,
+      devices: { ...NOT_PAIRED.devices, list: [WB_DEVICE] },
+    } as any);
+    render(<MatterPage />);
+
+    expect(await screen.findByText('matter.labels.state-on')).toBeInTheDocument();
+    expect(screen.queryByText('matter.labels.ignored-roles')).not.toBeInTheDocument();
   });
 
   it('opens the card of the device in the configurator', async () => {
