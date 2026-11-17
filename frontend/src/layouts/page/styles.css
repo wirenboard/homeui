@@ -95,6 +95,11 @@
     margin-block-start: -6px;
 }
 
+.defaultLayout-pageWrapperHmi .page-container {
+    padding-block-start: 0;
+    margin-block-start: 0;
+}
+
 .page-contentWrapper {
     position: relative;
     display: flex;
