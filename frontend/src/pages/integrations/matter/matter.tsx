@@ -12,8 +12,13 @@ import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { type MatterDevice, type MatterFabric, matterStore, pairingQrUrl } from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
+import { AppsCard } from './components/apps-card';
 import { CopyField } from './components/copy-field';
-import { configuratorSelection, groupManualCode, timeLeft, vendorKey } from './utils';
+import { RenameDialog } from './components/rename-dialog';
+import { AppMenuAction } from './types';
+import {
+  appDisplayName, configuratorSelection, detailParts, groupManualCode, isColour, timeLeft,
+} from './utils';
 import './styles.css';
 
 // The menu entry is shipped by wb-mqtt-matter-bridge itself, so its id in the custom
@@ -57,6 +62,9 @@ const MatterPage = observer(() => {
   // cost the operator cannot see from here: an app that remembered the old code will
   // offer the wrong one afterwards.
   const [isChangingCode, setChangingCode] = useState(false);
+  // The app being renamed, and the text typed so far. Kept apart from the fabric so that
+  // a poll of the store arriving mid-edit cannot overwrite what is being typed.
+  const [renameFor, setRenameFor] = useState<MatterFabric | null>(null);
   const now = useNow(Boolean(status?.pairing));
 
   useEffect(() => {
@@ -81,19 +89,12 @@ const MatterPage = observer(() => {
     navigate('/configurator');
   };
 
-  /**
-   * What to call a connected app. The label of a fabric is written by the controller of
-   * the ecosystem, and Yandex leaves it empty, so there has to be something else to
-   * show: the name of a vendor we know, or at least its number.
-   */
-  const appName = (fabric: MatterFabric) => {
-    if (fabric.label) {
-      return fabric.label;
+  const chooseAppAction = (fabric: MatterFabric, action: AppMenuAction) => {
+    if (action === AppMenuAction.Unpair) {
+      setUnpairFrom(fabric);
+      return;
     }
-    const key = vendorKey(fabric.vendor_id);
-    return key
-      ? t(`matter.labels.vendor-${key}`)
-      : t('matter.labels.app-unknown', { vendor: fabric.vendor_id });
+    setRenameFor(fabric);
   };
 
   /** The name of the type, taken from the configurator so the names live in one place. */
@@ -108,6 +109,17 @@ const MatterPage = observer(() => {
   const notExposedReason = (device: MatterDevice) => (device.reason_code
     ? t(`matter.labels.reason-${device.reason_code}`, { defaultValue: device.reason ?? '' })
     : device.reason ?? '');
+
+  /**
+   * The roles the config asks for and the endpoint does not carry, in the words of the
+   * configurator so that the names of the roles live in one place.
+   *
+   * The field is optional: a page can be newer than the service it talks to, and an
+   * older service simply says nothing about this.
+   */
+  const ignoredRoles = (device: MatterDevice) => (device.ignored_roles ?? [])
+    .map((role) => t(`configurator.roles.${role}`, { defaultValue: role }))
+    .join(', ');
 
   /** What the state column shows: the value of the control, or why there is none. */
   const deviceState = (device: MatterDevice) => {
@@ -127,7 +139,19 @@ const MatterPage = observer(() => {
     const text = TRANSLATED_STATES.has(device.state)
       ? t(`matter.labels.state-${device.state}`)
       : device.state;
-    return <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{text}</Tag>;
+    return (
+      <>
+        <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{text}</Tag>
+        {/* Readings, not words: "50 %", "#FF0000", "3000 K". Beside the tag and not
+            inside it - the tag is translated by a dictionary, a reading is not. */}
+        {detailParts(device).map((part) => (
+          <span className="matter-detail" key={part}>
+            {isColour(part) && <i className="matter-swatch" style={{ background: part }} />}
+            {part}
+          </span>
+        ))}
+      </>
+    );
   };
 
   const errors = [];
@@ -242,30 +266,11 @@ const MatterPage = observer(() => {
             </Card>
           )}
 
-          <Card className="matter-card" heading={t('matter.labels.ecosystems')}>
-            {status.fabrics.length === 0
-              ? <p className="matter-empty">{t('matter.labels.ecosystems-empty')}</p>
-              : (
-                <ul className="matter-fabrics">
-                  {status.fabrics.map((fabric) => (
-                    <li key={fabric.index}>
-                      {/* The row is a box of its own so that the item keeps its bullet:
-                          a flex list item loses the marker. */}
-                      <div className="matter-fabric">
-                        <span>{appName(fabric)}</span>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          label={t('matter.buttons.unpair')}
-                          onClick={() => setUnpairFrom(fabric)}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            <p className="matter-hint">{t('matter.labels.ecosystems-hint')}</p>
-          </Card>
+          <AppsCard
+            fabrics={status.fabrics}
+            fabricsSince={status.fabrics_since}
+            onAction={chooseAppAction}
+          />
 
           <Card className="matter-card" heading={t('matter.labels.devices')}>
             {status.devices.list.length === 0
@@ -292,7 +297,14 @@ const MatterPage = observer(() => {
                       <TableCell>{device.name}</TableCell>
                       <TableCell>{deviceType(device)}</TableCell>
                       <TableCell>{device.area ?? ''}</TableCell>
-                      <TableCell>{deviceState(device)}</TableCell>
+                      <TableCell>
+                        {deviceState(device)}
+                        {device.exposed && ignoredRoles(device) !== '' && (
+                          <span className="matter-ignored">
+                            {t('matter.labels.ignored-roles', { roles: ignoredRoles(device) })}
+                          </span>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </Table>
@@ -351,7 +363,7 @@ const MatterPage = observer(() => {
             }}
           >
             <p className="matter-dialogText">
-              {t('matter.labels.unpair-where', { app: unpairFrom ? appName(unpairFrom) : '' })}
+              {t('matter.labels.unpair-where', { app: unpairFrom ? appDisplayName(unpairFrom, t) : '' })}
             </p>
             <p className="matter-dialogText">{t('matter.labels.unpair-why')}</p>
             <p className="matter-dialogText">{t('matter.labels.unpair-code')}</p>
@@ -360,6 +372,8 @@ const MatterPage = observer(() => {
               <p className="matter-dialogText matter-dialogError">{t('matter.labels.unpair-failed')}</p>
             )}
           </Confirm>
+
+          <RenameDialog fabric={renameFor} onClose={() => setRenameFor(null)} />
         </>
       )}
     </PageLayout>

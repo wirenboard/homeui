@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import {
-  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, unpairMatterApp,
+  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, renameMatterApp,
+  unpairMatterApp,
 } from './api';
 import type { MatterStatus, MatterWindow } from './types';
 
@@ -22,6 +23,12 @@ export default class MatterStore {
   unpairingIndex: number | null = null;
   // The last attempt did not go through. Cleared when the next one starts.
   hasUnpairFailed = false;
+  // The app being renamed right now, so its dialog can say so and cannot be used twice.
+  renamingIndex: number | null = null;
+  // Kept apart from hasUnpairFailed rather than shared: the two have separate dialogs
+  // open at separate times, and one flag would show a failed rename inside the unpair
+  // dialog of the next app the operator opens.
+  hasRenameFailed = false;
   // The window is being opened or closed right now, so the button cannot be pressed
   // twice and says it is busy.
   isChangingWindow = false;
@@ -80,6 +87,27 @@ export default class MatterStore {
     runInAction(() => {
       this.unpairingIndex = null;
       this.hasUnpairFailed = !ok;
+    });
+    return ok;
+  }
+
+  /**
+   * Names one app, or clears the name when given an empty one. The state is read again
+   * right after for the same reason as unpair: /status is the truth, not this answer.
+   */
+  async rename(index: number, name: string) {
+    this.renamingIndex = index;
+    this.hasRenameFailed = false;
+    let ok = true;
+    try {
+      await renameMatterApp(index, name);
+    } catch {
+      ok = false;
+    }
+    await this.fetch();
+    runInAction(() => {
+      this.renamingIndex = null;
+      this.hasRenameFailed = !ok;
     });
     return ok;
   }
