@@ -1558,7 +1558,7 @@
          "column-paired": "Подключено",
          "column-link": "Связь",
          "column-actions": "Действия",
-         "paired-before": "до {{date}}",
+         "paired-before": "до {{- date}}",
          "paired-unknown": "неизвестно",
          "link-online": "на связи",
          "link-quiet": "молчит {{ago}}",
