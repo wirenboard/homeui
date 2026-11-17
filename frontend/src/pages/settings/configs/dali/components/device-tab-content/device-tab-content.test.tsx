@@ -11,7 +11,7 @@ vi.mock('@/components/json-schema-editor', () => ({
   JsonSchemaEditor: () => <div data-testid="json-schema-editor" />,
 }));
 
-const button = (label: string) => screen.getByText(label).closest('button');
+const button = (label: string) => screen.getByRole('button', { name: label });
 
 describe('DeviceTabContent', () => {
   // The store prop never changes identity, so the tab is only redrawn through MobX:

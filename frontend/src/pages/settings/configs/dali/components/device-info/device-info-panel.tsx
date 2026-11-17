@@ -1,41 +1,32 @@
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { useMediaQuery } from 'react-responsive';
-import { MAX_LAPTOP_WIDTH } from '@/common/breakpoints';
 import { ZoomableImage } from '@/components/zoomable-image';
 import { getDevicePictureUrl } from '@/stores/dali/device-store';
-import type { DeviceInfoPanelProps } from './types';
+import { getDeviceInfoFields, getDeviceNames, getDeviceTypeNames } from './device-info-fields';
+import type { DeviceInfoField, DeviceInfoPanelProps } from './types';
 import './styles.css';
 
 export const DeviceInfoPanel = ({ description }: DeviceInfoPanelProps) => {
   const { t } = useTranslation();
-  const showPictureAbove = useMediaQuery({ maxWidth: MAX_LAPTOP_WIDTH });
   const pictureUrl = getDevicePictureUrl(description);
-  const typeNames = (description.types ?? [])
-    .map((type) => t(`dali.device-types.${type}`, { defaultValue: `DT${type}` }));
-  const names = [description.brand_name, description.product_name].filter(Boolean);
-  const fields = [
+  const typeNames = getDeviceTypeNames(description, t);
+  const names = getDeviceNames(description);
+  const fields: DeviceInfoField[] = [
     // Without a name above, the types move into the fields, wide enough to stay on one line:
     // one type fits two columns, several get the whole row.
-    ...(names.length ? [] : [{
+    ...(names.length || !typeNames.length ? [] : [{
       label: t('dali.labels.info-types'),
       value: typeNames.join(', '),
       className: typeNames.length > 1 ? 'daliDeviceInfo-fieldFull' : 'daliDeviceInfo-fieldWide',
     }]),
-    { label: t('dali.labels.info-gtin'), value: description.gtin },
-    { label: t('dali.labels.info-identification-number'), value: description.identification_number },
-    { label: t('dali.labels.info-firmware'), value: description.firmware_version },
-    { label: t('dali.labels.info-hardware'), value: description.hardware_version },
-    { label: t('dali.labels.info-oem-gtin'), value: description.oem_gtin },
-    { label: t('dali.labels.info-oem-identification-number'), value: description.oem_identification_number },
-  ].filter(({ value }) => value !== undefined && value !== null && value !== '');
+    ...getDeviceInfoFields(description, t),
+  ];
 
   if (!names.length && !fields.length && !pictureUrl) {
     return null;
   }
 
   return (
-    <div className={classNames('daliDeviceInfo', { 'daliDeviceInfo-stacked': showPictureAbove })}>
+    <div className="daliDeviceInfo">
       <div className="daliDeviceInfo-body">
         {pictureUrl && (
           <ZoomableImage

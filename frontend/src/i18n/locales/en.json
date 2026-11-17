@@ -1207,6 +1207,7 @@
          "info-hardware": "Hardware",
          "info-oem-gtin": "OEM GTIN",
          "info-oem-identification-number": "OEM ID",
+         "info-device": "Device information",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {

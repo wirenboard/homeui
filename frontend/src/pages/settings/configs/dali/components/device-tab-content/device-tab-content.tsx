@@ -6,7 +6,7 @@ import BrushIcon from '@/assets/icons/brush.svg';
 import BulbIcon from '@/assets/icons/bulb.svg';
 import CheckIcon from '@/assets/icons/check.svg';
 import RefreshIcon from '@/assets/icons/refresh.svg';
-import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
+import { MAX_LAPTOP_WIDTH, MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { FormButtonGroup } from '@/components/form';
@@ -16,7 +16,7 @@ import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 import { useAsyncAction } from '@/utils/async-action';
 import { DeviceControlsDesktop, DeviceControlsMobile, GearErrorStatus } from '../device-controls';
-import { DeviceInfoPanel } from '../device-info';
+import { DeviceInfoCompact, DeviceInfoPanel } from '../device-info';
 import { ResetConfirm } from './reset-confirm';
 import type { InstanceConfig, ResetMode } from './types';
 import './styles.css';
@@ -34,7 +34,8 @@ export const wrongSchemeInstances = (config: object | undefined): string[] =>
 
 export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => {
   const { t } = useTranslation();
-  const showIconButtons = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
+  const showIconButtons = useMediaQuery({ maxWidth: MAX_LAPTOP_WIDTH });
   const [identify, isIdentifying] = useAsyncAction(async () => {
     await store.identify();
   });
@@ -106,11 +107,9 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
           <span className="dali-contentTitleContext">{t('dali.labels.bus', { num: store.parent.index })}</span>
         )}
       </h2>
-      <GearErrorStatus mqttId={store.mqttId} isIconOnly={showIconButtons} />
+      <GearErrorStatus mqttId={store.mqttId} isIconOnly={isMobile} />
     </div>
   );
-
-  const infoPanel = store.description && <DeviceInfoPanel description={store.description} />;
 
   const settingsForm = (
     <>
@@ -148,7 +147,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
     />
   );
 
-  if (showIconButtons) {
+  if (isMobile) {
     return (
       <>
         <div className="dali-tabToolbar">
@@ -170,7 +169,7 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
           </div>
         </div>
         <div className="dali-tabBody">
-          {infoPanel}
+          {store.description && <DeviceInfoPanel description={store.description} />}
           {settingsForm}
         </div>
         <DeviceControlsMobile mqttId={store.mqttId} isDisabled={store.isLoading} />
@@ -190,12 +189,20 @@ export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => 
           </FormButtonGroup>
         </div>
       </div>
-      {infoPanel}
+      {store.description && <DeviceInfoCompact description={store.description} />}
       <DeviceControlsDesktop mqttId={store.mqttId} isDisabled={store.isLoading}>
         <div className="dali-settingsHeader">
           <h3 className="dali-settingsTitle">{t('dali.labels.device-settings')}</h3>
           <FormButtonGroup>
-            <Button label={t('dali.buttons.reload')} disabled={isBusy} onClick={() => store.load(true)} />
+            <Tooltip text={showIconButtons ? t('dali.buttons.reload') : undefined}>
+              <Button
+                label={showIconButtons ? undefined : t('dali.buttons.reload')}
+                aria-label={t('dali.buttons.reload')}
+                icon={showIconButtons && <RefreshIcon />}
+                disabled={isBusy}
+                onClick={() => store.load(true)}
+              />
+            </Tooltip>
             {saveButton}
           </FormButtonGroup>
         </div>
