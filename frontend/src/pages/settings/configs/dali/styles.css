@@ -23,7 +23,7 @@
     min-height: 0;
     overflow-y: auto;
 
-    @media (min-width: 991px) {
+    @media (--min-tablet-width) {
         width: 280px;
     }
 }
@@ -45,7 +45,7 @@
     overflow-y: auto;
 
     /* Alone on the screen once the tree is hidden, so there is nothing to frame it off from. */
-    @media (max-width: 991px) {
+    @media (--max-mobile-width) {
         --dali-inset: 0px;
         --dali-surface: var(--background-color);
         border: 0;

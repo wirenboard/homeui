@@ -47,7 +47,7 @@
     }
 }
 
-@media (max-width: 767px) {
+@media (--max-mobile-width) {
     .defaultLayout-pageWrapper:not(.defaultLayout-pageWrapperHmi) .svgDashboard {
         padding-bottom: 5px;
     }

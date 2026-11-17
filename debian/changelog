@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.288.0) stable; urgency=medium
+
+  * Improve web UI layout on tablets and small laptops
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 19:01:45 +0500
+
 wb-mqtt-homeui (2.287.2) stable; urgency=medium
 
   * Fix the devices page staying empty after a hard reload when "show service devices" is enabled

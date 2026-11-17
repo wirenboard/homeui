@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -17,7 +18,7 @@ import './styles.css';
 
 const ScanPage = observer(({ pageStore, scanType, onAddDeviceManually }: ScanPageProps) => {
   const { t, i18n } = useTranslation();
-  const isDesktop = useMediaQuery({ minWidth: 874 });
+  const showTable = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
   const [confirmAddressChange, isConfirmOpened, handleConfirm, handleClose, devicesToModify] = useConfirm<any>();
   const nothingFound = !pageStore.commonScanStore.devicesStore.newDevices.length
     && !pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices.length;
@@ -60,7 +61,7 @@ const ScanPage = observer(({ pageStore, scanType, onAddDeviceManually }: ScanPag
         )}
         <div>
           {(isScanning || !nothingFound) && (
-            isDesktop ? (
+            showTable ? (
               <DevicesTable
                 isScanning={isScanning}
                 newDevices={pageStore.commonScanStore.devicesStore.newDevices}

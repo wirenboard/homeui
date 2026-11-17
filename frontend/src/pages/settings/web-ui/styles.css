@@ -3,7 +3,7 @@
     gap: var(--content-gap);
     grid-template-columns: 1fr 1fr;
 
-    @media(max-width: 900px) {
+    @media (--max-mobile-width) {
         display: flex;
         flex-direction: column;
     }

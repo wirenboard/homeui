@@ -1,5 +1,5 @@
 ---
-# Exclude test code from Codacy static analysis.
+# Exclude test code and dev scripts from Codacy static analysis.
 #
 # Codacy runs type-aware ESLint (no-unsafe-*, no-confusing-void-expression, ...)
 # and security rules that the project's own gates intentionally do NOT apply to
@@ -10,4 +10,5 @@ exclude_paths:
   - "**/*.test.ts"
   - "**/*.test.tsx"
   - "frontend/src/test/**"
+  - "frontend/scripts/**"
   - "backend/tests/**"

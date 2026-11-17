@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FormButtonGroup } from '@/components/form';
@@ -122,7 +122,7 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
 
 export const BusTabContent = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const showControlsAside = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
 
   if (store.isLoading) {
     return (
@@ -178,14 +178,14 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
           </FormButtonGroup>
         </div>
       </div>
-      {isMobile ? (
+      {showControlsAside ? (
+        <DeviceControlsDesktop mqttId={`${store.id}_broadcast`}>{body}</DeviceControlsDesktop>
+      ) : (
         <>
           <div className="dali-tabBody">{body}</div>
           {/* Broadcast controls only send, there is no state to peek at. */}
           <DeviceControlsMobile mqttId={`${store.id}_broadcast`} peekTitle={t('dali.labels.broadcast-commands')} />
         </>
-      ) : (
-        <DeviceControlsDesktop mqttId={`${store.id}_broadcast`}>{body}</DeviceControlsDesktop>
       )}
     </>
   );
