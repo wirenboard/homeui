@@ -47,11 +47,6 @@ describe('Dialog', () => {
     expect(dialog.style.maxWidth).toBe('800px');
   });
 
-  test('leaves maxWidth to the styles without width', () => {
-    render(<Dialog isOpened={true} heading="H">x</Dialog>);
-    expect(screen.getByRole('dialog').style.maxWidth).toBe('');
-  });
-
   test('renders headerActions', () => {
     render(
       <Dialog isOpened={true} heading="H" headerActions={<button>Extra</button>}>x</Dialog>,

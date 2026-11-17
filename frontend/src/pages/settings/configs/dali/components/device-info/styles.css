@@ -119,10 +119,11 @@
 
 .dialog.daliDeviceInfoDialog {
     width: fit-content;
-    max-width: min(1500px, calc(100% - 32px));
 }
 
 .daliDeviceInfoDialog .dialog-content {
+    box-sizing: border-box;
+    max-width: calc(100vw - 32px);
     display: flex;
     flex-direction: column;
 }

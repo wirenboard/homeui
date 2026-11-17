@@ -21,6 +21,7 @@ export const DeviceInfoDialog = ({ description, isOpened, onClose }: DeviceInfoD
       className={classNames('daliDeviceInfoDialog', placement && `daliDeviceInfoDialog-${placement}`)}
       isOpened={isOpened}
       heading={names.length ? names.join(' ') : t('dali.labels.info-device')}
+      width={1500}
       onClose={onClose}
     >
       <div className="daliDeviceInfoDialog-body">
