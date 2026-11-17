@@ -4,6 +4,18 @@ wb-mqtt-homeui (2.288.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 19:01:45 +0500
 
+wb-mqtt-homeui (2.287.2) stable; urgency=medium
+
+  * Fix the devices page staying empty after a hard reload when "show service devices" is enabled
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Nov 2026 11:28:00 +0300
+
+wb-mqtt-homeui (2.287.1) stable; urgency=medium
+
+  * Fix extra padding at the bottom of dashboards in HMI mode
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Nov 2026 10:58:00 +0300
+
 wb-mqtt-homeui (2.287.0) stable; urgency=medium
 
   * Show table settings (e.g. DALI scenes) as cards on mobile
