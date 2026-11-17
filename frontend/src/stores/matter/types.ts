@@ -1,11 +1,13 @@
 export interface MatterFabric {
   index: number;
-  label: string;
+  // The label the fabric gave itself: FabricDescriptorStruct.Label, written by the app
+  // that paired. Often empty - half of the controllers never set one.
+  adminFabricLabel: string;
   vendor_id: number;
-  // A name the operator typed on this controller. It wins over the label, because the
-  // label belongs to whoever paired and Matter gives a bridge no way to write it:
-  // UpdateFabricLabel is fabric-scoped. Half of the controllers leave the label empty.
-  alias?: string;
+  // The label the operator typed on this controller. It wins over adminFabricLabel,
+  // because that one belongs to whoever paired and Matter gives a bridge no way to write
+  // it: UpdateFabricLabel is fabric-scoped.
+  localFabricLabel?: string;
   // When this app paired, in milliseconds since the epoch. Missing for an app that was
   // already paired before the bridge started keeping dates - then MatterStatus.fabrics_since
   // is what the page can honestly say instead of a blank.

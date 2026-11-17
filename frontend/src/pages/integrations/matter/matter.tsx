@@ -12,12 +12,12 @@ import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { type MatterDevice, type MatterFabric, matterStore, pairingQrUrl } from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
-import { AppsCard } from './components/apps-card';
 import { CopyField } from './components/copy-field';
-import { RenameDialog } from './components/rename-dialog';
-import { AppMenuAction } from './types';
+import { FabricLabelDialog } from './components/fabric-label-dialog';
+import { FabricsCard } from './components/fabrics-card';
+import { FabricMenuAction } from './types';
 import {
-  appDisplayName, configuratorSelection, detailParts, groupManualCode, isColour, timeLeft,
+  configuratorSelection, detailParts, fabricDisplayLabel, groupManualCode, isColour, timeLeft,
 } from './utils';
 import './styles.css';
 
@@ -56,15 +56,15 @@ const MatterPage = observer(() => {
   const isInstalled = uiStore.modules.includes(MODULE_ID);
   const isAdmin = authStore.hasRights(UserRole.Admin);
   const { status, isLoading, isUnreachable } = matterStore;
-  // The app whose "unpair" button was pressed, and so the one the dialog talks about.
+  // The fabric whose "unpair" button was pressed, and so the one the dialog talks about.
   const [unpairFrom, setUnpairFrom] = useState<MatterFabric | null>(null);
   // The "change the code" dialog. A dialog and not a plain button because the act has a
   // cost the operator cannot see from here: an app that remembered the old code will
   // offer the wrong one afterwards.
   const [isChangingCode, setChangingCode] = useState(false);
-  // The app being renamed, and the text typed so far. Kept apart from the fabric so that
-  // a poll of the store arriving mid-edit cannot overwrite what is being typed.
-  const [renameFor, setRenameFor] = useState<MatterFabric | null>(null);
+  // The fabric being labelled. Kept apart from the store so that a poll arriving
+  // mid-edit cannot overwrite what is being typed.
+  const [labelFor, setLabelFor] = useState<MatterFabric | null>(null);
   const now = useNow(Boolean(status?.pairing));
 
   useEffect(() => {
@@ -89,12 +89,12 @@ const MatterPage = observer(() => {
     navigate('/configurator');
   };
 
-  const chooseAppAction = (fabric: MatterFabric, action: AppMenuAction) => {
-    if (action === AppMenuAction.Unpair) {
+  const chooseFabricAction = (fabric: MatterFabric, action: FabricMenuAction) => {
+    if (action === FabricMenuAction.Unpair) {
       setUnpairFrom(fabric);
       return;
     }
-    setRenameFor(fabric);
+    setLabelFor(fabric);
   };
 
   /** The name of the type, taken from the configurator so the names live in one place. */
@@ -266,10 +266,10 @@ const MatterPage = observer(() => {
             </Card>
           )}
 
-          <AppsCard
+          <FabricsCard
             fabrics={status.fabrics}
             fabricsSince={status.fabrics_since}
-            onAction={chooseAppAction}
+            onAction={chooseFabricAction}
           />
 
           <Card className="matter-card" heading={t('matter.labels.devices')}>
@@ -363,7 +363,7 @@ const MatterPage = observer(() => {
             }}
           >
             <p className="matter-dialogText">
-              {t('matter.labels.unpair-where', { app: unpairFrom ? appDisplayName(unpairFrom, t) : '' })}
+              {t('matter.labels.unpair-where', { label: unpairFrom ? fabricDisplayLabel(unpairFrom, t) : '' })}
             </p>
             <p className="matter-dialogText">{t('matter.labels.unpair-why')}</p>
             <p className="matter-dialogText">{t('matter.labels.unpair-code')}</p>
@@ -373,7 +373,7 @@ const MatterPage = observer(() => {
             )}
           </Confirm>
 
-          <RenameDialog fabric={renameFor} onClose={() => setRenameFor(null)} />
+          <FabricLabelDialog fabric={labelFor} onClose={() => setLabelFor(null)} />
         </>
       )}
     </PageLayout>

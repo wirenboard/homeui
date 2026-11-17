@@ -1,7 +1,7 @@
 import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
 import type { MatterDevice, MatterFabric } from '@/stores/matter';
-import { LinkState, PairedDateKind } from './types';
+import { FabricLabelSource, LinkState, PairedDateKind } from './types';
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service
@@ -44,30 +44,61 @@ const KNOWN_VENDORS = new Map<number, string>([
 export const vendorKey = (vendorId: number) => KNOWN_VENDORS.get(vendorId) ?? null;
 
 /**
- * What to call a connected app, best name first.
+ * Which of the four sources the label shown for a fabric comes from.
  *
- * A name typed on this controller wins, because it is the only one a person here chose.
- * Then the label, which belongs to whoever paired and which Yandex leaves empty. Then a
- * vendor we recognise. An app that offers none of the three is named by its fabric
- * number, and that number has to stay visible: two apps with no name at all would be two
- * identical rows, and the operator could not tell which one to remove.
+ * One function instead of several predicates: the order here *is* the rule, and the page
+ * needs both the winner's text and which source won - to mark a label chosen on this
+ * controller, and to say so when there is no label at all.
+ */
+export const fabricLabelSource = (fabric: MatterFabric): FabricLabelSource => {
+  if (fabric.localFabricLabel) {
+    return FabricLabelSource.Local;
+  }
+  if (fabric.adminFabricLabel) {
+    return FabricLabelSource.Admin;
+  }
+  return vendorKey(fabric.vendor_id) ? FabricLabelSource.Vendor : FabricLabelSource.None;
+};
+
+/**
+ * What to show for a fabric, best source first.
+ *
+ * A label typed here wins, because it is the only one a person on this controller chose.
+ * Then the one the fabric gave itself, which Yandex leaves empty. Then a vendor we
+ * recognise. A fabric that offers none of the three is shown by its number, and that
+ * number has to stay visible: two unlabelled fabrics would be two identical rows, and the
+ * operator could not tell which one to remove.
  *
  * Here and not in the page because three places need the same answer - the table, the
- * menu heading and the unpair dialog - and a name that differed between them would read
- * as three different apps.
+ * menu heading and the unpair dialog - and a label that differed between them would read
+ * as three different fabrics.
  */
-export const appDisplayName = (fabric: MatterFabric, t: TFunction) => {
-  if (fabric.alias) {
-    return fabric.alias;
+export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => {
+  switch (fabricLabelSource(fabric)) {
+    case FabricLabelSource.Local:
+      return fabric.localFabricLabel;
+    case FabricLabelSource.Admin:
+      return fabric.adminFabricLabel;
+    case FabricLabelSource.Vendor:
+      return t(`matter.labels.vendor-${vendorKey(fabric.vendor_id)}`);
+    default:
+      return t('matter.labels.fabric-unlabelled', { index: fabric.index });
   }
-  if (fabric.label) {
-    return fabric.label;
-  }
-  const key = vendorKey(fabric.vendor_id);
-  return key
-    ? t(`matter.labels.vendor-${key}`)
-    : t('matter.labels.app-unnamed', { index: fabric.index });
 };
+
+/**
+ * What the label typed here replaced, for the note beside it.
+ *
+ * The fabric's own label when it had one, and the number it would fall back to when it
+ * did not. Showing what it was answers the second half of the question: a mark alone says
+ * the label is ours, this says what clearing it would bring back.
+ */
+export const replacedFabricLabel = (fabric: MatterFabric, t: TFunction) => (
+  fabric.adminFabricLabel
+  || (vendorKey(fabric.vendor_id)
+    ? t(`matter.labels.vendor-${vendorKey(fabric.vendor_id)}`)
+    : t('matter.labels.fabric-unlabelled', { index: fabric.index }))
+);
 
 /**
  * The vendor id the way every Matter document and every log line writes it. Decimal

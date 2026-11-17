@@ -47,22 +47,22 @@ export const changeMatterCode = async () => {
 };
 
 /**
- * Drops one app. The index is the one /status gave for it, so the page sends back what
+ * Drops one fabric. The index is the one /status gave for it, so the page sends back what
  * it was shown. The bridge answers 409 when the app is already gone, which the store
  * treats like any other failure: it reloads the state and the page shows what is true.
  */
-export const unpairMatterApp = async (index: number) => {
+export const unpairFabric = async (index: number) => {
   await request.post('/matter/unpair', { index });
 };
 
 /**
- * Names one app on this controller. An empty name clears ours, and the page falls back
- * to the label the app set for itself.
+ * Sets the label this controller keeps for one fabric. An empty value clears it, and the
+ * page falls back to adminFabricLabel or to the fabric number.
  *
- * The name is kept by the bridge and never reaches the app: the only standard place for
- * one is the fabric's own Label, and the command that writes it may only be sent by the
- * administrator of that fabric, not by the device it paired with.
+ * It never reaches the app: the only standard place for a label is the fabric's own
+ * Label, and the command that writes it may only be sent by the administrator of that
+ * fabric, not by the device it paired with.
  */
-export const renameMatterApp = async (index: number, name: string) => {
-  await request.post('/matter/rename', { index, name });
+export const setLocalFabricLabel = async (index: number, localFabricLabel: string) => {
+  await request.post('/matter/local-fabric-label', { index, localFabricLabel });
 };
