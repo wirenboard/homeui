@@ -2,7 +2,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import type { MatterFabric } from '@/stores/matter';
@@ -24,7 +24,7 @@ import { FabricMenu } from './fabric-menu';
  */
 export const FabricsCard = ({ fabrics, fabricsSince, onAction }: FabricsCardProps) => {
   const { t, i18n } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   // Matching the rest of the interface rather than inventing a format for this page.
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy, HH:mm' : 'dd/MM/yyyy, HH:mm';
   // The bound on an unknown pairing has no business carrying minutes: the moment it
