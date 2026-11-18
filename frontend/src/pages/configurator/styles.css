@@ -147,6 +147,45 @@
     border-top: 1px solid var(--light-gray-color);
 }
 
+.configurator-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.configurator-card {
+    border: 1px solid var(--light-gray-color);
+    border-radius: var(--container-border-radius);
+    overflow: hidden;
+}
+
+.configurator-cardHead {
+    flex-wrap: nowrap;
+    padding: 8px 12px;
+    background: var(--background-accent-color);
+    border-bottom: 1px solid var(--light-gray-color);
+}
+
+.configurator-cardNumber {
+    min-width: 24px;
+    padding: 0 6px;
+    border: 1px solid var(--light-gray-color);
+    border-radius: 12px;
+    text-align: center;
+    background: var(--container-background);
+}
+
+.configurator-cardName {
+    min-width: 0;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+}
+
+.configurator-cardBody {
+    margin-top: 0;
+    padding: 12px;
+}
+
 .configurator-channelHead {
     display: flex;
     flex-wrap: wrap;

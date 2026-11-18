@@ -111,7 +111,10 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
 
       <section className="configurator-section">
         <div className="configurator-sectionHead">
-          <h3 className="configurator-sectionTitle">{t('configurator.labels.channels')}</h3>
+          <h3 className="configurator-sectionTitle">
+            {t('configurator.labels.channels')}
+            {!!item.rows.length && ` (${item.rows.length})`}
+          </h3>
           <Button
             size="small"
             variant="secondary"
@@ -122,8 +125,8 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
           />
         </div>
         {!item.rows.length && <p className="configurator-empty">{t('configurator.labels.channels-none')}</p>}
-        <ul className="configurator-channels">
-          {item.rows.map((row) => {
+        <ul className="configurator-channels configurator-cards">
+          {item.rows.map((row, index) => {
             const { missing } = rowServices(row);
             const TypeIcon = TYPE_ICONS[row.type];
             const roles = findType(row.type).roles
@@ -132,11 +135,13 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
             const classTypes = primary ? CHANNEL_CLASSES[primary.cls].types : [];
             const types = !classTypes.length || classTypes.includes(row.type) ? classTypes : [row.type, ...classTypes];
             return (
-              <li key={row.did} className="configurator-channel">
-                <div className="configurator-channelHead">
+              <li key={row.did} className="configurator-card">
+                <div className="configurator-channelHead configurator-cardHead">
                   <span className="configurator-channelTitle">
+                    <span className="configurator-cardNumber">{index + 1}</span>
                     <TypeIcon className="configurator-typeIcon" />
                     {typeName(row.type)}
+                    {row.name && <span className="configurator-cardName">{`— ${row.name}`}</span>}
                   </span>
                   <Button
                     size="small"
@@ -146,7 +151,7 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
                     onClick={() => configuratorStore.removeRow(item, row.did)}
                   />
                 </div>
-                <div className="configurator-channelBody">
+                <div className="configurator-channelBody configurator-cardBody">
                   <div className="configurator-fields">
                     <StringField
                       title={t('configurator.labels.name-in-apps')}
