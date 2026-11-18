@@ -1,6 +1,8 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import type { MatterFabric } from '@/stores/matter';
@@ -11,15 +13,18 @@ import {
 import { FabricMenu } from './fabric-menu';
 
 /**
- * The fabrics paired with this bridge, in columns.
+ * The fabrics paired with this bridge: columns on a wide screen, stacked lines on a phone.
  *
- * Columns and not a list, because the three facts in a row are the same kind of fact for
- * every fabric and the question people bring here is a comparison between rows: which of
- * these is still talking to my house, and which did I add when. A list answers that one
- * row at a time.
+ * Columns, because the three facts in a row are the same kind of fact for every fabric and
+ * the question people bring here is a comparison between rows: which of these is still
+ * talking to my house, and which did I add when. A list answers that one row at a time.
+ *
+ * On a phone that comparison is not on offer anyway: at 375 px the four columns ask for 394,
+ * so the link state is clipped and the actions column falls off the right edge entirely.
  */
 export const FabricsCard = ({ fabrics, fabricsSince, onAction }: FabricsCardProps) => {
   const { t, i18n } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
   // Matching the rest of the interface rather than inventing a format for this page.
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy, HH:mm' : 'dd/MM/yyyy, HH:mm';
   // The bound on an unknown pairing has no business carrying minutes: the moment it
@@ -88,52 +93,76 @@ export const FabricsCard = ({ fabrics, fabricsSince, onAction }: FabricsCardProp
     }
   };
 
+  const linkClass = (fabric: MatterFabric) => (linkState(fabric) === LinkState.Online
+    ? 'matter-fabricLink matter-fabricLinkOnline'
+    : 'matter-fabricLink');
+
+  const fabricRows = (
+    <ul className="matter-rows">
+      {fabrics.map((fabric) => (
+        <li className="matter-row" key={fabric.index}>
+          <div className="matter-rowMain">
+            <span className="matter-rowName">{fabricDisplayLabel(fabric, t)}</span>
+            <span className="matter-rowLine">
+              <span className={linkClass(fabric)}>{linkText(fabric)}</span>
+            </span>
+            <span className="matter-rowLine">
+              {`${t('matter.labels.column-paired')}: ${pairedText(fabric)}`}
+            </span>
+            {labelNote(fabric) && <span className="matter-rowLine">{labelNote(fabric)}</span>}
+          </div>
+          <div className="matter-rowAction">
+            <FabricMenu
+              label={fabricDisplayLabel(fabric, t)}
+              fabric={fabric}
+              onChoose={(action) => onAction(fabric, action)}
+            />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
     <Card className="matter-card" heading={t('matter.labels.fabrics')}>
-      {fabrics.length === 0
-        ? <p className="matter-empty">{t('matter.labels.fabrics-empty')}</p>
-        : (
-          <Table isFullWidth>
-            <TableRow isHeading>
-              <TableCell>{t('matter.labels.column-fabric')}</TableCell>
-              <TableCell>{t('matter.labels.column-paired')}</TableCell>
-              <TableCell>{t('matter.labels.column-link')}</TableCell>
+      {fabrics.length === 0 && <p className="matter-empty">{t('matter.labels.fabrics-empty')}</p>}
+      {fabrics.length > 0 && isMobile && fabricRows}
+      {fabrics.length > 0 && !isMobile && (
+        <Table isFullWidth>
+          <TableRow isHeading>
+            <TableCell>{t('matter.labels.column-fabric')}</TableCell>
+            <TableCell>{t('matter.labels.column-paired')}</TableCell>
+            <TableCell>{t('matter.labels.column-link')}</TableCell>
+            <TableCell>
+              <span className="matter-srOnly">{t('matter.labels.column-actions')}</span>
+            </TableCell>
+          </TableRow>
+
+          {fabrics.map((fabric) => (
+            <TableRow key={fabric.index}>
               <TableCell>
-                <span className="matter-srOnly">{t('matter.labels.column-actions')}</span>
+                <span className="matter-fabricLabel">{fabricDisplayLabel(fabric, t)}</span>
+                {labelNote(fabric) && (
+                  <span className="matter-fabricNote">{labelNote(fabric)}</span>
+                )}
+              </TableCell>
+              <TableCell>
+                <span className="matter-fabricWhen">{pairedText(fabric)}</span>
+              </TableCell>
+              <TableCell>
+                <span className={linkClass(fabric)}>{linkText(fabric)}</span>
+              </TableCell>
+              <TableCell>
+                <FabricMenu
+                  label={fabricDisplayLabel(fabric, t)}
+                  fabric={fabric}
+                  onChoose={(action) => onAction(fabric, action)}
+                />
               </TableCell>
             </TableRow>
-
-            {fabrics.map((fabric) => (
-              <TableRow key={fabric.index}>
-                <TableCell>
-                  <span className="matter-fabricLabel">{fabricDisplayLabel(fabric, t)}</span>
-                  {labelNote(fabric) && (
-                    <span className="matter-fabricNote">{labelNote(fabric)}</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <span className="matter-fabricWhen">{pairedText(fabric)}</span>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={linkState(fabric) === LinkState.Online
-                      ? 'matter-fabricLink matter-fabricLinkOnline'
-                      : 'matter-fabricLink'}
-                  >
-                    {linkText(fabric)}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <FabricMenu
-                    label={fabricDisplayLabel(fabric, t)}
-                    fabric={fabric}
-                    onChoose={(action) => onAction(fabric, action)}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </Table>
-        )}
+          ))}
+        </Table>
+      )}
       <p className="matter-hint">{t('matter.labels.fabrics-hint')}</p>
     </Card>
   );

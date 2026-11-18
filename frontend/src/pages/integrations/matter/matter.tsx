@@ -1,24 +1,21 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Confirm } from '@/components/confirm';
-import { Table, TableCell, TableRow } from '@/components/table';
-import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { type MatterDevice, type MatterFabric, matterStore, pairingQrUrl } from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
 import { CopyField } from './components/copy-field';
+import { DevicesCard } from './components/devices-card';
 import { FabricLabelDialog } from './components/fabric-label-dialog';
 import { FabricsCard } from './components/fabrics-card';
 import { FabricMenuAction } from './types';
-import {
-  configuratorSelection, detailParts, fabricDisplayLabel, groupManualCode, isColour, timeLeft,
-} from './utils';
+import { configuratorSelection, fabricDisplayLabel, groupManualCode, timeLeft } from './utils';
 import './styles.css';
 
 // The menu entry is shipped by wb-mqtt-matter-bridge itself, so its id in the custom
@@ -43,9 +40,6 @@ const useNow = (isTicking: boolean) => {
   }, [isTicking]);
   return now;
 };
-
-/** The states this page has words for. Anything else is a reading, and is shown as it is. */
-const TRANSLATED_STATES = new Set(['on', 'off']);
 
 const MatterPage = observer(() => {
   const { t } = useTranslation();
@@ -95,63 +89,6 @@ const MatterPage = observer(() => {
       return;
     }
     setLabelFor(fabric);
-  };
-
-  /** The name of the type, taken from the configurator so the names live in one place. */
-  const deviceType = ({ type }: MatterDevice) => t(`configurator.types.${type}.name`, { defaultValue: type });
-
-  /**
-   * Why a device is not given to Matter, in the language of the page. The service sends
-   * a code for exactly this, and its own English sentence stays in /status and in the
-   * journal for support. An unknown code means a newer service than this page: then the
-   * sentence is better than nothing.
-   */
-  const notExposedReason = (device: MatterDevice) => (device.reason_code
-    ? t(`matter.labels.reason-${device.reason_code}`, { defaultValue: device.reason ?? '' })
-    : device.reason ?? '');
-
-  /**
-   * The roles the config asks for and the endpoint does not carry, in the words of the
-   * configurator so that the names of the roles live in one place.
-   *
-   * The field is optional: a page can be newer than the service it talks to, and an
-   * older service simply says nothing about this.
-   */
-  const ignoredRoles = (device: MatterDevice) => (device.ignored_roles ?? [])
-    .map((role) => t(`configurator.roles.${role}`, { defaultValue: role }))
-    .join(', ');
-
-  /** What the state column shows: the value of the control, or why there is none. */
-  const deviceState = (device: MatterDevice) => {
-    if (!device.exposed) {
-      return (
-        <Tag variant="gray" title={notExposedReason(device) || undefined}>
-          {t('matter.labels.not-exposed')}
-        </Tag>
-      );
-    }
-    if (device.state === null) {
-      return <Tag variant="warn" title={t('matter.labels.state-silent-hint')}>{t('matter.labels.state-silent')}</Tag>;
-    }
-    // Only a switch has a state with a word for it. A sensor puts its reading here, as
-    // the service formatted it ("10.0 C"), and asking for a translation of that printed
-    // the key it could not find - "matter.labels.state-10.0 C" - right in the table.
-    const text = TRANSLATED_STATES.has(device.state)
-      ? t(`matter.labels.state-${device.state}`)
-      : device.state;
-    return (
-      <>
-        <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{text}</Tag>
-        {/* Readings, not words: "50 %", "#FF0000", "3000 K". Beside the tag and not
-            inside it - the tag is translated by a dictionary, a reading is not. */}
-        {detailParts(device).map((part) => (
-          <span className="matter-detail" key={part}>
-            {isColour(part) && <i className="matter-swatch" style={{ background: part }} />}
-            {part}
-          </span>
-        ))}
-      </>
-    );
   };
 
   const errors = [];
@@ -272,56 +209,7 @@ const MatterPage = observer(() => {
             onAction={chooseFabricAction}
           />
 
-          <Card className="matter-card" heading={t('matter.labels.devices')}>
-            {status.devices.list.length === 0
-              ? <p className="matter-empty">{t('matter.labels.devices-empty')}</p>
-              : (
-                <Table isFullWidth>
-                  <TableRow isHeading>
-                    <TableCell>{t('matter.labels.column-name')}</TableCell>
-                    <TableCell>{t('matter.labels.column-type')}</TableCell>
-                    <TableCell>{t('matter.labels.column-room')}</TableCell>
-                    <TableCell>{t('matter.labels.column-state')}</TableCell>
-                  </TableRow>
-
-                  {status.devices.list.map((device) => (
-                    <TableRow
-                      key={device.did}
-                      className="matter-deviceRow"
-                      aria-label={t('matter.labels.open-device', { name: device.name })}
-                      // Not the url of the row: the selection has to be set before the
-                      // configurator mounts, and a Link navigates from the cell, which
-                      // is the click target and runs before this handler.
-                      onClick={() => openInConfigurator(device)}
-                    >
-                      <TableCell>{device.name}</TableCell>
-                      <TableCell>{deviceType(device)}</TableCell>
-                      <TableCell>{device.area ?? ''}</TableCell>
-                      <TableCell>
-                        {deviceState(device)}
-                        {device.exposed && ignoredRoles(device) !== '' && (
-                          <span className="matter-ignored">
-                            {t('matter.labels.ignored-roles', { roles: ignoredRoles(device) })}
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </Table>
-              )}
-            <p className="matter-hint">
-              {t('matter.labels.devices-count', {
-                count: status.devices.configured, exposed: status.devices.exposed,
-              })}
-              {status.devices.skipped > 0
-                && ` ${t('matter.labels.devices-skipped', { count: status.devices.skipped })}`}
-              {' '}
-              {t('matter.labels.devices-hint')}
-              {' '}
-              <Link to="/configurator">{t('matter.labels.devices-link')}</Link>
-              .
-            </p>
-          </Card>
+          <DevicesCard devices={status.devices} onOpen={openInConfigurator} />
 
           <Confirm
             isOpened={isChangingCode}

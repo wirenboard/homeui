@@ -1,4 +1,4 @@
-import type { MatterFabric } from '@/stores/matter';
+import type { MatterDevice, MatterDevices, MatterFabric } from '@/stores/matter';
 
 /**
  * What the page can honestly say about when an app paired. Three cases and not two: an
@@ -54,6 +54,11 @@ export interface FabricsCardProps {
   // of their own. Null or undefined from a service that keeps none.
   fabricsSince?: number | null;
   onAction: (_fabric: MatterFabric, _action: FabricMenuAction) => void;
+}
+
+export interface DevicesCardProps {
+  devices: MatterDevices;
+  onOpen: (_device: MatterDevice) => void;
 }
 
 export interface FabricLabelDialogProps {
