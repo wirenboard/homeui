@@ -12,7 +12,8 @@
     "test:perf": "vite build && playwright test -c playwright.config.ts",
     "lint": "npx eslint --cache --cache-location .eslintcache",
     "lint:fix": "npx eslint --fix",
-    "check:types": "tsc --noEmit"
+    "check:types": "tsc --noEmit",
+    "screens": "node scripts/breakpoint-screens.mjs"
   },
   "repository": {
     "type": "git",
@@ -45,7 +46,6 @@
     "@zxcvbn-ts/core": "3.0.4",
     "@zxcvbn-ts/language-common": "3.0.4",
     "axios": "1.21.0",
-    "bootstrap": "5.3.8",
     "classnames": "2.5.1",
     "date-fns": "4.3.0",
     "dompurify": "3.4.17",
@@ -74,6 +74,7 @@
     "use-file-picker": "2.1.4"
   },
   "devDependencies": {
+    "@csstools/postcss-global-data": "4.0.0",
     "@faker-js/faker": "10.6.0",
     "@playwright/test": "1.63.0",
     "@testing-library/jest-dom": "6.9.1",
@@ -94,6 +95,7 @@
     "eslint": "9.39.1",
     "globals": "17.6.0",
     "happy-dom": "21.0.4",
+    "postcss-custom-media": "12.0.3",
     "rimraf": "6.1.3",
     "terser": "5.51.2",
     "typescript": "6.0.3",

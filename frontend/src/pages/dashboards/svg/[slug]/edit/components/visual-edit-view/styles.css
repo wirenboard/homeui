@@ -4,7 +4,7 @@
     grid-template-columns: 2fr 1fr;
     gap: 12px;
 
-    @media (max-width: 992px) {
+    @media (--max-mobile-width) {
         display: flex;
         flex-direction: column;
     }
@@ -19,7 +19,7 @@
     flex-direction: column;
     align-items: center;
 
-    @media (min-width: 992px) {
+    @media (--min-tablet-width) {
         height: calc(100vh - 150px);
     }
 }

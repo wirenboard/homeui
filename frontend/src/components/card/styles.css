@@ -103,7 +103,7 @@
     overflow: hidden;
     cursor: pointer;
 
-    @media(max-width: 768px) {
+    @media (--max-mobile-width) {
         opacity: 1;
     }
 }

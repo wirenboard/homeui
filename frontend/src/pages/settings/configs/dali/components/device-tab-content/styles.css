@@ -4,3 +4,9 @@
     gap: 10px;
     min-width: 0;
 }
+
+.dali-tabToolbar-heading > :not(.dali-contentTitle) {
+    @media (--min-tablet-width) {
+        flex-shrink: 0;
+    }
+}

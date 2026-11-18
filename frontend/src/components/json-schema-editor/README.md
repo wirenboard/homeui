@@ -108,7 +108,7 @@ The schema subset the editor currently renders. Verified against `store-builder.
 
 - Plain arrays, plus `minItems` / `maxItems`.
 - Boolean-item arrays render as a checkbox list.
-- Object-item arrays with `format: "table"` render as a table.
+- Object-item arrays with `format: "table"` render as a table; on mobile widths items with more than one property render as cards (one per item, every field labelled, including `compact` ones).
 
 ### Reuse and composition
 

@@ -8,6 +8,7 @@ import ArrowDownIcon from '@/assets/icons/arrow-down.svg';
 import ArrowLeftIcon from '@/assets/icons/arrow-left.svg';
 import ArrowRightIcon from '@/assets/icons/arrow-right.svg';
 import ArrowUpIcon from '@/assets/icons/arrow-up.svg';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { StringField, BooleanField } from '@/components/form';
@@ -23,7 +24,7 @@ const SwitcherElement = ({ connection, moveLeft, moveRight }) => {
     id: connection.name,
     data: connection,
   });
-  const isMobile = useMediaQuery({ maxWidth: 991 });
+  const showPrioritiesInRow = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
   const style = transform
     ? {
       transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
@@ -40,7 +41,7 @@ const SwitcherElement = ({ connection, moveLeft, moveRight }) => {
       style={style}
       ref={setNodeRef}
     >
-      {!isMobile && moveLeft && (
+      {showPrioritiesInRow && moveLeft && (
         <Button
           variant="secondary"
           aria-label={t('network-connections.buttons.priority-up')}
@@ -51,7 +52,7 @@ const SwitcherElement = ({ connection, moveLeft, moveRight }) => {
       <div className="networkSwitcher-priorityItemContent" {...listeners} {...attributes}>
         <ConnectionItem connection={connection} />
       </div>
-      {isMobile && moveLeft && (
+      {!showPrioritiesInRow && moveLeft && (
         <Button
           variant="secondary"
           aria-label={t('network-connections.buttons.priority-up')}
@@ -63,7 +64,7 @@ const SwitcherElement = ({ connection, moveLeft, moveRight }) => {
         <Button
           variant="secondary"
           aria-label={t('network-connections.buttons.priority-down')}
-          icon={isMobile ? <ArrowDownIcon /> : <ArrowRightIcon />}
+          icon={showPrioritiesInRow ? <ArrowRightIcon /> : <ArrowDownIcon />}
           onClick={onMoveRight}
         />
       )}

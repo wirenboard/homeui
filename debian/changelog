@@ -1,8 +1,51 @@
-wb-mqtt-homeui (2.287.0) stable; urgency=medium
+wb-mqtt-homeui (2.290.0) stable; urgency=medium
 
   * Add the device configurator page (Integrations -> Device configurator)
 
- -- Victor Fedorov <victor.fedorov@wirenboard.com>  Fri, 13 Nov 2026 10:20:01 +0300
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 18 Nov 2026 10:29:44 +0300
+
+wb-mqtt-homeui (2.289.0) stable; urgency=medium
+
+  * DALI: compact device info on tablets and laptops, full info opens in a dialog
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Nov 2026 16:53:14 +0500
+
+wb-mqtt-homeui (2.288.0) stable; urgency=medium
+
+  * Improve web UI layout on tablets and small laptops
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Nov 2026 16:42:50 +0500
+
+wb-mqtt-homeui (2.287.2) stable; urgency=medium
+
+  * Fix the devices page staying empty after a hard reload when "show service devices" is enabled
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Nov 2026 11:28:00 +0300
+
+wb-mqtt-homeui (2.287.1) stable; urgency=medium
+
+  * Fix extra padding at the bottom of dashboards in HMI mode
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Nov 2026 10:58:00 +0300
+
+wb-mqtt-homeui (2.287.0) stable; urgency=medium
+
+  * Show table settings (e.g. DALI scenes) as cards on mobile
+  * Fix DALI device header overflow on mobile: truncate long names, show status as an icon
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 16:22:41 +0500
+
+wb-mqtt-homeui (2.286.5) stable; urgency=medium
+
+  * Show icon-only toolbar buttons on the DALI device page on mobile so they fit on one row
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 12:05:01 +0500
+
+wb-mqtt-homeui (2.286.4) stable; urgency=medium
+
+  * Fix web UI not loading when opened by an IPv6 address
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 13 Nov 2026 17:58:37 +0500
 
 wb-mqtt-homeui (2.286.3) stable; urgency=medium
 

@@ -1236,6 +1236,7 @@
          "info-hardware": "Аппаратная версия",
          "info-oem-gtin": "OEM GTIN",
          "info-oem-identification-number": "OEM ID",
+         "info-device": "Информация об устройстве",
          "monitor-broadcast": "Широковещательные"
       },
       "buttons": {

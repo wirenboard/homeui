@@ -7,6 +7,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSearchParams } from 'react-router-dom';
 import DownloadIcon from '@/assets/icons/download.svg';
 import FilterIcon from '@/assets/icons/filter.svg';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { RpcErrorCode } from '@/common/constants';
 import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
@@ -46,7 +47,7 @@ const syncFilterToParams = (filter: any, setSearchParams: (params: URLSearchPara
   setSearchParams(params, { replace: true });
 };
 
-const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
+const MOBILE_MEDIA_QUERY = `(max-width: ${MAX_MOBILE_WIDTH}px)`;
 
 const LogsPage = observer(() => {
   const { t, i18n } = useTranslation();

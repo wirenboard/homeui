@@ -110,7 +110,7 @@
     white-space: nowrap;
 }
 
-@media (max-width: 991px) {
+@media (--max-mobile-width) {
     .alert-withButton .alertMessage-content {
         flex-wrap: wrap;
     }
