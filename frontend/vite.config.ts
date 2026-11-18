@@ -86,7 +86,8 @@ export default defineConfig(({ mode }: ConfigEnv) => {
 function controllerProxy(target: string) {
   return {
     ['^/(fwupdate|auth|mqtt|device|diag|ui|api/https|api/check'
-      + '|api/dashboards|api/fonts|fonts|api/integrations/alice|dali-images)']: {
+      + '|api/dashboards|api/fonts|fonts|api/integrations/alice|matter|converter-ext'
+      + '|dali-images)']: {
       target,
       changeOrigin: true,
       ws: true,
