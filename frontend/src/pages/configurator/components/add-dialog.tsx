@@ -62,7 +62,9 @@ export const AddDialog = observer(({
     const classification = classifyCell(cell);
     const { types, preset: isPreset } = CHANNEL_CLASSES[classification.cls];
     const isUsed = used.has(cell.id);
-    const choice = isUsed ? { checked: true, type: '' } : picked[cell.controlId] ?? preset(cell, types, isPreset);
+    const choice = isUsed
+      ? { checked: true, type: '' }
+      : picked[cell.controlId] ?? preset(cell, types, isPreset && !target);
     return { cell, classification, types, choice, isUsed };
   }) : [];
   const typed = channels.filter((channel) => channel.types.length);
