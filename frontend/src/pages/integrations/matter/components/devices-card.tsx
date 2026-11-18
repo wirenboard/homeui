@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tag } from '@/components/tag';
@@ -22,7 +22,7 @@ const TRANSLATED_STATES = new Set(['on', 'off']);
  */
 export const DevicesCard = ({ devices, onOpen }: DevicesCardProps) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   const hasAreas = devices.list.some((device) => device.area);
 
   /** The name of the type, taken from the configurator so the names live in one place. */
