@@ -1493,9 +1493,9 @@
       }
    },
    "matter": {
-      "title": "Matter",
+      "title": "Matter Bridge",
       "labels": {
-         "subtitle": "The controller as a Matter bridge: smart home apps see the devices picked in the configurator",
+         "subtitle": "The Wiren Board controller as a Matter bridge: smart home ecosystems see the devices picked in the configurator",
          "unavailable": "The wb-mqtt-matter-bridge service is not installed on the controller",
          "unreachable": "The wb-mqtt-matter-bridge service does not answer. Check whether it is running.",
          "config-error": "The device config cannot be read: {{error}}",
