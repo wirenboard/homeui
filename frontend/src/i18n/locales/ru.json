@@ -1478,9 +1478,9 @@
       }
    },
    "matter": {
-      "title": "Matter",
+      "title": "Matter Bridge",
       "labels": {
-         "subtitle": "Контроллер как мост Matter: приложения умного дома видят устройства, выбранные в конфигураторе",
+         "subtitle": "Контроллер Wiren Board как мост Matter: экосистемы умного дома видят устройства, выбранные в конфигураторе",
          "unavailable": "Сервис wb-mqtt-matter-bridge не установлен на контроллере",
          "unreachable": "Сервис wb-mqtt-matter-bridge не отвечает. Проверьте, запущен ли он.",
          "config-error": "Конфиг устройств не читается: {{error}}",
