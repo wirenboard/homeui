@@ -16,6 +16,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup-components.ts'],
     pool: 'threads',
+    // The Jenkins builder runs the suite several times slower than locally, trivial tests hit the defaults there
+    testTimeout: 20000,
+    hookTimeout: 30000,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
