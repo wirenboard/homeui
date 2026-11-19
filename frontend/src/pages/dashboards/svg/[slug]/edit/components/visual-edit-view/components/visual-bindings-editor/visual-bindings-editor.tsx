@@ -24,6 +24,7 @@ const VisibleBindingForm = observer(({ store, devices }: VisibleBindingFormProps
         <BooleanField
           title={t('edit-svg-dashboard.labels.visible-enable')}
           value={store.params.visible.enable}
+          view="checkbox"
           onChange={(checked) => store.setParamValue('visible', 'enable', checked)}
         />
       }
@@ -107,6 +108,7 @@ const ClickBindingForm = observer(({
         <BooleanField
           title={title}
           value={enabled}
+          view="checkbox"
           onChange={(checked) => {
             if (checked) {
               store.setParamValue(clickParamName, 'enable', !writeDefault);
@@ -203,6 +205,7 @@ const ParamBindingForm = observer(({ store, paramName, devices }: ParamBindingFo
             ? t('edit-svg-dashboard.labels.read-enable')
             : t('edit-svg-dashboard.labels.style-enable')}
           value={store.params[paramName].enable}
+          view="checkbox"
           onChange={(checked) => store.setParamValue(paramName, 'enable', checked)}
         />
       }

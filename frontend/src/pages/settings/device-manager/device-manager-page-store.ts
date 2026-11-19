@@ -111,6 +111,11 @@ export class DeviceManagerPageStore {
     this.configEditorPageStore.addDevices(selectedDevices);
   }
 
+  cancelScanToAddDeviceManually() {
+    this.newDevicesScanPageStore.onCancel();
+    this.configEditorPageStore.requestAddDevice();
+  }
+
   searchDisconnectedDevice() {
     const selectedDeviceTab = this.configEditorPageStore.tabs.selectedTab as DeviceTabStore;
     const selectedPortTab = this.configEditorPageStore.tabs.selectedPortTab;

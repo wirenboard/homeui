@@ -179,6 +179,8 @@
 .dali-rgb-channel-mask {
     font-size: var(--font-size-small);
     white-space: nowrap;
+    /* Body line-height is inherited as 20.3px; keep the row at the slider's 19px */
+    line-height: 1;
 }
 
 .dali-rgb-editor-values {

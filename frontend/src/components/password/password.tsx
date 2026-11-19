@@ -1,7 +1,6 @@
-import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
-import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
+import { type zxcvbn as ZxcvbnCore, type zxcvbnOptions as ZxcvbnOptions } from '@zxcvbn-ts/core';
 import classNames from 'classnames';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import VisibilityOffIcon from '@/assets/icons/visibility-off.svg';
 import VisibilityIcon from '@/assets/icons/visibility.svg';
@@ -9,6 +8,23 @@ import { Button } from '@/components/button';
 import { Input } from '../input';
 import { type PasswordProps } from './types';
 import './styles.css';
+
+let zxcvbnLoad: Promise<{ zxcvbn: typeof ZxcvbnCore; zxcvbnOptions: typeof ZxcvbnOptions }> | null = null;
+
+function loadZxcvbn() {
+  if (!zxcvbnLoad) {
+    zxcvbnLoad = Promise.all([import('@zxcvbn-ts/core'), import('@zxcvbn-ts/language-common')]).then(
+      ([core, zxcvbnCommonPackage]) => {
+        core.zxcvbnOptions.setOptions({
+          dictionary: { ...zxcvbnCommonPackage.dictionary },
+          graphs: zxcvbnCommonPackage.adjacencyGraphs,
+        });
+        return core;
+      },
+    );
+  }
+  return zxcvbnLoad;
+}
 
 export const Password = ({
   ref,
@@ -32,15 +48,22 @@ export const Password = ({
 
   const toggleIsHidden = () => setIsHidden((prev) => !prev);
 
-  const options = {
-    dictionary: {
-      ...zxcvbnCommonPackage.dictionary,
-    },
-    graphs: zxcvbnCommonPackage.adjacencyGraphs,
-  };
-  zxcvbnOptions.setOptions(options);
+  const [score, setScore] = useState(0);
 
-  const score = useMemo(() => zxcvbn(value).score, [value]);
+  useEffect(() => {
+    if (!showIndicator) {
+      return undefined;
+    }
+    let isCancelled = false;
+    loadZxcvbn().then((core) => {
+      if (!isCancelled) {
+        setScore(core.zxcvbn(value).score);
+      }
+    });
+    return () => {
+      isCancelled = true;
+    };
+  }, [showIndicator, value]);
 
   return (
     <>

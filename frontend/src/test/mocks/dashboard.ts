@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Mock } from 'vitest';
 
 export function makeDashboard(overrides: Record<string, unknown> = {}) {
   return {
@@ -7,8 +8,8 @@ export function makeDashboard(overrides: Record<string, unknown> = {}) {
     isSvg: false,
     options: {},
     widgets: [faker.string.alphanumeric(4)],
-    toggleVisibility: vi.fn(),
-    delete: vi.fn().mockResolvedValue(undefined),
+    toggleVisibility: vi.fn() as Mock,
+    delete: vi.fn().mockResolvedValue(undefined) as Mock,
     ...overrides,
   };
 }

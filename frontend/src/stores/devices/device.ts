@@ -1,7 +1,10 @@
 import { makeAutoObservable } from 'mobx';
 import i18n from '@/i18n/config';
+import type Cell from './cell';
 import { getFoldedDevices, isDefaultSystemDevice } from './helpers';
 import { type DeviceMeta, DeviceType, type NameTranslations } from './types';
+
+type CellResolver = (cellId: string) => Cell | undefined;
 
 export default class Device {
   public id: string;
@@ -12,9 +15,11 @@ export default class Device {
   public type: DeviceType;
   private _name: string;
   private _nameTranslations: NameTranslations = {};
+  #cellResolver?: CellResolver;
 
-  constructor(id: string) {
+  constructor(id: string, cellResolver?: CellResolver) {
     this.id = id;
+    this.#cellResolver = cellResolver;
     this.isVisible = !getFoldedDevices().includes(this.id);
 
     if (isDefaultSystemDevice(id) || this.isServiceDevice) {
@@ -61,6 +66,22 @@ export default class Device {
 
   removeCell(cellId: string) {
     this.cells.delete(cellId);
+  }
+
+  get visibleCells(): Cell[] {
+    if (!this.#cellResolver) return [];
+    const result: Cell[] = [];
+    for (const cellId of this.cells) {
+      const cell = this.#cellResolver(cellId);
+      if (cell && !cell.hidden) {
+        result.push(cell);
+      }
+    }
+    result.sort((a, b) => {
+      if (b.order === null) return -1;
+      return (a.order ?? 1) - b.order;
+    });
+    return result;
   }
 
   get isServiceDevice(): boolean {

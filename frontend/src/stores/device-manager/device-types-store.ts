@@ -1,3 +1,4 @@
+import { makeObservable, observable, action } from 'mobx';
 import i18n from '@/i18n/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
@@ -44,15 +45,27 @@ export class DeviceTypesStore {
   public deviceTypeDropdownOptions: DeviceTypeDropdownOptionGroup[];
   private _loadDeviceSchemaFn: (deviceType: string) => Promise<any>;
   private _deviceTypesMap: Map<string, DeviceTypeDescription>;
+  private _groups: DeviceTypeDescriptionGroup[];
 
   constructor(loadDeviceSchemaFn: (deviceType: string) => Promise<any>) {
     this._loadDeviceSchemaFn = loadDeviceSchemaFn;
     this._deviceTypesMap = new Map<string, DeviceTypeDescription>();
+    this._groups = [];
     this.deviceTypeDropdownOptions = [];
+
+    makeObservable(this, {
+      deviceTypeDropdownOptions: observable,
+      setDeviceTypeGroups: action,
+    });
   }
 
   setDeviceTypeGroups(deviceTypeGroups: DeviceTypeDescriptionGroup[]) {
-    this.deviceTypeDropdownOptions = deviceTypeGroups.map((deviceTypeGroup) => {
+    this._groups = deviceTypeGroups;
+    this._rebuildFromGroups();
+  }
+
+  private _rebuildFromGroups() {
+    this.deviceTypeDropdownOptions = this._groups.map((deviceTypeGroup) => {
       return {
         label: deviceTypeGroup.name,
         options: deviceTypeGroup.types.map((deviceType) => {
@@ -65,7 +78,7 @@ export class DeviceTypesStore {
         }),
       };
     });
-    this._deviceTypesMap = deviceTypeGroups.reduce((groupsAcc, deviceTypeGroup) => {
+    this._deviceTypesMap = this._groups.reduce((groupsAcc, deviceTypeGroup) => {
       return deviceTypeGroup.types.reduce((typesAcc, deviceType) => {
         typesAcc.set(deviceType.type, deviceType);
         return typesAcc;
@@ -163,5 +176,9 @@ export class DeviceTypesStore {
 
   withSubdevices(deviceType: string) {
     return !!this._deviceTypesMap.get(deviceType)?.['with-subdevices'];
+  }
+
+  isUserDefined(deviceType: string) {
+    return !!this._deviceTypesMap.get(deviceType)?.['user-defined'];
   }
 }

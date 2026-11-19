@@ -1,4 +1,4 @@
-/* eslint max-lines: ["warn", 450] */
+/* eslint max-lines: ["warn", 495] */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
@@ -17,7 +17,6 @@ import {
   type JsonObject,
   type JsonSchema,
 } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/format-error';
 import { getTranslation } from '../stores/json-schema-utils';
 import {
   getDeviceSetupErrorMessage,
@@ -33,12 +32,23 @@ import { SettingsTab } from './settings-tab-store';
 import { TabsStore } from './tabs-store';
 import type { ConfigJson, LoadConfigResult, PortConfig } from './types';
 
+const LOAD_RETRY_DELAYS_MS = [1000, 2000, 4000, 10000];
+const LOAD_MAX_RETRIES = 30;
+
 export class ConfigEditorPageStore {
   public tabs: TabsStore;
   public schemaTranslator: Translator;
   public loading: boolean = true;
   public saving: boolean = false;
   public error = '';
+  public pendingAddDeviceRequest: boolean = false;
+  public templateOperationPending: boolean = false;
+  public templateHint: string = '';
+  // Device types touched by the last forced template upload/delete: templateHint is shown
+  // only on device tabs of these types, not on every open tab.
+  public templateAffectedTypes: Set<string> = new Set();
+  public templateSuccessMessage: string = '';
+  public templateWarning: string = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
   public serialDeviceProxy: typeof SerialDeviceProxyInstance;
@@ -46,6 +56,7 @@ export class ConfigEditorPageStore {
   public loadConfigFn: () => Promise<LoadConfigResult>;
   public saveConfigFn: (_cfg: ConfigJson) => Promise<void>;
   public portSchemaMap = {};
+  private _loadRetryAttempt = 0;
 
   constructor(
     loadConfigFn: () => Promise<LoadConfigResult>,
@@ -71,12 +82,39 @@ export class ConfigEditorPageStore {
       isDirty: computed,
       loading: observable,
       saving: observable,
+      error: observable,
+      pendingAddDeviceRequest: observable,
+      templateOperationPending: observable,
+      templateHint: observable,
+      templateAffectedTypes: observable.ref,
+      templateSuccessMessage: observable,
+      templateWarning: observable,
+      setError: action,
+      startTemplateOperation: action,
+      endTemplateOperation: action,
+      setTemplateHint: action,
+      clearTemplateHint: action,
+      setTemplateAffectedTypes: action,
+      setTemplateSuccessMessage: action,
+      clearTemplateSuccessMessage: action,
+      setTemplateWarning: action,
+      clearTemplateWarning: action,
       addDevices: action,
+      requestAddDevice: action,
+      clearAddDeviceRequest: action,
     });
   }
 
   get isDirty() {
     return this.tabs.isDirty;
+  }
+
+  requestAddDevice() {
+    this.pendingAddDeviceRequest = true;
+  }
+
+  clearAddDeviceRequest() {
+    this.pendingAddDeviceRequest = false;
   }
 
   get allowSave() {
@@ -127,7 +165,9 @@ export class ConfigEditorPageStore {
 
   async load() {
     try {
-      this.error = '';
+      runInAction(() => {
+        this.error = '';
+      });
       const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(schema.translations);
@@ -150,7 +190,15 @@ export class ConfigEditorPageStore {
         this.tabs.addPortTab(portTab, true);
       });
       this.tabs.addSettingsTab(this.createSettingsTab(config, schema));
+      this._loadRetryAttempt = 0;
     } catch (err) {
+      if (err?.data === 'config-busy' && this._loadRetryAttempt < LOAD_MAX_RETRIES) {
+        const delay = LOAD_RETRY_DELAYS_MS[Math.min(this._loadRetryAttempt, LOAD_RETRY_DELAYS_MS.length - 1)];
+        this._loadRetryAttempt++;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return this.load();
+      }
+      this._loadRetryAttempt = 0;
       this.tabs.clear();
       this.setError(err);
     }
@@ -160,7 +208,60 @@ export class ConfigEditorPageStore {
   }
 
   setError(error) {
-    this.error = formatError(error);
+    this.error = getErrorMessage(error);
+  }
+
+  startTemplateOperation() {
+    this.templateOperationPending = true;
+    this.error = '';
+    this.templateHint = '';
+    this.templateAffectedTypes = new Set();
+    this.templateSuccessMessage = '';
+    this.templateWarning = '';
+  }
+
+  endTemplateOperation() {
+    this.templateOperationPending = false;
+  }
+
+  setTemplateHint(hint: string) {
+    this.templateHint = hint;
+  }
+
+  clearTemplateHint() {
+    this.templateHint = '';
+  }
+
+  setTemplateAffectedTypes(deviceTypes: Set<string>) {
+    this.templateAffectedTypes = deviceTypes;
+  }
+
+  setTemplateSuccessMessage(message: string) {
+    this.templateSuccessMessage = message;
+  }
+
+  clearTemplateSuccessMessage() {
+    this.templateSuccessMessage = '';
+  }
+
+  setTemplateWarning(message: string) {
+    this.templateWarning = message;
+  }
+
+  clearTemplateWarning() {
+    this.templateWarning = '';
+  }
+
+  async reload() {
+    const previousSelectedIndex = this.tabs.selectedTabIndex;
+    runInAction(() => {
+      this.loading = true;
+    });
+    this.tabs.clear();
+    await this.load();
+    if (this.tabs.items.length > 0) {
+      this.tabs.onSelectTab(Math.min(previousSelectedIndex, this.tabs.items.length - 1));
+    }
   }
 
   async addPort(showAddPortModal: () => Promise<string | null>) {
@@ -243,6 +344,7 @@ export class ConfigEditorPageStore {
       await this.saveConfigFn(this.makeConfigJson());
       runInAction(() => {
         this.tabs.commitData();
+        this.templateWarning = '';
       });
     } catch (err) {
       runInAction(() => {

@@ -20,6 +20,7 @@ import ChevronRightDoubleIcon from '@/assets/icons/chevron-right-double.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
 import LayoutRightIcon from '@/assets/icons/layout-right.svg';
+import { MAX_LAPTOP_WIDTH } from '@/common/breakpoints';
 import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { consolePanelStore as store } from '@/stores/console-panel';
@@ -31,7 +32,7 @@ const OVERFLOW_BTN_SPACE = 26;
 
 export const ConsolePanel = observer(({ emptyState }: ConsolePanelProps = {}) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const forbidDockConsoleRight = useMediaQuery({ maxWidth: MAX_LAPTOP_WIDTH });
   const container = useRef<HTMLDivElement>(null);
   const resizer = useRef<HTMLDivElement>(null);
   const positionRef = useRef(store.position);
@@ -200,12 +201,12 @@ export const ConsolePanel = observer(({ emptyState }: ConsolePanelProps = {}) =>
   }, [store.position]);
 
   useEffect(() => {
-    if (isMobile && store.position === 'right') {
+    if (forbidDockConsoleRight && store.position === 'right') {
       changePosition('bottom', false);
-    } else if (!isMobile && localStorage.getItem('console-panel-position') === 'right') {
+    } else if (!forbidDockConsoleRight && localStorage.getItem('console-panel-position') === 'right') {
       changePosition('right', false);
     }
-  }, [isMobile]);
+  }, [forbidDockConsoleRight]);
 
   return (
     <aside
@@ -324,7 +325,7 @@ export const ConsolePanel = observer(({ emptyState }: ConsolePanelProps = {}) =>
             <Tooltip text={t('console-panel.buttons.dock-right')}>
               <button
                 className="consolePanel-button"
-                disabled={isMobile}
+                disabled={forbidDockConsoleRight}
                 aria-label={t('console-panel.buttons.dock-right')}
                 onClick={() => changePosition('right')}
               >

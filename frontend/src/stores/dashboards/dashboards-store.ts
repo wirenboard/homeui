@@ -91,7 +91,7 @@ export default class DashboardsStore {
 
     if (oldId !== data.id) {
       const result = await this._runWrite(
-        () => dashboardsApi.patchDashboard(oldId, { id: data.id, name: data.name }),
+        () => dashboardsApi.patchDashboard(oldId, { id: data.id, name: data.name, options: data.options }),
       );
       if (result === 'ok') {
         runInAction(() => {

@@ -12,7 +12,7 @@ body {
 }
 
 :focus {
-    outline: 0 !important
+    outline: 0;
 }
 
 #root {

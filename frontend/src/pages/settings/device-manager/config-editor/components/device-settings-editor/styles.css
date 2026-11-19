@@ -69,6 +69,15 @@
     flex-basis: 100%;
 }
 
+.deviceSettingsEditor-channelsTable table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.deviceSettingsEditor-channelTitle .input {
+    width: 100%;
+}
+
 .deviceSettingsEditor-parameter {
     display: flex;
     flex-direction: column;
@@ -99,6 +108,15 @@
 .deviceSettingsEditor-mobile .deviceSettingsEditor-channel {
     display: flex;
     flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    padding: 9px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--container-border-radius);
+}
+
+.deviceSettingsEditor-channel .deviceSettingsEditor-parameter > .wb-jsonEditor-propertyDescription {
+    flex-basis: auto;
 }
 
 .deviceSettingsEditor-customChannelsNoTabs .wb-jsonEditor{

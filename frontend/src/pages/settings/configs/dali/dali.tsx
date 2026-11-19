@@ -1,9 +1,10 @@
 import { type TFunction } from 'i18next';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -18,7 +19,6 @@ import {
   type BusStore,
   DaliPageStore,
 } from '@/stores/dali';
-import { ItemType } from '@/stores/dali/base-item-store';
 import { useStore } from '@/utils/use-store';
 import { BusTabContent } from './components/bus-tab-content';
 import { DeviceTabContent } from './components/device-tab-content';
@@ -26,55 +26,20 @@ import { GatewayTabContent } from './components/gateway-tab-content';
 import { GroupTabContent } from './components/group-tab-content';
 import './styles.css';
 
-const TabContent = ({
-  store,
-  title,
-  onDeviceRemoved,
-}: {
-  store: ItemStore;
-  title?: ReactNode;
-  onDeviceRemoved: (device: DeviceStore) => void;
-}) => {
+const TabContent = ({ store }: { store: ItemStore }) => {
   if (store?.type === 'bus') {
-    return <BusTabContent store={store as BusStore} title={title} />;
+    return <BusTabContent store={store as BusStore} />;
   }
   if (store?.type === 'group') {
-    return <GroupTabContent store={store as GroupStore} title={title} />;
+    return <GroupTabContent store={store as GroupStore} />;
   }
   if (store?.type === 'device') {
-    return (
-      <DeviceTabContent
-        store={store as DeviceStore}
-        title={title}
-        onDeviceRemoved={onDeviceRemoved}
-      />
-    );
+    return <DeviceTabContent store={store as DeviceStore} />;
   }
   if (store?.type === 'gateway') {
     return <GatewayTabContent store={store} />;
   }
   return null;
-};
-
-// What the page is, for the toolbar row: the tree selection is the only
-// other place that says so, and on mobile the tree is hidden while a page is
-// open.
-const itemTitle = (item: ItemStore, t: TFunction<'translation', undefined>): ReactNode => {
-  if (item.type === ItemType.Group) {
-    return t('dali.labels.group', { name: item.label });
-  }
-  if (item.type === ItemType.Bus) {
-    return t('dali.labels.bus', { num: (item as BusStore).index });
-  }
-  const parent = item.type === ItemType.Device ? (item as DeviceStore).parent : null;
-  return (
-    <>
-      {item.label}
-      {parent && (
-        <span className="dali-contentTitleContext">{t('dali.labels.bus', { num: parent.index })}</span>
-      )}
-    </>
-  );
 };
 
 const buildTreeItems = (
@@ -85,7 +50,7 @@ const buildTreeItems = (
   items.map((item) => {
     storeMap.set(item.id, item);
     let label: string | ReactNode = item.label;
-    if (item.type === ItemType.Group) {
+    if (item.type === 'group') {
       label = t('dali.labels.group', { name: item.label });
     } else if (item.type === 'device' && item.groups.length) {
       label = <>{item.label} <strong>{item.groups.map((g) => `G${g}`).join(' ')}</strong></>;
@@ -103,8 +68,8 @@ const buildTreeItems = (
 const DaliPage = observer(() => {
   const store = useStore(() => new DaliPageStore(daliGlobalStore));
   const { t, i18n } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 991 });
-  const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
+  const showTreeWithContent = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
+  const selectedItem = store.selectedItem;
 
   const itemStoreMap = new Map<string, ItemStore>();
   const data = buildTreeItems(store.gateways, itemStoreMap, t);
@@ -112,12 +77,8 @@ const DaliPage = observer(() => {
   useEffect(() => {
     const fetchData = async () => {
       await store.load();
-      if (!isMobile) {
-        const firstGateway = store.gateways.at(0);
-        if (firstGateway) {
-          setSelectedItem(firstGateway);
-          firstGateway.load();
-        }
+      if (showTreeWithContent) {
+        store.selectItem(store.gateways.at(0) ?? null);
       }
     };
     fetchData();
@@ -125,19 +86,7 @@ const DaliPage = observer(() => {
   }, []);
 
   const onItemClick = (treeItem: TreeItem) => {
-    const item = itemStoreMap.get(treeItem.id) ?? null;
-    setSelectedItem(item);
-    item?.load();
-  };
-
-  const onDeviceRemoved = (device: DeviceStore) => {
-    const parentBus = device.parent;
-    if (parentBus) {
-      setSelectedItem(parentBus);
-      parentBus.load();
-    } else {
-      setSelectedItem(null);
-    }
+    store.selectItem(itemStoreMap.get(treeItem.id) ?? null);
   };
 
   return (
@@ -149,8 +98,8 @@ const DaliPage = observer(() => {
       errors={store.errors}
       actions={
         <>
-          {isMobile && selectedItem && (
-            <Button label={t('dali.buttons.return')} variant="secondary" onClick={() => setSelectedItem(null)} />
+          {!showTreeWithContent && selectedItem && (
+            <Button label={t('dali.buttons.return')} variant="secondary" onClick={() => store.selectItem(null)} />
           )}
         </>
       }
@@ -165,7 +114,7 @@ const DaliPage = observer(() => {
         </Alert>
       ) : (
         <div className="dali">
-          {(!isMobile || !selectedItem) && (
+          {(showTreeWithContent || !selectedItem) && (
             <aside className="dali-list">
               <Tree
                 data={data}
@@ -175,16 +124,12 @@ const DaliPage = observer(() => {
               />
             </aside>
           )}
-          {(!isMobile || selectedItem) && (
+          {(showTreeWithContent || selectedItem) && (
             <section className="dali-content">
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>
               )}
-              <TabContent
-                store={selectedItem}
-                title={selectedItem ? itemTitle(selectedItem, t) : undefined}
-                onDeviceRemoved={onDeviceRemoved}
-              />
+              <TabContent key={selectedItem?.id} store={selectedItem} />
             </section>
           )}
         </div>

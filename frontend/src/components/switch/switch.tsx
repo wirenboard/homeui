@@ -1,5 +1,7 @@
 import classNames from 'classnames';
 import { useId } from 'react';
+import SwitchCheckIcon from '@/assets/icons/switch-check.svg';
+import SwitchMinusIcon from '@/assets/icons/switch-minus.svg';
 import { type SwitchProps } from './types';
 import './styles.css';
 
@@ -40,7 +42,9 @@ export const Switch = ({
         onChange={() => onChange(!value)}
       />
       <span className="toggle">
-        <span className="switch" />
+        <span className="switch">
+          {value ? <SwitchCheckIcon className="switch-icon" /> : <SwitchMinusIcon className="switch-icon" />}
+        </span>
       </span>
     </label>
   );

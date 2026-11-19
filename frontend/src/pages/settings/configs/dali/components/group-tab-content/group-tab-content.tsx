@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties, type ReactNode, useEffect } from 'react';
+import { type CSSProperties, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
@@ -9,8 +11,7 @@ import { Loader } from '@/components/loader';
 import type { GroupStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor';
 import { useAsyncAction } from '@/utils/async-action';
-import { DeviceControls } from '../device-controls';
-import { TabToolbar } from '../tab-toolbar';
+import { DeviceControlsDesktop, DeviceControlsMobile } from '../device-controls';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -53,8 +54,9 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
   );
 });
 
-export const GroupTabContent = observer(({ store, title }: { store: GroupStore; title?: ReactNode }) => {
+export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   const { t } = useTranslation();
+  const showControlsAside = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
 
   // While the members are still initializing the daemon has no parameters to
   // offer; keep asking — the form fills itself in as soon as one member is
@@ -68,7 +70,9 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
     return () => window.clearInterval(timer);
   }, [awaitingMembers, store]);
 
-  if (store.isLoading) {
+  // A re-poll while awaiting members keeps the page as it is instead of
+  // flashing the loader every few seconds.
+  if (store.isLoading && !store.objectStore) {
     return (
       <div className="dali-contentLoader">
         <Loader />
@@ -76,26 +80,25 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
     );
   }
 
+  const toolbar = (
+    <div className="dali-tabToolbar">
+      <h2 className="dali-contentTitle">{t('dali.labels.group', { name: store.label })}</h2>
+    </div>
+  );
+
   if (!store.objectStore) {
     // The one way here is a failed GetGroup — a busy bus can time the RPC
     // out. Rendering nothing looked like a blank page with no way back; say
     // what happened and offer the retry.
     return (
-      <Alert variant="warn">
-        <div className="dali-groupLoadFailed">
-          <span>{t('dali.labels.group-load-failed')}</span>
-          <Button label={t('dali.buttons.retry-load')} onClick={() => store.load()} />
-        </div>
-      </Alert>
-    );
-  }
-
-  if (store.isAwaitingMembers) {
-    return (
       <>
-        <TabToolbar title={title} />
-        {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
-        <Alert variant="info">{t('dali.labels.group-members-initializing')}</Alert>
+        {toolbar}
+        <div className="dali-tabBody">
+          <Alert variant="warn" className="alert-withButton">
+            <span>{t('dali.labels.group-load-failed')}</span>
+            <Button label={t('dali.buttons.retry')} variant="warn" onClick={() => store.load()} />
+          </Alert>
+        </div>
       </>
     );
   }
@@ -120,24 +123,34 @@ export const GroupTabContent = observer(({ store, title }: { store: GroupStore; 
     rows.push(currentRow);
   }
 
+  const paramRows = store.isAwaitingMembers ? (
+    <Alert variant="info">{t('dali.labels.group-members-initializing')}</Alert>
+  ) : rows.map((rowParams) => {
+    const rowKey = rowParams.map((p) => p.key).join('-');
+    const items = rowParams.map((param) => (
+      <GroupParam key={param.key} store={store} param={param} />
+    ));
+    if (rowParams.length === 1) {
+      return items[0];
+    }
+    return (
+      <div key={rowKey} className="wb-jsonEditor-objectEditorRow">
+        {items}
+      </div>
+    );
+  });
+
   return (
     <>
-      <TabToolbar title={title} />
-      {store.controlsMqttId && <DeviceControls mqttId={store.controlsMqttId} />}
-      {rows.map((rowParams) => {
-        const rowKey = rowParams.map((p) => p.key).join('-');
-        const items = rowParams.map((param) => (
-          <GroupParam key={param.key} store={store} param={param} />
-        ));
-        if (rowParams.length === 1) {
-          return items[0];
-        }
-        return (
-          <div key={rowKey} className="wb-jsonEditor-objectEditorRow">
-            {items}
-          </div>
-        );
-      })}
+      {toolbar}
+      {showControlsAside ? (
+        <DeviceControlsDesktop mqttId={store.controlsMqttId}>{paramRows}</DeviceControlsDesktop>
+      ) : (
+        <>
+          <div className="dali-tabBody">{paramRows}</div>
+          <DeviceControlsMobile mqttId={store.controlsMqttId} />
+        </>
+      )}
     </>
   );
 });

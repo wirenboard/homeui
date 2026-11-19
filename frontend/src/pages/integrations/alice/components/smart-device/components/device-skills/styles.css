@@ -27,7 +27,7 @@
     gap: 3px 12px;
     margin-bottom: 6px;
 
-    @media(max-width: 768px) {
+    @media (--max-mobile-width) {
         display: flex;
         flex-direction: column;
     }
@@ -64,13 +64,13 @@
     /* same offset as gridLabel min-height so buttons line up with the dropdown next to them */
     margin-top: 36px;
 
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         margin-top: 4px;
     }
 }
 
 .aliceDeviceSkills-deleteButton:not(:last-of-type)::after {
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         content: '';
         height: 1px;
         background: var(--border-color);
@@ -98,7 +98,7 @@
 .aliceDeviceSkills-dropdown .dropdown__menu {
     min-width: 250px;
 
-    @media (max-width: 310px) {
+    @media (--max-mobile-width) {
         min-width: unset;
     }
 }
@@ -116,7 +116,7 @@
     margin-bottom: 6px;
     align-items: end;
 
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         grid-template-columns: 22px 1fr 1fr 22px;
     }
 }

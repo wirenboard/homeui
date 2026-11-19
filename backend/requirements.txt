@@ -2,7 +2,8 @@
 bcrypt
 cryptography
 requests
-websockets
+# websockets.server.ServerProtocol (the Sans-I/O layer) exists since 11.0.
+websockets>=11
 
 # Wiren Board internal library providing `wb_common.mqtt_client` (MQTTClient).
 # Not on public PyPI — installed from git (default branch is `master`).

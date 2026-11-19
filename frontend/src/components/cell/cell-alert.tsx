@@ -9,35 +9,43 @@ import { topicCopyPolicy } from './topic-copy-policy';
 import { type CellAlertProps } from './types';
 import './styles.css';
 
-export const CellAlert = observer(({ cell, name, hideHistory }: CellAlertProps) => {
+export const CellAlert = observer(({ cell, name, hideHistory, hideCopy }: CellAlertProps) => {
   const { t } = useTranslation();
 
   const variant = cell.error?.includes(CellError.Read)
     ? 'gray'
     : cell.value ? 'danger' : 'success';
 
-  const alert = (
-    <Alert
-      size="small"
-      variant={variant}
-      className="deviceCell-alert"
-      onClick={topicCopyPolicy.enabled ? () => copyToClipboard(cell.id) : undefined}
-    >
-      {name || cell.name}
-    </Alert>
-  );
+  // A host without a broker switches topic copying off for every cell, on top
+  // of the per-use hideCopy — see topicCopyPolicy.
+  const canCopyTopic = !hideCopy && topicCopyPolicy.enabled;
 
   return (
     <>
-      {topicCopyPolicy.enabled ? (
+      {canCopyTopic ? (
         <Tooltip
           text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
           placement="top-start"
           trigger="click"
         >
-          {alert}
+          <Alert
+            size="small"
+            variant={variant}
+            className="deviceCell-alert"
+            onClick={() => copyToClipboard(cell.id)}
+          >
+            {name || cell.name}
+          </Alert>
         </Tooltip>
-      ) : alert}
+      ) : (
+        <Alert
+          size="small"
+          variant={variant}
+          className="deviceCell-alert deviceCell-noClick"
+        >
+          {name || cell.name}
+        </Alert>
+      )}
 
       {!hideHistory && <CellHistory cell={cell} />}
     </>

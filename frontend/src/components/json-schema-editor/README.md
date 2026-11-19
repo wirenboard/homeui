@@ -108,7 +108,7 @@ The schema subset the editor currently renders. Verified against `store-builder.
 
 - Plain arrays, plus `minItems` / `maxItems`.
 - Boolean-item arrays render as a checkbox list.
-- Object-item arrays with `format: "table"` render as a table.
+- Object-item arrays with `format: "table"` render as a table; on mobile widths items with more than one property render as cards (one per item, every field labelled, including `compact` ones).
 
 ### Reuse and composition
 
@@ -124,6 +124,7 @@ The schema subset the editor currently renders. Verified against `store-builder.
   - `dali-white` — a tunable-white slider.
   - `dali-tc` — a colour-temperature slider. The user edits Kelvin, the value is stored as
     mirek.
+- `dali-on-off` — an object-level editor for a DALI on/off block.
 - `wb-byte-array` — an editor for a byte-array value (`ByteArrayStore`).
 - `wb-serial-int`, `wb-int-address` — an integer / address kept as a string to simplify input.
   The builder converts a numeric value to a string and uses the `oneOf[0]` subschema.

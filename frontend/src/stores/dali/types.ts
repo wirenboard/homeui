@@ -1,7 +1,14 @@
 import {
   type JsonSchema,
 } from '@/stores/json-schema-editor';
+import type { BusStore } from './bus-store';
+import type { DeviceStore } from './device-store';
+import type { GatewayStore } from './gateway-store';
+import type { GroupStore } from './group-store';
 import type { MonitorStore } from './monitor-store';
+
+/** A node of the DALI tree: what the page can select and show a tab for. */
+export type ItemStore = GatewayStore | BusStore | DeviceStore | GroupStore;
 
 export type CommissioningStatus =
   | 'idle'
@@ -40,14 +47,14 @@ export interface Bus {
   id: string;
   name: string;
   devices: Device[];
-  groups: Group[];
+  groups?: Group[];
   commissioning?: CommissioningState;
   bus_monitor_enabled?: boolean;
 }
 
 export interface Group {
   id: string;
-  index: number;
+  number: number;
 }
 
 export interface Device {
@@ -71,11 +78,29 @@ export interface BusDetailed {
   name: string;
 }
 
+/** Read-only identification of a device, GetDevice sends it inside the config. */
+export interface DaliDeviceDescription {
+  /** DALI device type numbers, DT6 is 6. */
+  types?: number[];
+  brand_name?: string;
+  product_name?: string;
+  gtin?: number;
+  identification_number?: number | string;
+  firmware_version?: string;
+  hardware_version?: string;
+  oem_gtin?: number;
+  oem_identification_number?: number | string;
+}
+
+export interface DeviceConfig extends DaliDeviceDescription {
+  name?: string;
+  mqtt_id?: string;
+  groups?: boolean[];
+}
+
 export interface DeviceDetailed {
-  config: object;
+  config: DeviceConfig;
   schema: JsonSchema;
-  name: string;
-  groups: boolean[];
 }
 
 export interface GetGatewayParams {
@@ -132,10 +157,14 @@ export interface StopScanBusResponse {
   status: 'stopped' | 'not_running';
 }
 
+/** Both keys are optional: an empty pair means the write removed the group. */
 export interface GroupDetailed {
-  config: object;
-  schema: JsonSchema;
+  config?: object;
+  schema?: JsonSchema;
 }
+
+/** `GetGroup` on an older backend answers with the bare schema instead of the pair. */
+export type GroupReply = GroupDetailed | JsonSchema;
 
 export interface DaliProxy {
   GetGateway(params: GetGatewayParams): Promise<GatewayDetailed>;
@@ -143,8 +172,8 @@ export interface DaliProxy {
   GetBus(params: GetBusParams): Promise<BusDetailed>;
   SetBus(params: SetBusParams): Promise<void>;
   GetDevice(params: GetDeviceParams): Promise<DeviceDetailed>;
-  SetDevice(params: SetDeviceParams): Promise<DeviceDetailed>;
-  GetGroup(params: GetGroupParams): Promise<GroupDetailed>;
+  SetDevice(params: SetDeviceParams): Promise<DeviceConfig>;
+  GetGroup(params: GetGroupParams): Promise<GroupReply>;
   SetGroup(params: SetGroupParams): Promise<GroupDetailed>;
   GetList(): Promise<Gateway[]>;
   ScanBus(params: ScanBusParams): Promise<ScanBusResponse>;

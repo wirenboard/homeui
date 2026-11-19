@@ -83,7 +83,7 @@ def main():
     # handle upload
     uploading_file = form["file"]
     if hasattr(uploading_file, "filename") and hasattr(uploading_file, "file"):
-        fname = uploading_file.filename or "fwupdate"
+        fname = os.path.basename(uploading_file.filename or "") or "fwupdate"
         fp_upload = uploading_file.file
 
         with open(os.path.join(rw_dir, fname), "wb") as fp_save:  # wb-watch-update triggers on fd close

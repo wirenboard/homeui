@@ -1,0 +1,186 @@
+.daliDeviceInfo {
+    flex-shrink: 0;
+    margin: -10px calc(-1 * var(--dali-inset)) 0;
+    padding: 12px var(--dali-inset);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--dali-surface);
+}
+
+.dali-tabToolbar:has(+ .daliDeviceInfo) {
+    border-bottom: none;
+}
+
+.daliDeviceInfo-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.daliDeviceInfo-picture {
+    flex: none;
+    max-height: 80px;
+}
+
+.daliDeviceInfo-text {
+    container-type: inline-size;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.daliDeviceInfo-name {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.3em;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.daliDeviceInfo-types {
+    margin: 2px 0 0;
+}
+
+.daliDeviceInfo-fields {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20ch, 1fr));
+    gap: 10px 20px;
+}
+
+.daliDeviceInfo-fields dt {
+    margin-bottom: 2px;
+    font-weight: normal;
+    color: var(--gray-color);
+}
+
+.daliDeviceInfo-fieldWide {
+    grid-column: span 2;
+}
+
+.daliDeviceInfo-fieldFull {
+    grid-column: 1 / -1;
+}
+
+@container (width < calc(40ch + 20px)) {
+    .daliDeviceInfo-fieldWide {
+        grid-column: auto;
+    }
+}
+
+.daliDeviceInfo-fields dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.dali-tabToolbar:has(+ .daliDeviceInfo-compact) {
+    padding-bottom: 4px;
+}
+
+.daliDeviceInfo-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding-top: 0;
+    padding-bottom: 8px;
+    white-space: nowrap;
+}
+
+.daliDeviceInfo-compactName,
+.daliDeviceInfo-compactTypes {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.daliDeviceInfo-compactName {
+    font-weight: 600;
+}
+
+.daliDeviceInfo-compactTypes {
+    flex-shrink: 1000;
+    color: var(--gray-color);
+}
+
+.button.button-outlined.daliDeviceInfo-infoButton {
+    height: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: var(--gray-color);
+}
+
+.button-s.daliDeviceInfo-infoButton .button-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.dialog.daliDeviceInfoDialog {
+    width: fit-content;
+}
+
+.daliDeviceInfoDialog .dialog-content {
+    box-sizing: border-box;
+    max-width: calc(100vw - 32px);
+    display: flex;
+    flex-direction: column;
+}
+
+.daliDeviceInfoDialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+}
+
+.daliDeviceInfoDialog-left .daliDeviceInfoDialog-body {
+    flex-direction: row;
+}
+
+.daliDeviceInfoDialog-picture {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.daliDeviceInfoDialog-picture img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.daliDeviceInfoDialog-loading {
+    display: none;
+}
+
+.daliDeviceInfoDialog .daliDeviceInfo-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.daliDeviceInfoDialog-text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.daliDeviceInfoDialog-types {
+    margin: 0;
+}
+
+.daliDeviceInfoDialog-left .daliDeviceInfoDialog-text {
+    flex: none;
+    align-self: center;
+    width: 400px;
+}
+
+.daliDeviceInfoDialog-left .daliDeviceInfo-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}

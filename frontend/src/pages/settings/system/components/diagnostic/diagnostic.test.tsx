@@ -50,9 +50,10 @@ beforeEach(() => {
 });
 
 describe('Diagnostic', () => {
-  test('renders heading', () => {
+  test('renders heading', async () => {
     render(<Diagnostic />);
     expect(screen.getByText('system.collector.title')).toBeDefined();
+    await waitFor(() => {});
   });
 
   test('shows loader initially', () => {
@@ -125,12 +126,13 @@ describe('Diagnostic', () => {
     });
   });
 
-  test('subscribes to mqtt artifact topic', () => {
+  test('subscribes to mqtt artifact topic', async () => {
     render(<Diagnostic />);
     expect(mqttClientMock.addStickySubscription).toHaveBeenCalledWith(
       '/wb-diag-collect/artifact',
       expect.any(Function),
     );
+    await waitFor(() => {});
   });
 
   test('label changes to collecting after click', async () => {

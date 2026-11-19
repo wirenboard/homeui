@@ -2,7 +2,7 @@ import { useCallback, type ChangeEvent, type MouseEvent, type TouchEvent, type K
 import { Switch } from '@/components/switch';
 
 const CHANNEL_MIN = 0;
-const CHANNEL_MAX = 254;
+export const CHANNEL_MAX = 254;
 const MASK_VALUE = 255;
 
 export interface ChannelSliderProps {

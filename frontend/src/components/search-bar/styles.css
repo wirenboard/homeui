@@ -1,0 +1,34 @@
+.searchBar {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 36px;
+    transition: width 0.2s ease;
+}
+
+.searchBar-expanded {
+    width: 200px;
+}
+
+.searchBar-icon {
+    position: absolute;
+    left: 10px;
+    z-index: 1;
+    width: 16px;
+    height: 16px;
+    color: var(--gray-color);
+    pointer-events: none;
+}
+
+.searchBar-input {
+    width: 100%;
+    cursor: pointer;
+}
+
+.searchBar-expanded .searchBar-input {
+    cursor: text;
+}
+
+.searchBar-input-has-value {
+    padding-left: 8px;
+}

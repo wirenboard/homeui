@@ -97,7 +97,7 @@ const CardHeader = ({
 
 export const Card = ({
   children, id, className, heading, actions, indicator, toggleBody,
-  withError, isBodyVisible = true, variant = 'primary',
+  withError, isBodyVisible = true, variant = 'primary', hasStickyHeader,
 }: PropsWithChildren<CardProps>) => {
   const generatedId = useId();
   const normalizedId = id ?? generatedId;
@@ -124,6 +124,7 @@ export const Card = ({
         'card-primary': variant === 'primary',
         'card-secondary': variant === 'secondary',
         'card-tertiary': variant === 'tertiary',
+        'card-stickyHeader': hasStickyHeader,
       })}
       role="group"
       id={id}

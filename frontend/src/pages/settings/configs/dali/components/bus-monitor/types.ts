@@ -7,6 +7,12 @@ export interface BusMonitorTabProps {
   getLabel: () => string;
 }
 
+export interface SequencedBusMonitorFrame {
+  /** The row's React key. */
+  seq: number;
+  frame: ParsedBusMonitorLine;
+}
+
 export interface RegisterBusTabParams {
   busId: string;
   monitorStore: MonitorStore;
@@ -20,7 +26,6 @@ export interface ConsoleMenuProps {
 }
 
 /** One rendered monitor line: a frame, possibly standing for `repeat` identical errors. */
-export interface MonitorRow {
-  frame: ParsedBusMonitorLine;
+export interface MonitorRow extends SequencedBusMonitorFrame {
   repeat: number;
 }

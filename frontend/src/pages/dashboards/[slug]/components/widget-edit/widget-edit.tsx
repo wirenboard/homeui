@@ -8,6 +8,7 @@ import FileCodeIcon from '@/assets/icons/file-code.svg';
 import FilelistIcon from '@/assets/icons/file-list.svg';
 import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
@@ -23,7 +24,7 @@ import './styles.css';
 
 export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }: WidgetEditProps) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 420 });
+  const showCellsStacked = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   const [widgetCells, setWidgetCells] = useState<(CellSimple)[]>([]);
   const [isDirty, setIsDirty] = useState(false);
   const [isJsonView, setIsJsonView] = useState(false);
@@ -273,7 +274,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                     })}
                     tabIndex={0}
                   >
-                    {!isMobile && (
+                    {!showCellsStacked && (
                       <div className="widgetEdit-sort">
                         {widgetCells.length > 1 && (
                           <MoveIcon className="widgetEdit-sortHandle widgetEdit-iconAction" />
@@ -296,7 +297,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                         {cell.type === 'switch' && (
                           <BooleanField
                             value={cell.extra?.invert}
-                            title={isMobile && t('widget.labels.invert')}
+                            title={showCellsStacked && t('widget.labels.invert')}
                             onChange={(invert) => updateCell(cell.id, { extra: { invert } })}
                           />
                         )}
@@ -305,7 +306,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                     <div className="widgetEdit-readonly">
                       <BooleanField
                         value={cell.readOnly}
-                        title={isMobile && t('widget.labels.readOnly')}
+                        title={showCellsStacked && t('widget.labels.readOnly')}
                         onChange={(readOnly) => updateCell(cell.id, { readOnly })}
                       />
                     </div>

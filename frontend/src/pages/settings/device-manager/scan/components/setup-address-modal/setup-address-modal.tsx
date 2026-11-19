@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Card } from '@/components/card';
 import { Confirm } from '@/components/confirm';
@@ -9,7 +10,7 @@ import './styles.css';
 
 export const SetupAddressModal = ({ isOpened, devices, onConfirm, onClose }: SetupAddressModalProps) => {
   const { t } = useTranslation();
-  const isDesktop = useMediaQuery({ minWidth: 874 });
+  const showTable = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
 
   return (
     <Confirm
@@ -20,7 +21,7 @@ export const SetupAddressModal = ({ isOpened, devices, onConfirm, onClose }: Set
       confirmCallback={() => onConfirm(devices)}
       closeCallback={() => onClose(false)}
     >
-      {isDesktop ? (
+      {showTable ? (
         <Table>
           <TableRow isHeading>
             <TableCell>{t('scan.labels.device')}</TableCell>

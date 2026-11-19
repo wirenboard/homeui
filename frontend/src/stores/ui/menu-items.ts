@@ -55,13 +55,23 @@ const isSafeExternalUrl = (url?: string): boolean => {
   }
 };
 
+// Items in these sections without their own requiredRole are admin-only.
+const ADMIN_SECTIONS = ['integrations', 'rules'];
+
 export const toMenuItemInstance = (
   item: CustomMenuItem,
   language: string,
   hasRights?: (role: UserRole) => boolean,
+  defaultRole?: UserRole,
 ): MenuItemInstance => {
   const label = item.title?.[language as 'ru' | 'en'] || item.title?.ru || item.title?.en || item.id;
-  const children = item.children?.map((child) => toMenuItemInstance(child, language, hasRights));
+  const children = item.children?.map((child) => toMenuItemInstance(
+    child,
+    language,
+    hasRights,
+    ADMIN_SECTIONS.includes(item.id) ? UserRole.Admin : undefined,
+  ));
+  const requiredRole = item.requiredRole ?? defaultRole;
   const isExternal = Boolean(item.isExternal && isSafeExternalUrl(item.url));
   const output: MenuItemInstance = {
     id: item.id,
@@ -78,8 +88,8 @@ export const toMenuItemInstance = (
   }
 
   // Combines with visibility decided above: requiredRole may hide, never re-show.
-  if (item.requiredRole !== undefined && hasRights) {
-    output.isShow = output.isShow !== false && hasRights(item.requiredRole);
+  if (requiredRole !== undefined && hasRights) {
+    output.isShow = output.isShow !== false && hasRights(requiredRole);
   }
 
   return output;
@@ -185,7 +195,7 @@ export const getMenuItems = (
       label: 'navigation.labels.integrations',
       id: 'integrations',
       icon: IntegrationsIcon,
-      isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
+      isShow: !params.has('fullscreen'),
     },
     {
       label: 'navigation.labels.history',
@@ -196,9 +206,9 @@ export const getMenuItems = (
       label: 'navigation.labels.rules',
       id: 'rules',
       icon: FileIcon,
-      isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
+      isShow: !params.has('fullscreen'),
       children: [
-        { label: 'navigation.labels.rule-editor', url: '/rules' },
+        { label: 'navigation.labels.rule-editor', url: '/rules', isShow: hasRights(UserRole.Admin) },
       ],
     },
     {

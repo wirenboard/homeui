@@ -24,13 +24,15 @@ export const CloudStatus = observer(({ className }: CloudStatusProps) => {
       {store.activationLink === null ? (
         <>
           <Status status={store.status} />
-          <ButtonLink
-            to={store.cloudLink}
-            label={t('system.cloud-status.goto-cloud')}
-            className="cloudStatus-button"
-            variant="secondary"
-            target="_blank"
-          />
+          {store.cloudLink && (
+            <ButtonLink
+              to={store.cloudLink}
+              label={t('system.cloud-status.goto-cloud')}
+              className="cloudStatus-button"
+              variant="secondary"
+              target="_blank"
+            />
+          )}
         </>
       ) : (
         <Alert variant="info" withIcon={false} size="small">

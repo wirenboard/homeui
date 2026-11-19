@@ -1,12 +1,13 @@
-import { makeObservable, computed, observable, action, runInAction } from 'mobx';
+import { makeObservable, computed, observable, action } from 'mobx';
 import { compareFirmware, firmwareIsNewerOrEqual } from '@/stores/device-manager';
-import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
+import { type JsonSchema, ExactNumberStore, getDefaultValue } from '@/stores/json-schema-editor';
+import { type ExactNumber, exactNumberEquals, isNumberOrExact } from '@/utils/exact-number';
 import { W1_ID_FORMAT } from '@/utils/one-wire-number';
-import type { WbDeviceTemplateParameter } from '../../types';
+import { type WbDeviceTemplateParameter, ParameterValueSource } from '../../types';
 import { type Conditions } from './conditions';
 
 export class WbDeviceParameterEditorVariant {
-  public store: NumberStore;
+  public store: ExactNumberStore;
   public readonly fw: string | undefined;
   public readonly condition: string | undefined;
   public isSupportedByFirmware: boolean = true;
@@ -17,7 +18,7 @@ export class WbDeviceParameterEditorVariant {
 
   constructor(
     parameter: WbDeviceTemplateParameter,
-    valueFromUserDefinedConfig: number | undefined,
+    valueFromUserDefinedConfig: number | ExactNumber | undefined,
     otherParameters: Map<string, WbDeviceParameterEditor>,
     conditions: Conditions) {
 
@@ -26,7 +27,7 @@ export class WbDeviceParameterEditorVariant {
       jsonSchema.format = W1_ID_FORMAT;
     }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
-    this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
+    this.store = new ExactNumberStore(jsonSchema, initialValueToSet, parameter.required);
     this.fw = parameter.fw;
     this.condition = parameter.condition;
     this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
@@ -36,7 +37,7 @@ export class WbDeviceParameterEditorVariant {
     makeObservable(this, {
       isSupportedByFirmware: observable,
       isEnabledByCondition: computed,
-      hasDirtyDependency: computed,
+      hasDependencyChangedByUser: computed,
       setFirmwareInDevice: action,
     });
   }
@@ -53,19 +54,20 @@ export class WbDeviceParameterEditorVariant {
       const param = this._otherParameters.get(dep);
       if (param !== undefined && param.isEnabledByCondition) {
         const value = param.value;
+        // ExactNumber is left out like in wb-mqtt-serial, which passes only int32 values to conditions
         return (typeof value === 'number') ? value : undefined;
       }
       return undefined;
     }));
   }
 
-  get hasDirtyDependency() {
+  get hasDependencyChangedByUser() {
     if (!this._conditionFn) {
       return false;
     }
     return this._dependencies?.some((dep) => {
       const param = this._otherParameters.get(dep);
-      return param?.isEnabledByCondition && param.isDirty;
+      return param?.isEnabledByCondition && param.isChangedByUser;
     }) ?? false;
   }
 }
@@ -77,10 +79,9 @@ export class WbDeviceParameterEditor {
   public order: number;
   public required: boolean;
   public variants: WbDeviceParameterEditorVariant[] = [];
-  public isSetInDeviceRegisters: boolean = false;
-  public isSetInUserDefinedConfig: boolean = false;
 
   private _isUnsupportedByDevice: boolean = false;
+  private _loadedFrom: ParameterValueSource = ParameterValueSource.Default;
 
   constructor(
     parameter: WbDeviceTemplateParameter,
@@ -93,19 +94,20 @@ export class WbDeviceParameterEditor {
     this.order = parameter.order ?? 0;
     this.required = this.variants[0].store.required;
 
-    makeObservable<WbDeviceParameterEditor, '_isUnsupportedByDevice'>(this, {
+    makeObservable<WbDeviceParameterEditor, '_isUnsupportedByDevice' | '_loadedFrom'>(this, {
       _isUnsupportedByDevice: observable,
-      isSetInDeviceRegisters: observable,
+      _loadedFrom: observable,
       activeVariantIndex: computed,
       isSupportedByFirmware: computed,
       supportedFirmware: computed,
       value: computed,
       isEnabledByCondition: computed,
-      isDirty: computed,
+      isChangedByUser: computed,
+      valueSource: computed,
+      isConfigChanged: computed,
       hasErrors: computed,
       hasBadValueFromRegisters: computed,
       hasConflictingVariants: computed,
-      hasDirtyDependency: computed,
       shouldStoreInConfig: computed,
       addVariant: action,
       setFromDeviceRegister: action,
@@ -133,23 +135,15 @@ export class WbDeviceParameterEditor {
     if (activeVariantIndex === -1) {
       return false;
     }
-    const activeVariantStore = this.variants[activeVariantIndex].store;
-    if (this.isSetInDeviceRegisters) {
-      return activeVariantStore.isDirty && activeVariantStore.hasErrors;
-    }
-    return activeVariantStore.hasErrors;
+    return this.valueSource !== ParameterValueSource.Device && this.variants[activeVariantIndex].store.hasErrors;
   }
 
   get hasBadValueFromRegisters() {
-    if (!this.isSetInDeviceRegisters) {
-      return false;
-    }
     const activeVariantIndex = this.activeVariantIndex;
     if (activeVariantIndex === -1) {
       return false;
     }
-    const activeVariantStore = this.variants[activeVariantIndex].store;
-    return !activeVariantStore.isDirty && activeVariantStore.hasErrors;
+    return this.valueSource === ParameterValueSource.Device && this.variants[activeVariantIndex].store.hasErrors;
   }
 
   get value() {
@@ -157,9 +151,29 @@ export class WbDeviceParameterEditor {
     return activeVariantIndex !== -1 ? this.variants[activeVariantIndex].store.value : undefined;
   }
 
-  get isDirty() {
+  get isChangedByUser() {
     const activeVariantIndex = this.activeVariantIndex;
     return activeVariantIndex !== -1 ? this.variants[activeVariantIndex].store.isDirty : false;
+  }
+
+  get valueSource() {
+    const activeVariantIndex = this.activeVariantIndex;
+    if (activeVariantIndex !== -1) {
+      const activeVariant = this.variants[activeVariantIndex];
+      if (activeVariant.store.isDirty || activeVariant.hasDependencyChangedByUser) {
+        return ParameterValueSource.User;
+      }
+    }
+    return this._loadedFrom;
+  }
+
+  // Changes in this parameter require saving the config. Unlike shouldStoreInConfig, false for
+  // a value that is already in the config and was not changed by the user or a forced reread.
+  // isDirty is not used for it. A forced reread can bring an invalid value into this parameter
+  // and change a parameter of its condition. With isDirty both would look like the user's input,
+  // and the parameter would show an error, while a bad value from the device must be a warning.
+  get isConfigChanged() {
+    return this.shouldStoreInConfig && this.valueSource !== ParameterValueSource.Config;
   }
 
   // The newest variant supported by the device firmware, otherwise the oldest one to show it disabled.
@@ -178,21 +192,13 @@ export class WbDeviceParameterEditor {
     ).size > 1;
   }
 
-  get hasDirtyDependency() {
-    return this.variants.some((variant) => variant.hasDirtyDependency);
-  }
-
   get shouldStoreInConfig() {
     if (!this.isEnabledByCondition || !this.isSupportedByFirmware) {
       return false;
     }
-    if (this.isSetInUserDefinedConfig) {
-      return !this.hasErrors;
-    }
-    if (this.isSetInDeviceRegisters) {
-      return !this.hasBadValueFromRegisters;
-    }
-    return (this.required || this.isDirty || this.hasDirtyDependency) && !this.hasErrors;
+    return (this.required || this.valueSource !== ParameterValueSource.Default)
+      && !this.hasErrors
+      && !this.hasBadValueFromRegisters;
   }
 
   addVariant(
@@ -206,7 +212,9 @@ export class WbDeviceParameterEditor {
     if (typeof userDefinedConfig === 'object') {
       valueFromUserDefinedConfig = (userDefinedConfig as Record<string, any>)[parameter.id];
     }
-    this.isSetInUserDefinedConfig = valueFromUserDefinedConfig !== undefined;
+    this._loadedFrom = valueFromUserDefinedConfig !== undefined
+      ? ParameterValueSource.Config
+      : ParameterValueSource.Default;
 
     this.variants.push(new WbDeviceParameterEditorVariant(
       parameter,
@@ -217,27 +225,22 @@ export class WbDeviceParameterEditor {
   }
 
   setDefault() {
-    this.isSetInUserDefinedConfig = false;
-    this.isSetInDeviceRegisters = false;
+    this._loadedFrom = ParameterValueSource.Default;
     this.variants.forEach((variant) => {
       variant.store.setDefault();
     });
   }
 
   setFromDeviceRegister(value: unknown, isForce?: boolean) {
-    if ((!this.isSetInUserDefinedConfig || isForce) && typeof value === 'number') {
+    if ((this._loadedFrom !== ParameterValueSource.Config || isForce) && isNumberOrExact(value)) {
       this.variants.forEach((variant) => {
+        // The current value is the default or, on a forced reread, the config value
+        if (!exactNumberEquals(value, variant.store.value)) {
+          this._loadedFrom = ParameterValueSource.Device;
+        }
         variant.store.setValue(value);
         variant.store.commit();
-        if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
-          runInAction(() => {
-            this.isSetInDeviceRegisters = true;
-            if (isForce) {
-              variant.store.isDirty = true;
-            }
-          });
-        }
-        if (this.isSetInDeviceRegisters && variant.store.hasErrors) {
+        if (this._loadedFrom === ParameterValueSource.Device && variant.store.hasErrors) {
           variant.store.setAnyUserInputIsDirty(true);
           variant.store.setDoNotShowInvalidValue(true);
         }
@@ -260,8 +263,7 @@ export class WbDeviceParameterEditor {
   commit() {
     const activeVariantIndex = this.activeVariantIndex;
     if (activeVariantIndex === -1) {
-      this.isSetInUserDefinedConfig = false;
-      this.isSetInDeviceRegisters = false;
+      this._loadedFrom = ParameterValueSource.Default;
       this.variants.forEach((variant) => {
         variant.store.setAnyUserInputIsDirty(false);
         variant.store.setDoNotShowInvalidValue(false);
@@ -273,11 +275,8 @@ export class WbDeviceParameterEditor {
     if (this.hasErrors || this.hasBadValueFromRegisters) {
       return;
     }
-    if (this.shouldStoreInConfig) {
-      this.isSetInUserDefinedConfig = true;
-    }
-    this.isSetInDeviceRegisters = false;
-    const value = this.variants[activeVariantIndex].store.value as number;
+    this._loadedFrom = this.shouldStoreInConfig ? ParameterValueSource.Config : ParameterValueSource.Default;
+    const value = this.variants[activeVariantIndex].store.value;
     this.variants.forEach((variant) => {
       variant.store.setAnyUserInputIsDirty(false);
       variant.store.setDoNotShowInvalidValue(false);

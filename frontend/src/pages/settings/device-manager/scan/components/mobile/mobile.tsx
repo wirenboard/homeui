@@ -55,10 +55,8 @@ const DevicePanel = observer(({ deviceStore, isScanning }: DevicePanelProps) => 
         </div>
       </div>
       {deviceStore?.scannedDevice?.fw?.update?.error && (
-        <div className="row">
-          <div className="col-xs-12">
-            <Tag variant="danger">{deviceStore?.scannedDevice?.fw?.update?.error}</Tag>
-          </div>
+        <div className="mobileDevicePanel-error">
+          <Tag variant="danger">{deviceStore?.scannedDevice?.fw?.update?.error}</Tag>
         </div>
       )}
     </Card>

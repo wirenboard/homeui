@@ -88,6 +88,30 @@ describe('EditSvgDashboardPageStore', () => {
     expect(store.commonParameters.name).toBe('New Name');
   });
 
+  describe('isIdCharsValid', () => {
+    test('is false when the id contains "#" (it would break the hash-router URL)', () => {
+      store.setCommonParam('id', 'my#dashboard');
+      expect(store.isIdCharsValid).toBe(false);
+    });
+
+    test('is false when the id contains "/" (it would break the hash-router URL)', () => {
+      store.setCommonParam('id', 'my/dashboard');
+      expect(store.isIdCharsValid).toBe(false);
+    });
+
+    test('is true for an id without "#" or "/"', () => {
+      store.setCommonParam('id', 'my-dashboard');
+      expect(store.isIdCharsValid).toBe(true);
+    });
+
+    test('blocks isValid when the id contains "#"', () => {
+      store.setCommonParam('id', 'my#dashboard');
+      store.setCommonParam('name', 'Test');
+      store.svgStore.setSvg('<svg/>');
+      expect(store.isValid).toBeFalsy();
+    });
+  });
+
   test('setSwipeParameters updates swipe config', () => {
     store.setSwipeParameters('enable', true);
     expect(store.swipeParameters.enable).toBe(true);

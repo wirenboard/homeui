@@ -8,7 +8,7 @@ export { BusCommandsStore } from './bus-commands-store';
 export { DaliPageStore } from './dali-page-store';
 export { MonitorStore } from './monitor-store';
 
-export type ItemStore = GatewayStore | BusStore | DeviceStore | GroupStore;
+export type { ItemStore } from './types';
 
 export const daliGlobalStore = new DaliGlobalStore();
 

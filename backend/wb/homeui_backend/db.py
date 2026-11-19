@@ -4,6 +4,9 @@ import sqlite3
 
 DB_SCHEMA_VERSION = 2
 
+# The database holds password hashes and session tokens; only the backend (root) reads it.
+DB_FILE_MODE = 0o600
+
 
 def create_tables(con: sqlite3.Connection):
     cursor = con.cursor()
@@ -68,6 +71,7 @@ def update_db(con: sqlite3.Connection, version: int) -> None:
 def create_db(db_file: str) -> sqlite3.Connection:
     os.makedirs(os.path.dirname(db_file), exist_ok=True)
     con = sqlite3.connect(db_file)
+    os.chmod(db_file, DB_FILE_MODE)
     create_tables(con)
     cur = con.cursor()
     cur.execute("PRAGMA user_version = 2")
@@ -76,9 +80,14 @@ def create_db(db_file: str) -> sqlite3.Connection:
 
 def open_db(db_file: str) -> sqlite3.Connection:
     if not check_db(db_file):
+        db_real_path = os.path.realpath(db_file)
+        if os.path.exists(db_real_path):
+            logging.error("Removing broken database %s", db_real_path)
+            os.remove(db_real_path)
         return create_db(db_file)
 
     con = sqlite3.connect(db_file)
+    os.chmod(db_file, DB_FILE_MODE)
     cur = con.cursor()
     cur.execute("PRAGMA user_version")
     version = cur.fetchone()[0]
@@ -94,15 +103,20 @@ def check_db(db_file: str) -> bool:
         return False
 
     con = sqlite3.connect(db_file)
+    try:
+        cursor = con.cursor()
+        cursor.execute("PRAGMA quick_check")
+        if cursor.fetchone()[0] != "ok":
+            logging.error("Database is broken. Recreating")
+            return False
 
-    cursor = con.cursor()
-    cursor.execute("PRAGMA quick_check")
-    if cursor.fetchone()[0] != "ok":
-        logging.error("Database is broken. Recreating")
+        cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
+        if cursor.fetchone()[0] < 1:
+            logging.error("Database has no tables. Recreating")
+            return False
+        return True
+    except sqlite3.DatabaseError as e:
+        logging.error("Database is not readable: %s", e)
         return False
-
-    cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
-    if cursor.fetchone()[0] < 1:
-        logging.error("Database has no tables. Recreating")
-        return False
-    return True
+    finally:
+        con.close()

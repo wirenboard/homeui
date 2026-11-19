@@ -54,6 +54,7 @@
 
 .dropdown__option {
   display: block;
+  line-height: 1.2em;
 }
 
 .dropdown__placeholder {
@@ -106,9 +107,18 @@
 .dropdown-s .dropdown__control,
 .dropdown-s .dropdown__option,
 .dropdown-s .dropdown__group-heading {
-  height: 28px;
+  min-height: 28px;
   padding: 3px 8px;
+}
+
+.dropdown-s .dropdown__control,
+.dropdown-s .dropdown__group-heading {
   max-height: 30px;
+}
+
+.dropdown-s .dropdown__option {
+  display: flex;
+  align-items: center;
 }
 
 .dropdown-s .dropdown__group-heading + div .dropdown__option {
@@ -135,6 +145,14 @@
   width: 100%;
   z-index: 9999 !important;
   font-family: var(--font);
+}
+
+.dropdown__menu {
+  overflow: hidden;
+}
+
+.dropdown__menu-list {
+  border-radius: var(--input-border-radius);
 }
 
 .dropdown__option--is-disabled:not(.dropdown__option--is-selected) {
@@ -165,9 +183,6 @@
   border-color: var(--danger-color);
 }
 
-/* Picked up by json-editor's has-error class on the surrounding form-group so
-   the dropdown shows the same red border as native form-controls on validation
-   failure. */
 .has-error .dropdown__control,
 .has-error .dropdown__control:hover {
   border-color: var(--danger-color);
@@ -175,6 +190,7 @@
 
 .dropdown__control--is-disabled {
   background-color: var(--input-background-disabled);
+  color: var(--gray-color);
   cursor: not-allowed;
 }
 

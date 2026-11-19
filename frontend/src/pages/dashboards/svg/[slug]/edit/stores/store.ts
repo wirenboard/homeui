@@ -29,7 +29,13 @@ export class EditSvgDashboardPageStore {
   }
 
   get isValid() {
-    return this.commonParameters.id && this.commonParameters.name && this.svgStore.svg && this.isIdUnique;
+    return (
+      this.commonParameters.id
+      && this.commonParameters.name
+      && this.svgStore.svg
+      && this.isIdUnique
+      && this.isIdCharsValid
+    );
   }
 
   // The chosen id must not collide with another dashboard (the one being edited keeps its own id).
@@ -39,6 +45,10 @@ export class EditSvgDashboardPageStore {
       return true;
     }
     return !dashboardsStore.dashboards.has(id);
+  }
+
+  get isIdCharsValid() {
+    return !/[#/]/.test(this.commonParameters.id);
   }
 
   setCommonParam<K extends keyof typeof this.commonParameters>(key: K, value: typeof this.commonParameters[K]) {

@@ -3,9 +3,9 @@ import os
 import shutil
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, call, mock_open, patch
 
 from wb.homeui_backend.cert import CertificateState
 from wb.homeui_backend.gates import CUSTOM_MENU_DIR as GATES_CUSTOM_MENU_DIR
@@ -21,18 +21,24 @@ from wb.homeui_backend.http_response import (
 )
 from wb.homeui_backend.main import (
     CUSTOM_MENU_DIRS,
+    MAX_ID_COOKIE_CANDIDATES,
+    UNKNOWN_LOGIN_PASSWORD_HASH,
     RequestHandler,
     WebRequestHandler,
     WebRequestHandlerContext,
     auth_check_handler,
+    auth_login_handler,
     auth_who_am_i_handler,
     custom_menu_handler,
     delete_user_handler,
     device_info_handler,
+    get_id_cookie_values,
     get_required_user_type,
+    get_session,
     get_users_handler,
     make_certificate_usable_change_handler,
     security_check_handler,
+    update_dashboards_handler,
     update_https_handler,
     update_user_handler,
 )
@@ -40,6 +46,132 @@ from wb.homeui_backend.rate_limiter import RateLimiter
 from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
+
+
+class GetIdCookieValuesTest(unittest.TestCase):
+    def test_header_parsing(self):
+        """Foreign cookies planted by apps on other ports of the same host (JSON-valued,
+        named like reserved attributes, duplicates of "id") must not hide our session
+        cookie: every distinct "id" value is collected in header order, the name is
+        matched case-sensitively, a value keeps everything after the first "=" (base64
+        padding survives), and parts without "=" are skipped."""
+        for header, expected in (
+            ("id=abc", ["abc"]),
+            ('foo={"a": 1}; id=abc', ["abc"]),
+            ("path=/; expires=Sat, 01 Jan 2028 00:00:00 GMT; id=abc", ["abc"]),
+            ("id=stale; id=abc", ["stale", "abc"]),
+            ("id=abc; id=abc; id=other", ["abc", "other"]),
+            ("other=1; theme=dark", []),
+            ("", []),
+            ("ID=abc", []),
+            ("id=dG9rZW4=; other=1", ["dG9rZW4="]),
+            ("garbage; id=abc", ["abc"]),
+        ):
+            with self.subTest(header=header):
+                self.assertEqual(get_id_cookie_values(header), expected)
+
+    def test_candidate_cap(self):
+        """More "id" values than MAX_ID_COOKIE_CANDIDATES (an attacker-shaped header —
+        real browsers send a couple at most) are cut to the first ones; duplicates are
+        dropped before the cap so repeats cannot consume it."""
+        header = "; ".join(f"id=c{i}" for i in range(MAX_ID_COOKIE_CANDIDATES + 2))
+        self.assertEqual(
+            get_id_cookie_values("id=c0; " + header),
+            [f"c{i}" for i in range(MAX_ID_COOKIE_CANDIDATES)],
+        )
+
+
+class GetSessionTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock(spec=BaseHTTPRequestHandler)
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.sessions_storage_mock = MagicMock(spec=SessionsStorage)
+        self.session = Session(
+            "valid", User("1", "user1", "password1", UserType.USER, False), datetime.now(timezone.utc)
+        )
+
+    def _get_session(self):
+        return get_session(self.request, self.users_storage_mock, self.sessions_storage_mock)
+
+    def test_id_after_json_foreign_cookie_resolves_session(self):
+        """A JSON-valued foreign cookie before "id" (the SimpleCookie parse-abort case)
+        must not prevent the session from being resolved."""
+        self.request.headers = {"Cookie": 'foo={"a": 1}; id=valid'}
+        self.sessions_storage_mock.get_session_by_id.return_value = self.session
+        self.assertIs(self._get_session(), self.session)
+        self.sessions_storage_mock.get_session_by_id.assert_called_once_with("valid", self.users_storage_mock)
+
+    def test_duplicate_id_stale_first_tries_candidates_in_order(self):
+        """With two "id" cookies where a stale/foreign value comes first, both candidates
+        are looked up in header order and the second (resolving) one wins."""
+        self.request.headers = {"Cookie": "id=stale; id=valid"}
+        self.sessions_storage_mock.get_session_by_id.side_effect = [None, self.session]
+        self.assertIs(self._get_session(), self.session)
+        self.assertEqual(
+            self.sessions_storage_mock.get_session_by_id.call_args_list,
+            [call("stale", self.users_storage_mock), call("valid", self.users_storage_mock)],
+        )
+
+    def test_duplicate_id_valid_first_wins_without_trying_the_rest(self):
+        """With the resolving "id" first, the lookup stops there and the garbage duplicate
+        is never tried."""
+        self.request.headers = {"Cookie": "id=valid; id=garbage"}
+        self.sessions_storage_mock.get_session_by_id.side_effect = [self.session]
+        self.assertIs(self._get_session(), self.session)
+        self.sessions_storage_mock.get_session_by_id.assert_called_once_with("valid", self.users_storage_mock)
+
+    def test_no_cookie_header_returns_none(self):
+        self.request.headers = {}
+        self.assertIsNone(self._get_session())
+        self.request.log_error.assert_called_once_with("Cookie not found")
+        self.sessions_storage_mock.get_session_by_id.assert_not_called()
+
+    def test_candidates_but_no_session_returns_none(self):
+        self.request.headers = {"Cookie": "id=unknown"}
+        self.sessions_storage_mock.get_session_by_id.return_value = None
+        self.assertIsNone(self._get_session())
+        self.request.log_error.assert_called_once_with("Session not found")
+
+    def test_expired_admin_session_is_rejected(self):
+        """An ADMIN session idle for more than 14 days resolves from the storage but is
+        rejected ("Cookie expired")."""
+        admin_session = Session(
+            "valid",
+            User("1", "admin", "password1", UserType.ADMIN, False),
+            datetime.now(timezone.utc) - timedelta(days=15),
+        )
+        self.request.headers = {"Cookie": "id=valid"}
+        self.sessions_storage_mock.get_session_by_id.return_value = admin_session
+        self.assertIsNone(self._get_session())
+        self.request.log_error.assert_called_once_with("Cookie expired")
+
+    def test_fresh_admin_session_is_accepted(self):
+        """An ADMIN session idle for less (13 days) than the 14-day ADMIN_COOKIE_LIFETIME
+        passes the expiry check and is returned."""
+        admin_session = Session(
+            "valid",
+            User("1", "admin", "password1", UserType.ADMIN, False),
+            datetime.now(timezone.utc) - timedelta(days=13),
+        )
+        self.request.headers = {"Cookie": "id=valid"}
+        self.sessions_storage_mock.get_session_by_id.return_value = admin_session
+        self.assertIs(self._get_session(), admin_session)
+
+    def test_expired_admin_first_candidate_is_not_skipped(self):
+        """Contract pin: the loop stops at the first candidate that resolves to a stored
+        session, and the 14-day check then rejects it without falling back to later
+        candidates — a second id that also resolves against this store is not a state a
+        real browser produces, so the simpler rule stands."""
+        admin_session = Session(
+            "stale",
+            User("1", "admin", "password1", UserType.ADMIN, False),
+            datetime.now(timezone.utc) - timedelta(days=15),
+        )
+        self.request.headers = {"Cookie": "id=stale; id=valid"}
+        self.sessions_storage_mock.get_session_by_id.return_value = admin_session
+        self.assertIsNone(self._get_session())
+        self.sessions_storage_mock.get_session_by_id.assert_called_once_with("stale", self.users_storage_mock)
+        self.request.log_error.assert_called_once_with("Cookie expired")
 
 
 class DeleteUserHandlerTest(unittest.TestCase):
@@ -335,6 +467,64 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         )
 
 
+class AuthLoginHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.request.headers = {}
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.sessions_storage_mock = MagicMock(spec=SessionsStorage)
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=self.users_storage_mock,
+            sessions_storage=self.sessions_storage_mock,
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+        )
+
+    def _post(self, login, password):
+        body = json.dumps({"login": login, "password": password}).encode("utf-8")
+        self.request.headers = {"Content-Length": str(len(body))}
+        self.request.rfile.read.return_value = body
+
+    @patch("wb.homeui_backend.main.check_password", return_value=False)
+    def test_unknown_login_still_checks_a_password(self, check_password_mock):
+        """An unknown login is refused only after a password check against the placeholder hash,
+        so that the response takes as long as for an existing login with a wrong password."""
+        self.users_storage_mock.get_user_by_login.return_value = None
+        self._post("nobody", "secret")
+        response = auth_login_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+        check_password_mock.assert_called_once_with("secret", UNKNOWN_LOGIN_PASSWORD_HASH)
+
+    @patch("wb.homeui_backend.main.check_password", return_value=True)
+    def test_unknown_login_is_refused_even_if_the_placeholder_check_passes(self, _check_password_mock):
+        self.users_storage_mock.get_user_by_login.return_value = None
+        self._post("nobody", "secret")
+        self.assertEqual(auth_login_handler(self.request, self.context), response_401())
+        self.sessions_storage_mock.add_session.assert_not_called()
+
+    @patch("wb.homeui_backend.main.check_password", return_value=False)
+    def test_wrong_password_is_checked_against_the_user_hash(self, check_password_mock):
+        self.users_storage_mock.get_user_by_login.return_value = User(
+            "1", "user1", "hash1", UserType.USER, False
+        )
+        self._post("user1", "wrong")
+        self.assertEqual(auth_login_handler(self.request, self.context), response_401())
+        check_password_mock.assert_called_once_with("wrong", "hash1")
+
+    @patch("wb.homeui_backend.main.check_password", return_value=True)
+    def test_right_password_opens_a_session(self, _check_password_mock):
+        user = User("1", "user1", "hash1", UserType.USER, False)
+        self.users_storage_mock.get_user_by_login.return_value = user
+        self.sessions_storage_mock.add_session.return_value = Session("s1", user, datetime.now(timezone.utc))
+        self._post("user1", "right")
+        response = auth_login_handler(self.request, self.context)
+        self.assertEqual(response.status, 200)
+        self.sessions_storage_mock.add_session.assert_called_once_with(user)
+
+
 class UpdateUserHandlerTest(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
@@ -488,6 +678,65 @@ class UpdateUserHandlerTest(unittest.TestCase):
             )
             self.assertEqual(response, response_200())
 
+    def test_update_login_keeps_autologin(self):
+        """A partial update that doesn't mention autologin must not clear it.
+
+        The users page patches only {login, password, type}, so an omitted autologin
+        field means "unchanged", not "off".
+        """
+        self.request.path = "/users/1"
+        user = User("1", "user1", "password1", UserType.USER, True)
+        self.users_storage_mock.get_user_by_id.return_value = user
+        self.users_storage_mock.get_user_by_login.return_value = None
+        self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
+        self.request.rfile.read.return_value = b'{"login": "user2"}'
+        response = update_user_handler(self.request, self.context)
+        saved_user = self.users_storage_mock.update_user.call_args.args[0]
+        self.assertTrue(saved_user.autologin)
+        self.users_storage_mock.update_user.assert_called_once_with(
+            User("1", "user2", "password1", UserType.USER, True)
+        )
+        self.assertEqual(response, response_200())
+
+    def test_invalid_fields_are_rejected(self):
+        """Bad field values are 400s from the validator, not 500s from deeper in the handler.
+
+        Each payload is a field the handler would otherwise act on: an unknown type used to
+        reach UserType() and raise, and an empty password used to be hashed and stored.
+        """
+        self.request.path = "/users/1"
+        self.users_storage_mock.get_user_by_id.return_value = User(
+            "1", "user1", "password1", UserType.USER, True
+        )
+        self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
+        cases = [
+            (b'{"type": "root"}', "Invalid type field"),
+            (b'{"password": ""}', "Invalid password field"),
+            (b'{"password": 123}', "Invalid password field"),
+            (b'{"login": ""}', "Invalid login field"),
+            (b'{"autologin": "yes"}', "Invalid autologin field"),
+            (b'{"autologin": null}', "Invalid autologin field"),
+        ]
+        for body, message in cases:
+            with self.subTest(body=body):
+                self.request.rfile.read.return_value = body
+                response = update_user_handler(self.request, self.context)
+                self.assertEqual(response, response_400(message))
+                self.users_storage_mock.update_user.assert_not_called()
+
+    def test_update_autologin(self):
+        """An explicit autologin field is applied (the users page uses it to move autologin)."""
+        self.request.path = "/users/1"
+        user = User("1", "user1", "password1", UserType.USER, True)
+        self.users_storage_mock.get_user_by_id.return_value = user
+        self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
+        self.request.rfile.read.return_value = b'{"autologin": false}'
+        response = update_user_handler(self.request, self.context)
+        self.users_storage_mock.update_user.assert_called_once_with(
+            User("1", "user1", "password1", UserType.USER, False)
+        )
+        self.assertEqual(response, response_200())
+
 
 class SecurityCheckHandlerTest(unittest.TestCase):
     def setUp(self):
@@ -551,30 +800,30 @@ class GetRequiredUserTypeTest(unittest.TestCase):
                 self.assertEqual(get_required_user_type(request), expected)
 
 
+def make_handler():
+    handler = WebRequestHandler.__new__(WebRequestHandler)
+    handler.rate_limiter = RateLimiter()
+    handler.users_storage = MagicMock(spec=UsersStorage)
+    handler.sessions_storage = MagicMock(spec=SessionsStorage)
+    handler.certificate_thread = MagicMock()
+    handler.security_check_thread = MagicMock()
+    handler.dashboards_store = MagicMock()
+    handler.fonts_store = MagicMock()
+    handler.sn = ""
+    return handler
+
+
 class RequestHandlerRateLimitKeyTest(unittest.TestCase):
     """The per-endpoint rate limit must key on the parsed path, not the raw request
     target. Requests differing only by query string have to share one bucket, so a
     client can't bypass the limit (nor grow RateLimiter.calls unbounded) by varying
     ?params. Guards the urlparse() key normalisation in _request_handler."""
 
-    @staticmethod
-    def _handler():
-        handler = WebRequestHandler.__new__(WebRequestHandler)
-        handler.rate_limiter = RateLimiter()
-        handler.users_storage = MagicMock(spec=UsersStorage)
-        handler.sessions_storage = MagicMock(spec=SessionsStorage)
-        handler.certificate_thread = MagicMock()
-        handler.security_check_thread = MagicMock()
-        handler.dashboards_store = MagicMock()
-        handler.fonts_store = MagicMock()
-        handler.sn = ""
-        return handler
-
     def test_query_string_variants_share_one_bucket(self):
         """Three GETs to /auth/check differing only by ?nonce against a limit of 2:
         they collapse onto a single bucket, so the third is throttled (429)."""
         limit = 2
-        handler = self._handler()
+        handler = make_handler()
         handler.process_response = MagicMock()
         handlers = {
             "/auth/check": RequestHandler(
@@ -753,3 +1002,59 @@ class UpdateHttpsHandlerTest(unittest.TestCase):
                 response, apply_mock = self._toggle(True, ApplyResult(ok=True), cert_usable=usable)
                 apply_mock.assert_called_once_with(usable)
                 self.assertEqual(response, response_200())
+
+
+class ProcessRequestErrorTest(unittest.TestCase):
+    def test_handler_exception_is_logged_and_hidden_from_client(self):
+        """A handler raising an unexpected exception: the client gets a plain 500 without the
+        traceback (it would reveal file paths, line numbers and the interpreter version), and
+        the traceback is written to the log instead."""
+        handler = make_handler()
+        handler.process_response = MagicMock()
+        handler.command = "GET"
+        handler.path = "/users"
+        handlers = {"/users": RequestHandler(fn=MagicMock(side_effect=RuntimeError("/secret/path.py")))}
+
+        with patch("wb.homeui_backend.main.get_session", return_value=None), self.assertLogs(
+            level="ERROR"
+        ) as logs:
+            handler.process_request(handlers)
+
+        response = handler.process_response.call_args.args[0]
+        self.assertEqual(response.status, 500)
+        self.assertNotIn("Traceback", response.body)
+        self.assertNotIn("/secret/path.py", response.body)
+        self.assertIn("RuntimeError: /secret/path.py", "\n".join(logs.output))
+
+
+class UpdateHttpsHandlerValidationTest(unittest.TestCase):
+    def test_non_bool_enabled_is_rejected_with_400(self):
+        """PATCH /api/https with an "enabled" that is not a boolean: 400 and the config is
+        left untouched, instead of a TypeError escaping into a 500."""
+        config = MagicMock()
+        request = MagicMock()
+        body = json.dumps({"enabled": "x"})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+
+        with patch.object(WebRequestHandler, "config", config, create=True):
+            response = update_https_handler(request, MagicMock())
+
+        self.assertEqual(response.status, 400)
+        config.set_https_enabled.assert_not_called()
+
+
+class UpdateDashboardsHandlerTest(unittest.TestCase):
+    def test_non_list_dashboards_is_rejected_with_400(self):
+        """PUT /api/dashboards with a "dashboards" that is not a list: 400 before the store is
+        touched, instead of a TypeError escaping into a 500."""
+        request = MagicMock()
+        body = json.dumps({"dashboards": 5})
+        request.headers = {"Content-Length": str(len(body))}
+        request.rfile.read.return_value = body.encode()
+        context = MagicMock()
+
+        response = update_dashboards_handler(request, context)
+
+        self.assertEqual(response.status, 400)
+        context.dashboards_store.replace_collection.assert_not_called()

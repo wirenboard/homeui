@@ -2,7 +2,7 @@
 import { configure } from 'mobx';
 import { dashboardsStore } from '@/stores/dashboards';
 import { devicesStore } from '@/stores/devices';
-import { historyProxyMock } from '@/test/mocks/services';
+import { historyProxyMock, mqttClientMock } from '@/test/mocks/services';
 import { ChartTraits } from './chart-traits';
 import HistoryStore from './history-store';
 import { ChartType, type HistoryValue } from './types';
@@ -513,6 +513,18 @@ describe('HistoryStore', () => {
       spy.mockRestore();
     });
 
+    test('still creates a chart for a control the devices store has not resolved yet, e.g. a link opened directly', () => {
+      store.controls = [];
+
+      const spy = vi.spyOn(store, 'beforeLoadChunkedHistory').mockImplementation(() => {});
+
+      store.startLoading(['metrics/load_average_15min']);
+
+      expect(store.charts).toHaveLength(1);
+      expect(store.charts[0].channelName).toBe('metrics / load_average_15min');
+      spy.mockRestore();
+    });
+
     test('matches control with widget id', () => {
       store.controls = [
         { name: 'W Temp', group: 'W', deviceId: 'therm', controlId: 'temp', valueType: 'number', widget: { id: 'w1', name: 'W' } },
@@ -648,6 +660,23 @@ describe('HistoryStore', () => {
 
       expect(store.errors[0].variant).toBe('danger');
       expect(store.loadPending).toBe(false);
+    });
+
+    test('waits for MQTT to connect before calling historyProxy, e.g. on a URL opened directly', async () => {
+      (store as any).loadId = 1;
+      store.charts = [new ChartTraits({ name: 'T', group: 'A', deviceId: 'd', controlId: 'c', valueType: 'number' })];
+      let resolveConnected: () => void;
+      mqttClientMock.whenConnected.mockReturnValueOnce(new Promise<void>((resolve) => {
+        resolveConnected = resolve;
+      }));
+      historyProxyMock.get_values.mockResolvedValue({ values: [] });
+
+      store.loadHistory({}, 0, 0, ['a', 'b'], 1);
+      await Promise.resolve();
+      expect(historyProxyMock.get_values).not.toHaveBeenCalled();
+
+      resolveConnected();
+      await vi.waitFor(() => expect(historyProxyMock.get_values).toHaveBeenCalled());
     });
 
     test('ignores result when loadId changed', async () => {

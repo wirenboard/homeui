@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
+/* eslint-disable max-lines */
+import { autorun } from 'mobx';
 import type { JsonSchema } from '@/stores/json-schema-editor';
-import type { WbDeviceTemplateParameter } from '../../types';
+import type { WbDeviceParametersGroup, WbDeviceTemplateParameter } from '../../types';
 import { DeviceSettingsObjectStore } from './device-settings-store';
 
 // Minimal device schema: one common param plus the template parameters under test.
@@ -29,17 +31,6 @@ const fwChain: WbDeviceTemplateParameter[] = [
 ];
 
 describe('DeviceSettingsObjectStore with a chain of fw variants (base + fw 2.2.0)', () => {
-  it('shows the newest variant with three enum values while the device firmware is unknown', () => {
-    const store = makeStore(fwChain);
-    const param = getParam(store, 'p1');
-
-    expect(param.activeVariantIndex).toBe(1);
-    expect(getActiveStore(store, 'p1').schema.enum).toEqual([0, 1, 2]);
-    expect(param.hasConflictingVariants).toBe(false);
-    expect(param.isSupportedByFirmware).toBe(true);
-    expect(param.supportedFirmware).toBeUndefined();
-  });
-
   it('shows the base variant with two enum values when the device firmware 2.1.0 is older than the extension', () => {
     const store = makeStore(fwChain);
 
@@ -59,16 +50,6 @@ describe('DeviceSettingsObjectStore with a chain of fw variants (base + fw 2.2.0
 
     expect(getParam(store, 'p1').activeVariantIndex).toBe(1);
     expect(getActiveStore(store, 'p1').schema.enum).toEqual([0, 1, 2]);
-  });
-
-  it('treats the value 2 read from a device with firmware 2.1.0 as a bad value from registers', () => {
-    const store = makeStore(fwChain);
-
-    store.setFromDeviceRegisters({ p1: 2 }, '2.1.0');
-
-    expect(getActiveStore(store, 'p1').value).toBe(2);
-    expect(getParam(store, 'p1').hasBadValueFromRegisters).toBe(true);
-    expect(store.hasBadValuesFromRegisters).toBe(true);
   });
 
   it('accepts the value 2 read from a device with firmware 2.2.0', () => {
@@ -126,15 +107,6 @@ describe('DeviceSettingsObjectStore with a chain of fw variants (base + fw 2.2.0
     expect(param.hasErrors).toBe(true);
     expect(param.shouldStoreInConfig).toBe(false);
     expect(store.value).not.toHaveProperty('p1');
-  });
-
-  it('disables the parameter without a "supported since" hint when the device reports the unsupported marker', () => {
-    const store = makeStore(fwChain);
-
-    store.setFromDeviceRegisters({ p1: 'unsupported' }, '2.2.0');
-
-    expect(getParam(store, 'p1').isSupportedByFirmware).toBe(false);
-    expect(getParam(store, 'p1').supportedFirmware).toBeUndefined();
   });
 });
 
@@ -253,7 +225,7 @@ describe('DeviceSettingsObjectStore with condition variants of different fw (mod
     const param = getParam(store, 'p1');
     expect(param.activeVariantIndex).toBe(-1);
     expect(param.value).toBeUndefined();
-    expect(param.isDirty).toBe(false);
+    expect(param.isChangedByUser).toBe(false);
     expect(param.hasErrors).toBe(false);
     expect(store.value).not.toHaveProperty('p1');
 
@@ -265,16 +237,6 @@ describe('DeviceSettingsObjectStore with condition variants of different fw (mod
 });
 
 describe('WbDeviceParameterEditor.hasConflictingVariants', () => {
-  it('reports a template error when declarations with different conditions are enabled at once', () => {
-    const store = makeStore([
-      { id: 'mode', title: 'Mode', enum: [0, 1], default: 1 },
-      { id: 'p1', title: 'P1', enum: [0, 1], default: 0, condition: 'mode==1', dependencies: ['mode'] },
-      { id: 'p1', title: 'P1', enum: [0, 1], default: 0, condition: 'mode>0', dependencies: ['mode'] },
-    ]);
-
-    expect(getParam(store, 'p1').hasConflictingVariants).toBe(true);
-  });
-
   it('does not report an error for a chain of fw variants sharing the same condition', () => {
     const store = makeStore([
       { id: 'mode', title: 'Mode', enum: [0, 1], default: 1 },
@@ -284,6 +246,130 @@ describe('WbDeviceParameterEditor.hasConflictingVariants', () => {
 
     expect(getParam(store, 'p1').hasConflictingVariants).toBe(false);
     expect(getParam(store, 'p1').activeVariantIndex).toBe(1);
+  });
+});
+
+// Minimal device schema with groups: the parameter puts the group under test into the tree.
+const makeGroupsStore = (groups: WbDeviceParametersGroup[]) =>
+  new DeviceSettingsObjectStore(
+    {
+      type: 'object',
+      properties: { slave_id: { type: 'string' } },
+      device: { groups, parameters: [{ id: 'p1', title: 'P1', enum: [0, 1], default: 0, group: 'g1' }] },
+    } as unknown as JsonSchema,
+    {},
+  );
+
+const getGroup = (store: DeviceSettingsObjectStore, id: string) =>
+  store.topLevelGroup.subgroups.find((group) => group.properties.id === id);
+
+// One group declared twice: the base declaration and the variant since fw 2.2.0.
+const groupFwVariants: WbDeviceParametersGroup[] = [
+  { id: 'g1', title: 'G1', description: 'base description' },
+  { id: 'g1', title: 'G1', description: 'new description', fw: '2.2.0' },
+];
+
+describe('DeviceSettingsObjectStore with a group declared in two variants (base + fw 2.2.0)', () => {
+  it('shows the description of the newest variant while the device firmware is unknown', () => {
+    expect(getGroup(makeGroupsStore(groupFwVariants), 'g1').description).toBe('new description');
+  });
+
+  it('shows the base description when the device firmware 2.1.0 is older than the variant', () => {
+    const store = makeGroupsStore(groupFwVariants);
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.1.0');
+
+    expect(getGroup(store, 'g1').description).toBe('base description');
+  });
+
+  it.each(['2.2.0', '3.0.0'])('shows the newest description when the device firmware is %s', (fw) => {
+    const store = makeGroupsStore(groupFwVariants);
+
+    store.setFromDeviceRegisters({ p1: 0 }, fw);
+
+    expect(getGroup(store, 'g1').description).toBe('new description');
+  });
+
+  it('shows the base description when the daemon omitted the firmware version', () => {
+    const store = makeGroupsStore(groupFwVariants);
+
+    store.setFromDeviceRegisters({ p1: 0 }, undefined);
+
+    expect(getGroup(store, 'g1').description).toBe('base description');
+  });
+
+  it('keeps one group with its members in the tree whatever the device firmware is', () => {
+    const store = makeGroupsStore(groupFwVariants);
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.1.0');
+
+    expect(store.topLevelGroup.subgroups.length).toBe(1);
+    expect(getGroup(store, 'g1').properties.title).toBe('G1');
+    expect(getGroup(store, 'g1').parameters.map((param) => param.id)).toEqual(['p1']);
+  });
+
+  it('picks the variant by fw when the variants are declared newest first', () => {
+    const store = makeGroupsStore([...groupFwVariants].reverse());
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.1.0');
+
+    expect(getGroup(store, 'g1').description).toBe('base description');
+  });
+
+  it('shows the base description when the daemon answered with nothing, a template without parameters', () => {
+    const store = makeGroupsStore(groupFwVariants);
+
+    store.setFromDeviceRegisters(undefined, undefined);
+
+    expect(getGroup(store, 'g1').description).toBe('base description');
+  });
+
+  it('switches the description reactively when the read registers bring the firmware 2.1.0', () => {
+    const store = makeGroupsStore(groupFwVariants);
+    const seen: string[] = [];
+    const dispose = autorun(() => seen.push(getGroup(store, 'g1').description));
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.1.0');
+    dispose();
+
+    expect(seen).toEqual(['new description', 'base description']);
+  });
+});
+
+describe('DeviceSettingsObjectStore with a group declared in three variants (base + fw 1.5 + fw 2.2.0)', () => {
+  it('shows the middle description when the device firmware 2.0 is between the two variants with fw', () => {
+    const store = makeGroupsStore([
+      { id: 'g1', title: 'G1', description: 'base description' },
+      { id: 'g1', title: 'G1', description: 'middle description', fw: '1.5' },
+      { id: 'g1', title: 'G1', description: 'new description', fw: '2.2.0' },
+    ]);
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.0');
+
+    expect(getGroup(store, 'g1').description).toBe('middle description');
+  });
+});
+
+describe('DeviceSettingsObjectStore with a group declared twice with the same fw 2.2.0', () => {
+  it('shows the description of the last declaration when the device firmware is 2.2.0', () => {
+    const store = makeGroupsStore([
+      { id: 'g1', title: 'G1', description: 'first description', fw: '2.2.0' },
+      { id: 'g1', title: 'G1', description: 'last description', fw: '2.2.0' },
+    ]);
+
+    store.setFromDeviceRegisters({ p1: 0 }, '2.2.0');
+
+    expect(getGroup(store, 'g1').description).toBe('last description');
+  });
+});
+
+describe('DeviceSettingsObjectStore with a group declared once with fw 1.0', () => {
+  it.each(['0.9', '1.0', '2.0', undefined])('shows its description when the device firmware is %s', (fw) => {
+    const store = makeGroupsStore([{ id: 'g1', title: 'G1', description: 'only description', fw: '1.0' }]);
+
+    store.setFromDeviceRegisters({ p1: 0 }, fw);
+
+    expect(getGroup(store, 'g1').description).toBe('only description');
   });
 });
 

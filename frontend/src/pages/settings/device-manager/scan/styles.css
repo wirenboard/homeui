@@ -18,3 +18,16 @@
 .scan-disconnectedNotice {
     text-align: center;
 }
+
+.scan-fastModbusNotice {
+    margin-bottom: 12px;
+}
+
+.scan-tryNormalScanNotice {
+    margin-top: 12px;
+}
+
+.scan-tryNormalScanText,
+.scan-fastModbusText {
+    margin: 0 0 8px;
+}

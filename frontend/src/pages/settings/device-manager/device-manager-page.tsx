@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { serialConfiPath } from '@/common/paths';
 import i18n from '@/i18n/config';
 import {
@@ -11,6 +12,7 @@ import {
   serialDeviceProxy,
   serialPortProxy,
   serialProxy,
+  serialTemplatesProxy,
 } from '@/services';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { useStore } from '@/utils/use-store';
@@ -20,7 +22,7 @@ import ScanPage from './scan';
 import type { StateTransitions } from './types';
 
 const DeviceManagerPage = observer(() => {
-  const isMobile = useMediaQuery({ maxWidth: 991 });
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
 
   const store = useStore(() => {
     let storeInstance: DeviceManagerPageStore;
@@ -35,7 +37,12 @@ const DeviceManagerPage = observer(() => {
     };
 
     const saveConfig = async (content: any) => {
-      await configEditorProxy.Save({ path: serialConfiPath, content });
+      // wb-mqtt-serial before 2.282.0 has no config/Save, its config is saved by wb-mqtt-confed
+      if (await serialProxy.hasMethod('Save')) {
+        await serialProxy.Save({ config: content });
+      } else {
+        await configEditorProxy.Save({ path: serialConfiPath, content });
+      }
     };
 
     const loadDeviceTypeSchema = async (deviceType: string) => {
@@ -111,6 +118,7 @@ const DeviceManagerPage = observer(() => {
       <ScanPage
         scanType={scanType}
         pageStore={scanType === 'new' ? store.newDevicesScanPageStore : store.searchDisconnectedScanPageStore}
+        onAddDeviceManually={scanType === 'new' ? () => store.cancelScanToAddDeviceManually() : undefined}
       />
     );
   }
@@ -118,6 +126,7 @@ const DeviceManagerPage = observer(() => {
   return (
     <ConfigEditorPage
       pageStore={store.configEditorPageStore}
+      serialTemplatesProxy={serialTemplatesProxy}
       onAddWbDevice={() => store.addWbDevice()}
       onSearchDisconnectedDevice={() => store.searchDisconnectedDevice()}
     />

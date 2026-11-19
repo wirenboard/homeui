@@ -1,6 +1,7 @@
 import { type ReactElement } from 'react';
 import {
   type StringStore,
+  type ExactNumberStore,
   type ObjectStore,
   type NumberStore,
   type BooleanStore,
@@ -41,7 +42,7 @@ export interface BooleanEditorProps {
 }
 
 export interface NumberEditorProps {
-  store: NumberStore;
+  store: NumberStore | ExactNumberStore;
   inputId?: string;
   descriptionId?: string;
   errorId?: string;
@@ -53,6 +54,11 @@ export interface NumberEditorProps {
 export interface DaliLevelSliderEditorProps {
   store: NumberStore;
   rootStore: PropertyStore;
+  inputId?: string;
+}
+
+export interface RangeSliderEditorProps {
+  store: NumberStore;
   inputId?: string;
 }
 
@@ -70,6 +76,22 @@ export interface DaliRGBEditorProps {
 export interface DaliWhiteEditorProps {
   store: NumberStore;
   inputId?: string;
+}
+
+export enum DaliOnOffActionMode {
+  Scene = 'scene',
+  LastActiveLevel = 'last_active_level',
+  Level = 'level',
+  Dapc = 'dapc',
+  Off = 'off',
+}
+
+export interface DaliOnOffEditorProps {
+  store: ObjectStore;
+  rootStore: PropertyStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
+  isTopLevel?: boolean;
 }
 
 export interface StringEditorProps {
@@ -142,12 +164,12 @@ export interface OptionalParamsSelectDialogProps {
   onClose: () => void;
 }
 
-export interface TableCellWithEditorProps {
+export interface ParamEditorProps {
   paramStore: ObjectParamStore;
   rootStore: PropertyStore;
   translator: Translator;
   editorBuilder: EditorBuilderFunction;
-  width?: number;
+  label?: string;
 }
 
 export interface ArrayItemProps {

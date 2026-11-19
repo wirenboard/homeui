@@ -5,41 +5,29 @@
   background: #1e1e1e;
 }
 
-.terminal-toolbar {
+.terminal-host {
+  width: 100%;
+  height: 100%;
+}
+
+.terminal-banner {
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+.terminal-bannerBody {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-.terminal-status {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #999;
+.terminal-bannerText {
+  min-width: 0;
 }
 
-.terminal-statusDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.terminal-statusDot--connected {
-  background-color: #6a9955;
-}
-
-.terminal-statusDot--connecting {
-  background-color: #d7ba7d;
-}
-
-.terminal-statusDot--disconnected {
-  background-color: #808080;
-}
-
-.terminal-statusDot--error {
-  background-color: #f44747;
+.terminal-bannerAction {
+  flex-shrink: 0;
 }
 
 

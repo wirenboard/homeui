@@ -7,5 +7,6 @@ export interface HeaderButtonsProps {
   onSave: () => Promise<void>;
   onAddDevice: (_showAddDeviceModal: () => Promise<{ port: string; deviceType: string } | null>) => Promise<void>;
   onAddWbDevice: () => void;
+  onAddPort: () => Promise<void>;
   mobileModeStore: MobileModeTabsStore;
 }

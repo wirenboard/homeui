@@ -1,5 +1,4 @@
-import type { ParsedBusMonitorLine } from '@/stores/dali/types';
-import type { MonitorRow } from './types';
+import type { MonitorRow, SequencedBusMonitorFrame } from './types';
 
 /**
  * Consecutive identical error rows collapse into one with a xN badge:
@@ -7,11 +6,13 @@ import type { MonitorRow } from './types';
  * instance, and rendering every retry paints the whole viewport red for
  * what is one fact. Only error rows collapse — ordinary traffic keeps its
  * one-row-per-frame timeline, and foreign frames their counters. The kept
- * frame is the LATEST of the run, so the timestamp shows the last retry.
+ * frame is the LATEST of the run, so the timestamp shows the last retry; the
+ * row keeps the FIRST frame's seq, so its key — and the virtualized log's
+ * measured slot — stays put while the run grows.
  */
-export function collapseErrorRows(frames: ParsedBusMonitorLine[]): MonitorRow[] {
+export function collapseErrorRows(frames: SequencedBusMonitorFrame[]): MonitorRow[] {
   const rows: MonitorRow[] = [];
-  frames.forEach((frame) => {
+  frames.forEach(({ seq, frame }) => {
     const prev = rows[rows.length - 1];
     if (
       prev
@@ -25,7 +26,7 @@ export function collapseErrorRows(frames: ParsedBusMonitorLine[]): MonitorRow[] 
       prev.frame = frame;
       return;
     }
-    rows.push({ frame, repeat: 1 });
+    rows.push({ seq, frame, repeat: 1 });
   });
   return rows;
 }

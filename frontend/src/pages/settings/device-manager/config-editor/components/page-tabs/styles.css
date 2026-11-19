@@ -13,7 +13,7 @@
     flex-shrink: 0;
     max-width: 250px;
 
-    @media (max-width: 991px) {
+    @media (--max-mobile-width) {
         width: 100%;
         max-width: unset;
     }
@@ -22,6 +22,11 @@
 .deviceManagerPageTabs-list {
     overflow-y: auto;
     flex-grow: 1;
+}
+
+.deviceManagerPageTabs-empty {
+    color: var(--gray-color);
+    padding: 8px 0;
 }
 
 .deviceManagerPageTabs-listMobile .tabs-buttonSelected {
@@ -40,9 +45,4 @@
     padding: 0;
     border: none;
     background: none;
-}
-
-.deviceManagerPageTabs-addPort {
-    width: 100%;
-    margin-top: 10px;
 }

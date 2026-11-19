@@ -17,13 +17,17 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 8px;
-    margin: 0 0 18px;
+    padding-top: 12px;
+    margin: 0 0 8px;
     border-bottom: 1px solid var(--border-color);
     gap: 12px;
     flex-wrap: wrap;
-    padding-top: 12px;
 
-    @media(max-width: 768px) {
+    @media (--max-tablet-width) {
+        padding-top: 0;
+    }
+
+    @media (--max-mobile-width) {
         gap: 6px;
     }
 }
@@ -89,7 +93,14 @@
     flex-direction: column;
     flex-grow: 1;
     padding-inline: 6px;
+    padding-block-start: 6px;
     margin-inline: -6px;
+    margin-block-start: -6px;
+}
+
+.defaultLayout-pageWrapperHmi .page-container {
+    padding-block-start: 0;
+    margin-block-start: 0;
 }
 
 .page-contentWrapper {

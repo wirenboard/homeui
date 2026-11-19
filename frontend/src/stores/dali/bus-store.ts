@@ -6,7 +6,7 @@ import { BusCommandsStore } from './bus-commands-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
 import { relativizeTcLimitPaths } from './tc-limit-paths';
-import type { CommissioningState } from './types';
+import type { Bus, CommissioningState, Device } from './types';
 
 const IDLE_COMMISSIONING_STATE: CommissioningState = {
   status: 'idle',
@@ -24,7 +24,6 @@ export class BusStore extends BaseItemStore {
   public gatewayName: string;
   public index: number;
 
-  public pollingInterval: number = 5;
   public busMonitorSyslogEnabled: boolean = false;
   public broadcastSettingsVisible: boolean = false;
 
@@ -35,30 +34,27 @@ export class BusStore extends BaseItemStore {
   public scanStopRequested: boolean = false;
 
   private isFirstLoad: boolean = true;
+  /** Groups GetList reported. Empty on an older backend, then only device membership counts. */
+  #reportedGroupIds: Map<number, string>;
   #commissioningTopic: string;
   #commissioningHandler: ((msg: { topic: string; payload: string }) => void) | null = null;
 
-  constructor(
-    id: string,
-    name: string,
-    index: number,
-    gatewayName: string,
-    commissioning?: CommissioningState,
-  ) {
-    super(id, name);
+  constructor(bus: Bus, index: number, gatewayName: string) {
+    super(bus.id, bus.name);
     this.index = index;
     this.gatewayName = gatewayName;
-    this.commands = new BusCommandsStore(id);
-    this.#commissioningTopic = `/wb-dali/${id}/commissioning`;
+    this.commands = new BusCommandsStore(bus.id);
+    this.#commissioningTopic = `/wb-dali/${bus.id}/commissioning`;
+    this.#reportedGroupIds = new Map((bus.groups ?? []).map((group) => [group.number, group.id]));
     makeObservable(this, {
       load: action,
       scan: action,
       stopScan: action,
       saveParam: action,
-      setPollingInterval: action,
       setBusMonitorSyslogEnabled: action,
       applyCommissioningState: action,
       syncGroupChildren: action,
+      removeGroup: action,
       setError: action,
       isLoading: observable,
       isParametersSchemaLoading: observable,
@@ -68,32 +64,21 @@ export class BusStore extends BaseItemStore {
       isScanning: computed,
       error: observable,
       label: observable,
+      objectStore: observable.ref,
       gatewayName: observable,
       children: observable.shallow,
-      pollingInterval: observable,
       busMonitorSyslogEnabled: observable,
       broadcastSettingsVisible: observable,
     });
 
-    this.commissioningState = commissioning ?? IDLE_COMMISSIONING_STATE;
+    this.commissioningState = bus.commissioning ?? IDLE_COMMISSIONING_STATE;
+    this.setDevices(bus.devices);
     this.subscribeToCommissioning();
   }
 
   get isScanning(): boolean {
     return !['idle', 'completed', 'failed', 'cancelled'].includes(this.commissioningState.status)
       || this.scanStartRequested;
-  }
-
-  async setPollingInterval(value: number) {
-    try {
-      await daliProxy.SetBus({ busId: this.id, config: { polling_interval: value } });
-      runInAction(() => {
-        this.pollingInterval = value;
-        this.setError(null);
-      });
-    } catch (error) {
-      this.setError(error);
-    }
   }
 
   /**
@@ -138,7 +123,9 @@ export class BusStore extends BaseItemStore {
       if (schema) {
         relativizeTcLimitPaths(schema);
         this.translator.addTranslations(schema.translations);
-        this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
+        runInAction(() => {
+          this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
+        });
       }
       this.setError(null);
       runInAction(() => {
@@ -212,12 +199,18 @@ export class BusStore extends BaseItemStore {
     this.unsubscribeFromCommissioning();
   }
 
+  removeGroup(group: GroupStore) {
+    this.#reportedGroupIds.delete(group.index);
+    this.children = this.children.filter((child) => child !== group);
+  }
+
   syncGroupChildren() {
-    const activeGroupNums = new Set<number>(
-      this.children
+    const activeGroupNums = new Set<number>([
+      ...this.#reportedGroupIds.keys(),
+      ...this.children
         .filter((c): c is DeviceStore => c.type === ItemType.Device)
         .flatMap((d) => d.groups),
-    );
+    ]);
     this.children = this.children.filter((c) => {
       if (c.type !== ItemType.Group) {
         return true;
@@ -232,7 +225,7 @@ export class BusStore extends BaseItemStore {
     const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys())
       .filter((index) => !existingGroupIndexes.has(index));
     groupIndexesToAdd.forEach((index) => {
-      this.children.push(new GroupStore(this.makeGroupId(index), index, this));
+      this.children.push(new GroupStore(this.#reportedGroupIds.get(index) ?? this.makeGroupId(index), index, this));
     });
     this.children.sort((a, b) => {
       if (a.type !== ItemType.Group || b.type !== ItemType.Group) {
@@ -252,14 +245,18 @@ export class BusStore extends BaseItemStore {
     this.scanStartRequested = false;
     this.scanStopRequested = false;
     if ('completed' === newState.status && wasScanning) {
-      this.children = newState.devices.map((device: { id: string; name: string; groups: number[] }) =>
-        new DeviceStore(device.id, device.name, device.groups, this),
-      );
-      this.syncGroupChildren();
+      this.setDevices(newState.devices);
       this.setError(null);
       this.objectStore = null;
       await this.load();
     }
+  }
+
+  private setDevices(devices: Device[]) {
+    this.children = devices.map(
+      (device) => new DeviceStore(device.id, device.name, device.groups ?? [], this),
+    );
+    this.syncGroupChildren();
   }
 
   private subscribeToCommissioning() {
@@ -287,7 +284,6 @@ export class BusStore extends BaseItemStore {
   }
 
   private _applyConfig(config: Record<string, any>) {
-    this.pollingInterval = config.polling_interval ?? 5;
     this.busMonitorSyslogEnabled = config.bus_monitor_syslog_enabled ?? false;
   }
 

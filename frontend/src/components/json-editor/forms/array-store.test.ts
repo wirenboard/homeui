@@ -38,6 +38,15 @@ describe('ArrayStore', () => {
     expect(store.contentIsChanged).toBe(false);
   });
 
+  test('setValue treats missing value as empty array', () => {
+    const store = new ArrayStore('arr', ['Field'], makeItemForm);
+    store.add();
+    store.setValue(undefined);
+    expect(store.items).toHaveLength(0);
+    expect(store.value).toEqual([]);
+    expect(store.isDirty).toBe(false);
+  });
+
   test('isDirty when contentIsChanged', () => {
     const store = new ArrayStore('arr', ['Field'], makeItemForm);
     expect(store.isDirty).toBe(false);

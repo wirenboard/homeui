@@ -3,7 +3,7 @@ import { useRef, useLayoutEffect } from 'react';
 import type { SvgViewProps, ParamProps } from './types';
 
 const getSvgElement = (svg: Element, id: string) => {
-  return svg.querySelector(`#${id}`) || svg.querySelector(`[data-svg-param-id=${id}]`);
+  return svg.querySelector(`[id="${id}"]`) || svg.querySelector(`[data-svg-param-id="${id}"]`);
 };
 
 const setReadHandler = (element, param: ParamProps, values) => {
@@ -17,7 +17,7 @@ const setReadHandler = (element, param: ParamProps, values) => {
   const apply = (value) => {
     if (fn) {
       try {
-        el.innerHTML = fn(value);
+        el.textContent = fn(value);
       } catch (e) {
         // Exception in rule
       }

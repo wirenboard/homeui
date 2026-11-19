@@ -1,27 +1,31 @@
-.PHONY: all test build clean install
+.PHONY: all check-types lint test build clean install
 
 WWW_ROOT = /var/www
 
 all: build
 
-clean:
+# npm ci wipes node_modules and installs it from scratch, so running it at the top of every target
+# made one package build install the whole dependency tree several times over. Depend on the
+# directory instead - it is reinstalled only when the lockfile is newer than it.
+node_modules: package-lock.json
 	npm ci
-	npm run clean
+	touch node_modules
 
-check-types:
-	npm ci
+# dh_auto_clean runs before anything is installed, and npm run clean is just rimraf over three
+# directories, so doing it by hand here keeps the clean step from pulling in the dependencies.
+clean:
+	rm -rf dist coverage tmp
+
+check-types: node_modules
 	npm run check:types
 
-lint:
-	npm ci
+lint: node_modules
 	npm run lint
 
-test:
-	npm ci
+test: node_modules
 	npm run test
 
-build:
-	npm ci
+build: node_modules
 	npm run build
 
 install:

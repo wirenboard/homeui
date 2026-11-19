@@ -10,7 +10,7 @@
 .logsFilters-pattern {
     width: 140px;
 
-    @media (max-width: 1024px) {
+    @media (--max-laptop-width) {
         width: calc(100% - 90px);
     }
 }
@@ -33,7 +33,7 @@
     gap: 6px;
     margin-left: 6px;
 
-    @media (max-width: 510px) {
+    @media (--max-mobile-width) {
         margin-left: 0;
         margin-top: 6px;
     }
@@ -50,7 +50,7 @@
     width: 170px;
     max-width: 170px;
 
-    @media (max-width: 400px) {
+    @media (--max-mobile-width) {
         max-width: unset;
     }
 }
@@ -59,7 +59,7 @@
     min-width: 160px;
     max-width: 160px;
 
-    @media (max-width: 400px) {
+    @media (--max-mobile-width) {
         max-width: unset;
     }
 }
@@ -68,16 +68,57 @@
     margin-bottom: 0 !important;
 }
 
-@media (max-width: 500px) {
+@media (--max-mobile-width) {
     .logsFilters .formFields-group {
         width: calc(100% - 30px);
     }
-}
 
-@media (max-width: 400px) {
     .datetimePicker-inputWrapper,
     .wb-tooltip-container:has(.logsFilters-input),
     .logsFilters-input {
         width: 100%;
     }
+}
+
+.logsFilters-mobilePopup {
+    width: min(280px, calc(100vw - 32px));
+}
+
+.logsFilters-mobilePopup .logsFilters {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.logsFilters-mobilePopup .logsFilters-input,
+.logsFilters-mobilePopup .logsFilters-boot,
+.logsFilters-mobilePopup .logsFilters-inputDate,
+.logsFilters-mobilePopup .datetimePicker-inputWrapper,
+.logsFilters-mobilePopup .logsFilters-liveUpdate {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
+.logsFilters-mobilePopup .logsFilters-patternWrapper {
+    max-width: none;
+    min-width: 0;
+}
+
+.logsFilters-mobilePopup .formFields-group {
+    flex: 1;
+}
+
+.logsFilters-mobilePopup .logsFilters-pattern {
+    width: auto;
+    flex: 1;
+}
+
+.logsFilters-mobilePopup .logsFilters-liveUpdate {
+    margin-left: 0;
+}
+
+.logsFilters-mobilePopup .logsFilters-patternWrapper > .wb-tooltip-container {
+    display: none;
 }

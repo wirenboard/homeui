@@ -9,6 +9,7 @@ export default class AuthStore {
   public areUsersConfigured: boolean = true;
   public users: User[] = [];
   #currentUserId: string;
+  #logoutCallback: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -49,8 +50,13 @@ export default class AuthStore {
     });
   }
 
+  onLogout(cb: () => void) {
+    this.#logoutCallback = cb;
+  }
+
   async logout() {
     this.#currentUserId = null;
+    this.#logoutCallback?.();
     if (!this.isAutologin) {
       await request.post('/auth/logout');
     }

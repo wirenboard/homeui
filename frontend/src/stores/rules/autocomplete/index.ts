@@ -1,4 +1,4 @@
-import { autocompletion, type CompletionSource } from '@codemirror/autocomplete';
+import { autocompletion, type CompletionSource, ifNotIn } from '@codemirror/autocomplete';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { type DevicesStore } from '@/stores/devices';
 import { getEnums } from './enums';
@@ -18,8 +18,10 @@ function mergeSources(sources: CompletionSource[]): CompletionSource {
 export const getExtensions = (devicesStore: DevicesStore) => {
   const autocomplete = mergeSources([
     ...getEnums(devicesStore),
-    ...methods,
-    snippetSource,
+    ifNotIn(['String', 'TemplateString'], mergeSources([
+      ...methods,
+      snippetSource,
+    ])),
   ]);
 
   return [

@@ -1,6 +1,12 @@
 import { observer } from 'mobx-react-lite';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import BrushIcon from '@/assets/icons/brush.svg';
+import BulbIcon from '@/assets/icons/bulb.svg';
+import CheckIcon from '@/assets/icons/check.svg';
+import RefreshIcon from '@/assets/icons/refresh.svg';
+import { MAX_LAPTOP_WIDTH, MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { FormButtonGroup } from '@/components/form';
@@ -9,17 +15,14 @@ import { Loader } from '@/components/loader';
 import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 import { useAsyncAction } from '@/utils/async-action';
-import { DeviceControls } from '../device-controls';
-import { TabToolbar } from '../tab-toolbar';
+import { DeviceControlsDesktop, DeviceControlsMobile, GearErrorStatus } from '../device-controls';
+import { DeviceInfoCompact, DeviceInfoPanel } from '../device-info';
 import { ResetConfirm } from './reset-confirm';
 import type { InstanceConfig, ResetMode } from './types';
+import './styles.css';
 
-// IEC 62386-103 Table 8: only the "device short and instance number" scheme
-// puts both the sender's short address and the instance number into an event
-// frame — the only combination the daemon can attribute to a device. A sensor
-// left in another scheme (the factory default is "instance type and number")
-// sends events that decode fine in the monitor yet update nothing, an
-// invisible misconfiguration worth a visible warning.
+// Events sent under any other scheme carry no sender address (IEC 62386-103
+// Table 8), so the daemon cannot tell whose controls to update.
 export const ATTRIBUTABLE_EVENT_SCHEME = 2;
 
 export const wrongSchemeInstances = (config: object | undefined): string[] =>
@@ -29,16 +32,10 @@ export const wrongSchemeInstances = (config: object | undefined): string[] =>
       && (value as InstanceConfig).event_scheme !== ATTRIBUTABLE_EVENT_SCHEME)
     .map(([key]) => key);
 
-export const DeviceTabContent = observer(({
-  store,
-  title,
-  onDeviceRemoved,
-}: {
-  store: DeviceStore;
-  title?: ReactNode;
-  onDeviceRemoved: (device: DeviceStore) => void;
-}) => {
+export const DeviceTabContent = observer(({ store }: { store: DeviceStore }) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
+  const showIconButtons = useMediaQuery({ maxWidth: MAX_LAPTOP_WIDTH });
   const [identify, isIdentifying] = useAsyncAction(async () => {
     await store.identify();
   });
@@ -61,74 +58,157 @@ export const DeviceTabContent = observer(({
     } else {
       await store.reset();
       setIsResetDialogOpen(false);
-      onDeviceRemoved(store);
     }
   });
 
-  if (!store.objectStore) {
-    return (
-      <div className="dali-contentLoader">
-        <Loader />
-      </div>
-    );
-  }
-  return (
+  const isBusy = store.isLoading || isIdentifying || isResetting;
+
+  const identifyButton = (
+    <Tooltip text={t('dali.labels.identify-tooltip')}>
+      <Button
+        label={showIconButtons ? undefined : t('dali.buttons.identify')}
+        aria-label={t('dali.buttons.identify')}
+        icon={showIconButtons && <BulbIcon />}
+        isLoading={isIdentifying}
+        disabled={isBusy}
+        onClick={identify}
+      />
+    </Tooltip>
+  );
+  const resetButton = (
+    <Tooltip text={showIconButtons ? t('dali.buttons.reset') : undefined}>
+      <Button
+        label={showIconButtons ? undefined : t('dali.buttons.reset')}
+        aria-label={t('dali.buttons.reset')}
+        icon={showIconButtons && <BrushIcon />}
+        variant="danger"
+        disabled={isBusy}
+        onClick={() => setIsResetDialogOpen(true)}
+      />
+    </Tooltip>
+  );
+  const saveButton = (
+    <Tooltip text={showIconButtons ? t('common.buttons.save') : undefined}>
+      <Button
+        label={showIconButtons ? undefined : t('common.buttons.save')}
+        aria-label={t('common.buttons.save')}
+        icon={showIconButtons && <CheckIcon />}
+        disabled={isBusy || !store.objectStore?.isDirty || store.objectStore.hasErrors}
+        onClick={() => store.save()}
+      />
+    </Tooltip>
+  );
+
+  const toolbarHeading = (
+    <div className="dali-tabToolbar-heading">
+      <h2 className="dali-contentTitle">
+        <span className="dali-contentTitleName" title={store.label}>{store.label}</span>
+        {store.parent && (
+          <span className="dali-contentTitleContext">{t('dali.labels.bus', { num: store.parent.index })}</span>
+        )}
+      </h2>
+      <GearErrorStatus mqttId={store.mqttId} isIconOnly={isMobile} />
+    </div>
+  );
+
+  const settingsForm = (
     <>
-      <TabToolbar title={title}>
-        <FormButtonGroup>
-          <Tooltip text={t('dali.labels.identify-tooltip')}>
-            <Button
-              label={t('dali.buttons.identify')}
-              isLoading={isIdentifying}
-              onClick={identify}
-            />
-          </Tooltip>
+      {!store.isLoading && wrongSchemeInstances(store.objectStore?.value).length > 0 && (
+        <Alert variant="warn" className="alert-withButton">
+          <span>{t('dali.labels.event-scheme-warning')}</span>
           <Button
-            label={t('dali.buttons.reload')}
-            onClick={() => store.load(true)}
+            label={t('dali.buttons.fix-event-schemes')}
+            variant="warn"
+            isLoading={isFixingSchemes}
+            onClick={fixEventSchemes}
           />
-          <Button
-            label={t('dali.buttons.reset')}
-            variant="danger"
-            onClick={() => setIsResetDialogOpen(true)}
-          />
-          <Button
-            label={t('common.buttons.save')}
-            disabled={!store.objectStore.isDirty || store.objectStore.hasErrors}
-            onClick={() => store.save()}
-          />
-        </FormButtonGroup>
-      </TabToolbar>
-      {store.mqttId && <DeviceControls mqttId={store.mqttId} />}
-      {!store.isLoading && wrongSchemeInstances(store.objectStore.value).length > 0 && (
-        <Alert variant="warn">
-          <div className="dali-schemeWarning">
-            <span>{t('dali.labels.event-scheme-warning')}</span>
-            <Button
-              label={t('dali.buttons.fix-event-schemes')}
-              isLoading={isFixingSchemes}
-              onClick={fixEventSchemes}
-            />
-          </div>
         </Alert>
       )}
       {store.isLoading ? (
         <div className="dali-contentLoader">
           <Loader />
         </div>
-      ) : (
+      ) : store.objectStore && (
         <JsonSchemaEditor
           store={store.objectStore}
           translator={store.translator}
         />
       )}
-      <ResetConfirm
-        isOpened={isResetDialogOpen}
-        isLoading={isResetting}
-        isDirty={store.objectStore.isDirty}
-        closeCallback={() => setIsResetDialogOpen(false)}
-        onConfirm={runReset}
-      />
+    </>
+  );
+
+  const resetConfirm = (
+    <ResetConfirm
+      isOpened={isResetDialogOpen}
+      isLoading={isResetting}
+      isDirty={!!store.objectStore?.isDirty}
+      closeCallback={() => setIsResetDialogOpen(false)}
+      onConfirm={runReset}
+    />
+  );
+
+  if (isMobile) {
+    return (
+      <>
+        <div className="dali-tabToolbar">
+          {toolbarHeading}
+          <div className="dali-tabToolbar-actions">
+            <FormButtonGroup>
+              {identifyButton}
+              <Tooltip text={t('dali.buttons.reload-settings')}>
+                <Button
+                  aria-label={t('dali.buttons.reload-settings')}
+                  icon={<RefreshIcon />}
+                  disabled={isBusy}
+                  onClick={() => store.load(true)}
+                />
+              </Tooltip>
+              {resetButton}
+              {saveButton}
+            </FormButtonGroup>
+          </div>
+        </div>
+        <div className="dali-tabBody">
+          {store.description && <DeviceInfoPanel description={store.description} />}
+          {settingsForm}
+        </div>
+        <DeviceControlsMobile mqttId={store.mqttId} isDisabled={store.isLoading} />
+        {resetConfirm}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="dali-tabToolbar">
+        {toolbarHeading}
+        <div className="dali-tabToolbar-actions">
+          <FormButtonGroup>
+            {identifyButton}
+            {resetButton}
+          </FormButtonGroup>
+        </div>
+      </div>
+      {store.description && <DeviceInfoCompact description={store.description} />}
+      <DeviceControlsDesktop mqttId={store.mqttId} isDisabled={store.isLoading}>
+        <div className="dali-settingsHeader">
+          <h3 className="dali-settingsTitle">{t('dali.labels.device-settings')}</h3>
+          <FormButtonGroup>
+            <Tooltip text={showIconButtons ? t('dali.buttons.reload') : undefined}>
+              <Button
+                label={showIconButtons ? undefined : t('dali.buttons.reload')}
+                aria-label={t('dali.buttons.reload')}
+                icon={showIconButtons && <RefreshIcon />}
+                disabled={isBusy}
+                onClick={() => store.load(true)}
+              />
+            </Tooltip>
+            {saveButton}
+          </FormButtonGroup>
+        </div>
+        {settingsForm}
+      </DeviceControlsDesktop>
+      {resetConfirm}
     </>
   );
 });

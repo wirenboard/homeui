@@ -84,6 +84,7 @@ describe('SelectControls', () => {
         isOpen={true}
         configuredControls={[]}
         devicesStore={defaultDevicesStore()}
+        registerType="auto"
         onConfirm={onConfirm}
         onClose={onClose}
         {...props}
@@ -106,7 +107,14 @@ describe('SelectControls', () => {
   test('renders heading', () => {
     renderSelect();
     expect(screen.getByTestId('heading')).toHaveTextContent(
-      'mbgate.labels.select-channels',
+      'mbgate.labels.select-channels-to.auto',
+    );
+  });
+
+  test('renders heading for chosen register type', () => {
+    renderSelect({ registerType: 'inputs' });
+    expect(screen.getByTestId('heading')).toHaveTextContent(
+      'mbgate.labels.select-channels-to.inputs',
     );
   });
 
