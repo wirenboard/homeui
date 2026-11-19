@@ -5,7 +5,7 @@ import { Button } from '@/components/button';
 import { Tooltip } from '@/components/tooltip';
 import { getDevicePictureUrl } from '@/stores/dali/device-store';
 import { DeviceInfoDialog } from './device-info-dialog';
-import { getDeviceNames, getShortDeviceTypes } from './device-info-fields';
+import { getDeviceInfoFields, getDeviceNames, getShortDeviceTypes } from './device-info-fields';
 import type { DeviceInfoCompactProps } from './types';
 import './styles.css';
 
@@ -19,23 +19,27 @@ export const DeviceInfoCompact = ({ description }: DeviceInfoCompactProps) => {
     <div className="daliDeviceInfo daliDeviceInfo-compact">
       {!!names && <span className="daliDeviceInfo-compactName" title={names}>{names}</span>}
       {!!types && <span className="daliDeviceInfo-compactTypes" title={types}>{types}</span>}
-      <Tooltip text={t('dali.labels.info-device')}>
-        <Button
-          className="daliDeviceInfo-infoButton"
-          icon={<InfoIcon />}
-          aria-label={t('dali.labels.info-device')}
-          variant="secondary"
-          size="small"
-          isOutlined
-          onClick={() => setIsDialogOpened(true)}
-        />
-      </Tooltip>
-      <DeviceInfoDialog
-        key={getDevicePictureUrl(description)}
-        description={description}
-        isOpened={isDialogOpened}
-        onClose={() => setIsDialogOpened(false)}
-      />
+      {(!!types || !!getDeviceInfoFields(description, t).length) && (
+        <>
+          <Tooltip text={t('dali.labels.info-device')}>
+            <Button
+              className="daliDeviceInfo-infoButton"
+              icon={<InfoIcon />}
+              aria-label={t('dali.labels.info-device')}
+              variant="secondary"
+              size="small"
+              isOutlined
+              onClick={() => setIsDialogOpened(true)}
+            />
+          </Tooltip>
+          <DeviceInfoDialog
+            key={getDevicePictureUrl(description)}
+            description={description}
+            isOpened={isDialogOpened}
+            onClose={() => setIsDialogOpened(false)}
+          />
+        </>
+      )}
     </div>
   );
 };
