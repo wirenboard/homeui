@@ -15,10 +15,9 @@ export default defineConfig({
   test: {
     globals: true,
     setupFiles: ['./src/test/setup-components.ts'],
-    pool: 'threads',
-    // The Jenkins builder runs the suite several times slower than locally, trivial tests hit the defaults there
-    testTimeout: 20000,
-    hookTimeout: 30000,
+    // Isolated like threads, but node_modules and happy-dom load once per worker instead of once per file
+    pool: 'vmThreads',
+    vmMemoryLimit: '300MB',
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
