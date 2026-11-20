@@ -147,6 +147,10 @@
 
 }
 
+.configurator-addSuitable {
+    margin: 0 0 8px;
+}
+
 .configurator-wbSections {
     display: flex;
     flex-direction: column;

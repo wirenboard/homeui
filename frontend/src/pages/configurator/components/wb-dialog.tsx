@@ -7,12 +7,13 @@ import { Button } from '@/components/button';
 import { Dialog } from '@/components/dialog';
 import { Tag } from '@/components/tag';
 import {
-  CHANNEL_CLASSES, configuratorStore, recipeModels, recipeModelTitle, recipeRows, recipeSkipped, type RecipeFit,
+  CHANNEL_CLASSES, configuratorStore, hasUnit, primaryRole, recipeModels, recipeModelTitle, recipeRows,
+  recipeSkipped, type RecipeFit,
 } from '@/stores/configurator';
 import type { WbDialogProps } from '../types';
 import {
-  classifyCell, deviceControls, deviceTitle, isModbusDevice, listDevices, recipeRowName, TYPE_ICONS, typeName,
-  UNESCAPED,
+  classifyCell, controlMeta, deviceControls, deviceTitle, isModbusDevice, listDevices, recipeRowName, TYPE_ICONS,
+  typeName, UNESCAPED,
 } from '../utils';
 
 export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps) => {
@@ -29,16 +30,26 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
     const cells = deviceControls(id);
     const controlIds = cells.map((cell) => cell.controlId);
     const serial = configuratorStore.serialDevices[id];
+    const cellOf = (key: string) => cells.find((cell) => cell.id === key);
+    // Заряд батареи каталог относит к роли «батарея», но как числовое показание он тоже годится.
     const isFit: RecipeFit = (controlId, role) => {
-      const cell = cells.find((item) => item.controlId === controlId);
-      return CHANNEL_CLASSES[classifyCell(cell).cls].fits.includes(role);
+      const { cls } = classifyCell(cells.find((item) => item.controlId === controlId));
+      return CHANNEL_CLASSES[cls].fits.includes(role) || (role === 'number' && cls === 'battery');
     };
     return {
       id,
       model: recipeModelTitle(id, serial),
       skipped: recipeSkipped(id, controlIds, serial),
       rows: (recipeRows(id, controlIds, configuratorStore.usedKeys, isFit, serial) ?? [])
-        .map((item) => ({ ...item.row, name: recipeRowName(item) })),
+        .map((item) => {
+          const cell = cellOf(item.row.bind[primaryRole(item.row.type)]);
+          // У числового датчика имя и единицы берутся от самого контрола.
+          return {
+            ...item.row,
+            name: item.byControl || hasUnit(item.row.type) ? cell.name : recipeRowName(item),
+            ...(hasUnit(item.row.type) ? { unit: controlMeta(cell).units } : {}),
+          };
+        }),
     };
   });
   const found = devices.filter(({ rows }) => rows.length);
@@ -76,7 +87,9 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
                   aria-label={deviceTitle(id)}
                   title={rows.map((row) => row.name).join(', ')}
                   className="configurator-wbModel configurator-wbModelFound"
-                  onClick={() => setSkipped(isChecked ? [...skipped, id] : skipped.filter((item) => item !== id))}
+                  onClick={() => setSkipped((items) => (
+                    items.includes(id) ? items.filter((item) => item !== id) : [...items, id]
+                  ))}
                 >
                   <span className="configurator-wbModelIcons" aria-hidden="true">
                     {types.map((type) => {

@@ -49,6 +49,18 @@ const RECIPES: WbRecipe[] = [
     skipped: 'Curtain {n} Open',
   },
   {
+    // Управлять в ИБП нечем, в приложения идут только показания.
+    models: { wb_ups_v3: 'wb_ups_v3' },
+    controlNames: true,
+    channels: [
+      { type: 'number_sensor', bind: { number: 'battery_charge_level' } },
+      { type: 'number_sensor', bind: { number: 'input_voltage' } },
+      { type: 'number_sensor', bind: { number: 'output_voltage' } },
+      { type: 'number_sensor', bind: { number: 'charging_input_current' } },
+      { type: 'temperature_sensor', bind: { temperature: 'battery_temperature' } },
+    ],
+  },
+  {
     models: { 'wb-mdm3': 'tpl1_wb_mdm3' },
     repeat: 3,
     channels: [{ type: 'light', bind: { on_off: 'K{n}', brightness: 'Channel {n}' } }],
@@ -58,14 +70,20 @@ const RECIPES: WbRecipe[] = [
 // Названия моделей, у которых тип шаблона не годится для показа.
 const TITLES: Record<string, string> = {
   tpl1_wb_mdm3: 'WB-MDM3',
+  wb_ups_v3: 'WB-UPS v.3',
   'WB-MRM2-mini-NO-inputs': 'WB-MRM2-mini',
 };
 
-const modelsOf = (recipe: WbRecipe): RecipeModel[] => Object.values(recipe.models).map((deviceType) => ({
-  title: TITLES[deviceType] ?? deviceType,
-  types: recipe.channels.map((channel) => channel.type),
-  count: recipe.counts?.[deviceType] ?? recipe.repeat ?? 1,
-}));
+// Одинаковые каналы показываются одним типом со счётчиком.
+const modelsOf = (recipe: WbRecipe): RecipeModel[] => {
+  const types = Array.from(new Set(recipe.channels.map((channel) => channel.type)));
+  const same = types.length === 1 ? recipe.channels.length : 1;
+  return Object.values(recipe.models).map((deviceType) => ({
+    title: TITLES[deviceType] ?? deviceType,
+    types,
+    count: recipe.counts?.[deviceType] ?? recipe.repeat ?? same,
+  }));
+};
 
 // Все модели, для которых есть рецепт.
 export const recipeModels = (): RecipeModel[] => RECIPES.flatMap(modelsOf);
@@ -125,7 +143,7 @@ export const recipeRows = (
         return !isRequired;
       });
       if (isComplete) {
-        rows.push({ row, index: recipe.repeat ? index : null });
+        rows.push({ row, index: recipe.repeat ? index : null, ...(recipe.controlNames ? { byControl: true } : {}) });
       }
     });
   }

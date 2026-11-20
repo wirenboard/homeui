@@ -170,6 +170,8 @@ export interface WbRecipe {
   channels: WbRecipeChannel[];
   // контрол, по которому видно, что часть устройства в режиме, который рецепт не берёт
   skipped?: string;
+  // каналы называются как их контролы, а не по роли
+  controlNames?: boolean;
 }
 
 // Модель с рецептом для показа: типы каналов и сколько раз набор повторяется.
@@ -185,6 +187,8 @@ export type RecipeFit = (_controlId: string, _role: RoleId) => boolean;
 export interface RecipeRow {
   row: NewDeviceRow;
   index: number | null;
+  // имя канала берётся от контрола
+  byControl?: boolean;
 }
 
 export interface OrigBinding {

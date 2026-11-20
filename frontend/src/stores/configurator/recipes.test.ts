@@ -94,6 +94,6 @@ describe('recipe models', () => {
   it('names the model of a device by its id or by the type from the config, null without a recipe', () => {
     expect(recipeModelTitle('wb-mdm3_7')).toBe('WB-MDM3');
     expect(recipeModelTitle('dimmer', { deviceType: 'tpl1_wb_mdm3', params: {} })).toBe('WB-MDM3');
-    expect(recipeModelTitle('wb_ups_v3_183')).toBeNull();
+    expect(recipeModelTitle('wb-led_42')).toBeNull();
   });
 });

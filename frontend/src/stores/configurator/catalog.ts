@@ -62,8 +62,8 @@ export const DEVICE_TYPES: DeviceTypeDef[] = [
 export const CHANNEL_CLASSES: Record<ChannelClass, ChannelClassDef> = {
   bin_rw: { fits: ['on_off'], types: ['switch', 'outlet', 'light'], preset: true },
   bin_r: {
-    fits: ['leak', 'contact', 'motion', 'occupancy', 'smoke'],
-    types: ['leak_sensor', 'contact_sensor', 'motion_sensor', 'occupancy_sensor', 'smoke_sensor'],
+    fits: ['contact', 'leak', 'motion', 'occupancy', 'smoke'],
+    types: ['contact_sensor', 'leak_sensor', 'motion_sensor', 'occupancy_sensor', 'smoke_sensor'],
     preset: false,
   },
   level: { fits: ['brightness', 'position', 'color_temperature'], types: ['light', 'cover'], preset: false },

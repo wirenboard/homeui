@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
+import { Tag } from '@/components/tag';
 import {
   CHANNEL_CLASSES, configuratorStore, findType, isAmbiguousClass, NO_PRESET, primaryRole, splitKey,
-  type NewDeviceRow,
+  type ChannelClass, type NewDeviceRow,
 } from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
 import type { AddDialogProps, PickedChannel } from '../types';
@@ -26,7 +27,7 @@ export const AddDialog = observer(({
   const [isTilesShown, setIsTilesShown] = useState(false);
   const [showSystem, setShowSystem] = useState(false);
   const [deviceId, setDeviceId] = useState<string | null>(null);
-  // Выбор пользователя поверх предотметки.
+  // Выбор по всем устройствам контроллера: ключ — «устройство/контрол».
   const [picked, setPicked] = useState<Record<string, PickedChannel>>({});
 
   const used = configuratorStore.usedKeys;
@@ -53,25 +54,40 @@ export const AddDialog = observer(({
     setDeviceId(initialDeviceId ?? fromTarget ?? listDevices(false).find(hasFree) ?? listDevices(false)[0] ?? null);
   }, [isOpened]);
 
-  const preset = (cell: Cell, types: string[], isPreset: boolean): PickedChannel => {
-    const checked = isPreset && !NO_PRESET.test(cell.controlId) && !NO_PRESET.test(cell.name);
-    return { checked, type: checked ? types[0] : '' };
-  };
-
-  const channels = current ? deviceControls(current).map((cell) => {
+  const channelsOf = (id: string) => deviceControls(id).map((cell) => {
     const classification = classifyCell(cell);
     const { types, preset: isPreset } = CHANNEL_CLASSES[classification.cls];
     const isUsed = used.has(cell.id);
-    const choice = isUsed
+    const choice: PickedChannel = isUsed
       ? { checked: true, type: '' }
-      : picked[cell.controlId] ?? preset(cell, types, isPreset && !target);
-    return { cell, classification, types, choice, isUsed };
-  }) : [];
+      : picked[cell.id] ?? { checked: false, type: '' };
+    return {
+      cell, classification, types, choice, isUsed, isPreset,
+    };
+  });
+
+  const channels = current ? channelsOf(current) : [];
   const typed = channels.filter((channel) => channel.types.length);
   const unsupported = channels.filter((channel) => !channel.types.length);
-  const chosen = typed.filter((channel) => !channel.isUsed && channel.choice.checked);
+  const pickedDevices = Array.from(new Set(Object.keys(picked).map((key) => splitKey(key)[0])));
+  const chosen = pickedDevices.flatMap((id) => channelsOf(id)
+    .filter((channel) => channel.types.length && !channel.isUsed && channel.choice.checked)
+    .map((channel) => ({ ...channel, deviceId: id })));
+  const pickedCount = (id: string) => chosen.filter((channel) => channel.deviceId === id).length;
 
-  const pick = (controlId: string, choice: PickedChannel) => setPicked({ ...picked, [controlId]: choice });
+  // Тип неоднозначного канала ставится первым из подходящих и помечается как предположение.
+  const check = (cls: ChannelClass, types: string[]): PickedChannel =>
+    ({ checked: true, type: types[0], isGuessed: isAmbiguousClass(cls) });
+
+  const pick = (key: string, choice: PickedChannel) => setPicked({ ...picked, [key]: choice });
+
+  const pickSuitable = () => setPicked({
+    ...picked,
+    ...Object.fromEntries(typed
+      .filter(({ cell, isUsed, isPreset }) => isPreset && !isUsed
+        && !NO_PRESET.test(cell.controlId) && !NO_PRESET.test(cell.name))
+      .map(({ cell, classification, types }) => [cell.id, check(classification.cls, types)])),
+  });
 
   const add = (name: string, rows: NewDeviceRow[]) => {
     if (target) {
@@ -83,8 +99,10 @@ export const AddDialog = observer(({
   };
 
   const addChosen = () => {
-    const battery = channels.find((channel) => channel.classification.cls === 'battery')?.cell.id;
-    const rows: NewDeviceRow[] = chosen.map(({ cell, classification, choice }) => {
+    const rows: NewDeviceRow[] = chosen.map(({
+      cell, classification, choice, deviceId,
+    }) => {
+      const battery = channelsOf(deviceId).find((channel) => channel.classification.cls === 'battery')?.cell.id;
       const hasBattery = findType(choice.type).roles.some(([role]) => role === 'battery');
       return {
         type: choice.type,
@@ -96,7 +114,8 @@ export const AddDialog = observer(({
         unit: classification.units,
       };
     });
-    add(deviceTitle(current), rows);
+    const sources = Array.from(new Set(chosen.map((channel) => channel.deviceId)));
+    add(sources.length === 1 ? deviceTitle(sources[0]) : t('configurator.labels.new-device'), rows);
   };
 
   const addEmpty = (typeId: string) => {
@@ -118,7 +137,9 @@ export const AddDialog = observer(({
     const count = usedCount
       ? t('configurator.labels.suitable-used', { ...UNESCAPED, count: suitable.length, used: usedCount })
       : t('configurator.labels.suitable', { ...UNESCAPED, count: suitable.length });
-    return [id, kind, count].filter(Boolean).join(' · ');
+    const pickedHere = pickedCount(id);
+    const pickedText = pickedHere ? t('configurator.labels.picked-count', { ...UNESCAPED, count: pickedHere }) : '';
+    return [id, kind, count, pickedText].filter(Boolean).join(' · ');
   };
 
   return (
@@ -145,10 +166,7 @@ export const AddDialog = observer(({
                     type="button"
                     className={classNames('configurator-listItem', { 'configurator-listItemSelected': id === current })}
                     aria-pressed={id === current}
-                    onClick={() => {
-                      setDeviceId(id);
-                      setPicked({});
-                    }}
+                    onClick={() => setDeviceId(id)}
                   >
                     <span className="configurator-listText">
                       <span className="configurator-listTitle">{deviceTitle(id)}</span>
@@ -171,6 +189,14 @@ export const AddDialog = observer(({
               <>
                 <h3 className="configurator-sectionTitle">{`${deviceTitle(current)} (${current})`}</h3>
                 <p>{t('configurator.labels.add-hint')}</p>
+                <div className="configurator-actions configurator-addSuitable">
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    label={t('configurator.buttons.pick-suitable')}
+                    onClick={pickSuitable}
+                  />
+                </div>
                 <ul className="configurator-channels">
                   {typed.map(({ cell, classification, types, choice, isUsed }) => (
                     <li key={cell.controlId} className="configurator-channel">
@@ -180,16 +206,16 @@ export const AddDialog = observer(({
                           title={cell.name}
                           ariaLabel={t('configurator.labels.show-channel', { ...UNESCAPED, name: cell.name })}
                           isDisabled={isUsed}
-                          onChange={(checked) => pick(cell.controlId, {
-                            checked,
-                            type: checked && !isAmbiguousClass(classification.cls) ? types[0] : '',
-                          })}
+                          onChange={(checked) => pick(
+                            cell.id,
+                            checked ? check(classification.cls, types) : { checked: false, type: '' },
+                          )}
                         />
                         <span className="configurator-channelValue">
                           {isUsed ? t('configurator.labels.already-used') : (
                             <>
                               {t('configurator.labels.value', { ...UNESCAPED, value: formatValue(cell) })}
-                              {isAmbiguousClass(classification.cls) && `, ${t('configurator.labels.choose-type-hint')}`}
+                              {choice.isGuessed && <Tag variant="warn">{t('configurator.labels.type-guessed')}</Tag>}
                             </>
                           )}
                         </span>
@@ -199,7 +225,7 @@ export const AddDialog = observer(({
                           types={types}
                           value={choice.type}
                           ariaLabel={`${t('configurator.labels.type')}: ${cell.name}`}
-                          onChange={(typeId) => pick(cell.controlId, { checked: true, type: typeId })}
+                          onChange={(typeId) => pick(cell.id, { checked: true, type: typeId })}
                         />
                       )}
                     </li>
