@@ -29,6 +29,8 @@ export const AddDialog = observer(({
   const [deviceId, setDeviceId] = useState<string | null>(null);
   // Выбор по всем устройствам контроллера: ключ — «устройство/контрол».
   const [picked, setPicked] = useState<Record<string, PickedChannel>>({});
+  // Каналы, отмеченные кнопкой: они показываются первыми, чтобы отметка была видна без прокрутки.
+  const [raised, setRaised] = useState<string[]>([]);
 
   const used = configuratorStore.usedKeys;
   const suitableControls = (id: string) =>
@@ -46,6 +48,7 @@ export const AddDialog = observer(({
     }
     setIsTilesShown(!!isEmpty);
     setPicked({});
+    setRaised([]);
     const bound = target?.rows.flatMap((row) => Object.values(row.bind).map((key) => splitKey(key)[0])) ?? [];
     const fromTarget = listDevices(true).find((id) => bound.includes(id) && hasFree(id));
     if (fromTarget && isSystemDevice(fromTarget)) {
@@ -81,13 +84,21 @@ export const AddDialog = observer(({
 
   const pick = (key: string, choice: PickedChannel) => setPicked({ ...picked, [key]: choice });
 
-  const pickSuitable = () => setPicked({
-    ...picked,
-    ...Object.fromEntries(typed
-      .filter(({ cell, isUsed, isPreset }) => isPreset && !isUsed
-        && !NO_PRESET.test(cell.controlId) && !NO_PRESET.test(cell.name))
-      .map(({ cell, classification, types }) => [cell.id, check(classification.cls, types)])),
-  });
+  // Свободные каналы устройства, которые кнопка отмечает сама: выходы и основные датчики.
+  const suitable = typed.filter(({ cell, isUsed, isPreset }) => isPreset && !isUsed
+    && !NO_PRESET.test(cell.controlId) && !NO_PRESET.test(cell.name));
+
+  const pickSuitable = () => {
+    setPicked({
+      ...picked,
+      ...Object.fromEntries(suitable
+        .map(({ cell, classification, types }) => [cell.id, check(classification.cls, types)])),
+    });
+    setRaised([...raised, ...suitable.map(({ cell }) => cell.id)]);
+  };
+
+  const isRaised = ({ cell, choice }: (typeof typed)[number]) => raised.includes(cell.id) && choice.checked;
+  const listed = [...typed.filter(isRaised), ...typed.filter((channel) => !isRaised(channel))];
 
   const add = (name: string, rows: NewDeviceRow[]) => {
     if (target) {
@@ -194,11 +205,13 @@ export const AddDialog = observer(({
                     size="small"
                     variant="secondary"
                     label={t('configurator.buttons.pick-suitable')}
+                    disabled={suitable.every(({ choice }) => choice.checked)}
                     onClick={pickSuitable}
                   />
+                  {!suitable.length && <span>{t('configurator.labels.no-suitable')}</span>}
                 </div>
                 <ul className="configurator-channels">
-                  {typed.map(({ cell, classification, types, choice, isUsed }) => (
+                  {listed.map(({ cell, classification, types, choice, isUsed }) => (
                     <li key={cell.controlId} className="configurator-channel">
                       <div className="configurator-channelHead">
                         <Checkbox

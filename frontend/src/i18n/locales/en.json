@@ -1302,6 +1302,7 @@
          "add-hint": "Check the channels that make the device: they can come from different controller devices. The set can be changed later in the settings.",
          "value": "Value: {{value}}",
          "type-guessed": "the type is chosen automatically, check it",
+         "no-suitable": "No free suitable channels, check the ones you need yourself",
          "picked-count": "picked: {{count}}",
          "already-used": "already used",
          "no-controller-devices": "There are no devices on the controller to add.",

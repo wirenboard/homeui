@@ -88,4 +88,29 @@ describe('AddDialog channel selection', () => {
     fireEvent.click(document.querySelectorAll('.configurator-choice button')[1]);
     expect(screen.queryByText('configurator.labels.type-guessed')).toBeNull();
   });
+
+  it('disables the suitable button when nothing is left to check and explains a device without suitable ones', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+
+    fireEvent.click(addButton('configurator.buttons.pick-suitable'));
+    expect(addButton('configurator.buttons.pick-suitable').disabled).toBe(true);
+    expect(screen.queryByText('configurator.labels.no-suitable')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
+    expect(addButton('configurator.buttons.pick-suitable').disabled).toBe(true);
+    expect(screen.getByText('configurator.labels.no-suitable')).toBeTruthy();
+  });
+
+  it('moves the channels checked by the button to the top, a manual check keeps the channel in place', () => {
+    const names = () => channelBoxes().map((input) => input.getAttribute('title') ?? input.parentElement.textContent);
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    fireEvent.click(channelBoxes()[1]);
+    expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
+
+    fireEvent.click(addButton('configurator.buttons.pick-suitable'));
+    fireEvent.click(channelBoxes()[0]);
+
+    expect(names()).toEqual(['K2', 'K1']);
+    expect(channelBoxes().map((input) => input.checked)).toEqual([true, false]);
+  });
 });

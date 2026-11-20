@@ -112,6 +112,27 @@ const RECIPES: WbRecipe[] = [
     ],
   },
   {
+    // Защита от протечек: общий признак протечки, входы в режиме датчика, краны и счётчики воды.
+    models: { 'wb-mwac-v2': 'WB-MWAC-v2 ver2' },
+    repeat: 5,
+    counts: { 'WB-MWAC-v2 ver2': 1 },
+    controlNames: true,
+    byChannel: true,
+    channels: [
+      { type: 'leak_sensor', bind: { leak: 'Leakage Mode' } },
+      {
+        type: 'leak_sensor',
+        bind: { leak: 'Input F{n}' },
+        condition: 'isDefined(in{n}_mode)==0||in{n}_mode==5',
+      },
+      // Шестой вход по умолчанию обычный дискретный, датчиком протечки он бывает только по настройке.
+      { type: 'leak_sensor', bind: { leak: 'Input S6' }, condition: 'in6_mode==5' },
+      { type: 'switch', bind: { on_off: 'Output K{n}' } },
+      { type: 'switch', bind: { on_off: 'Cleaning Mode' } },
+      { type: 'number_sensor', bind: { number: 'P{n} Volume' } },
+    ],
+  },
+  {
     // Реле с измерением: у каждого выхода свои мощность и накопленная энергия.
     models: { 'wb-mrwm2': 'WB-MRWM2' },
     repeat: 2,
@@ -175,6 +196,7 @@ const TYPE_ALIASES: Record<string, string> = {
   'WB-MAO4-since-fw-2.9': 'tpl1_wb_mao4',
   'WB-MAP3E': 'WB-MAP3E fw2',
   'WB-MAP6S': 'WB-MAP6S fw2',
+  'WB-MWAC-v2': 'WB-MWAC-v2 ver2',
 };
 
 const typeOf = (serial: SerialDevice) => TYPE_ALIASES[serial.deviceType] ?? serial.deviceType;
@@ -192,6 +214,7 @@ const TITLES: Record<string, string> = {
   'WB-MAP12E fw2': 'WB-MAP12E',
   'WB-MAP3E fw2': 'WB-MAP3E',
   'WB-MAP6S fw2': 'WB-MAP6S',
+  'WB-MWAC-v2 ver2': 'WB-MWAC v.2',
 };
 
 // Одинаковые каналы показываются одним типом со счётчиком.
@@ -248,6 +271,7 @@ export const recipeRows = (
   }
   const isFree = (controlId: string) => controlIds.includes(controlId) && !used.has(`${deviceId}/${controlId}`);
   const rows: RecipeRow[] = [];
+  const places: number[] = [];
 
   for (let index = 1; index <= (recipe.repeat ?? 1); index += 1) {
     const place = (text: string) => text
@@ -255,7 +279,7 @@ export const recipeRows = (
       .replace(/{pair}/g, String(Math.ceil(index / 2)));
     recipe.channels.forEach(({
       type, bind, condition, unless,
-    }) => {
+    }, position) => {
       if (unless && controlIds.includes(place(unless))) {
         return;
       }
@@ -278,10 +302,15 @@ export const recipeRows = (
       });
       if (isComplete) {
         rows.push({ row, index: recipe.repeat ? index : null, ...(recipe.controlNames ? { byControl: true } : {}) });
+        places.push(position);
       }
     });
   }
-  return rows;
+  // Обычно каналы идут по номерам, а с byChannel — группами в порядке рецепта.
+  return recipe.byChannel
+    ? rows.map((row, at) => ({ row, at })).sort((a, b) => places[a.at] - places[b.at] || a.at - b.at)
+      .map(({ row }) => row)
+    : rows;
 };
 
 // Сколько частей устройства рецепт не берёт из-за режима, например приводов штор у реле.
