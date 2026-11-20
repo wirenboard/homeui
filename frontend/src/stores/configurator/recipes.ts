@@ -110,11 +110,13 @@ const TYPE_ALIASES: Record<string, string> = {
 
 const typeOf = (serial: SerialDevice) => TYPE_ALIASES[serial.deviceType] ?? serial.deviceType;
 
-// Названия моделей, у которых тип шаблона не годится для показа.
+// Названия изделий там, где тип шаблона не годится для показа или шаблон общий для нескольких.
 const TITLES: Record<string, string> = {
   tpl1_wb_mdm3: 'WB-MDM3',
   wb_ups_v3: 'WB-UPS v.3',
   'WB-MRM2-mini-NO-inputs': 'WB-MRM2-mini',
+  'WB-MR6C': 'WB-MR6C v.2, WB-MR6LV/HV',
+  'WB-MR3': 'WB-MR3LV/HV, WB-MRWL3',
 };
 
 // Одинаковые каналы показываются одним типом со счётчиком.
@@ -128,8 +130,13 @@ const modelsOf = (recipe: WbRecipe): RecipeModel[] => {
   }));
 };
 
-// Все модели, для которых есть рецепт.
-export const recipeModels = (): RecipeModel[] => RECIPES.flatMap(modelsOf);
+// Рецепт для них есть, но в списке моделей они лишние: старые шаблоны актуальных изделий
+// и изделия, снятые с производства.
+const UNLISTED = new Set(['WB-MR6LV', 'WB-MR3LV', 'WB-MR6C-NC', 'WB-MS-THLS v.2']);
+
+// Модели с рецептом, которые стоит показывать пользователю.
+export const recipeModels = (): RecipeModel[] => RECIPES.flatMap(modelsOf)
+  .filter(({ title }) => !UNLISTED.has(title));
 
 // Рецепт по модели из конфига порта, а без него — из идентификатора вида «модель_адрес».
 const findRecipe = (deviceId: string, serial?: SerialDevice) => {

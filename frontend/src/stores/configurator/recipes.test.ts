@@ -87,7 +87,8 @@ describe('recipe models', () => {
     expect(models.map(({ title }) => title)).toContain('WB-MRM2-mini');
     expect(models.find(({ title }) => title === 'WB-MDM3')).toEqual({ title: 'WB-MDM3', types: ['light'], count: 3 });
     expect(models.find(({ title }) => title === 'WB-MSW v.4').types).toHaveLength(4);
-    const relays = models.filter(({ title }) => ['WB-MR6C', 'WB-MR3', 'WB-MRM2-mini'].includes(title));
+    const titles = ['WB-MR6C v.2, WB-MR6LV/HV', 'WB-MR3LV/HV, WB-MRWL3', 'WB-MRM2-mini'];
+    const relays = models.filter(({ title }) => titles.includes(title));
     expect(relays.map(({ count }) => count)).toEqual([6, 3, 2]);
   });
 

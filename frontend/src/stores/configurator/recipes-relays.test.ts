@@ -24,12 +24,23 @@ describe('WB-MRWM2 recipe', () => {
 });
 
 describe('WB-MR3LV recipe of the old template', () => {
-  it('makes three relays and is shown with three outputs', () => {
+  it('makes three relays and stays out of the list of models', () => {
     const rows = recipeRows('wb-mr3lv_9', ['K1', 'K2', 'K3', 'Input 0'], new Set());
 
     expect(rows.map(({ row, index }) => [row.type, row.bind.on_off, index])).toEqual(
       [1, 2, 3].map((index) => ['switch', `wb-mr3lv_9/K${index}`, index]),
     );
-    expect(recipeModels().find(({ title }) => title === 'WB-MR3LV').count).toBe(3);
+    expect(recipeModels().map(({ title }) => title)).not.toContain('WB-MR3LV');
+  });
+});
+
+describe('list of supported models', () => {
+  it('leaves out old templates and discontinued devices, their recipes still work', () => {
+    const titles = recipeModels().map(({ title }) => title);
+
+    expect(titles).toEqual(expect.not.arrayContaining(['WB-MR6LV', 'WB-MR3LV', 'WB-MR6C-NC', 'WB-MS-THLS v.2']));
+    expect(titles).toEqual(expect.arrayContaining(['WB-MR6C v.2, WB-MR6LV/HV', 'WB-MR3LV/HV, WB-MRWL3', 'WB-MRPS6']));
+    expect(recipeRows('wb-mr6lv_4', ['K1'], new Set())).toHaveLength(1);
+    expect(recipeRows('wb-ms-thls-v2_8', ['Temperature'], new Set())).toHaveLength(1);
   });
 });
