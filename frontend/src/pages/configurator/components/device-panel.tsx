@@ -16,7 +16,7 @@ import {
 import { devicesStore, type Cell } from '@/stores/devices';
 import type { DevicePanelProps } from '../types';
 import {
-  classifyCell, defaultName, deviceControls, deviceTitle, formatValue, listDevices, liveControls, roleLabel,
+  classifyCell, defaultName, deviceControls, formatValue, listDevices, liveControls, roleLabel,
   TYPE_ICONS, typeName, UNESCAPED,
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
@@ -28,24 +28,20 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
   const { t } = useTranslation();
   const devices = listDevices(true);
 
+  const cellLabel = (cell: Cell) => `${cell.name} · ${formatValue(cell)} [${cell.id}]`;
+
   const roleOptions = (role: RoleId, current: string): Option<string>[] => {
-    const groups: Option<string>[] = devices
-      .map((deviceId) => ({
-        label: `${deviceTitle(deviceId)} (${deviceId})`,
-        options: deviceControls(deviceId)
-          .filter((cell) => CHANNEL_CLASSES[classifyCell(cell).cls].fits.includes(role))
-          .map((cell) => ({ label: `${cell.name} · ${formatValue(cell)}`, value: cell.id })),
-      }))
-      .filter((group) => group.options.length);
-    const isListed = groups.some((group) => group.options.some((option) => option.value === current));
-    if (current && !isListed) {
+    const options: Option<string>[] = devices.flatMap((deviceId) => deviceControls(deviceId)
+      .filter((cell) => CHANNEL_CLASSES[classifyCell(cell).cls].fits.includes(role))
+      .map((cell) => ({ label: cellLabel(cell), value: cell.id })));
+    if (current && !options.some((option) => option.value === current)) {
       const cell = devicesStore.cells.get(current);
       const label = cell
-        ? `${deviceTitle(cell.deviceId)}: ${cell.name} · ${formatValue(cell)}`
+        ? cellLabel(cell)
         : t('configurator.labels.channel-lost', { ...UNESCAPED, topic: topicOf(...splitKey(current)) });
-      groups.unshift({ label, value: current });
+      options.unshift({ label, value: current });
     }
-    return groups;
+    return options;
   };
 
   const bindRole = (row: DeviceRow, role: RoleId, key: string | null) => {
