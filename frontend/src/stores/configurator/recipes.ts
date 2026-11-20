@@ -92,6 +92,8 @@ const RECIPES: WbRecipe[] = [
 // Шаблоны одной модели для разных версий прошивки.
 const TYPE_ALIASES: Record<string, string> = {
   'WB-LED-since-fw-3.8': 'WB-LED',
+  'WB-MDM3': 'tpl1_wb_mdm3',
+  'WB-MDM3-since-fw-2.12': 'tpl1_wb_mdm3',
 };
 
 const typeOf = (serial: SerialDevice) => TYPE_ALIASES[serial.deviceType] ?? serial.deviceType;
