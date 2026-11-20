@@ -25,8 +25,9 @@ const RECIPES: WbRecipe[] = [
     ],
   },
   {
-    models: { 'wb-mrps6': 'WB-MRPS6', 'wb-mr6lv': 'WB-MR6LV' },
+    models: { 'wb-mrps6': 'WB-MRPS6', 'wb-mr6lv': 'WB-MR6LV', 'wb-mr3lv': 'WB-MR3LV' },
     repeat: 6,
+    counts: { 'WB-MR3LV': 3 },
     channels: [{ type: 'switch', bind: { on_off: 'K{n}' } }],
   },
   {
@@ -47,6 +48,17 @@ const RECIPES: WbRecipe[] = [
       condition: 'isDefined(curtain{pair}_mode)==0||curtain{pair}_mode==0',
     }],
     skipped: 'Curtain {n} Open',
+  },
+  {
+    // Реле с измерением: у каждого выхода свои мощность и накопленная энергия.
+    models: { 'wb-mrwm2': 'WB-MRWM2' },
+    repeat: 2,
+    controlNames: true,
+    channels: [
+      { type: 'switch', bind: { on_off: 'K{n}' } },
+      { type: 'power_sensor', bind: { power: 'P L{n}' } },
+      { type: 'energy_meter', bind: { energy: 'AP energy L{n}' } },
+    ],
   },
   {
     // Управлять в ИБП нечем, в приложения идут только показания.
