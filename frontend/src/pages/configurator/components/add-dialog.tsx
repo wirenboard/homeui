@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CloseIcon from '@/assets/icons/close.svg';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
@@ -14,7 +15,7 @@ import type { Cell } from '@/stores/devices';
 import type { AddDialogProps, PickedChannel } from '../types';
 import {
   classifyCell, defaultName, deviceControls, deviceTitle, formatValue, isSystemDevice, isVirtualDevice, listDevices,
-  typeName, UNESCAPED, whyText,
+  TYPE_ICONS, typeName, UNESCAPED, whyText,
 } from '../utils';
 import { TypeChoice } from './type-choice';
 import { TypeTiles } from './type-tiles';
@@ -96,6 +97,20 @@ export const AddDialog = observer(({
     });
     setRaised([...raised, ...suitable.map(({ cell }) => cell.id)]);
   };
+
+  // Все свободные каналы текущего устройства; уже отмеченные сохраняют свой тип.
+  const free = typed.filter(({ isUsed }) => !isUsed);
+
+  const pickAll = () => setPicked({
+    ...picked,
+    ...Object.fromEntries(free
+      .filter(({ choice }) => !choice.checked)
+      .map(({ cell, classification, types }) => [cell.id, check(classification.cls, types)])),
+  });
+
+  const pickNone = () => setPicked(Object.fromEntries(
+    Object.entries(picked).filter(([key]) => !free.some(({ cell }) => cell.id === key)),
+  ));
 
   const isRaised = ({ cell, choice }: (typeof typed)[number]) => raised.includes(cell.id) && choice.checked;
   const listed = [...typed.filter(isRaised), ...typed.filter((channel) => !isRaised(channel))];
@@ -205,10 +220,27 @@ export const AddDialog = observer(({
                     size="small"
                     variant="secondary"
                     label={t('configurator.buttons.pick-suitable')}
+                    title={t('configurator.buttons.pick-suitable-hint')}
                     disabled={suitable.every(({ choice }) => choice.checked)}
                     onClick={pickSuitable}
                   />
                   {!suitable.length && <span>{t('configurator.labels.no-suitable')}</span>}
+                  <span className="configurator-addBulk">
+                    <Button
+                      size="small"
+                      variant="secondary"
+                      label={t('configurator.buttons.pick-all')}
+                      disabled={free.every(({ choice }) => choice.checked)}
+                      onClick={pickAll}
+                    />
+                    <Button
+                      size="small"
+                      variant="secondary"
+                      label={t('configurator.buttons.pick-none')}
+                      disabled={!free.some(({ choice }) => choice.checked)}
+                      onClick={pickNone}
+                    />
+                  </span>
                 </div>
                 <ul className="configurator-channels">
                   {listed.map(({ cell, classification, types, choice, isUsed }) => (
@@ -255,6 +287,27 @@ export const AddDialog = observer(({
             )}
           </section>
         </div>
+      )}
+      {!isTilesShown && !!chosen.length && (
+        <ul className="configurator-picked" aria-label={t('configurator.labels.picked-channels')}>
+          {chosen.map(({ cell, deviceId, choice }) => {
+            const TypeIcon = TYPE_ICONS[choice.type];
+            return (
+              <li key={cell.id} className="configurator-pickedItem" title={typeName(choice.type)}>
+                {TypeIcon && <TypeIcon className="configurator-typeIcon" aria-hidden="true" />}
+                {`${cell.name} · ${deviceTitle(deviceId)}`}
+                <button
+                  type="button"
+                  className="configurator-pickedRemove"
+                  aria-label={t('configurator.labels.unpick', { ...UNESCAPED, name: cell.name })}
+                  onClick={() => pick(cell.id, { checked: false, type: '' })}
+                >
+                  <CloseIcon />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       )}
       <footer className="configurator-dialogFooter">
         <span>

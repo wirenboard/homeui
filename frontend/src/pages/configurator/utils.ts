@@ -11,6 +11,7 @@ import TypeIlluminanceIcon from '@/assets/icons/type-illuminance.svg';
 import TypeLeakIcon from '@/assets/icons/type-leak.svg';
 import TypeLightIcon from '@/assets/icons/type-light.svg';
 import TypeMotionIcon from '@/assets/icons/type-motion.svg';
+import TypeOccupancyIcon from '@/assets/icons/type-occupancy.svg';
 import TypeOutletIcon from '@/assets/icons/type-outlet.svg';
 import TypeSmokeIcon from '@/assets/icons/type-smoke.svg';
 import TypeSwitchIcon from '@/assets/icons/type-switch.svg';
@@ -39,7 +40,7 @@ export const TYPE_ICONS: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   leak_sensor: TypeLeakIcon,
   contact_sensor: TypeContactIcon,
   motion_sensor: TypeMotionIcon,
-  occupancy_sensor: TypeMotionIcon,
+  occupancy_sensor: TypeOccupancyIcon,
   smoke_sensor: TypeSmokeIcon,
   power_sensor: TypeEnergyIcon,
   energy_meter: TypeEnergyIcon,

@@ -26,6 +26,7 @@ vi.mock('@/components/dialog', () => ({
 
 const channelBoxes = () => screen.getAllByRole('checkbox', { name: /show-channel/ }) as HTMLInputElement[];
 const checkedCount = () => channelBoxes().filter((input) => input.checked).length;
+const pickedList = () => screen.getByRole('list', { name: 'configurator.labels.picked-channels' });
 const addButton = (label: string) => screen.getByRole('button', { name: label }) as HTMLButtonElement;
 
 beforeEach(() => {
@@ -112,5 +113,33 @@ describe('AddDialog channel selection', () => {
 
     expect(names()).toEqual(['K2', 'K1']);
     expect(channelBoxes().map((input) => input.checked)).toEqual([true, false]);
+  });
+
+  it('checks and clears all the channels of the current device only, keeping the picks of the other devices', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
+    fireEvent.click(channelBoxes()[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Relay/ }));
+    expect(addButton('configurator.buttons.pick-none').disabled).toBe(true);
+
+    fireEvent.click(addButton('configurator.buttons.pick-all'));
+    expect(checkedCount()).toBe(2);
+    expect(addButton('configurator.buttons.pick-all').disabled).toBe(true);
+    expect(pickedList().children).toHaveLength(3);
+
+    fireEvent.click(addButton('configurator.buttons.pick-none'));
+    expect(checkedCount()).toBe(0);
+    expect(pickedList().textContent).toBe('Level · Dimmer');
+  });
+
+  it('lists the picked channels with their devices and removes one by its cross', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    expect(screen.queryByRole('list', { name: 'configurator.labels.picked-channels' })).toBeNull();
+
+    fireEvent.click(addButton('configurator.buttons.pick-all'));
+    fireEvent.click(screen.getAllByRole('button', { name: 'configurator.labels.unpick' })[0]);
+
+    expect(pickedList().textContent).toBe('K2 · Relay');
+    expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
   });
 });
