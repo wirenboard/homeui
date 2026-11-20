@@ -3,7 +3,7 @@
 import { authStore, type UserRole } from '@/stores/auth';
 import { Theme } from '@/stores/ui/types';
 import { getMenu } from './api';
-import { normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
+import { getMenuItems, normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
 import UiStore from './ui-store';
 
 vi.mock('@/i18n/config', () => ({ default: { language: 'en' } }));
@@ -398,5 +398,52 @@ describe('mergeMenuItems', () => {
     expect(item?.url).toBe('https://ext.example/');
     expect(item?.isExternal).toBe(true);
     expect(item?.openInNewTab).toBe(true);
+  });
+});
+
+describe('admin-only base sections (integrations, rules)', () => {
+  const ROLES = ['user', 'operator', 'admin'];
+  const asRole = (role: string) => (required: string) => ROLES.indexOf(role) >= ROLES.indexOf(required);
+  const buildFor = (role: string, custom: any[]) => {
+    const hasRights = asRole(role) as (r: UserRole) => boolean;
+    return mergeMenuItems(
+      getMenuItems([], false, new URLSearchParams(), hasRights),
+      custom.map((item) => toMenuItemInstance(item, 'en', hasRights)),
+    );
+  };
+  const gateItem = {
+    id: 'integrations',
+    children: [{
+      id: 'my-gate', url: '/open-my-gate', isExternal: true, title: { en: 'Gate' }, requiredRole: 'operator',
+    }],
+  };
+  const plainItem = { id: 'integrations', children: [{ id: 'plain', url: '/plain', title: { en: 'Plain' } }] };
+
+  test('operator sees integrations section with a gate item that requires operator', () => {
+    const section = buildFor('operator', [gateItem]).find((i) => i.id === 'integrations');
+    expect(section.isShow).not.toBe(false);
+    expect(section.children.find((c) => c.id === 'my-gate').isShow).not.toBe(false);
+  });
+
+  test('user gets no integrations section when its only item requires operator', () => {
+    expect(buildFor('user', [gateItem]).find((i) => i.id === 'integrations')).toBeUndefined();
+  });
+
+  test('custom item without requiredRole inside integrations stays admin-only', () => {
+    expect(buildFor('operator', [plainItem]).find((i) => i.id === 'integrations')).toBeUndefined();
+    const forAdmin = buildFor('admin', [plainItem]).find((i) => i.id === 'integrations');
+    expect(forAdmin.children.find((c) => c.id === 'plain').isShow).not.toBe(false);
+  });
+
+  test('operator sees rules section with a custom operator item, but not the rule editor', () => {
+    const custom = [{ id: 'rules', children: [{ id: 'r', url: '/r', title: { en: 'R' }, requiredRole: 'operator' }] }];
+    const section = buildFor('operator', custom).find((i) => i.id === 'rules');
+    expect(section.isShow).not.toBe(false);
+    expect(section.children.find((c) => c.url === '/rules').isShow).toBe(false);
+    expect(section.children.find((c) => c.id === 'r').isShow).not.toBe(false);
+  });
+
+  test('without custom items the empty integrations section is dropped for every role', () => {
+    expect(buildFor('admin', []).find((i) => i.id === 'integrations')).toBeUndefined();
   });
 });

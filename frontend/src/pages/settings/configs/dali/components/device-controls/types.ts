@@ -87,4 +87,5 @@ export interface DeviceControlsMobileProps {
 
 export interface GearErrorStatusProps {
   mqttId?: string;
+  isIconOnly?: boolean;
 }

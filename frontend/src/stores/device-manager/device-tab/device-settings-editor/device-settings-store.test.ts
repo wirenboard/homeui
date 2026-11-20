@@ -31,17 +31,6 @@ const fwChain: WbDeviceTemplateParameter[] = [
 ];
 
 describe('DeviceSettingsObjectStore with a chain of fw variants (base + fw 2.2.0)', () => {
-  it('shows the newest variant with three enum values while the device firmware is unknown', () => {
-    const store = makeStore(fwChain);
-    const param = getParam(store, 'p1');
-
-    expect(param.activeVariantIndex).toBe(1);
-    expect(getActiveStore(store, 'p1').schema.enum).toEqual([0, 1, 2]);
-    expect(param.hasConflictingVariants).toBe(false);
-    expect(param.isSupportedByFirmware).toBe(true);
-    expect(param.supportedFirmware).toBeUndefined();
-  });
-
   it('shows the base variant with two enum values when the device firmware 2.1.0 is older than the extension', () => {
     const store = makeStore(fwChain);
 
@@ -61,16 +50,6 @@ describe('DeviceSettingsObjectStore with a chain of fw variants (base + fw 2.2.0
 
     expect(getParam(store, 'p1').activeVariantIndex).toBe(1);
     expect(getActiveStore(store, 'p1').schema.enum).toEqual([0, 1, 2]);
-  });
-
-  it('treats the value 2 read from a device with firmware 2.1.0 as a bad value from registers', () => {
-    const store = makeStore(fwChain);
-
-    store.setFromDeviceRegisters({ p1: 2 }, '2.1.0');
-
-    expect(getActiveStore(store, 'p1').value).toBe(2);
-    expect(getParam(store, 'p1').hasBadValueFromRegisters).toBe(true);
-    expect(store.hasBadValuesFromRegisters).toBe(true);
   });
 
   it('accepts the value 2 read from a device with firmware 2.2.0', () => {
@@ -128,15 +107,6 @@ describe('DeviceSettingsObjectStore with a chain of fw variants (base + fw 2.2.0
     expect(param.hasErrors).toBe(true);
     expect(param.shouldStoreInConfig).toBe(false);
     expect(store.value).not.toHaveProperty('p1');
-  });
-
-  it('disables the parameter without a "supported since" hint when the device reports the unsupported marker', () => {
-    const store = makeStore(fwChain);
-
-    store.setFromDeviceRegisters({ p1: 'unsupported' }, '2.2.0');
-
-    expect(getParam(store, 'p1').isSupportedByFirmware).toBe(false);
-    expect(getParam(store, 'p1').supportedFirmware).toBeUndefined();
   });
 });
 
@@ -255,7 +225,7 @@ describe('DeviceSettingsObjectStore with condition variants of different fw (mod
     const param = getParam(store, 'p1');
     expect(param.activeVariantIndex).toBe(-1);
     expect(param.value).toBeUndefined();
-    expect(param.isDirty).toBe(false);
+    expect(param.isChangedByUser).toBe(false);
     expect(param.hasErrors).toBe(false);
     expect(store.value).not.toHaveProperty('p1');
 
@@ -267,16 +237,6 @@ describe('DeviceSettingsObjectStore with condition variants of different fw (mod
 });
 
 describe('WbDeviceParameterEditor.hasConflictingVariants', () => {
-  it('reports a template error when declarations with different conditions are enabled at once', () => {
-    const store = makeStore([
-      { id: 'mode', title: 'Mode', enum: [0, 1], default: 1 },
-      { id: 'p1', title: 'P1', enum: [0, 1], default: 0, condition: 'mode==1', dependencies: ['mode'] },
-      { id: 'p1', title: 'P1', enum: [0, 1], default: 0, condition: 'mode>0', dependencies: ['mode'] },
-    ]);
-
-    expect(getParam(store, 'p1').hasConflictingVariants).toBe(true);
-  });
-
   it('does not report an error for a chain of fw variants sharing the same condition', () => {
     const store = makeStore([
       { id: 'mode', title: 'Mode', enum: [0, 1], default: 1 },

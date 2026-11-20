@@ -37,6 +37,7 @@ const Placeholder = (props: any) => (
 );
 
 const DRAG_THRESHOLD_PX = 3;
+const MENU_WINDOW_MARGIN_PX = 8;
 
 const SelectRefContext = createContext<RefObject<SelectInstance> | null>(null);
 
@@ -214,6 +215,11 @@ export const Dropdown = ({
         ...baseStyles,
         minWidth,
       }),
+      // Lets menus wider than the control limit themselves to the space left up to the window edge
+      menuPortal: (baseStyles: any, { rect }: any) => {
+        const availableWidth = document.documentElement.clientWidth - rect.left - MENU_WINDOW_MARGIN_PX;
+        return { ...baseStyles, '--dropdown-menu-available-width': `${availableWidth}px` };
+      },
       option: (baseStyles: any, { data }: any) => ({
         ...baseStyles,
         display: data?.hidden ? 'none' : baseStyles.display,

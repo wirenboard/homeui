@@ -23,9 +23,12 @@
     gap: 12px;
     flex-wrap: wrap;
 
-    @media(max-width: 768px) {
-        gap: 6px;
+    @media (--max-tablet-width) {
         padding-top: 0;
+    }
+
+    @media (--max-mobile-width) {
+        gap: 6px;
     }
 }
 
@@ -93,6 +96,11 @@
     padding-block-start: 6px;
     margin-inline: -6px;
     margin-block-start: -6px;
+}
+
+.defaultLayout-pageWrapperHmi .page-container {
+    padding-block-start: 0;
+    margin-block-start: 0;
 }
 
 .page-contentWrapper {

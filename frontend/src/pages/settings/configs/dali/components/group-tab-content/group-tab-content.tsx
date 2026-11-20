@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import { MOBILE_MAX_WIDTH } from '@/common/breakpoints';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
@@ -55,7 +55,7 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
 
 export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: MOBILE_MAX_WIDTH });
+  const showControlsAside = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
 
   if (store.isLoading) {
     return (
@@ -109,13 +109,13 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
       <div className="dali-tabToolbar">
         <h2 className="dali-contentTitle">{t('dali.labels.group', { name: store.label })}</h2>
       </div>
-      {isMobile ? (
+      {showControlsAside ? (
+        <DeviceControlsDesktop mqttId={store.controlsMqttId}>{paramRows}</DeviceControlsDesktop>
+      ) : (
         <>
           <div className="dali-tabBody">{paramRows}</div>
           <DeviceControlsMobile mqttId={store.controlsMqttId} />
         </>
-      ) : (
-        <DeviceControlsDesktop mqttId={store.controlsMqttId}>{paramRows}</DeviceControlsDesktop>
       )}
     </>
   );

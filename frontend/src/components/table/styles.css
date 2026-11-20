@@ -104,7 +104,7 @@
 .wb-tableCellInvisible {
     visibility: hidden;
 
-    @media(max-width: 640px) {
+    @media (--max-mobile-width) {
         visibility: visible;
     }
 }

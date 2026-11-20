@@ -67,8 +67,11 @@ The structure of the JSON-file
     // With isExternal: open in a new tab (rel="noopener noreferrer" is applied)
     "openInNewTab": true,
     // Optional. Minimal role to SEE the item: "user" < "operator" < "admin";
-    // absent = visible to all. Affects visibility only — the page or service the
-    // url points at must check access rights itself
+    // absent = visible to all, except items inside the "integrations" and "rules"
+    // sections, where absent means "admin". A section is shown when any of its
+    // items is visible to the current user.
+    // Affects visibility only — the page or service the url points at must check
+    // access rights itself
     "requiredRole": "admin",
     "children": [
       {

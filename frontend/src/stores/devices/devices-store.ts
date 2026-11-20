@@ -77,7 +77,8 @@ export default class DevicesStore {
   get filteredDevices() {
     const showSystemDevices = localStorage.getItem('show-system-devices') === 'yes';
     if (showSystemDevices) {
-      return this.devices;
+      // Copying (not just returning this.devices) makes MobX actually track Map mutations, not just field reassignment.
+      return new Map(this.devices);
     }
 
     return new Map(

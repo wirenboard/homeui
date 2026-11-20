@@ -35,7 +35,7 @@
     flex-grow: 1;
 }
 
-@media (max-width: 991px) {
+@media (--max-mobile-width) {
     .hasUpdateAlert .alertMessage-content {
         flex-wrap: wrap;
     }

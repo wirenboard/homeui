@@ -4,7 +4,7 @@
     height: 100%;
     flex-grow: 1;
 
-    @media (max-width: 767px) {
+    @media (--max-mobile-width) {
         padding-bottom: 10px;
     }
 }

@@ -43,11 +43,9 @@ export default class LogsStore {
           }
 
           if (params.cursor.direction === 'forward') {
-            reversedLogs.shift();
             this.logs.push(...reversedLogs);
             return;
           } else {
-            reversedLogs.pop();
             this.logs.unshift(...reversedLogs);
             return !!reversedLogs.length;
           }

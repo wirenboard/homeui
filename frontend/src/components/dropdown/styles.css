@@ -116,6 +116,11 @@
   max-height: 30px;
 }
 
+.dropdown-s .dropdown__option {
+  display: flex;
+  align-items: center;
+}
+
 .dropdown-s .dropdown__group-heading + div .dropdown__option {
   padding-left: 16px;
 }

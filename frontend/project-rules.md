@@ -11,6 +11,9 @@ Code-style rules for `frontend/`. The repo-wide **agent workflow rules** live in
 
 ## Code Style & Notes
 
+- **UI checked on the breakpoint sizes** — a change to `src/**/*.css` / `*.tsx` is checked on the
+  sizes from `../docs/breakpoints.md` before the PR (procedure there, `npm run screens`). In a review,
+  flag a UI change that has no such check.
 - **Comment only unclear scenarios** — don't write comments that restate what the code does;
   concise, well-chosen naming of constants/functions/variables should already make that clear.
   Write a comment only for the WHY when it's genuinely non-obvious: a hidden constraint, a

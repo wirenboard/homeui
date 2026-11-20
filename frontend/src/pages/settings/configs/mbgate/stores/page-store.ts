@@ -7,6 +7,26 @@ import { RegSpace } from './reg-space';
 import type { AllRegisters, Register, RegisterType, RegisterTypeSelection } from './types';
 
 const COIL_CONTROL_TYPES = ['switch', 'alarm', 'pushbutton'];
+const DEFAULT_TCP_PORT = 502;
+const ANY_HOST = ['', '*', '0.0.0.0'];
+
+export interface PortBinding {
+  isRtu: boolean;
+  path?: string;
+  host?: string;
+  port?: number;
+}
+
+function isSameBinding(a?: PortBinding, b?: PortBinding): boolean {
+  if (!a || !b || a.isRtu !== b.isRtu) {
+    return false;
+  }
+  if (a.isRtu) {
+    return !!a.path && a.path === b.path;
+  }
+  const isAnyHost = (host?: string) => ANY_HOST.includes(host ?? '');
+  return a.port === b.port && (a.host === b.host || isAnyHost(a.host) || isAnyHost(b.host));
+}
 
 export class MbGateStore {
   public paramsStore: any = {};
@@ -46,18 +66,44 @@ export class MbGateStore {
     }
   }
 
-  getConfiguredControls(): string[] {
-    const registers = this.paramsStore.value['registers'];
-    return Object.values(registers).flatMap((registerTypeArray: any) =>
+  // Older wb-mqtt-mbgate schemas have no additional_ports
+  get supportsAdditionalPorts(): boolean {
+    return !!this.paramsStore.params?.['additional_ports'];
+  }
+
+  get additionalPorts(): any[] {
+    return this.paramsStore.params?.['additional_ports']?.items ?? [];
+  }
+
+  addPort(): number {
+    const ports = this.paramsStore.params['additional_ports'];
+    ports.add();
+    ports.items.at(-1).setValue({
+      modbus: { host: '*', port: this.#getFreeTcpPort() },
+      registers: { discretes: [], coils: [], inputs: [], holdings: [] },
+    });
+    return ports.items.length - 1;
+  }
+
+  removePort(index: number) {
+    this.paramsStore.params['additional_ports'].remove(index);
+  }
+
+  getConfiguredControls(registersStore = this.paramsStore.params['registers']): string[] {
+    return Object.values(registersStore.value).flatMap((registerTypeArray: any) =>
       registerTypeArray.map((register: Register) => register['topic']),
     );
   }
 
-  addControls(selectedControls: string[], registerType: RegisterTypeSelection = 'auto') {
+  addControls(
+    selectedControls: string[],
+    registerType: RegisterTypeSelection = 'auto',
+    registersStore = this.paramsStore.params['registers'],
+  ) {
     if (!selectedControls?.length) {
       return;
     }
-    const registers = this.paramsStore.value['registers'];
+    const registers = registersStore.value;
     let newRegs: AllRegisters = {
       coils: [],
       discretes: [],
@@ -83,17 +129,14 @@ export class MbGateStore {
     this.#mergeRegs(registers, newRegs, 'holdings');
     this.#mergeRegs(registers, newRegs, 'inputs');
 
-    this.paramsStore.params['registers'].setValue(registers);
+    registersStore.setValue(registers);
   }
 
-  checkAllControlsConfigured(): boolean {
-    if (!this.paramsStore?.value) {
+  checkAllControlsConfigured(registersStore = this.paramsStore.params?.['registers']): boolean {
+    if (!registersStore) {
       return false;
     }
-    const registers = this.paramsStore.value['registers'];
-    const configuredControls = Object.values(registers).flatMap((arr: any) =>
-      arr.map((reg: Register) => reg['topic']),
-    );
+    const configuredControls = this.getConfiguredControls(registersStore);
     return Array.from(this.#devicesStore.filteredDevices.values()).every(
       (device: Device) => Array.from(device.cells).every((cellId) => configuredControls.includes(cellId)),
     );
@@ -104,7 +147,46 @@ export class MbGateStore {
   }
 
   get allowSave() {
-    return this.isDirty && !this.paramsStore.hasErrors;
+    return this.isDirty && !this.paramsStore.hasErrors && !this.hasPortConflicts;
+  }
+
+  // Index 0 is the main port, index i + 1 is additional port i
+  get portConflicts(): number[][] {
+    const bindings = this.portBindings;
+    return bindings.map((binding, index) =>
+      bindings.reduce<number[]>((conflicts, other, otherIndex) => {
+        if (otherIndex !== index && isSameBinding(binding, other)) {
+          conflicts.push(otherIndex);
+        }
+        return conflicts;
+      }, []),
+    );
+  }
+
+  get hasPortConflicts() {
+    return this.portConflicts.some((conflicts) => conflicts.length);
+  }
+
+  // Index 0 is the main port, index i + 1 is additional port i
+  get portBindings(): (PortBinding | undefined)[] {
+    if (!this.paramsStore.params) {
+      return [];
+    }
+    return [this.paramsStore.params['modbus'], ...this.additionalPorts.map((port) => port.params.modbus)]
+      .map((modbusStore) => {
+        // An empty RTU path is omitted from the value, so the mode is taken from the selected form
+        const form = modbusStore?.selectedForm;
+        return form ? { ...form.value, isRtu: !!form.params.path } : undefined;
+      });
+  }
+
+  #getFreeTcpPort(): number {
+    const usedPorts = this.portBindings.filter((binding) => !binding?.isRtu).map((binding) => binding?.port);
+    let port = DEFAULT_TCP_PORT;
+    while (usedPorts.includes(port)) {
+      port++;
+    }
+    return port;
   }
 
   #getDefaultRegisterType(cell: { type: string; readOnly: boolean }): RegisterType {

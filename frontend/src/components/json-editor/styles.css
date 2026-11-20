@@ -1,3 +1,83 @@
+.json-editor .row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0;
+  margin-right: -0.75rem;
+  margin-left: -0.75rem;
+}
+
+.json-editor .row > * {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+  margin-top: 0;
+}
+
+@media (--min-tablet-width) {
+  .json-editor .col-md-1 {
+    flex: 0 0 auto;
+    width: 8.33333333%;
+  }
+
+  .json-editor .col-md-2 {
+    flex: 0 0 auto;
+    width: 16.66666667%;
+  }
+
+  .json-editor .col-md-3 {
+    flex: 0 0 auto;
+    width: 25%;
+  }
+
+  .json-editor .col-md-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+  }
+
+  .json-editor .col-md-5 {
+    flex: 0 0 auto;
+    width: 41.66666667%;
+  }
+
+  .json-editor .col-md-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+
+  .json-editor .col-md-7 {
+    flex: 0 0 auto;
+    width: 58.33333333%;
+  }
+
+  .json-editor .col-md-8 {
+    flex: 0 0 auto;
+    width: 66.66666667%;
+  }
+
+  .json-editor .col-md-9 {
+    flex: 0 0 auto;
+    width: 75%;
+  }
+
+  .json-editor .col-md-10 {
+    flex: 0 0 auto;
+    width: 83.33333333%;
+  }
+
+  .json-editor .col-md-11 {
+    flex: 0 0 auto;
+    width: 91.66666667%;
+  }
+
+  .json-editor .col-md-12 {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+
 .json-editor .tab-content>.tab-pane {
   display: none;
 }
@@ -10,7 +90,7 @@
 .json-editor .tab-content {
   flex-shrink: 1;
 
-  @media (max-width: 991px) {
+  @media (--max-mobile-width) {
     width: 100%;
     margin-top: 12px;
   }
@@ -167,7 +247,7 @@
   /* don't stretch the content pane to the (taller) tab list */
   align-items: flex-start;
 
-  @media (max-width: 991px) {
+  @media (--max-mobile-width) {
     flex-direction: column;
     gap: 0;
     align-items: stretch;
@@ -182,7 +262,7 @@
   border-radius: var(--input-border-radius);
   height: fit-content;
 
-  @media (max-width: 991px) {
+  @media (--max-mobile-width) {
     width: 100%;
   }
 }
@@ -196,7 +276,7 @@
 
 /* An array marked by the fit-tabs-to-window editor fills the visible part of the page - the tab
    list and the pane scroll inside it, the page itself does not scroll. */
-@media (min-width: 992px) {
+@media (--min-tablet-width) {
   /* the height comes from the page, so every box down to the holder passes it on instead of growing
      with its content. A hidden tab pane is skipped, it has to keep its display: none */
   .page-contentWrapper:has(.je-fitTabsToWindow),
