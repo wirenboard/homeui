@@ -1,28 +1,37 @@
-import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import CheckIcon from '@/assets/icons/check.svg';
 import { Button } from '@/components/button';
+import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
 import { Tag } from '@/components/tag';
 import {
-  CHANNEL_CLASSES, configuratorStore, hasUnit, primaryRole, recipeModels, recipeModelTitle, recipeRows,
-  recipeSkipped, type RecipeFit,
+  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, recipeModels, recipeModelTitle, recipeRows,
+  recipeSkipped, recipeSplit, type NewDeviceRow, type RecipeFit,
 } from '@/stores/configurator';
-import type { WbDialogProps } from '../types';
+import type { WbDialogProps, WbUnit } from '../types';
 import {
   classifyCell, controlMeta, deviceControls, deviceTitle, isModbusDevice, listDevices, recipeRowName, TYPE_ICONS,
   typeName, UNESCAPED,
 } from '../utils';
+import { TypeChoice } from './type-choice';
 
 export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps) => {
   const { t } = useTranslation();
+  // Модель, открытая на втором этапе; null — этап с плитками моделей.
+  const [model, setModel] = useState<string | null>(null);
   const [skipped, setSkipped] = useState<string[]>([]);
+  const [types, setTypes] = useState<Record<string, string>>({});
+
+  const open = (title: string | null) => {
+    setModel(title);
+    setSkipped([]);
+    setTypes({});
+  };
 
   useEffect(() => {
     if (isOpened) {
-      setSkipped([]);
+      open(null);
     }
   }, [isOpened]);
 
@@ -30,117 +39,205 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
     const cells = deviceControls(id);
     const controlIds = cells.map((cell) => cell.controlId);
     const serial = configuratorStore.serialDevices[id];
-    const cellOf = (key: string) => cells.find((cell) => cell.id === key);
+    const cellOf = (row: NewDeviceRow) => cells.find((cell) => cell.id === row.bind[primaryRole(row.type)]);
     // Заряд батареи каталог относит к роли «батарея», но как числовое показание он тоже годится.
     const isFit: RecipeFit = (controlId, role) => {
       const { cls } = classifyCell(cells.find((item) => item.controlId === controlId));
       return CHANNEL_CLASSES[cls].fits.includes(role) || (role === 'number' && cls === 'battery');
     };
+    const items = (recipeRows(id, controlIds, configuratorStore.usedKeys, isFit, serial) ?? []).map((item) => {
+      const cell = cellOf(item.row);
+      // У числового датчика имя и единицы берутся от самого контрола.
+      const row: NewDeviceRow = {
+        ...item.row,
+        name: item.byControl || hasUnit(item.row.type) ? cell.name : recipeRowName(item),
+        ...(hasUnit(item.row.type) ? { unit: controlMeta(cell).units } : {}),
+      };
+      return { ...item, row, choices: CHANNEL_CLASSES[classifyCell(cell).cls].types };
+    });
+    const split = recipeSplit(id, serial);
+    const units: WbUnit[] = [];
+    items.forEach((item, at) => {
+      const key = split === 'index' ? `${id}#${item.index}` : `${id}#row${at}`;
+      const unit = split && units.find((other) => other.key === key);
+      if (unit) {
+        unit.rows.push(item.row);
+        unit.choices = [];
+      } else if (split || !units.length) {
+        const label = split === 'index'
+          ? t('configurator.labels.recipe-channel', { index: item.index })
+          : item.row.name;
+        units.push({
+          key: split ? key : id,
+          name: split ? `${deviceTitle(id)} · ${label}` : deviceTitle(id),
+          label: split ? label : deviceTitle(id),
+          rows: [item.row],
+          // Тип можно менять, только пока в строке один канал с несколькими подходящими типами.
+          choices: split && item.choices.includes(item.row.type) ? item.choices : [],
+          suggest: item.suggest,
+        });
+      } else {
+        units[0].rows.push(item.row);
+      }
+    });
     return {
-      id,
-      model: recipeModelTitle(id, serial),
-      skipped: recipeSkipped(id, controlIds, serial),
-      rows: (recipeRows(id, controlIds, configuratorStore.usedKeys, isFit, serial) ?? [])
-        .map((item) => {
-          const cell = cellOf(item.row.bind[primaryRole(item.row.type)]);
-          // У числового датчика имя и единицы берутся от самого контрола.
-          return {
-            ...item.row,
-            name: item.byControl || hasUnit(item.row.type) ? cell.name : recipeRowName(item),
-            ...(hasUnit(item.row.type) ? { unit: controlMeta(cell).units } : {}),
-          };
-        }),
+      id, units, model: recipeModelTitle(id, serial), skipped: recipeSkipped(id, controlIds, serial),
     };
   });
-  const found = devices.filter(({ rows }) => rows.length);
-  const unsupported = devices.filter(({ id, model }) => !model && isModbusDevice(id));
-  const absent = recipeModels().filter(({ title }) => !devices.some(({ model }) => model === title));
-  const chosen = found.filter(({ id }) => !skipped.includes(id));
+
+  const found = devices.filter(({ units }) => units.length);
+  const models = Array.from(new Set(found.map((device) => device.model)));
+  const unsupported = devices.filter((device) => !device.model && isModbusDevice(device.id));
+  const absent = recipeModels().filter(({ title }) => !devices.some((device) => device.model === title));
+  const opened = found.filter((device) => device.model === model);
+  const chosen = opened.flatMap(({ units }) => units).filter(({ key }) => !skipped.includes(key));
+  const typeOf = (unit: WbUnit) => types[unit.key] ?? unit.suggest ?? unit.rows[0].type;
+
+  // Строка под выбранный тип: привязки ролей, которых у типа нет, отбрасываются.
+  const typed = (row: NewDeviceRow, type: string): NewDeviceRow => ({
+    ...row,
+    type,
+    bind: Object.fromEntries(findType(type).roles
+      .filter(([role]) => row.bind[role])
+      .map(([role]) => [role, row.bind[role]])),
+  });
 
   const create = () => {
-    const [first] = chosen.map(({ id, rows }) => configuratorStore.addDevice(deviceTitle(id), rows));
-    configuratorStore.select({ id: first.id });
-    onAdded();
+    const created = chosen.map((unit) => configuratorStore.addDevice(
+      unit.name,
+      unit.choices.length ? [typed(unit.rows[0], typeOf(unit))] : unit.rows,
+    ));
+    if (created.length > 1) {
+      configuratorStore.showOverview();
+    } else {
+      onAdded();
+    }
     onClose();
   };
+
+  const icons = (rowTypes: string[]) => Array.from(new Set(rowTypes)).map((type) => {
+    const Icon = TYPE_ICONS[type];
+    return <Icon key={type} className="configurator-typeIcon" />;
+  });
 
   return (
     <Dialog
       className="configurator-addDialog"
       isOpened={isOpened}
-      heading={t('configurator.labels.wb-title')}
+      heading={model ?? t('configurator.labels.wb-title')}
       width={640}
       onClose={onClose}
     >
-      <div className="configurator-addNew configurator-wbSections">
-        <p>{t(found.length ? 'configurator.labels.wb-legend' : 'configurator.labels.wb-none')}</p>
-        <ul className="configurator-wbModels">
-          {found.map(({ id, rows, skipped: curtains }) => {
-            const isChecked = !skipped.includes(id);
-            const types = Array.from(new Set(rows.map((row) => row.type)));
-            return (
-              <li key={id}>
-                <button
-                  type="button"
-                  role="checkbox"
-                  aria-checked={isChecked}
-                  aria-label={deviceTitle(id)}
-                  title={rows.map((row) => row.name).join(', ')}
-                  className="configurator-wbModel configurator-wbModelFound"
-                  onClick={() => setSkipped((items) => (
-                    items.includes(id) ? items.filter((item) => item !== id) : [...items, id]
-                  ))}
-                >
-                  <span className="configurator-wbModelIcons" aria-hidden="true">
-                    {types.map((type) => {
-                      const Icon = TYPE_ICONS[type];
-                      return <Icon key={type} className="configurator-typeIcon" />;
-                    })}
-                    {types.length === 1 && rows.length > 1 && `× ${rows.length}`}
-                    <span className={classNames('configurator-wbCheck', { 'configurator-wbCheckOn': isChecked })}>
-                      {isChecked && <CheckIcon />}
-                    </span>
-                  </span>
-                  <span className="configurator-listTitle">{deviceTitle(id)}</span>
-                  {!!curtains && <span>{t('configurator.labels.wb-curtains', { count: curtains })}</span>}
-                </button>
-              </li>
-            );
-          })}
-          {absent.map(({ title, types, count }) => (
-            <li key={title} className="configurator-wbModel configurator-wbModelAbsent">
-              <span className="configurator-wbModelIcons" aria-hidden="true">
-                {types.map((type) => {
-                  const Icon = TYPE_ICONS[type];
-                  return <Icon key={type} className="configurator-typeIcon" />;
-                })}
-                {count > 1 && `× ${count}`}
-              </span>
-              <span className="configurator-listTitle">{title}</span>
-              <span className="sr-only">
-                {types.map(typeName).join(', ')}
-                {count > 1 && ` × ${count}`}
-              </span>
-            </li>
+      {model ? (
+        <div className="configurator-addNew configurator-wbSections">
+          <p>{t('configurator.labels.wb-step-hint')}</p>
+          {opened.map(({ id, units, skipped: curtains }) => (
+            <section key={id}>
+              <h3 className="configurator-sectionTitle">{deviceTitle(id)}</h3>
+              <ul className="configurator-channels">
+                {units.map((unit) => (
+                  <li key={unit.key} className="configurator-channel">
+                    <div className="configurator-channelHead">
+                      <Checkbox
+                        checked={!skipped.includes(unit.key)}
+                        title={unit.label}
+                        ariaLabel={unit.name}
+                        onChange={(checked) => {
+                          setSkipped(checked ? skipped.filter((key) => key !== unit.key) : [...skipped, unit.key]);
+                        }}
+                      />
+                      <span className="configurator-wbModelIcons" aria-hidden="true">
+                        {icons(unit.choices.length ? [typeOf(unit)] : unit.rows.map((row) => row.type))}
+                      </span>
+                    </div>
+                    {unit.choices.length > 1 && (
+                      <TypeChoice
+                        types={unit.choices}
+                        value={typeOf(unit)}
+                        ariaLabel={`${t('configurator.labels.type')}: ${unit.name}`}
+                        onChange={(typeId) => setTypes({ ...types, [unit.key]: typeId })}
+                      />
+                    )}
+                    {unit.rows.length > 1 && (
+                      <p className="configurator-adapterNote">{unit.rows.map((row) => row.name).join(', ')}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {!!curtains && (
+                <p className="configurator-adapterNote">
+                  {t('configurator.labels.wb-curtains', { count: curtains })}
+                </p>
+              )}
+            </section>
           ))}
-        </ul>
+        </div>
+      ) : (
+        <div className="configurator-addNew configurator-wbSections">
+          <p>{t(found.length ? 'configurator.labels.wb-legend' : 'configurator.labels.wb-none')}</p>
+          <ul className="configurator-wbModels">
+            {models.map((title) => {
+              const same = found.filter((device) => device.model === title);
+              return (
+                <li key={title}>
+                  <button
+                    type="button"
+                    className="configurator-wbModel configurator-wbModelFound"
+                    aria-label={t('configurator.labels.wb-open', { ...UNESCAPED, title, count: same.length })}
+                    onClick={() => open(title)}
+                  >
+                    <span className="configurator-wbModelIcons" aria-hidden="true">
+                      {icons(same.flatMap(({ units }) => units).flatMap(({ rows }) => rows.map((row) => row.type)))}
+                      <span className="configurator-wbCount">{same.length}</span>
+                    </span>
+                    <span className="configurator-listTitle">{title}</span>
+                  </button>
+                </li>
+              );
+            })}
+            {absent.map(({ title, types: rowTypes, count }) => (
+              <li key={title} className="configurator-wbModel configurator-wbModelAbsent">
+                <span className="configurator-wbModelIcons" aria-hidden="true">
+                  {icons(rowTypes)}
+                  {count > 1 && `× ${count}`}
+                </span>
+                <span className="configurator-listTitle">{title}</span>
+                <span className="sr-only">
+                  {rowTypes.map(typeName).join(', ')}
+                  {count > 1 && ` × ${count}`}
+                </span>
+              </li>
+            ))}
+          </ul>
 
-        {!!unsupported.length && (
-          <section>
-            <h3 className="configurator-sectionTitle">{t('configurator.labels.wb-unsupported')}</h3>
-            <div className="configurator-wbTags">
-              {unsupported.map(({ id }) => <Tag key={id} variant="gray">{deviceTitle(id)}</Tag>)}
-            </div>
-          </section>
-        )}
-      </div>
+          {!!unsupported.length && (
+            <section>
+              <h3 className="configurator-sectionTitle">{t('configurator.labels.wb-unsupported')}</h3>
+              <div className="configurator-wbTags">
+                {unsupported.map(({ id }) => <Tag key={id} variant="gray">{deviceTitle(id)}</Tag>)}
+              </div>
+            </section>
+          )}
+        </div>
+      )}
       <footer className="configurator-dialogFooter">
         <span>
-          {!!found.length && t('configurator.labels.wb-selected-count', { ...UNESCAPED, count: chosen.length })}
+          {model && t('configurator.labels.wb-create-count', { ...UNESCAPED, count: chosen.length })}
         </span>
         <Button variant="secondary" label={t('modal.labels.cancel')} onClick={onClose} />
-        {!!found.length && (
-          <Button label={t('configurator.buttons.create-devices')} disabled={!chosen.length} onClick={create} />
+        {model && (
+          <>
+            <Button
+              variant="secondary"
+              label={t('configurator.buttons.wb-back')}
+              onClick={() => open(null)}
+            />
+            <Button
+              label={t('configurator.buttons.create-devices')}
+              disabled={!chosen.length}
+              onClick={create}
+            />
+          </>
         )}
       </footer>
     </Dialog>

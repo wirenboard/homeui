@@ -1,4 +1,4 @@
-import type { Device } from '@/stores/configurator';
+import type { Device, NewDeviceRow } from '@/stores/configurator';
 
 export interface PageStatus {
   variant: 'success' | 'danger' | 'info';
@@ -81,6 +81,18 @@ export interface ImportFile {
 export interface UnitFieldProps {
   value: string;
   onChange: (_unit: string) => void;
+}
+
+// Строка второго этапа: то, что станет одним устройством.
+export interface WbUnit {
+  key: string;
+  // имя будущего устройства
+  name: string;
+  label: string;
+  rows: NewDeviceRow[];
+  // типы, между которыми можно выбрать; пусто — выбора нет
+  choices: string[];
+  suggest?: string;
 }
 
 export interface WbDialogProps {

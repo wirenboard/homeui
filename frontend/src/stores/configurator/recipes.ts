@@ -42,7 +42,8 @@ const RECIPES: WbRecipe[] = [
     models: { 'wb-mrps6': 'WB-MRPS6', 'wb-mr6lv': 'WB-MR6LV', 'wb-mr3lv': 'WB-MR3LV' },
     repeat: 6,
     counts: { 'WB-MR3LV': 3 },
-    channels: [{ type: 'switch', bind: { on_off: 'K{n}' } }],
+    split: 'index',
+    channels: [{ type: 'switch', suggest: 'light', bind: { on_off: 'K{n}' } }],
   },
   {
     models: {
@@ -55,9 +56,11 @@ const RECIPES: WbRecipe[] = [
     },
     repeat: 6,
     counts: { 'WB-MR3': 3, 'WB-MRM2-mini-NO-inputs': 2 },
+    split: 'index',
     // Пара выходов в режиме штор не подходит: ею управляет привод, её K только для чтения.
     channels: [{
       type: 'switch',
+      suggest: 'light',
       bind: { on_off: 'K{n}' },
       condition: 'isDefined(curtain{pair}_mode)==0||curtain{pair}_mode==0',
     }],
@@ -76,6 +79,7 @@ const RECIPES: WbRecipe[] = [
     // По одному датчику на вход: в новом шаблоне это первый датчик шины.
     models: { 'wb-m1w2': 'WB-M1W2 v.3 MULTIPLE W1' },
     repeat: 2,
+    split: 'row',
     controlNames: true,
     channels: [
       { type: 'temperature_sensor', bind: { temperature: 'External Sensor {n}' } },
@@ -86,6 +90,7 @@ const RECIPES: WbRecipe[] = [
     // Выходы 0–10 В обычно управляют диммируемыми драйверами света.
     models: { 'wb-mao4': 'tpl1_wb_mao4' },
     repeat: 4,
+    split: 'index',
     channels: [{
       type: 'light',
       bind: { on_off: 'Channel {n} Switch', brightness: 'Channel {n} Dimming Level' },
@@ -94,6 +99,7 @@ const RECIPES: WbRecipe[] = [
   {
     models: { 'wb-map12e': 'WB-MAP12E fw2' },
     repeat: 4,
+    split: 'index',
     controlNames: true,
     channels: meterChannels('Ch {n} '),
   },
@@ -105,6 +111,7 @@ const RECIPES: WbRecipe[] = [
   {
     models: { 'wb-map6s': 'WB-MAP6S fw2' },
     repeat: 6,
+    split: 'index',
     controlNames: true,
     channels: [
       { type: 'power_sensor', bind: { power: 'P {n}' } },
@@ -136,9 +143,10 @@ const RECIPES: WbRecipe[] = [
     // Реле с измерением: у каждого выхода свои мощность и накопленная энергия.
     models: { 'wb-mrwm2': 'WB-MRWM2' },
     repeat: 2,
+    split: 'index',
     controlNames: true,
     channels: [
-      { type: 'switch', bind: { on_off: 'K{n}' } },
+      { type: 'switch', suggest: 'light', bind: { on_off: 'K{n}' } },
       { type: 'power_sensor', bind: { power: 'P L{n}' } },
       { type: 'energy_meter', bind: { energy: 'AP energy L{n}' } },
     ],
@@ -160,6 +168,7 @@ const RECIPES: WbRecipe[] = [
     // создаются те, чьи контролы есть на контроллере.
     models: { 'wb-led': 'WB-LED' },
     repeat: 4,
+    split: 'row',
     counts: { 'WB-LED': 1 },
     controlNames: true,
     channels: [
@@ -180,6 +189,7 @@ const RECIPES: WbRecipe[] = [
   {
     models: { 'wb-mdm3': 'tpl1_wb_mdm3' },
     repeat: 3,
+    split: 'index',
     channels: [{ type: 'light', bind: { on_off: 'K{n}', brightness: 'Channel {n}' } }],
   },
 ];
@@ -278,7 +288,7 @@ export const recipeRows = (
       .replace(/{n}/g, String(index))
       .replace(/{pair}/g, String(Math.ceil(index / 2)));
     recipe.channels.forEach(({
-      type, bind, condition, unless,
+      type, bind, condition, unless, suggest,
     }, position) => {
       if (unless && controlIds.includes(place(unless))) {
         return;
@@ -301,7 +311,12 @@ export const recipeRows = (
         return !isRequired;
       });
       if (isComplete) {
-        rows.push({ row, index: recipe.repeat ? index : null, ...(recipe.controlNames ? { byControl: true } : {}) });
+        rows.push({
+          row,
+          index: recipe.repeat ? index : null,
+          ...(recipe.controlNames ? { byControl: true } : {}),
+          ...(suggest ? { suggest } : {}),
+        });
         places.push(position);
       }
     });
@@ -328,3 +343,6 @@ export const recipeModelTitle = (deviceId: string, serial?: SerialDevice) => {
   const deviceType = serial ? typeOf(serial) : recipe?.models[/^(.+)_\d+$/.exec(deviceId)?.[1]];
   return recipe ? TITLES[deviceType] ?? deviceType : null;
 };
+
+// Как прибор делится на отдельные устройства: по каналу, по номеру канала или никак (null).
+export const recipeSplit = (deviceId: string, serial?: SerialDevice) => findRecipe(deviceId, serial)?.split ?? null;

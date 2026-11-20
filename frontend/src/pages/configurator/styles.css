@@ -196,26 +196,14 @@
     opacity: 0.6;
 }
 
-.configurator-wbCheck {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
+.configurator-wbCount {
+    min-width: 22px;
     margin-left: auto;
-    border: 1px solid var(--gray-color);
-    border-radius: 4px;
-}
-
-.configurator-wbCheckOn {
+    padding: 0 6px;
     color: var(--button-text-color);
+    text-align: center;
     background: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.configurator-wbCheck svg {
-    width: 12px;
-    height: 12px;
+    border-radius: 11px;
 }
 
 .configurator-wbModelIcons {

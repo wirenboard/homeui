@@ -154,6 +154,8 @@ export interface WbRecipeChannel {
   condition?: string;
   // контрол, при наличии которого канал не нужен
   unless?: string;
+  // тип, который предлагается по умолчанию, когда у канала есть выбор
+  suggest?: string;
 }
 
 // Устройство из конфига wb-mqtt-serial: тип шаблона и параметры, от которых зависит режим.
@@ -176,6 +178,8 @@ export interface WbRecipe {
   controlNames?: boolean;
   // каналы идут группами в порядке рецепта, а не по номерам
   byChannel?: boolean;
+  // прибор с независимыми выходами: отдельное устройство на каждый канал или на каждый номер
+  split?: 'row' | 'index';
 }
 
 // Модель с рецептом для показа: типы каналов и сколько раз набор повторяется.
@@ -193,6 +197,8 @@ export interface RecipeRow {
   index: number | null;
   // имя канала берётся от контрола
   byControl?: boolean;
+  // тип, который стоит предложить вместо основного
+  suggest?: string;
 }
 
 export interface OrigBinding {
