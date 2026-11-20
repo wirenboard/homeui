@@ -50,6 +50,34 @@ const RECIPES: WbRecipe[] = [
     skipped: 'Curtain {n} Open',
   },
   {
+    // Внешние датчики 1-Wire не берутся: по контролам не видно, какие из них подключены.
+    models: { 'wb-ms': 'tpl1_wb_ms_v2' },
+    channels: [
+      { type: 'temperature_sensor', bind: { temperature: 'Temperature' } },
+      { type: 'humidity_sensor', bind: { humidity: 'Humidity' } },
+      { type: 'illuminance_sensor', bind: { illuminance: 'Illuminance' } },
+    ],
+  },
+  {
+    // По одному датчику на вход: в новом шаблоне это первый датчик шины.
+    models: { 'wb-m1w2': 'WB-M1W2 v.3 MULTIPLE W1' },
+    repeat: 2,
+    controlNames: true,
+    channels: [
+      { type: 'temperature_sensor', bind: { temperature: 'External Sensor {n}' } },
+      { type: 'temperature_sensor', bind: { temperature: 'Temperature {n}:1' } },
+    ],
+  },
+  {
+    // Выходы 0–10 В обычно управляют диммируемыми драйверами света.
+    models: { 'wb-mao4': 'tpl1_wb_mao4' },
+    repeat: 4,
+    channels: [{
+      type: 'light',
+      bind: { on_off: 'Channel {n} Switch', brightness: 'Channel {n} Dimming Level' },
+    }],
+  },
+  {
     // Реле с измерением: у каждого выхода свои мощность и накопленная энергия.
     models: { 'wb-mrwm2': 'WB-MRWM2' },
     repeat: 2,
@@ -106,6 +134,11 @@ const TYPE_ALIASES: Record<string, string> = {
   'WB-LED-since-fw-3.8': 'WB-LED',
   'WB-MDM3': 'tpl1_wb_mdm3',
   'WB-MDM3-since-fw-2.12': 'tpl1_wb_mdm3',
+  'WB-MS v.2': 'tpl1_wb_ms_v2',
+  'WB-MS-v2-since-fw-4.36': 'tpl1_wb_ms_v2',
+  'WB-M1W2 BUTTONS': 'WB-M1W2 v.3 MULTIPLE W1',
+  'WB-MAO4': 'tpl1_wb_mao4',
+  'WB-MAO4-since-fw-2.9': 'tpl1_wb_mao4',
 };
 
 const typeOf = (serial: SerialDevice) => TYPE_ALIASES[serial.deviceType] ?? serial.deviceType;
@@ -117,6 +150,9 @@ const TITLES: Record<string, string> = {
   'WB-MRM2-mini-NO-inputs': 'WB-MRM2-mini',
   'WB-MR6C': 'WB-MR6C v.2, WB-MR6LV/HV',
   'WB-MR3': 'WB-MR3LV/HV, WB-MRWL3',
+  tpl1_wb_ms_v2: 'WB-MS v.2',
+  'WB-M1W2 v.3 MULTIPLE W1': 'WB-M1W2 v.3',
+  tpl1_wb_mao4: 'WB-MAO4',
 };
 
 // Одинаковые каналы показываются одним типом со счётчиком.
