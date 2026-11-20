@@ -24,7 +24,9 @@ import { GroupField } from './group-field';
 import { TypeChoice } from './type-choice';
 import { UnitField } from './unit-field';
 
-export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelProps) => {
+export const DevicePanel = observer(({
+  item, onOverview, onRemove, onAddRows,
+}: DevicePanelProps) => {
   const { t } = useTranslation();
   const devices = listDevices(true);
 
@@ -78,15 +80,25 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
     <Card
       heading={t('configurator.labels.device-settings')}
       indicator={(
-        <Button
-          size="small"
-          variant="danger"
-          icon={<TrashIcon />}
-          label={t('configurator.buttons.remove')}
-          aria-label={t('configurator.buttons.remove-device')}
-          aria-haspopup="dialog"
-          onClick={() => onRemove(item.name || t('configurator.labels.new-device'))}
-        />
+        <div className="configurator-listActions">
+          {onOverview && (
+            <Button
+              size="small"
+              variant="secondary"
+              label={t('configurator.buttons.to-overview')}
+              onClick={onOverview}
+            />
+          )}
+          <Button
+            size="small"
+            variant="danger"
+            icon={<TrashIcon />}
+            label={t('configurator.buttons.remove')}
+            aria-label={t('configurator.buttons.remove-device')}
+            aria-haspopup="dialog"
+            onClick={() => onRemove(item.name || t('configurator.labels.new-device'))}
+          />
+        </div>
       )}
     >
       <div className="configurator-fields">

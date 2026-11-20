@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { MAX_MOBILE_WIDTH, MAX_TABLET_WIDTH } from '@/common/breakpoints';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
@@ -15,6 +16,7 @@ import { AddDialog } from './components/add-dialog';
 import { DeviceList } from './components/device-list';
 import { DevicePanel } from './components/device-panel';
 import { NewDevicesAlert } from './components/new-devices-alert';
+import { Overview } from './components/overview';
 import type { ImportFile, PageStatus } from './types';
 import { liveControls, UNESCAPED } from './utils';
 import './styles.css';
@@ -32,14 +34,15 @@ const ConfiguratorPage = observer(() => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-  const isSingleColumn = useMediaQuery({ maxWidth: 990 });
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
+  const isSingleColumn = useMediaQuery({ maxWidth: MAX_TABLET_WIDTH });
   const buttonSize = isMobile ? 'small' : 'default';
   const [isPanelShown, setIsPanelShown] = useState(false);
   const [isClearOpened, setIsClearOpened] = useState(false);
   const [removed, setRemoved] = useState<{ name: string; remove: () => void } | null>(null);
   const [confirmOverwrite, isOverwriteOpened, handleOverwrite, handleOverwriteClose] = useConfirm<any>();
-  const { isDirty, isSaving, isLoading, backendState, selected } = configuratorStore;
+  const { isDirty, isSaving, isLoading, backendState, isOverview } = configuratorStore;
+  const selected = isOverview ? undefined : configuratorStore.selected;
   const hasDevices = !!configuratorStore.devices.length;
   const hasNameConflicts = !!configuratorStore.nameConflicts.size;
   // В одну колонку на экране либо список устройств, либо панель выбранного, как в менеджере устройств.
@@ -206,7 +209,7 @@ const ConfiguratorPage = observer(() => {
         </div>
       )}
 
-      {!isPanelMode && <NewDevicesAlert onConfigure={(deviceId) => openAdd(deviceId)} />}
+      {!isPanelMode && <NewDevicesAlert onConfigure={() => openAdd(null)} />}
 
       <div ref={layoutRef} className="configurator-layout">
         {!isPanelMode && (
@@ -224,14 +227,20 @@ const ConfiguratorPage = observer(() => {
               <DevicePanel
                 key={selected.id}
                 item={selected}
+                onOverview={isSingleColumn ? undefined : configuratorStore.showOverview}
                 onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeDevice(selected.id) })}
                 onAddRows={() => openAdd(null, selected)}
               />
+            ) : hasDevices ? (
+              <Overview
+                onSelect={(id) => {
+                  configuratorStore.select({ id });
+                  setIsPanelShown(true);
+                }}
+              />
             ) : (
-              <Card
-                heading={hasDevices ? t('configurator.labels.select-device') : t('configurator.labels.first-title')}
-              >
-                {!hasDevices && <p>{t('configurator.labels.first-text')}</p>}
+              <Card heading={t('configurator.labels.first-title')}>
+                <p>{t('configurator.labels.first-text')}</p>
               </Card>
             )}
           </div>

@@ -1239,7 +1239,6 @@
          "search": "Search by name, channel or group",
          "nothing-found": "Nothing found",
          "no-devices": "No devices yet",
-         "select-device": "Select a device in the list",
          "first-title": "Build devices for smart home apps",
          "first-text": "Press \"Add\" and choose a WB device, for example WB-MSW or WB-MR6C. Suitable channels are checked automatically. Or press \"Manual\" and compose a device of channels from different controller devices. Then name the channels, set their groups and press \"Save\".",
          "channels-count": "Channels: {{count}}",
@@ -1260,6 +1259,14 @@
          "type": "Type",
          "none": "None",
          "role-required": "A channel for \"{{role}}\" is required, otherwise the device is not exported",
+         "overview": "Overview",
+         "device": "Device",
+         "open-device": "Open the settings of the device \"{{name}}\"",
+         "adapter-on": "On",
+         "adapter-off": "Off",
+         "adapter-no-package": "Package not installed",
+         "adapter-service-stopped": "Service stopped",
+         "new-devices-count": "The controller has devices not yet set up for apps: {{count}}",
          "device-settings": "Device settings",
          "device-name": "Device name",
          "new-device": "New device",
@@ -1304,8 +1311,6 @@
          "import-prompt": "Devices from the file will replace the current list. The controller gets the changes after saving.",
          "imported": "Devices imported: {{count}}. Check the list and press \"Save\".",
          "unsupported": "Not suitable for apps ({{count}})",
-         "new-devices": "The controller has devices not yet set up for apps:",
-         "more-devices": "and {{count}} more",
          "unit": "Units",
          "unit-placeholder": "Choose or type"
       },
@@ -1320,6 +1325,7 @@
          "save": "Save",
          "discard": "Discard changes",
          "to-list": "To device list",
+         "to-overview": "To overview",
          "to-controller-devices": "To controller devices",
          "remove-device": "Remove device",
          "remove-channel": "Remove channel \"{{name}}\"",
@@ -1328,7 +1334,7 @@
          "remove": "Remove",
          "import": "Import",
          "export": "Export",
-         "configure": "Set up \"{{name}}\""
+         "configure": "Set up"
       },
       "errors": {
          "load": "Failed to load the config: {{error}}",

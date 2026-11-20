@@ -29,6 +29,8 @@ export interface DeviceListProps {
 
 export interface DevicePanelProps {
   item: Device;
+  // без него кнопки «К обзору» нет
+  onOverview?: () => void;
   onRemove: (_name: string) => void;
   onAddRows: () => void;
 }
@@ -72,11 +74,15 @@ export interface UnitFieldProps {
   onChange: (_unit: string) => void;
 }
 
+export interface OverviewProps {
+  onSelect: (_deviceId: string) => void;
+}
+
 export interface GroupFieldProps {
   value: string;
   onChange: (_group: string) => void;
 }
 
 export interface NewDevicesAlertProps {
-  onConfigure: (_deviceId: string) => void;
+  onConfigure: () => void;
 }

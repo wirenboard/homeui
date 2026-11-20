@@ -41,6 +41,7 @@ export default class ConfiguratorStore {
   orig: ParsedConfig['orig'] = {};
   mixed: Record<string, boolean> = {};
   selection: Selection = null;
+  isOverview = true;
   backendState: BackendState = 'checking';
   adapters: Adapter[] = DEFAULT_ADAPTERS;
   isLoading = false;
@@ -182,6 +183,11 @@ export default class ConfiguratorStore {
 
   select(selection: Selection) {
     this.selection = selection;
+    this.isOverview = !selection;
+  }
+
+  showOverview() {
+    this.isOverview = true;
   }
 
   revert() {
@@ -223,6 +229,7 @@ export default class ConfiguratorStore {
     };
     this.devices.push(device);
     this.selection = { id: device.id };
+    this.isOverview = false;
     return this.selected;
   }
 
@@ -238,6 +245,7 @@ export default class ConfiguratorStore {
 
   removeDevice(id: string) {
     this.devices = this.devices.filter((device) => device.id !== id);
+    this.isOverview = true;
     this._keepSelection();
   }
 

@@ -5,10 +5,9 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { CHANNEL_CLASSES, configuratorStore, ROLES, splitKey } from '@/stores/configurator';
 import type { NewDevicesAlertProps } from '../types';
-import { classifyCell, deviceControls, deviceTitle, isVirtualDevice, listDevices, UNESCAPED } from '../utils';
+import { classifyCell, deviceControls, isVirtualDevice, listDevices } from '../utils';
 
 const DISMISSED_KEY = 'configurator-dismissed-devices';
-const SHOWN_LIMIT = 5;
 
 const readDismissed = (): string[] => {
   try {
@@ -48,23 +47,15 @@ export const NewDevicesAlert = observer(({ onConfigure }: NewDevicesAlertProps) 
 
   return (
     <Alert variant="info" size="small" className="configurator-alert" onClose={dismiss}>
-      <p className="configurator-newDevicesText">{t('configurator.labels.new-devices')}</p>
       <div className="configurator-newDevices">
-        {devices.slice(0, SHOWN_LIMIT).map((id) => (
-          <Button
-            key={id}
-            size="small"
-            variant="secondary"
-            label={t('configurator.buttons.configure', { ...UNESCAPED, name: deviceTitle(id) })}
-            aria-haspopup="dialog"
-            onClick={() => {
-              onConfigure(id);
-            }}
-          />
-        ))}
-        {devices.length > SHOWN_LIMIT && (
-          <span>{t('configurator.labels.more-devices', { count: devices.length - SHOWN_LIMIT })}</span>
-        )}
+        <span>{t('configurator.labels.new-devices-count', { count: devices.length })}</span>
+        <Button
+          size="small"
+          variant="secondary"
+          label={t('configurator.buttons.configure')}
+          aria-haspopup="dialog"
+          onClick={onConfigure}
+        />
       </div>
     </Alert>
   );

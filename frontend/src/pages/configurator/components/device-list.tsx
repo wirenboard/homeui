@@ -15,7 +15,7 @@ import { hasLostBinding } from '../utils';
 export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const { devices, selection, savedModel } = configuratorStore;
+  const { devices, selection, savedModel, isOverview } = configuratorStore;
   const saved = new Map(savedModel.devices.map((device) => [device.id, stable(device)]));
   const needle = query.trim().toLowerCase();
 
@@ -76,7 +76,7 @@ export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: De
           )}
           <ul className="configurator-listItems">
             {shown.filter((device) => device.group.trim() === group).map((device) => {
-              const isSelected = selection?.id === device.id;
+              const isSelected = !isOverview && selection?.id === device.id;
               const tag = mark(device);
               return (
                 <li key={device.id}>

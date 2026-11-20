@@ -4,7 +4,7 @@
     align-items: center;
     gap: 8px;
 
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         gap: 6px;
     }
 }
@@ -27,7 +27,7 @@
     gap: var(--content-gap);
     align-items: start;
 
-    @media (max-width: 990px) {
+    @media (--max-tablet-width) {
         grid-template-columns: minmax(0, 1fr);
     }
 }
@@ -59,7 +59,9 @@
 
 .configurator-listActions {
     display: flex;
+    flex-shrink: 0;
     gap: 6px;
+    white-space: nowrap;
 }
 
 .configurator-listSection {
@@ -145,6 +147,17 @@
     opacity: 0.7;
 }
 
+.configurator-overviewRow {
+    cursor: pointer;
+}
+
+.configurator-overviewName {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
 .configurator-channels {
     margin: 0;
     padding: 0;
@@ -226,7 +239,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px var(--content-gap);
 
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         grid-template-columns: minmax(0, 1fr);
     }
 }
@@ -249,7 +262,7 @@
     align-items: center;
     gap: 8px;
 
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         grid-template-columns: minmax(0, 1fr);
     }
 }
@@ -274,7 +287,7 @@
     height: 60vh;
     padding: var(--content-gap);
 
-    @media (max-width: 768px) {
+    @media (--max-mobile-width) {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
     }
@@ -323,10 +336,6 @@
 
 .configurator-fileInput {
     display: none;
-}
-
-.configurator-newDevicesText {
-    margin: 0 0 8px;
 }
 
 .configurator-newDevices {

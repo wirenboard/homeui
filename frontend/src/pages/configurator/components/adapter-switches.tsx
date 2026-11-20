@@ -7,8 +7,7 @@ import { Alert } from '@/components/alert';
 import { Switch } from '@/components/switch';
 import { configuratorStore, type AdapterId } from '@/stores/configurator';
 import type { AdapterSwitchesProps } from '../types';
-
-const ADAPTER_IDS: string[] = ['matter'] satisfies AdapterId[];
+import { ADAPTER_IDS, adapterLabel, isAdapterShown } from '../utils';
 
 export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
   const { t, i18n } = useTranslation();
@@ -16,11 +15,11 @@ export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
 
   const known = configuratorStore.adapters.filter(({ id }) => ADAPTER_IDS.includes(id));
   const shown = known
-    .filter(({ languages }) => !languages || languages.includes(i18n.language))
+    .filter((adapter) => isAdapterShown(adapter, i18n.language))
     .map((adapter) => ({
       ...adapter,
       id: adapter.id as AdapterId,
-      label: adapter.title?.[i18n.language as 'ru' | 'en'] || adapter.title?.en || adapter.id,
+      label: adapterLabel(adapter, i18n.language),
     }));
 
   return (
