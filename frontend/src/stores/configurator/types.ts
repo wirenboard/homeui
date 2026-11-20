@@ -146,19 +146,40 @@ export interface Device {
   rows: DeviceRow[];
 }
 
-// Канал рецепта: роль → имя контрола устройства, {n} — номер канала.
+// Канал рецепта: роль → имя контрола устройства; {n} — номер канала, {pair} — номер пары каналов.
 export interface WbRecipeChannel {
   type: string;
   bind: Partial<Record<RoleId, string>>;
+  // условие шаблона wb-mqtt-serial над параметрами устройства; без него канал берётся всегда
+  condition?: string;
+}
+
+// Устройство из конфига wb-mqtt-serial: тип шаблона и параметры, от которых зависит режим.
+export interface SerialDevice {
+  deviceType: string;
+  params: Record<string, unknown>;
 }
 
 export interface WbRecipe {
-  // идентификаторы устройств без адреса, например wb-msw-v4
-  models: string[];
+  // идентификатор устройства без адреса → тип шаблона, например wb-msw-v4 → WB-MSW v.4
+  models: Record<string, string>;
   // число одинаковых каналов; без него набор берётся один раз
   repeat?: number;
+  // число каналов у моделей, где оно меньше repeat; нужно только для показа
+  counts?: Record<string, number>;
   channels: WbRecipeChannel[];
+  // контрол, по которому видно, что часть устройства в режиме, который рецепт не берёт
+  skipped?: string;
 }
+
+// Модель с рецептом для показа: типы каналов и сколько раз набор повторяется.
+export interface RecipeModel {
+  title: string;
+  types: string[];
+  count: number;
+}
+
+export type RecipeFit = (_controlId: string, _role: RoleId) => boolean;
 
 // Строка по рецепту; index — номер канала у повторяющихся, иначе null.
 export interface RecipeRow {

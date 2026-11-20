@@ -73,6 +73,8 @@ export const isSystemDevice = (deviceId: string) =>
 
 export const isVirtualDevice = (deviceId: string) => devicesStore.devices.get(deviceId)?.type === DeviceType.Virtual;
 
+export const isModbusDevice = (deviceId: string) => devicesStore.devices.get(deviceId)?.type === DeviceType.Modbus;
+
 export const liveControls: LiveControls = {
   meta: (deviceId, controlId) => {
     const cell = devicesStore.cells.get(`${deviceId}/${controlId}`);

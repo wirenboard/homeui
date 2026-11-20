@@ -218,7 +218,10 @@ const ConfiguratorPage = observer(() => {
           <DeviceList
             onAdd={() => openAdd(null)}
             onAddEmpty={() => openAdd(null, null, true)}
-            onAddWb={() => setIsWbOpened(true)}
+            onAddWb={() => {
+              configuratorStore.loadSerialDevices();
+              setIsWbOpened(true);
+            }}
             onClear={() => setIsClearOpened(true)}
             onSelect={() => setIsPanelShown(true)}
           />

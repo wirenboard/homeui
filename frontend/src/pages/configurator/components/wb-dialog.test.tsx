@@ -4,13 +4,17 @@ import { configuratorStore } from '@/stores/configurator';
 import { fireEvent, render, screen } from '@/test/render';
 import { WbDialog } from './wb-dialog';
 
-const { controls } = vi.hoisted(() => ({ controls: {} as Record<string, string[]> }));
+const { controls, CLASSES } = vi.hoisted(() => ({
+  controls: {} as Record<string, string[]>,
+  CLASSES: { Temperature: 'temp', Humidity: 'hum', K1: 'bin_rw', K2: 'bin_rw' } as Record<string, string>,
+}));
 
 vi.mock('../utils', async (importOriginal) => ({
   ...await importOriginal() as Record<string, unknown>,
   listDevices: () => Object.keys(controls),
   deviceControls: (id: string) => controls[id].map((controlId) => ({ controlId })),
   deviceTitle: (id: string) => id.toUpperCase(),
+  classifyCell: ({ controlId }: { controlId: string }) => ({ cls: CLASSES[controlId] ?? 'none' }),
 }));
 vi.mock('@/components/dialog', () => ({
   Dialog: ({ children, isOpened }: any) => (isOpened ? <div>{children}</div> : null),
@@ -32,7 +36,7 @@ describe('WbDialog', () => {
     const onAdded = show({
       'wb-msw-v4_90': ['Temperature', 'Humidity'],
       'wb-mrps6_12': ['K1', 'K2'],
-      'wb-mr6cv3_137': ['K1'],
+      'wb-led_42': ['Channel 1'],
     });
 
     expect(screen.getAllByRole('checkbox')).toHaveLength(2);
@@ -56,9 +60,19 @@ describe('WbDialog', () => {
   });
 
   it('says there is nothing to add when no device has a recipe', () => {
-    show({ 'wb-mr6cv3_137': ['K1'] });
+    show({ 'wb-led_42': ['Channel 1'] });
 
     expect(screen.getByText('configurator.labels.wb-none')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'configurator.buttons.create-devices' })).toBeNull();
+  });
+
+  it('lists the supported models that are not on the controller and leaves out the ones that are', () => {
+    show({ 'wb-msw-v4_90': ['Temperature'] });
+
+    const models = Array.from(document.querySelectorAll('.configurator-wbModelAbsent .configurator-listTitle'))
+      .map((title) => title.textContent);
+
+    expect(models).toContain('WB-MDM3');
+    expect(models).not.toContain('WB-MSW v.4');
   });
 });

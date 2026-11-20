@@ -2,6 +2,7 @@ import { dump as dumpYaml, load as loadYaml } from 'js-yaml';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { findType, hasUnit } from './catalog';
 import { clone, fromConfig, moduleName, stable, toConfig } from './model';
+import { loadSerialDevices } from './serial-devices';
 import type {
   Adapter,
   BackendState,
@@ -16,6 +17,7 @@ import type {
   ParsedConfig,
   RoleId,
   Selection,
+  SerialDevice,
 } from './types';
 
 const STATUS_URL = '/converter-ext/status';
@@ -44,6 +46,7 @@ export default class ConfiguratorStore {
   isOverview = true;
   backendState: BackendState = 'checking';
   adapters: Adapter[] = DEFAULT_ADAPTERS;
+  serialDevices: Record<string, SerialDevice> = {};
   isLoading = false;
   isSaving = false;
 
@@ -247,6 +250,13 @@ export default class ConfiguratorStore {
     this.devices = this.devices.filter((device) => device.id !== id);
     this.isOverview = true;
     this._keepSelection();
+  }
+
+  async loadSerialDevices() {
+    const serialDevices = await loadSerialDevices();
+    runInAction(() => {
+      this.serialDevices = serialDevices;
+    });
   }
 
   setName(device: Device, name: string) {

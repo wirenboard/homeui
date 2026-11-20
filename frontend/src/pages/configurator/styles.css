@@ -147,10 +147,76 @@
 
 }
 
-.configurator-wbDevice {
+.configurator-wbSections {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--content-gap);
+}
+
+.configurator-wbTags {
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+}
+
+.configurator-wbModels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-wbModel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    padding: 8px 12px;
+    text-align: left;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--light-gray-color);
+    border-radius: var(--container-border-radius);
+}
+
+.configurator-wbModelFound {
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+}
+
+.configurator-wbModelAbsent {
+    opacity: 0.6;
+}
+
+.configurator-wbCheck {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    border: 1px solid var(--gray-color);
+    border-radius: 4px;
+}
+
+.configurator-wbCheckOn {
+    color: var(--button-text-color);
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.configurator-wbCheck svg {
+    width: 12px;
+    height: 12px;
+}
+
+.configurator-wbModelIcons {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .configurator-listGroup {
