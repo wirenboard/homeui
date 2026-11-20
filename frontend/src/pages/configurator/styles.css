@@ -111,6 +111,15 @@
     overflow-wrap: anywhere;
 }
 
+.configurator-listGroup {
+    margin: 0 0 4px;
+    padding: 0 8px;
+    font-size: inherit;
+    font-weight: 400;
+    color: var(--gray-color);
+    overflow-wrap: anywhere;
+}
+
 .configurator-listTitle {
     font-weight: 600;
 }

@@ -72,6 +72,11 @@ export interface UnitFieldProps {
   onChange: (_unit: string) => void;
 }
 
+export interface GroupFieldProps {
+  value: string;
+  onChange: (_group: string) => void;
+}
+
 export interface NewDevicesAlertProps {
   onConfigure: (_deviceId: string) => void;
 }

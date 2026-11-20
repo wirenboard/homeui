@@ -25,6 +25,9 @@ export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: De
     ...device.rows.flatMap((row) => [row.name, ...Object.values(row.bind)]),
   ].join(' ').toLowerCase().includes(needle));
 
+  const groups = Array.from(new Set(shown.map((device) => device.group.trim())))
+    .sort((a, b) => Number(!a) - Number(!b) || a.localeCompare(b));
+
   const mark = (device: Device) => {
     if (!saved.has(device.id)) {
       return t('configurator.labels.new');
@@ -66,41 +69,48 @@ export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: De
         onChange={(value) => setQuery(String(value))}
       />
 
-      {!!shown.length && (
-        <ul className="configurator-listItems configurator-listSection">
-          {shown.map((device) => {
-            const isSelected = selection?.id === device.id;
-            const tag = mark(device);
-            return (
-              <li key={device.id}>
-                <button
-                  type="button"
-                  className={classNames('configurator-listItem', { 'configurator-listItemSelected': isSelected })}
-                  aria-current={isSelected || undefined}
-                  onClick={() => {
-                    configuratorStore.select({ id: device.id });
-                    onSelect();
-                  }}
-                >
-                  <span className="configurator-listText">
-                    <span className="configurator-listTitle">{device.name || t('configurator.labels.new-device')}</span>
-                    <span>
-                      {device.rows.length
-                        ? t('configurator.labels.channels-count', { count: device.rows.length })
-                        : t('configurator.labels.channels-none')}
+      {groups.map((group) => (
+        <section key={group} className="configurator-listSection">
+          {groups.some(Boolean) && (
+            <h4 className="configurator-listGroup">{group || t('configurator.labels.no-group')}</h4>
+          )}
+          <ul className="configurator-listItems">
+            {shown.filter((device) => device.group.trim() === group).map((device) => {
+              const isSelected = selection?.id === device.id;
+              const tag = mark(device);
+              return (
+                <li key={device.id}>
+                  <button
+                    type="button"
+                    className={classNames('configurator-listItem', { 'configurator-listItemSelected': isSelected })}
+                    aria-current={isSelected || undefined}
+                    onClick={() => {
+                      configuratorStore.select({ id: device.id });
+                      onSelect();
+                    }}
+                  >
+                    <span className="configurator-listText">
+                      <span className="configurator-listTitle">
+                        {device.name || t('configurator.labels.new-device')}
+                      </span>
+                      <span>
+                        {device.rows.length
+                          ? t('configurator.labels.channels-count', { count: device.rows.length })
+                          : t('configurator.labels.channels-none')}
+                      </span>
                     </span>
-                  </span>
-                  {hasLostBinding(device) && <Tag variant="warn">{t('configurator.labels.not-found')}</Tag>}
-                  {configuratorStore.nameConflicts.has(device.id) && (
-                    <Tag variant="warn">{t('configurator.labels.name-duplicate')}</Tag>
-                  )}
-                  {tag && <Tag variant="gray">{tag}</Tag>}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                    {hasLostBinding(device) && <Tag variant="warn">{t('configurator.labels.not-found')}</Tag>}
+                    {configuratorStore.nameConflicts.has(device.id) && (
+                      <Tag variant="warn">{t('configurator.labels.name-duplicate')}</Tag>
+                    )}
+                    {tag && <Tag variant="gray">{tag}</Tag>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
 
       {!shown.length && (
         <p className="configurator-empty">

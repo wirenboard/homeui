@@ -20,6 +20,7 @@ import {
   TYPE_ICONS, typeName, UNESCAPED,
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
+import { GroupField } from './group-field';
 import { TypeChoice } from './type-choice';
 import { UnitField } from './unit-field';
 
@@ -100,12 +101,7 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
           error={configuratorStore.nameConflicts.has(item.id) ? t('configurator.labels.name-taken') : undefined}
           onChange={(name) => configuratorStore.setName(item, String(name))}
         />
-        <StringField
-          title={t('configurator.labels.group')}
-          value={item.group}
-          placeholder={t('configurator.labels.no-group')}
-          onChange={(group) => configuratorStore.setGroup(item, String(group))}
-        />
+        <GroupField value={item.group} onChange={(group) => configuratorStore.setGroup(item, group)} />
       </div>
       {configuratorStore.mixed[item.id] && (
         <Alert variant="info" size="small" className="configurator-alertInline">
