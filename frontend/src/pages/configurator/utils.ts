@@ -18,7 +18,7 @@ import TypeTemperatureIcon from '@/assets/icons/type-temperature.svg';
 import i18n from '@/i18n/config';
 import {
   CHANNEL_CLASSES, classify, primaryRole, ROLES, splitKey, type Adapter, type AdapterId, type ChannelClass,
-  type Classification, type ControlMeta, type Device, type LiveControls,
+  type Classification, type ControlMeta, type Device, type LiveControls, type RecipeRow,
 } from '@/stores/configurator';
 import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
 
@@ -144,3 +144,8 @@ export const sortByGroup = (devices: Device[]) => {
     .sort((a, b) => Number(!a) - Number(!b) || a.localeCompare(b));
   return groups.flatMap((group) => devices.filter((device) => device.group.trim() === group));
 };
+
+// Имя канала по рецепту: «Канал N» у повторяющихся, иначе название основной роли.
+export const recipeRowName = ({ row, index }: RecipeRow) => (index
+  ? t('configurator.labels.recipe-channel', { index })
+  : roleLabel(primaryRole(row.type)));

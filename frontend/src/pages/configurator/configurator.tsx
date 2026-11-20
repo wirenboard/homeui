@@ -17,6 +17,7 @@ import { DeviceList } from './components/device-list';
 import { DevicePanel } from './components/device-panel';
 import { NewDevicesAlert } from './components/new-devices-alert';
 import { Overview } from './components/overview';
+import { WbDialog } from './components/wb-dialog';
 import type { ImportFile, PageStatus } from './types';
 import { liveControls, UNESCAPED } from './utils';
 import './styles.css';
@@ -30,6 +31,7 @@ const ConfiguratorPage = observer(() => {
   const [addDeviceId, setAddDeviceId] = useState<string | null>(null);
   const [addTarget, setAddTarget] = useState<Device | null>(null);
   const [isAddEmpty, setIsAddEmpty] = useState(false);
+  const [isWbOpened, setIsWbOpened] = useState(false);
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
@@ -216,6 +218,7 @@ const ConfiguratorPage = observer(() => {
           <DeviceList
             onAdd={() => openAdd(null)}
             onAddEmpty={() => openAdd(null, null, true)}
+            onAddWb={() => setIsWbOpened(true)}
             onClear={() => setIsClearOpened(true)}
             onSelect={() => setIsPanelShown(true)}
           />
@@ -254,6 +257,12 @@ const ConfiguratorPage = observer(() => {
         isEmpty={isAddEmpty}
         onAdded={() => setIsPanelShown(true)}
         onClose={() => setIsAddOpened(false)}
+      />
+
+      <WbDialog
+        isOpened={isWbOpened}
+        onAdded={() => setIsPanelShown(true)}
+        onClose={() => setIsWbOpened(false)}
       />
 
       <Confirm

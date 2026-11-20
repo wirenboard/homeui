@@ -145,15 +145,11 @@
         background: var(--background-accent-color);
     }
 
-    &:disabled {
-        opacity: 0.6;
-        cursor: default;
-    }
 }
 
-.configurator-addMenuItem .configurator-listTitle {
-    display: inline-flex;
-    align-items: center;
+.configurator-wbDevice {
+    display: flex;
+    align-items: flex-start;
     gap: 8px;
 }
 

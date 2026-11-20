@@ -146,6 +146,26 @@ export interface Device {
   rows: DeviceRow[];
 }
 
+// Канал рецепта: роль → имя контрола устройства, {n} — номер канала.
+export interface WbRecipeChannel {
+  type: string;
+  bind: Partial<Record<RoleId, string>>;
+}
+
+export interface WbRecipe {
+  // идентификаторы устройств без адреса, например wb-msw-v4
+  models: string[];
+  // число одинаковых каналов; без него набор берётся один раз
+  repeat?: number;
+  channels: WbRecipeChannel[];
+}
+
+// Строка по рецепту; index — номер канала у повторяющихся, иначе null.
+export interface RecipeRow {
+  row: NewDeviceRow;
+  index: number | null;
+}
+
 export interface OrigBinding {
   binding: ConfigBinding;
   range?: Range;

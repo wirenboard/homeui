@@ -13,14 +13,16 @@ import { configuratorStore, stable, type Device } from '@/stores/configurator';
 import type { AddWay, DeviceListProps } from '../types';
 import { hasLostBinding } from '../utils';
 
-export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: DeviceListProps) => {
+export const DeviceList = observer(({
+  onAdd, onAddEmpty, onAddWb, onClear, onSelect,
+}: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [isMenuOpened, setIsMenuOpened] = useState(false);
   const ways: AddWay[] = [
     { id: 'manual', onPick: onAddEmpty },
     { id: 'from-device', onPick: onAdd },
-    { id: 'from-wb' },
+    { id: 'from-wb', onPick: onAddWb },
   ];
   const { devices, selection, savedModel, isOverview } = configuratorStore;
   const saved = new Map(savedModel.devices.map((device) => [device.id, stable(device)]));
@@ -60,16 +62,12 @@ export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: De
                     type="button"
                     role="menuitem"
                     className="configurator-addMenuItem"
-                    disabled={!onPick}
                     onClick={() => {
                       setIsMenuOpened(false);
                       onPick();
                     }}
                   >
-                    <span className="configurator-listTitle">
-                      {t(`configurator.labels.add-${id}`)}
-                      {!onPick && <Tag variant="gray">{t('configurator.labels.soon')}</Tag>}
-                    </span>
+                    <span className="configurator-listTitle">{t(`configurator.labels.add-${id}`)}</span>
                     <span>{t(`configurator.labels.add-${id}-text`)}</span>
                   </button>
                 </li>

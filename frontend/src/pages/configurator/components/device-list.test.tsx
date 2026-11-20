@@ -13,7 +13,7 @@ const show = (groups: string[]) => {
       id: `d${index}`, name: `Устройство ${index}`, group, matter: true, rows: [],
     }));
   });
-  render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onClear={vi.fn()} onSelect={vi.fn()} />);
+  render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onAddWb={vi.fn()} onClear={vi.fn()} onSelect={vi.fn()} />);
 };
 
 const sections = () => Array.from(document.querySelectorAll('section')).map((section) => [
@@ -46,22 +46,18 @@ describe('DeviceList', () => {
     expect(sections()).toEqual([[null, ['Устройство 0', 'Устройство 1']]]);
   });
 
-  it('offers the ways to add a device in a menu: manual and from a device work, the WB one is not ready', () => {
-    const onAdd = vi.fn();
-    const onAddEmpty = vi.fn();
-    render(<DeviceList onAdd={onAdd} onAddEmpty={onAddEmpty} onClear={vi.fn()} onSelect={vi.fn()} />);
+  it('offers three ways to add a device in a menu, each closes the menu and starts its own way', () => {
+    const ways = [vi.fn(), vi.fn(), vi.fn()];
+    render(
+      <DeviceList onAddEmpty={ways[0]} onAdd={ways[1]} onAddWb={ways[2]} onClear={vi.fn()} onSelect={vi.fn()} />,
+    );
 
-    openMenu();
-    const [manual, fromDevice, fromWb] = screen.getAllByRole('menuitem') as HTMLButtonElement[];
-    expect(fromWb.disabled).toBe(true);
+    ways.forEach((way, index) => {
+      openMenu();
+      fireEvent.click(screen.getAllByRole('menuitem')[index]);
 
-    fireEvent.click(manual);
-    expect(onAddEmpty).toHaveBeenCalledTimes(1);
-    expect(screen.queryByRole('menu')).toBeNull();
-
-    openMenu();
-    fireEvent.click(screen.getAllByRole('menuitem')[1]);
-    expect(onAdd).toHaveBeenCalledTimes(1);
-    expect(fromDevice.textContent).toContain('configurator.labels.add-from-device');
+      expect(way).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('menu')).toBeNull();
+    });
   });
 });

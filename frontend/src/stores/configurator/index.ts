@@ -8,4 +8,5 @@ export {
   TYPE_CATEGORIES
 } from './catalog';
 export { rowServices, splitKey, stable, topicOf } from './model';
+export { recipeRows } from './recipes';
 export type * from './types';

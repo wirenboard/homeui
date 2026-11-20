@@ -20,15 +20,16 @@ export interface TypeTilesProps {
   onPick: (_typeId: string) => void;
 }
 
-// Способ добавления устройства в меню «Добавить»; без onPick пункт недоступен.
+// Способ добавления устройства в меню «Добавить».
 export interface AddWay {
   id: 'manual' | 'from-device' | 'from-wb';
-  onPick?: () => void;
+  onPick: () => void;
 }
 
 export interface DeviceListProps {
   onAdd: () => void;
   onAddEmpty: () => void;
+  onAddWb: () => void;
   onClear: () => void;
   onSelect: () => void;
 }
@@ -78,6 +79,12 @@ export interface ImportFile {
 export interface UnitFieldProps {
   value: string;
   onChange: (_unit: string) => void;
+}
+
+export interface WbDialogProps {
+  isOpened: boolean;
+  onClose: () => void;
+  onAdded: () => void;
 }
 
 export interface OverviewProps {
