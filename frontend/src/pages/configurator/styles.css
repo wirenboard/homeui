@@ -113,6 +113,50 @@
     overflow-wrap: anywhere;
 }
 
+.configurator-addMenu {
+    padding: 4px;
+}
+
+.configurator-addMenuItems {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 320px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-addMenuItem {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: 8px;
+    text-align: left;
+    color: var(--text-color);
+    background: transparent;
+    border: 0;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+        background: var(--background-accent-color);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: default;
+    }
+}
+
+.configurator-addMenuItem .configurator-listTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .configurator-listGroup {
     margin: 0 0 4px;
     padding: 0 8px;

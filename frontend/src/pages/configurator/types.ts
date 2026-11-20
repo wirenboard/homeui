@@ -20,6 +20,12 @@ export interface TypeTilesProps {
   onPick: (_typeId: string) => void;
 }
 
+// Способ добавления устройства в меню «Добавить»; без onPick пункт недоступен.
+export interface AddWay {
+  id: 'manual' | 'from-device' | 'from-wb';
+  onPick?: () => void;
+}
+
 export interface DeviceListProps {
   onAdd: () => void;
   onAddEmpty: () => void;

@@ -7,14 +7,21 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
+import { Popup } from '@/components/popup';
 import { Tag } from '@/components/tag';
 import { configuratorStore, stable, type Device } from '@/stores/configurator';
-import type { DeviceListProps } from '../types';
+import type { AddWay, DeviceListProps } from '../types';
 import { hasLostBinding } from '../utils';
 
 export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [isMenuOpened, setIsMenuOpened] = useState(false);
+  const ways: AddWay[] = [
+    { id: 'manual', onPick: onAddEmpty },
+    { id: 'from-device', onPick: onAdd },
+    { id: 'from-wb' },
+  ];
   const { devices, selection, savedModel, isOverview } = configuratorStore;
   const saved = new Map(savedModel.devices.map((device) => [device.id, stable(device)]));
   const needle = query.trim().toLowerCase();
@@ -41,23 +48,44 @@ export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: De
       heading={t('configurator.labels.devices')}
       variant="secondary"
       indicator={(
-        <div className="configurator-listActions">
-          <Button
-            size="small"
-            variant="secondary"
-            label={t('configurator.buttons.add-empty')}
-            title={t('configurator.buttons.empty-device')}
-            aria-haspopup="dialog"
-            onClick={onAddEmpty}
-          />
+        <Popup
+          isOpen={isMenuOpened}
+          placement="bottom-end"
+          className="configurator-addMenu"
+          content={(
+            <ul className="configurator-addMenuItems" role="menu">
+              {ways.map(({ id, onPick }) => (
+                <li key={id} role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="configurator-addMenuItem"
+                    disabled={!onPick}
+                    onClick={() => {
+                      setIsMenuOpened(false);
+                      onPick();
+                    }}
+                  >
+                    <span className="configurator-listTitle">
+                      {t(`configurator.labels.add-${id}`)}
+                      {!onPick && <Tag variant="gray">{t('configurator.labels.soon')}</Tag>}
+                    </span>
+                    <span>{t(`configurator.labels.add-${id}-text`)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          onOpenChange={setIsMenuOpened}
+        >
           <Button
             size="small"
             icon={<PlusIcon />}
             label={t('configurator.buttons.add')}
-            aria-haspopup="dialog"
-            onClick={onAdd}
+            aria-haspopup="menu"
+            aria-expanded={isMenuOpened}
           />
-        </div>
+        </Popup>
       )}
     >
       <Input

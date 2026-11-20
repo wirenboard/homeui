@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { runInAction } from 'mobx';
 import { configuratorStore } from '@/stores/configurator';
-import { render } from '@/test/render';
+import { fireEvent, render, screen } from '@/test/render';
 import { DeviceList } from './device-list';
 
 vi.mock('@/assets/icons/plus.svg', () => ({ default: () => null }));
@@ -21,6 +21,14 @@ const sections = () => Array.from(document.querySelectorAll('section')).map((sec
   Array.from(section.querySelectorAll('.configurator-listTitle')).map((title) => title.textContent),
 ]);
 
+// Меню рисуется в общий контейнер всплывающих блоков приложения.
+const openMenu = () => {
+  if (!document.querySelector('.floating')) {
+    document.body.appendChild(Object.assign(document.createElement('div'), { className: 'floating' }));
+  }
+  fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.add' }));
+};
+
 describe('DeviceList', () => {
   it('puts devices under headings of their groups by name, the ones without a group last', () => {
     show(['Кухня', '', 'Коридор', 'Кухня']);
@@ -36,5 +44,24 @@ describe('DeviceList', () => {
     show(['', '']);
 
     expect(sections()).toEqual([[null, ['Устройство 0', 'Устройство 1']]]);
+  });
+
+  it('offers the ways to add a device in a menu: manual and from a device work, the WB one is not ready', () => {
+    const onAdd = vi.fn();
+    const onAddEmpty = vi.fn();
+    render(<DeviceList onAdd={onAdd} onAddEmpty={onAddEmpty} onClear={vi.fn()} onSelect={vi.fn()} />);
+
+    openMenu();
+    const [manual, fromDevice, fromWb] = screen.getAllByRole('menuitem') as HTMLButtonElement[];
+    expect(fromWb.disabled).toBe(true);
+
+    fireEvent.click(manual);
+    expect(onAddEmpty).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('menu')).toBeNull();
+
+    openMenu();
+    fireEvent.click(screen.getAllByRole('menuitem')[1]);
+    expect(onAdd).toHaveBeenCalledTimes(1);
+    expect(fromDevice.textContent).toContain('configurator.labels.add-from-device');
   });
 });
