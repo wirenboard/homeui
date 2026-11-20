@@ -36,14 +36,15 @@ beforeEach(() => {
 });
 
 describe('AddDialog channel selection', () => {
-  it('checks nothing in advance and checks the suitable channels of the device by the button', () => {
+  it('checks nothing in advance and checks all the channels of the device by the button', () => {
     render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
     expect(checkedCount()).toBe(0);
     expect(addButton('configurator.buttons.add-device').disabled).toBe(true);
 
-    fireEvent.click(addButton('configurator.buttons.pick-suitable'));
+    fireEvent.click(addButton('configurator.buttons.pick-all'));
 
     expect(checkedCount()).toBe(2);
+    expect(addButton('configurator.buttons.add-device').disabled).toBe(false);
   });
 
   it('preselects nothing when channels are added to an existing device', () => {
@@ -88,31 +89,6 @@ describe('AddDialog channel selection', () => {
 
     fireEvent.click(document.querySelectorAll('.configurator-choice button')[1]);
     expect(screen.queryByText('configurator.labels.type-guessed')).toBeNull();
-  });
-
-  it('disables the suitable button when nothing is left to check and explains a device without suitable ones', () => {
-    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
-
-    fireEvent.click(addButton('configurator.buttons.pick-suitable'));
-    expect(addButton('configurator.buttons.pick-suitable').disabled).toBe(true);
-    expect(screen.queryByText('configurator.labels.no-suitable')).toBeNull();
-
-    fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
-    expect(addButton('configurator.buttons.pick-suitable').disabled).toBe(true);
-    expect(screen.getByText('configurator.labels.no-suitable')).toBeTruthy();
-  });
-
-  it('moves the channels checked by the button to the top, a manual check keeps the channel in place', () => {
-    const names = () => channelBoxes().map((input) => input.getAttribute('title') ?? input.parentElement.textContent);
-    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
-    fireEvent.click(channelBoxes()[1]);
-    expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
-
-    fireEvent.click(addButton('configurator.buttons.pick-suitable'));
-    fireEvent.click(channelBoxes()[0]);
-
-    expect(names()).toEqual(['K2', 'K1']);
-    expect(channelBoxes().map((input) => input.checked)).toEqual([true, false]);
   });
 
   it('checks and clears all the channels of the current device only, keeping the picks of the other devices', () => {
