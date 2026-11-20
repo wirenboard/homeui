@@ -36,7 +36,7 @@ describe('WbDialog', () => {
     const onAdded = show({
       'wb-msw-v4_90': ['Temperature', 'Humidity'],
       'wb-mrps6_12': ['K1', 'K2'],
-      'wb-led_42': ['Channel 1'],
+      'wb-none_1': ['Channel 1'],
     });
 
     expect(screen.getAllByRole('checkbox')).toHaveLength(2);
@@ -60,7 +60,7 @@ describe('WbDialog', () => {
   });
 
   it('says there is nothing to add when no device has a recipe', () => {
-    show({ 'wb-led_42': ['Channel 1'] });
+    show({ 'wb-none_1': ['Channel 1'] });
 
     expect(screen.getByText('configurator.labels.wb-none')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'configurator.buttons.create-devices' })).toBeNull();

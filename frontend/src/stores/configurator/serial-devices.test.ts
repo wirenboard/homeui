@@ -13,7 +13,7 @@ describe('loadSerialDevices', () => {
               { device_type: 'WB-MR6C v.3', slave_id: '137', curtain1_mode: 1 },
               { device_type: 'WB-MSW v.4', slave_id: '90', id: 'hall' },
               { device_type: 'WB-MSW v.4', slave_id: '91', enabled: false },
-              { device_type: 'WB-LED', slave_id: '42' },
+              { device_type: 'WB-NONE', slave_id: '42' },
             ],
           },
           {},

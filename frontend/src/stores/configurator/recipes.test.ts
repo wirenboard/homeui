@@ -7,7 +7,7 @@ const binds = (deviceId: string, controlIds: string[], used: string[] = []) =>
 
 describe('recipeRows', () => {
   it('has no recipe for a model with modes or for a device that is not WB over Modbus', () => {
-    expect(recipeRows('wb-led_42', ['Channel 1'], new Set())).toBeNull();
+    expect(recipeRows('wb-none_1', ['Channel 1'], new Set())).toBeNull();
     expect(recipeRows('wb-gpio', ['A1_OUT'], new Set())).toBeNull();
   });
 
@@ -69,14 +69,14 @@ describe('recipes with the wb-mqtt-serial config', () => {
   });
 
   it('has no recipe for a device whose type in the config is not in the recipes, whatever its id', () => {
-    expect(recipeRows('wb-mr6cv3_137', controls, new Set(), () => true, { deviceType: 'WB-LED', params: {} }))
+    expect(recipeRows('wb-mr6cv3_137', controls, new Set(), () => true, { deviceType: 'WB-NONE', params: {} }))
       .toBeNull();
   });
 
   it('builds the MQTT id of a config entry: its own id or the model with the address', () => {
     expect(serialDeviceId('WB-MSW v.4', '90')).toBe('wb-msw-v4_90');
     expect(serialDeviceId('WB-MSW v.4', '90', 'hall')).toBe('hall');
-    expect(serialDeviceId('WB-LED', '42')).toBeNull();
+    expect(serialDeviceId('WB-NONE', '42')).toBeNull();
   });
 });
 
@@ -94,6 +94,6 @@ describe('recipe models', () => {
   it('names the model of a device by its id or by the type from the config, null without a recipe', () => {
     expect(recipeModelTitle('wb-mdm3_7')).toBe('WB-MDM3');
     expect(recipeModelTitle('dimmer', { deviceType: 'tpl1_wb_mdm3', params: {} })).toBe('WB-MDM3');
-    expect(recipeModelTitle('wb-led_42')).toBeNull();
+    expect(recipeModelTitle('wb-none_1')).toBeNull();
   });
 });

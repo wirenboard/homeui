@@ -61,11 +61,40 @@ const RECIPES: WbRecipe[] = [
     ],
   },
   {
+    // Режим ленты задаёт набор контролов, поэтому в рецепте перечислены лампы всех режимов:
+    // создаются те, чьи контролы есть на контроллере.
+    models: { 'wb-led': 'WB-LED' },
+    repeat: 4,
+    counts: { 'WB-LED': 1 },
+    controlNames: true,
+    channels: [
+      {
+        type: 'light',
+        bind: { on_off: 'RGB Strip', brightness: 'RGB Strip Brightness', color: 'RGB Palette' },
+      },
+      { type: 'light', bind: { on_off: 'Channel {n}', brightness: 'Channel {n} Brightness' } },
+      { type: 'light', bind: { on_off: 'Channels 1_2', brightness: 'Channels 1_2 Brightness' } },
+      { type: 'light', bind: { on_off: 'Channels 3_4', brightness: 'Channels 3_4 Brightness' } },
+      { type: 'light', bind: { on_off: 'Channels 1_2_3_4', brightness: 'Channels 1_2_3_4 Brightness' } },
+      {
+        type: 'light',
+        bind: { on_off: 'CCT{n}', brightness: 'CCT{n} Brightness', color_temperature: 'CCT{n} Temperature' },
+      },
+    ],
+  },
+  {
     models: { 'wb-mdm3': 'tpl1_wb_mdm3' },
     repeat: 3,
     channels: [{ type: 'light', bind: { on_off: 'K{n}', brightness: 'Channel {n}' } }],
   },
 ];
+
+// Шаблоны одной модели для разных версий прошивки.
+const TYPE_ALIASES: Record<string, string> = {
+  'WB-LED-since-fw-3.8': 'WB-LED',
+};
+
+const typeOf = (serial: SerialDevice) => TYPE_ALIASES[serial.deviceType] ?? serial.deviceType;
 
 // Названия моделей, у которых тип шаблона не годится для показа.
 const TITLES: Record<string, string> = {
@@ -91,7 +120,7 @@ export const recipeModels = (): RecipeModel[] => RECIPES.flatMap(modelsOf);
 // Рецепт по модели из конфига порта, а без него — из идентификатора вида «модель_адрес».
 const findRecipe = (deviceId: string, serial?: SerialDevice) => {
   if (serial) {
-    return RECIPES.find((recipe) => Object.values(recipe.models).includes(serial.deviceType));
+    return RECIPES.find((recipe) => Object.values(recipe.models).includes(typeOf(serial)));
   }
   const model = /^(.+)_\d+$/.exec(deviceId)?.[1];
   return RECIPES.find((recipe) => model in recipe.models);
@@ -100,7 +129,7 @@ const findRecipe = (deviceId: string, serial?: SerialDevice) => {
 // Идентификатор устройства в MQTT по записи конфига порта; null — модели нет в рецептах.
 export const serialDeviceId = (deviceType: string, slaveId: string | number, id?: string) => {
   const model = RECIPES.flatMap((recipe) => Object.entries(recipe.models))
-    .find(([, type]) => type === deviceType)?.[0];
+    .find(([, type]) => type === (TYPE_ALIASES[deviceType] ?? deviceType))?.[0];
   return id || (model ? `${model}_${slaveId}` : null);
 };
 
@@ -129,6 +158,10 @@ export const recipeRows = (
       .replace(/{n}/g, String(index))
       .replace(/{pair}/g, String(Math.ceil(index / 2)));
     recipe.channels.forEach(({ type, bind, condition }) => {
+      // Канал без номера в именах контролов берётся один раз.
+      if (index > 1 && !Object.values(bind).some((controlId) => controlId.includes('{'))) {
+        return;
+      }
       if (condition && !holds(place(condition), serial?.params ?? {})) {
         return;
       }
@@ -162,6 +195,6 @@ export const recipeSkipped = (deviceId: string, controlIds: string[], serial?: S
 // Название модели устройства по рецептам; null — рецепта нет.
 export const recipeModelTitle = (deviceId: string, serial?: SerialDevice) => {
   const recipe = findRecipe(deviceId, serial);
-  const deviceType = serial?.deviceType ?? recipe?.models[/^(.+)_\d+$/.exec(deviceId)?.[1]];
+  const deviceType = serial ? typeOf(serial) : recipe?.models[/^(.+)_\d+$/.exec(deviceId)?.[1]];
   return recipe ? TITLES[deviceType] ?? deviceType : null;
 };
