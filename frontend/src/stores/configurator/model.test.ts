@@ -7,7 +7,7 @@ const liveOf = (controls: Record<string, ControlMeta>): LiveControls => ({
 });
 
 const device = (fields: Partial<Device>): Device =>
-  ({ id: 'd', name: 'd', matter: true, alice: true, rows: [], ...fields });
+  ({ id: 'd', name: 'd', matter: true, rows: [], ...fields });
 
 const relayConfig: Config = {
   version: '1.0',
@@ -17,7 +17,7 @@ const relayConfig: Config = {
     type: 'switch',
     module: 'wb-gpio',
     area: 'Прихожая',
-    adapter_settings: { matter: true, alice: false },
+    adapter_settings: { matter: true },
     services: [{
       sid: 1,
       role: 'on_off',
@@ -100,7 +100,7 @@ describe('fromConfig / toConfig', () => {
   it('round-trips a device without changes', () => {
     const parsed = fromConfig(relayConfig);
     expect(parsed.devices).toHaveLength(1);
-    expect(parsed.devices[0]).toMatchObject({ id: 'module:wb-gpio', name: 'wb-gpio', matter: true, alice: false });
+    expect(parsed.devices[0]).toMatchObject({ id: 'module:wb-gpio', name: 'wb-gpio', matter: true });
     expect(parsed.devices[0].rows[0]).toMatchObject({
       did: 10, name: 'Реле', group: 'Прихожая', bind: { on_off: 'wb-gpio/A1_OUT' },
     });
@@ -137,7 +137,7 @@ describe('fromConfig / toConfig', () => {
 
   it('groups entries by module into one device with their dids, even with channels from several devices', () => {
     const entry = (did: number, module: string, state: string, matter = true) => ({
-      did, name: `n${did}`, type: 'switch', module, adapter_settings: { matter, alice: true },
+      did, name: `n${did}`, type: 'switch', module, adapter_settings: { matter },
       services: [{ sid: 1, role: 'on_off', binding: { state } }],
     });
     const parsed = fromConfig({
@@ -209,7 +209,7 @@ describe('fromConfig / toConfig', () => {
       devices: [
         device({ rows: [{ did: 11, name: 'Лампа', type: 'light', group: '', bind: { brightness: 'dimmer/Level' } }] }),
         device({
-          id: 'Шторы', name: 'Шторы', alice: false,
+          id: 'Шторы', name: 'Шторы',
           rows: [{ did: 12, type: 'cover', name: 'Шторы', group: '', bind: { position: 'dimmer/Level' } }],
         }),
       ],
@@ -277,7 +277,6 @@ describe('fromConfig / toConfig', () => {
       devices: [device({
         id: 'module:Свет',
         name: 'Свет',
-        alice: false,
         rows: [{
           did: 12, type: 'number_sensor', name: 'Освещённость', group: '', unit: 'lvl', bind: { number: 'dev/ctl' },
         }],

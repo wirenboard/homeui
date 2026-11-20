@@ -12,12 +12,9 @@ const matter: Adapter = {
   installed: true,
   active: true,
 };
-const alice: Adapter = {
-  id: 'alice', title: { ru: 'Яндекс Алиса', en: 'Yandex Alice' }, languages: ['ru'], installed: true, active: true,
-};
 
 const device = (fields: Partial<Device> = {}): Device =>
-  ({ id: 'd', name: 'd', matter: true, alice: true, rows: [], ...fields });
+  ({ id: 'd', name: 'd', matter: true, rows: [], ...fields });
 
 const show = (adapters: Adapter[], target = device()) => {
   runInAction(() => {
@@ -28,10 +25,9 @@ const show = (adapters: Adapter[], target = device()) => {
 
 describe('AdapterSwitches', () => {
   it('hides an adapter that is not available in the interface language (tests run in English)', () => {
-    show([matter, alice]);
+    show([{ ...matter, languages: ['ru'] }]);
 
-    expect(screen.getByRole('checkbox', { name: 'Matter' })).toBeTruthy();
-    expect(screen.queryByRole('checkbox', { name: 'Yandex Alice' })).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
   it('skips registry entries the device model has no switch for', () => {
@@ -60,5 +56,11 @@ describe('AdapterSwitches', () => {
     expect(screen.getByText('configurator.labels.adapter-stopped', { exact: false })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'configurator.labels.adapter-page' }).getAttribute('href'))
       .toBe('/integrations/matter');
+  });
+
+  it('warns that the device goes nowhere when the only adapter of the registry is off', () => {
+    show([matter], device({ matter: false }));
+
+    expect(screen.getByText('configurator.labels.no-apps')).toBeTruthy();
   });
 });

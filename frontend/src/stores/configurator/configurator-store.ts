@@ -22,16 +22,9 @@ const STATUS_URL = '/converter-ext/status';
 const CONFIG_URL = '/converter-ext/config';
 // did 0–9 зарезервированы (корневой узел Matter, bridge aid в HomeKit).
 const FIRST_DID = 10;
-// Пока сервис не прислал реестр адаптеров, обе системы считаются доступными.
+// Пока сервис не прислал реестр адаптеров, Matter считается доступным.
 const DEFAULT_ADAPTERS: Adapter[] = [
   { id: 'matter', title: { ru: 'Matter', en: 'Matter' }, installed: true, active: true },
-  {
-    id: 'alice',
-    title: { ru: 'Яндекс Алиса', en: 'Yandex Alice' },
-    languages: ['ru'],
-    installed: true,
-    active: true,
-  },
 ];
 
 export class ConfigParseError extends Error {
@@ -225,7 +218,6 @@ export default class ConfiguratorStore {
       id: `new:${this._newCount}`,
       name: freeName,
       matter: true,
-      alice: true,
       rows: rows.map((row, index) => ({ ...row, did: firstDid + index, group: '' })),
     };
     this.devices.push(device);
@@ -253,7 +245,7 @@ export default class ConfiguratorStore {
     device.name = name;
   }
 
-  setAdapters(target: Device, adapters: { matter?: boolean; alice?: boolean }) {
+  setAdapters(target: Device, adapters: { matter?: boolean }) {
     Object.assign(target, adapters);
   }
 

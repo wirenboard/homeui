@@ -83,7 +83,6 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     });
     const unit = services.find((item) => ROLES[item.role as RoleId]?.unit)?.service.unit;
     const matter = !!device.adapter_settings?.matter;
-    const alice = !!device.adapter_settings?.alice;
     const bind: DeviceRow['bind'] = {};
     services.forEach((item) => {
       bind[item.role as RoleId] = `${item.topic.dev}/${item.topic.ctl}`;
@@ -97,9 +96,9 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     const id = `module:${name}`;
     let target = devices.find((item) => item.id === id);
     if (!target) {
-      target = { id, name, matter, alice, rows: [] };
+      target = { id, name, matter, rows: [] };
       devices.push(target);
-    } else if (target.matter !== matter || target.alice !== alice) {
+    } else if (target.matter !== matter) {
       mixed[id] = true;
     }
     target.rows.push(row);
@@ -159,7 +158,7 @@ export const toConfig = (
   const drafts: Draft[] = [];
 
   const makeDevice = (
-    did: number, name: string, type: string, module: string, area: string, matter: boolean, alice: boolean,
+    did: number, name: string, type: string, module: string, area: string, matter: boolean,
     services: [RoleId, string, string][], rawUnit?: string,
   ): ConfigDevice => {
     const unit = rawUnit?.trim();
@@ -169,7 +168,7 @@ export const toConfig = (
       type,
       module,
       ...(area?.trim() ? { area: area.trim() } : {}),
-      adapter_settings: { matter, alice },
+      adapter_settings: { matter },
       services: services.map(([role, deviceId, controlId], index) => {
         const service = buildService(index + 1, role, deviceId, controlId, live, orig[did]?.[role]);
         return unit && ROLES[role].unit ? { ...service, unit } : service;
@@ -186,7 +185,7 @@ export const toConfig = (
         return;
       }
       devices.push(makeDevice(
-        row.did, row.name, row.type, module, row.group, device.matter, device.alice,
+        row.did, row.name, row.type, module, row.group, device.matter,
         list.map(({ role, key }) => [role, ...splitKey(key)]),
         row.unit,
       ));

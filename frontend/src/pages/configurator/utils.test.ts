@@ -43,7 +43,7 @@ describe('formatValue', () => {
 
 describe('hasLostBinding', () => {
   const card = (key: string): Device => ({
-    id: 'd', name: 'd', matter: true, alice: true,
+    id: 'd', name: 'd', matter: true,
     rows: [{ did: 10, name: 'K1', type: 'switch', group: '', bind: { on_off: key } }],
   });
 

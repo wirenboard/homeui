@@ -143,7 +143,6 @@ export interface Device {
   id: string;
   name: string;
   matter: boolean;
-  alice: boolean;
   rows: DeviceRow[];
 }
 
@@ -176,7 +175,7 @@ export type Selection = { id: string } | null;
 
 export type BackendState = 'checking' | 'available' | 'unavailable';
 
-export type AdapterId = 'matter' | 'alice';
+export type AdapterId = 'matter';
 
 // Запись реестра адаптеров из /converter-ext/status.
 export interface Adapter {

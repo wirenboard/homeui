@@ -8,14 +8,15 @@ import { Switch } from '@/components/switch';
 import { configuratorStore, type AdapterId } from '@/stores/configurator';
 import type { AdapterSwitchesProps } from '../types';
 
-const ADAPTER_IDS: string[] = ['matter', 'alice'] satisfies AdapterId[];
+const ADAPTER_IDS: string[] = ['matter'] satisfies AdapterId[];
 
 export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
   const { t, i18n } = useTranslation();
   const labelId = useId();
 
-  const shown = configuratorStore.adapters
-    .filter(({ id, languages }) => ADAPTER_IDS.includes(id) && (!languages || languages.includes(i18n.language)))
+  const known = configuratorStore.adapters.filter(({ id }) => ADAPTER_IDS.includes(id));
+  const shown = known
+    .filter(({ languages }) => !languages || languages.includes(i18n.language))
     .map((adapter) => ({
       ...adapter,
       id: adapter.id as AdapterId,
@@ -57,7 +58,7 @@ export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
           )}
         </Alert>
       ))}
-      {!target.matter && !target.alice && (
+      {known.every(({ id }) => !target[id as AdapterId]) && (
         <Alert variant="warn" size="small" className="configurator-alertInline">
           {t('configurator.labels.no-apps')}
         </Alert>

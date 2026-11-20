@@ -7,7 +7,7 @@ devices:
     name: Реле
     type: switch
     module: wb-gpio
-    adapter_settings: { matter: true, alice: false }
+    adapter_settings: { matter: true }
     services:
       - sid: 1
         role: on_off
@@ -83,7 +83,7 @@ devices:
     name: A
     type: switch
     module: Кухня
-    adapter_settings: { matter: true, alice: true }
+    adapter_settings: { matter: true }
     services:
       - sid: 1
         role: on_off
@@ -92,7 +92,7 @@ devices:
     name: B
     type: switch
     module: Кухня
-    adapter_settings: { matter: false, alice: true }
+    adapter_settings: { matter: false }
     services:
       - sid: 1
         role: on_off
@@ -358,9 +358,9 @@ describe('ConfiguratorStore editing', () => {
     const device = store.addDevice('A', [relay('r/K1')]);
 
     store.setName(device, 'Кухня');
-    store.setAdapters(device, { alice: false });
+    store.setAdapters(device, { matter: false });
 
-    expect(device).toMatchObject({ name: 'Кухня', matter: true, alice: false });
+    expect(device).toMatchObject({ name: 'Кухня', matter: false });
   });
 });
 
@@ -369,7 +369,7 @@ describe('ConfiguratorStore adapters registry', () => {
     const store = new ConfiguratorStore();
     stubBackend({ status: [respond({ has_config: false })] });
     await store.load();
-    expect(store.adapters.map(({ id, installed }) => [id, installed])).toEqual([['matter', true], ['alice', true]]);
+    expect(store.adapters.map(({ id, installed }) => [id, installed])).toEqual([['matter', true]]);
 
     const adapters = [{ id: 'matter', package: 'wb-mqtt-matter-bridge', installed: false, active: false }];
     stubBackend({ status: [respond({ has_config: false, adapters })] });
