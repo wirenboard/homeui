@@ -100,6 +100,12 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
           error={configuratorStore.nameConflicts.has(item.id) ? t('configurator.labels.name-taken') : undefined}
           onChange={(name) => configuratorStore.setName(item, String(name))}
         />
+        <StringField
+          title={t('configurator.labels.group')}
+          value={item.group}
+          placeholder={t('configurator.labels.no-group')}
+          onChange={(group) => configuratorStore.setGroup(item, String(group))}
+        />
       </div>
       {configuratorStore.mixed[item.id] && (
         <Alert variant="info" size="small" className="configurator-alertInline">
@@ -157,12 +163,6 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
                       title={t('configurator.labels.name-in-apps')}
                       value={row.name}
                       onChange={(name) => configuratorStore.updateRow(row, { name: String(name) })}
-                    />
-                    <StringField
-                      title={t('configurator.labels.group')}
-                      value={row.group}
-                      placeholder={t('configurator.labels.no-group')}
-                      onChange={(group) => configuratorStore.updateRow(row, { group: String(group) })}
                     />
                     {hasUnit(row.type) && (
                       <UnitField

@@ -129,19 +129,19 @@ export interface DeviceRow {
   did: number;
   name: string;
   type: string;
-  group: string;
   // единицы числового датчика или настройки
   unit?: string;
   bind: Partial<Record<RoleId, string>>;
 }
 
-// Строка при добавлении: did и группу назначает стор.
-export type NewDeviceRow = Omit<DeviceRow, 'did' | 'group'>;
+// Строка при добавлении: did назначает стор.
+export type NewDeviceRow = Omit<DeviceRow, 'did'>;
 
-// Устройство приложений: name пишется в module конфига.
+// Устройство приложений: name пишется в module конфига, group — в area каждого канала.
 export interface Device {
   id: string;
   name: string;
+  group: string;
   matter: boolean;
   rows: DeviceRow[];
 }

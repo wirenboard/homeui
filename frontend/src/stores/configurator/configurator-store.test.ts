@@ -249,22 +249,24 @@ describe('ConfiguratorStore editing', () => {
 
     expect(store.devices).toEqual([device]);
     expect(store.selected).toBe(device);
-    expect(device.rows.map((row) => [row.did, row.group])).toEqual([[10, ''], [11, '']]);
+    expect(device.group).toBe('');
+    expect(device.rows.map((row) => row.did)).toEqual([10, 11]);
     expect(store.isDirty).toBe(true);
   });
 
-  it('puts added rows first with the group of the last filled row', () => {
+  it('puts added rows first and keeps the group of the device', () => {
     const store = new ConfiguratorStore();
     const device = store.addDevice('Щит', [relay('r/K1'), relay('r/K2')]);
-    store.updateRow(device.rows[0], { group: 'Котельная' });
+    store.setGroup(device, 'Котельная');
 
     store.addRows(device, [relay('r/K3'), relay('r/K4')]);
 
-    expect(device.rows.map((row) => [row.did, row.name, row.group])).toEqual([
-      [12, 'r/K3', 'Котельная'],
-      [13, 'r/K4', 'Котельная'],
-      [10, 'r/K1', 'Котельная'],
-      [11, 'r/K2', ''],
+    expect(device.group).toBe('Котельная');
+    expect(device.rows.map((row) => [row.did, row.name])).toEqual([
+      [12, 'r/K3'],
+      [13, 'r/K4'],
+      [10, 'r/K1'],
+      [11, 'r/K2'],
     ]);
   });
 
@@ -276,7 +278,7 @@ describe('ConfiguratorStore editing', () => {
     const third = store.addDevice('WB-MR6C 1', [relay('wb-mr6c_1/K3')]);
 
     expect(store.devices.map((device) => device.name)).toEqual(['WB-MR6C 1', 'WB-MR6C 1 2', 'WB-MR6C 1 3']);
-    expect(first.rows).toEqual([{ did: 10, group: '', ...relay('wb-mr6c_1/K1') }]);
+    expect(first.rows).toEqual([{ did: 10, ...relay('wb-mr6c_1/K1') }]);
     expect(store.selected).toBe(third);
     expect(store.nameConflicts.size).toBe(0);
   });
@@ -297,21 +299,19 @@ describe('ConfiguratorStore editing', () => {
     expect(Array.from(store.nameConflicts)).toEqual([first.id, second.id]);
   });
 
-  it('changes the row type keeping the binding on the primary role, the did and the group', () => {
+  it('changes the row type keeping the binding on the primary role and the did', () => {
     const store = new ConfiguratorStore();
     const device = store.addDevice('Щит', [
       { type: 'cover', name: 'Шторы', bind: { position: 'dimmer/Level', on_off: 'dimmer/K1' } },
       { type: 'number_sensor', name: 'Уровень', unit: 'V', bind: { number: 'msw/level', battery: 'msw/battery' } },
     ]);
-    store.updateRow(device.rows[0], { group: 'Зал' });
-
     store.changeType(device.rows[0], 'light', 'brightness', 'Свет');
     store.changeType(device.rows[1], 'temperature_sensor', 'temperature', 'Температура');
 
     expect(device.rows).toEqual([
-      { did: 10, group: 'Зал', type: 'light', name: 'Свет', bind: { brightness: 'dimmer/Level', on_off: 'dimmer/K1' } },
+      { did: 10, type: 'light', name: 'Свет', bind: { brightness: 'dimmer/Level', on_off: 'dimmer/K1' } },
       {
-        did: 11, group: '', type: 'temperature_sensor', name: 'Температура',
+        did: 11, type: 'temperature_sensor', name: 'Температура',
         bind: { temperature: 'msw/level', battery: 'msw/battery' },
       },
     ]);

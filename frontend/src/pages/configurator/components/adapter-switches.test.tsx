@@ -14,7 +14,7 @@ const matter: Adapter = {
 };
 
 const device = (fields: Partial<Device> = {}): Device =>
-  ({ id: 'd', name: 'd', matter: true, rows: [], ...fields });
+  ({ id: 'd', name: 'd', group: '', matter: true, rows: [], ...fields });
 
 const show = (adapters: Adapter[], target = device()) => {
   runInAction(() => {

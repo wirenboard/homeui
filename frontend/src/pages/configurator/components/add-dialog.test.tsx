@@ -34,7 +34,7 @@ describe('AddDialog channel preselection', () => {
   });
 
   it('preselects nothing when channels are added to an existing device', () => {
-    const target: Device = { id: 'd', name: 'd', matter: true, rows: [] };
+    const target: Device = { id: 'd', name: 'd', group: '', matter: true, rows: [] };
     render(<AddDialog target={target} isOpened onClose={vi.fn()} />);
 
     expect(checkedCount()).toBe(0);

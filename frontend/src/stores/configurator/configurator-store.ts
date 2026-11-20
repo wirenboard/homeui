@@ -217,19 +217,19 @@ export default class ConfiguratorStore {
     const device: Device = {
       id: `new:${this._newCount}`,
       name: freeName,
+      group: '',
       matter: true,
-      rows: rows.map((row, index) => ({ ...row, did: firstDid + index, group: '' })),
+      rows: rows.map((row, index) => ({ ...row, did: firstDid + index })),
     };
     this.devices.push(device);
     this.selection = { id: device.id };
     return this.selected;
   }
 
-  // Новые строки встают первыми и наследуют группу последней заполненной.
+  // Новые строки встают первыми.
   addRows(device: Device, rows: NewDeviceRow[]) {
     const firstDid = this.nextDid();
-    const lastGroup = device.rows.map((row) => row.group).filter(Boolean).pop() ?? '';
-    device.rows.unshift(...rows.map((row, index) => ({ ...row, did: firstDid + index, group: lastGroup })));
+    device.rows.unshift(...rows.map((row, index) => ({ ...row, did: firstDid + index })));
   }
 
   removeRow(device: Device, did: number) {
@@ -245,11 +245,15 @@ export default class ConfiguratorStore {
     device.name = name;
   }
 
+  setGroup(device: Device, group: string) {
+    device.group = group;
+  }
+
   setAdapters(target: Device, adapters: { matter?: boolean }) {
     Object.assign(target, adapters);
   }
 
-  updateRow(row: DeviceRow, patch: Partial<Pick<DeviceRow, 'name' | 'group' | 'unit'>>) {
+  updateRow(row: DeviceRow, patch: Partial<Pick<DeviceRow, 'name' | 'unit'>>) {
     Object.assign(row, patch);
   }
 

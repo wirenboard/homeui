@@ -7,7 +7,7 @@ const liveOf = (controls: Record<string, ControlMeta>): LiveControls => ({
 });
 
 const device = (fields: Partial<Device>): Device =>
-  ({ id: 'd', name: 'd', matter: true, rows: [], ...fields });
+  ({ id: 'd', name: 'd', group: '', matter: true, rows: [], ...fields });
 
 const relayConfig: Config = {
   version: '1.0',
@@ -100,9 +100,9 @@ describe('fromConfig / toConfig', () => {
   it('round-trips a device without changes', () => {
     const parsed = fromConfig(relayConfig);
     expect(parsed.devices).toHaveLength(1);
-    expect(parsed.devices[0]).toMatchObject({ id: 'module:wb-gpio', name: 'wb-gpio', matter: true });
+    expect(parsed.devices[0]).toMatchObject({ id: 'module:wb-gpio', name: 'wb-gpio', group: 'Прихожая', matter: true });
     expect(parsed.devices[0].rows[0]).toMatchObject({
-      did: 10, name: 'Реле', group: 'Прихожая', bind: { on_off: 'wb-gpio/A1_OUT' },
+      did: 10, name: 'Реле', bind: { on_off: 'wb-gpio/A1_OUT' },
     });
 
     const live = liveOf({ 'wb-gpio/A1_OUT': { type: 'switch' } });
@@ -164,7 +164,7 @@ describe('fromConfig / toConfig', () => {
       raw: [],
       devices: [device({
         rows: [{
-          did: 11, name: 'Свет', type: 'light', group: '', bind: { brightness: 'mdm/Channel 1', on_off: 'mdm/K1' },
+          did: 11, name: 'Свет', type: 'light', bind: { brightness: 'mdm/Channel 1', on_off: 'mdm/K1' },
         }],
       })],
     }, live, {});
@@ -192,9 +192,9 @@ describe('fromConfig / toConfig', () => {
     const built = toConfig({
       raw: [],
       devices: [
-        device({ name: ' Щит ', rows: [{ did: 10, name: 'A', type: 'switch', group: '', bind: { on_off: 'r/K1' } }] }),
+        device({ name: ' Щит ', rows: [{ did: 10, name: 'A', type: 'switch', bind: { on_off: 'r/K1' } }] }),
         device({
-          id: 'x', name: '', rows: [{ did: 11, name: 'B', type: 'switch', group: '', bind: { on_off: 'r/K2' } }],
+          id: 'x', name: '', rows: [{ did: 11, name: 'B', type: 'switch', bind: { on_off: 'r/K2' } }],
         }),
       ],
     }, liveOf({}), {});
@@ -207,10 +207,10 @@ describe('fromConfig / toConfig', () => {
     const built = toConfig({
       raw: [],
       devices: [
-        device({ rows: [{ did: 11, name: 'Лампа', type: 'light', group: '', bind: { brightness: 'dimmer/Level' } }] }),
+        device({ rows: [{ did: 11, name: 'Лампа', type: 'light', bind: { brightness: 'dimmer/Level' } }] }),
         device({
           id: 'Шторы', name: 'Шторы',
-          rows: [{ did: 12, type: 'cover', name: 'Шторы', group: '', bind: { position: 'dimmer/Level' } }],
+          rows: [{ did: 12, type: 'cover', name: 'Шторы', bind: { position: 'dimmer/Level' } }],
         }),
       ],
     }, live, {});
@@ -226,7 +226,7 @@ describe('fromConfig / toConfig', () => {
       raw: [],
       devices: [device({
         rows: [{
-          did: 10, name: 'Кнопка', type: 'button', group: '', bind: { press: 'snzb/action', battery: 'snzb/battery' },
+          did: 10, name: 'Кнопка', type: 'button', bind: { press: 'snzb/action', battery: 'snzb/battery' },
         }],
       })],
     }, liveOf({ 'snzb/action': { type: 'text' }, 'snzb/battery': { type: 'value', units: '%' } }), {});
@@ -242,7 +242,7 @@ describe('fromConfig / toConfig', () => {
       raw: [],
       devices: [device({
         rows: [{
-          did: 10, name: 'LED Period (s)', type: 'number_setting', group: '', bind: { setting: 'msw/LED Period (s)' },
+          did: 10, name: 'LED Period (s)', type: 'number_setting', bind: { setting: 'msw/LED Period (s)' },
         }],
       })],
     }, liveOf({ 'msw/LED Period (s)': { type: 'range', min: 1, max: 10, step: 1 } }), {});
@@ -261,7 +261,7 @@ describe('fromConfig / toConfig', () => {
       raw: [],
       devices: [device({
         rows: [{
-          did: 10, name: 'Присутствие', type: 'number_sensor', group: '', unit: ' lvl ',
+          did: 10, name: 'Присутствие', type: 'number_sensor', unit: ' lvl ',
           bind: { number: 'msw/occupancy_level' },
         }],
       })],
@@ -278,7 +278,7 @@ describe('fromConfig / toConfig', () => {
         id: 'module:Свет',
         name: 'Свет',
         rows: [{
-          did: 12, type: 'number_sensor', name: 'Освещённость', group: '', unit: 'lvl', bind: { number: 'dev/ctl' },
+          did: 12, type: 'number_sensor', name: 'Освещённость', unit: 'lvl', bind: { number: 'dev/ctl' },
         }],
       })],
     }, liveOf({ 'dev/ctl': { type: 'value', readonly: true } }), {});
@@ -287,13 +287,40 @@ describe('fromConfig / toConfig', () => {
     expect(fromConfig(built.config).devices[0].rows[0].unit).toBe('lvl');
   });
 
+  it('writes the device group into the area of every channel', () => {
+    const live = liveOf({ 'r/K1': { type: 'switch' }, 'r/K2': { type: 'switch' } });
+    const built = toConfig({
+      raw: [],
+      devices: [device({
+        group: ' Коридор ',
+        rows: [
+          { did: 10, name: 'A', type: 'switch', bind: { on_off: 'r/K1' } },
+          { did: 11, name: 'B', type: 'switch', bind: { on_off: 'r/K2' } },
+        ],
+      })],
+    }, live, {});
+
+    expect(built.config.devices.map((item) => item.area)).toEqual(['Коридор', 'Коридор']);
+  });
+
+  it('takes the first filled area of the channels as the device group', () => {
+    const entry = (did: number, area?: string) => ({
+      did, name: `n${did}`, type: 'switch', module: 'Щит', ...(area ? { area } : {}),
+      services: [{ sid: 1, role: 'on_off', binding: { state: `/devices/r/controls/K${did}` } }],
+    });
+
+    const parsed = fromConfig({ version: '1.0', devices: [entry(10), entry(11, 'Зал'), entry(12, 'Кухня')] });
+
+    expect(parsed.devices[0].group).toBe('Зал');
+  });
+
   it('puts the unit only on numeric services and skips a blank unit', () => {
     const live = liveOf({
       'msw/level': { type: 'value', readonly: true },
       'msw/battery': { type: 'value', readonly: true, units: '%' },
     });
     const sensor = (did: number, unit: string) => ({
-      did, name: 'Уровень', type: 'number_sensor', group: '', unit,
+      did, name: 'Уровень', type: 'number_sensor', unit,
       bind: { number: 'msw/level', battery: 'msw/battery' },
     });
     const built = toConfig({
@@ -312,7 +339,7 @@ describe('fromConfig / toConfig', () => {
 
   it('fills range defaults of a numeric setting and omits the range without max', () => {
     const setting = (did: number, key: string) => ({
-      did, name: key, type: 'number_setting', group: '', bind: { setting: key },
+      did, name: key, type: 'number_setting', bind: { setting: key },
     });
     const built = toConfig({
       raw: [],

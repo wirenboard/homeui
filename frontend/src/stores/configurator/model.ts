@@ -88,7 +88,7 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
       bind[item.role as RoleId] = `${item.topic.dev}/${item.topic.ctl}`;
     });
     const row: DeviceRow = {
-      did: device.did, type: device.type, name: device.name || '', group: device.area || '', bind,
+      did: device.did, type: device.type, name: device.name || '', bind,
       ...(unit ? { unit } : {}),
     };
 
@@ -96,11 +96,12 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     const id = `module:${name}`;
     let target = devices.find((item) => item.id === id);
     if (!target) {
-      target = { id, name, matter, rows: [] };
+      target = { id, name, group: '', matter, rows: [] };
       devices.push(target);
     } else if (target.matter !== matter) {
       mixed[id] = true;
     }
+    target.group ||= String(device.area || '').trim();
     target.rows.push(row);
   });
 
@@ -185,7 +186,7 @@ export const toConfig = (
         return;
       }
       devices.push(makeDevice(
-        row.did, row.name, row.type, module, row.group, device.matter,
+        row.did, row.name, row.type, module, device.group, device.matter,
         list.map(({ role, key }) => [role, ...splitKey(key)]),
         row.unit,
       ));

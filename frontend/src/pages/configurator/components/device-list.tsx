@@ -21,7 +21,8 @@ export const DeviceList = observer(({ onAdd, onAddEmpty, onClear, onSelect }: De
 
   const shown = devices.filter((device) => !needle || [
     device.name,
-    ...device.rows.flatMap((row) => [row.name, row.group, ...Object.values(row.bind)]),
+    device.group,
+    ...device.rows.flatMap((row) => [row.name, ...Object.values(row.bind)]),
   ].join(' ').toLowerCase().includes(needle));
 
   const mark = (device: Device) => {
