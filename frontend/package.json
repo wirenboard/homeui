@@ -13,6 +13,8 @@
     "lint": "npx eslint --cache --cache-location .eslintcache",
     "lint:fix": "npx eslint --fix",
     "check:types": "tsc --noEmit",
+    "audit": "npm audit --registry=https://registry.npmjs.org/",
+    "audit:fix": "npm audit fix --registry=https://registry.npmjs.org/",
     "screens": "node scripts/breakpoint-screens.mjs"
   },
   "repository": {
@@ -95,7 +97,7 @@
     "globals": "17.6.0",
     "happy-dom": "21.0.4",
     "postcss-custom-media": "12.0.3",
-    "rimraf": "6.1.3",
+    "rimraf": "^6.1.4",
     "terser": "5.51.2",
     "typescript": "6.0.3",
     "use-resize-observer": "9.1.0",
