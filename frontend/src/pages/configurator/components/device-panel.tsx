@@ -79,7 +79,7 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
 
   return (
     <Card
-      heading={item.name || t('configurator.labels.new-device')}
+      heading={t('configurator.labels.device-settings')}
       indicator={(
         <Button
           size="small"
@@ -147,7 +147,6 @@ export const DevicePanel = observer(({ item, onRemove, onAddRows }: DevicePanelP
                     <span className="configurator-cardNumber">{index + 1}</span>
                     <TypeIcon className="configurator-typeIcon" />
                     {typeName(row.type)}
-                    {row.name && <span className="configurator-cardName">{`— ${row.name}`}</span>}
                   </span>
                   <Button
                     size="small"

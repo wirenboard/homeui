@@ -1260,6 +1260,7 @@
          "type": "Type",
          "none": "None",
          "role-required": "A channel for \"{{role}}\" is required, otherwise the device is not exported",
+         "device-settings": "Device settings",
          "device-name": "Device name",
          "new-device": "New device",
          "name-taken": "This name is taken, choose another one",

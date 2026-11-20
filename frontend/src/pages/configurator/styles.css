@@ -175,12 +175,6 @@
     background: var(--container-background);
 }
 
-.configurator-cardName {
-    min-width: 0;
-    font-weight: 400;
-    overflow-wrap: anywhere;
-}
-
 .configurator-cardBody {
     margin-top: 0;
     padding: 12px;
