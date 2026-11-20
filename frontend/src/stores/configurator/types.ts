@@ -152,6 +152,8 @@ export interface WbRecipeChannel {
   bind: Partial<Record<RoleId, string>>;
   // условие шаблона wb-mqtt-serial над параметрами устройства; без него канал берётся всегда
   condition?: string;
+  // контрол, при наличии которого канал не нужен
+  unless?: string;
 }
 
 // Устройство из конфига wb-mqtt-serial: тип шаблона и параметры, от которых зависит режим.

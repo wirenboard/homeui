@@ -1,8 +1,22 @@
 import { Conditions } from '@/stores/device-manager/device-tab/device-settings-editor/conditions';
 import { findType } from './catalog';
 import type {
-  NewDeviceRow, RecipeFit, RecipeModel, RecipeRow, RoleId, SerialDevice, WbRecipe,
+  NewDeviceRow, RecipeFit, RecipeModel, RecipeRow, RoleId, SerialDevice, WbRecipe, WbRecipeChannel,
 } from './types';
+
+// Мощность и энергия счётчика: суммарные по каналу, а если их нет — по каждой фазе.
+const meterChannels = (prefix: string): WbRecipeChannel[] => [
+  { type: 'power_sensor', bind: { power: `${prefix}Total P` } },
+  { type: 'energy_meter', bind: { energy: `${prefix}Total AP energy` } },
+  ...[1, 2, 3].flatMap((phase): WbRecipeChannel[] => [
+    { type: 'power_sensor', bind: { power: `${prefix}P L${phase}` }, unless: `${prefix}Total P` },
+    {
+      type: 'energy_meter',
+      bind: { energy: `${prefix}AP energy L${phase}` },
+      unless: `${prefix}Total AP energy`,
+    },
+  ]),
+];
 
 // Готовые наборы каналов по моделям WB; {n} в имени контрола — номер канала от 1 до repeat.
 // Сюда попадают только модели без режимов: набор их контролов не зависит от настроек.
@@ -78,6 +92,26 @@ const RECIPES: WbRecipe[] = [
     }],
   },
   {
+    models: { 'wb-map12e': 'WB-MAP12E fw2' },
+    repeat: 4,
+    controlNames: true,
+    channels: meterChannels('Ch {n} '),
+  },
+  {
+    models: { 'wb-map3e': 'WB-MAP3E fw2', 'wb-map3et': 'WB-MAP3ET' },
+    controlNames: true,
+    channels: meterChannels(''),
+  },
+  {
+    models: { 'wb-map6s': 'WB-MAP6S fw2' },
+    repeat: 6,
+    controlNames: true,
+    channels: [
+      { type: 'power_sensor', bind: { power: 'P {n}' } },
+      { type: 'energy_meter', bind: { energy: 'AP energy {n}' } },
+    ],
+  },
+  {
     // Реле с измерением: у каждого выхода свои мощность и накопленная энергия.
     models: { 'wb-mrwm2': 'WB-MRWM2' },
     repeat: 2,
@@ -139,6 +173,8 @@ const TYPE_ALIASES: Record<string, string> = {
   'WB-M1W2 BUTTONS': 'WB-M1W2 v.3 MULTIPLE W1',
   'WB-MAO4': 'tpl1_wb_mao4',
   'WB-MAO4-since-fw-2.9': 'tpl1_wb_mao4',
+  'WB-MAP3E': 'WB-MAP3E fw2',
+  'WB-MAP6S': 'WB-MAP6S fw2',
 };
 
 const typeOf = (serial: SerialDevice) => TYPE_ALIASES[serial.deviceType] ?? serial.deviceType;
@@ -153,6 +189,9 @@ const TITLES: Record<string, string> = {
   tpl1_wb_ms_v2: 'WB-MS v.2',
   'WB-M1W2 v.3 MULTIPLE W1': 'WB-M1W2 v.3',
   tpl1_wb_mao4: 'WB-MAO4',
+  'WB-MAP12E fw2': 'WB-MAP12E',
+  'WB-MAP3E fw2': 'WB-MAP3E',
+  'WB-MAP6S fw2': 'WB-MAP6S',
 };
 
 // Одинаковые каналы показываются одним типом со счётчиком.
@@ -214,7 +253,12 @@ export const recipeRows = (
     const place = (text: string) => text
       .replace(/{n}/g, String(index))
       .replace(/{pair}/g, String(Math.ceil(index / 2)));
-    recipe.channels.forEach(({ type, bind, condition }) => {
+    recipe.channels.forEach(({
+      type, bind, condition, unless,
+    }) => {
+      if (unless && controlIds.includes(place(unless))) {
+        return;
+      }
       // Канал без номера в именах контролов берётся один раз.
       if (index > 1 && !Object.values(bind).some((controlId) => controlId.includes('{'))) {
         return;
