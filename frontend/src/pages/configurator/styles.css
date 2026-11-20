@@ -155,7 +155,6 @@
 .configurator-addBulk {
     display: inline-flex;
     gap: 6px;
-    margin-left: auto;
 }
 
 .configurator-picked {

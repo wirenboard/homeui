@@ -85,9 +85,6 @@ export const CHANNEL_CLASSES: Record<ChannelClass, ChannelClassDef> = {
 export const isAmbiguousClass = (cls: ChannelClass) =>
   !CHANNEL_CLASSES[cls].preset && CHANNEL_CLASSES[cls].types.length > 1;
 
-// Служебные каналы модулей не отмечаем при добавлении устройства.
-export const NO_PRESET = /^(mcu|supply|board|cpu|buzzer|red led|green led|led|learn|curtain)/i;
-
 // Единицы из скобок в конце имени канала: «LED Period (s)» → «s».
 const unitsFromName = (id?: string) => /\(([^()]+)\)\s*$/.exec(id ?? '')?.[1] ?? '';
 
