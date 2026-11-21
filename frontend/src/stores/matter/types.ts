@@ -93,8 +93,26 @@ export interface MatterSettings {
   name_in_model: boolean;
 }
 
+/** Why the bridge is not doing its job: a code for the page, a sentence for support. */
+export interface MatterProblem {
+  code: string;
+  reason: string;
+  detail?: string;
+}
+
 export interface MatterStatus {
   version: string;
+  // The clock of the controller at the moment it answered, in milliseconds since the
+  // epoch. closes_at is on that clock and the countdown runs in the browser, whose clock
+  // is another one: a controller with no time server can be hours away. Undefined from a
+  // service older than this page.
+  now?: number;
+  // Null while all is well, undefined from a service older than this page. With a
+  // network error Matter has not started at all, and no button of this page will work.
+  network_error?: MatterProblem | null;
+  // While the broker is lost the states shown are from before the outage and a command
+  // of an app cannot reach a device.
+  broker_error?: MatterProblem | null;
   paired: boolean;
   fabrics: MatterFabric[];
   // When this controller started keeping pairing dates, so the page can say "paired

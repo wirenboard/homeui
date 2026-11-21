@@ -39,8 +39,16 @@ export default class MatterStore {
   isSavingSettings = false;
   // The last change of a switch did not go through. Cleared when the next one starts.
   hasSettingsFailed = false;
+  // How far the clock of the controller is ahead of the clock of this browser, in
+  // milliseconds. Zero for a service that does not say what time it has.
+  clockOffset = 0;
 
   #timer: ReturnType<typeof setInterval> | null = null;
+  // Requests are numbered because answers can come back out of order: a poll sent before
+  // a change and answered after the re-read that followed it would put the old state
+  // back on the page for five seconds - a switch that was thrown springing back.
+  #asked = 0;
+  #shown = 0;
 
   // A tab that comes back shows the state of now, not the state of when it was hidden.
   // A field and not a method, because addEventListener and removeEventListener have to
@@ -56,14 +64,27 @@ export default class MatterStore {
   }
 
   async fetch() {
+    this.#asked += 1;
+    const asked = this.#asked;
     try {
       const status = await getMatterStatus();
+      if (asked < this.#shown) {
+        return;
+      }
+      this.#shown = asked;
       runInAction(() => {
         this.status = status;
+        if (Number.isFinite(status?.now)) {
+          this.clockOffset = status.now - Date.now();
+        }
         this.isUnreachable = false;
         this.isLoading = false;
       });
     } catch {
+      if (asked < this.#shown) {
+        return;
+      }
+      this.#shown = asked;
       runInAction(() => {
         // The last known state is kept on purpose: a page that empties itself on one
         // failed request is worse than a page with a warning over the data.

@@ -24,6 +24,10 @@ import './styles.css';
 // in any case, and without this check the page would ask a service that is not there.
 const MODULE_ID = 'matter';
 
+// The network problems this page has its own words for. Any other code means a service
+// newer than the page, and then its English sentence is better than nothing.
+const NETWORK_CODES = new Set(['no_ipv6']);
+
 /**
  * Re-renders once a second while a window is open, so the countdown moves between the
  * polls of the store. Nothing else needs a clock, so it stops as soon as the window is
@@ -97,10 +101,25 @@ const MatterPage = observer(() => {
     errors.push({ variant: 'danger', text: t('matter.labels.unavailable') });
   } else if (isUnreachable) {
     errors.push({ variant: 'danger', text: t('matter.labels.unreachable') });
-  } else if (status?.devices.config_error) {
-    // A config that cannot be read leaves the bridge working on the last good one, so
-    // this is a warning over the data and not an error instead of it.
-    errors.push({ variant: 'warn', text: t('matter.labels.config-error', { error: status.devices.config_error }) });
+  } else {
+    // Not one instead of another: each of the three is true by itself, and a person who
+    // fixed the first should not find the second only then.
+    if (status?.network_error) {
+      errors.push({
+        variant: 'danger',
+        text: NETWORK_CODES.has(status.network_error.code)
+          ? t(`matter.labels.network-${status.network_error.code}`)
+          : t('matter.labels.network-error', { reason: status.network_error.reason }),
+      });
+    }
+    if (status?.broker_error) {
+      errors.push({ variant: 'danger', text: t('matter.labels.broker-lost') });
+    }
+    if (status?.devices.config_error) {
+      // A config that cannot be read leaves the bridge working on the last good one, so
+      // this is a warning over the data and not an error instead of it.
+      errors.push({ variant: 'warn', text: t('matter.labels.config-error', { error: status.devices.config_error }) });
+    }
   }
 
   return (
@@ -183,7 +202,7 @@ const MatterPage = observer(() => {
                   <div className="matter-windowActions">
                     <span className="matter-countdown">
                       {t('matter.labels.window-left', {
-                        left: timeLeft(status.pairing.closes_at, now),
+                        left: timeLeft(status.pairing.closes_at, now + matterStore.clockOffset),
                       })}
                     </span>
                     <Button
