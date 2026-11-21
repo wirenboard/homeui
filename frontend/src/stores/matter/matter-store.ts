@@ -1,9 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import {
   changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, setLocalFabricLabel,
-  unpairFabric,
+  setMatterSettings, unpairFabric,
 } from './api';
-import type { MatterStatus, MatterWindow } from './types';
+import type { MatterSettings, MatterStatus, MatterWindow } from './types';
 
 /**
  * How often the page asks the bridge again. The state changes when somebody scans the
@@ -35,6 +35,10 @@ export default class MatterStore {
   // The bridge refused or did not answer. 409 lands here too: it means somebody is
   // pairing at this very moment, and the page says so rather than pretending.
   hasWindowFailed = false;
+  // A switch of the page is on its way to the bridge, so it cannot be thrown twice.
+  isSavingSettings = false;
+  // The last change of a switch did not go through. Cleared when the next one starts.
+  hasSettingsFailed = false;
 
   #timer: ReturnType<typeof setInterval> | null = null;
 
@@ -108,6 +112,27 @@ export default class MatterStore {
     runInAction(() => {
       this.labellingIndex = null;
       this.hasLabelFailed = !ok;
+    });
+    return ok;
+  }
+
+  /**
+   * Throws switches of the page. The state is read again whatever the answer: the switch
+   * shows what the bridge holds, so a change that was refused springs back by itself.
+   */
+  async setSettings(settings: Partial<MatterSettings>) {
+    this.isSavingSettings = true;
+    this.hasSettingsFailed = false;
+    let ok = true;
+    try {
+      await setMatterSettings(settings);
+    } catch {
+      ok = false;
+    }
+    await this.fetch();
+    runInAction(() => {
+      this.isSavingSettings = false;
+      this.hasSettingsFailed = !ok;
     });
     return ok;
   }

@@ -1,4 +1,6 @@
-import type { MatterDevice, MatterDevices, MatterFabric } from '@/stores/matter';
+import type {
+  MatterDevice, MatterDevices, MatterFabric, MatterSettings,
+} from '@/stores/matter';
 
 /**
  * What the page can honestly say about when an app paired. Three cases and not two: an
@@ -74,4 +76,12 @@ export interface CopyFieldProps {
   text: string;
   // Put in the clipboard: the apps expect the manual code without the grouping dashes.
   value: string;
+}
+
+export interface SettingsCardProps {
+  // As the bridge holds them: the switch shows this and not what was clicked.
+  settings: MatterSettings;
+  isSaving: boolean;
+  hasFailed: boolean;
+  onChange: (_settings: Partial<MatterSettings>) => void;
 }

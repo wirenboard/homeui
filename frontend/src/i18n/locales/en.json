@@ -1571,7 +1571,11 @@
          "devices-count": "In the config: {{count}} device(s), of which {{exposed}} given to Matter.",
          "devices-skipped": "Devices skipped: {{count}}. The journal of the service says why.",
          "devices-hint": "Devices to publish over Matter are picked on the page",
-         "devices-link": "Device configurator"
+         "devices-link": "Device configurator",
+         "settings": "Settings",
+         "name-in-model": "Device name in place of the model",
+         "name-in-model-hint": "The Aqara app names a device by its model, and the Yandex smart home app shows the model in the device card. When on, the bridge gives the name from the configurator where the model goes - about 32 Latin or 16 Cyrillic letters. Turn it off to have the type name there: Outlet, Switch.",
+         "settings-failed": "The setting could not be saved. Try again."
       },
       "buttons": {
          "fabric-actions": "Actions for {{label}}",

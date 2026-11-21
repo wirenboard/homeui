@@ -14,6 +14,7 @@ import { CopyField } from './components/copy-field';
 import { DevicesCard } from './components/devices-card';
 import { FabricLabelDialog } from './components/fabric-label-dialog';
 import { FabricsCard } from './components/fabrics-card';
+import { SettingsCard } from './components/settings-card';
 import { FabricMenuAction } from './types';
 import { configuratorSelection, fabricDisplayLabel, groupManualCode, timeLeft } from './utils';
 import './styles.css';
@@ -210,6 +211,16 @@ const MatterPage = observer(() => {
           />
 
           <DevicesCard devices={status.devices} onOpen={openInConfigurator} />
+
+          {/* A bridge older than this page has no settings, and then there is no card. */}
+          {status.settings && (
+            <SettingsCard
+              settings={status.settings}
+              isSaving={matterStore.isSavingSettings}
+              hasFailed={matterStore.hasSettingsFailed}
+              onChange={matterStore.setSettings}
+            />
+          )}
 
           <Confirm
             isOpened={isChangingCode}

@@ -1,5 +1,5 @@
 import { request } from '@/utils/request';
-import type { MatterStatus, MatterWindow } from './types';
+import type { MatterSettings, MatterStatus, MatterWindow } from './types';
 
 export const getMatterStatus = async () => {
   const { data } = await request.get<MatterStatus>('/matter/status');
@@ -65,4 +65,13 @@ export const unpairFabric = async (index: number) => {
  */
 export const setLocalFabricLabel = async (index: number, localFabricLabel: string) => {
   await request.post('/matter/local-fabric-label', { index, localFabricLabel });
+};
+
+/**
+ * Throws switches of this page. The bridge answers once the change is kept and said to
+ * the apps, so there is no restart to wait for; it refuses a name it does not know with
+ * a 400, which the store treats like any other failure.
+ */
+export const setMatterSettings = async (settings: Partial<MatterSettings>) => {
+  await request.post('/matter/settings', settings);
 };

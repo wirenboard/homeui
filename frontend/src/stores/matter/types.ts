@@ -81,6 +81,18 @@ export interface MatterDevices {
   list: MatterDevice[];
 }
 
+/**
+ * The switches of this page, kept by the bridge. Each is true or false, and a change is
+ * applied without a restart of the service.
+ */
+export interface MatterSettings {
+  // The name of a device is given where an app shows its model. On by default: the hub
+  // of Aqara names a bridged device by its model and Alice prints the model in the
+  // device card, and neither shows the name. See docs/ecosystems.md of
+  // wb-mqtt-matter-bridge, finding Я31.
+  name_in_model: boolean;
+}
+
 export interface MatterStatus {
   version: string;
   paired: boolean;
@@ -94,4 +106,6 @@ export interface MatterStatus {
   // Also null right after pairing, when the window closes on its own.
   pairing: MatterPairing | null;
   devices: MatterDevices;
+  // Undefined from a service older than this page, which has no settings to show.
+  settings?: MatterSettings;
 }
