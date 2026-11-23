@@ -79,16 +79,18 @@ describe('AddDialog channel selection', () => {
     expect(configuratorStore.devices[0].name).toBe('Relay');
   });
 
-  it('gives an ambiguous channel the first type and asks to check it until the user picks the type', () => {
+  it('gives an ambiguous channel the first type when checked and lets the user change it', () => {
+    const pressed = () => Array.from(document.querySelectorAll('.configurator-choice button'))
+      .map((button) => button.getAttribute('aria-pressed'));
     render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
 
     fireEvent.click(channelBoxes()[0]);
-    expect(screen.getByText('configurator.labels.type-guessed')).toBeTruthy();
+    expect(pressed()).toEqual(['true', 'false']);
     expect(addButton('configurator.buttons.add-device').disabled).toBe(false);
 
     fireEvent.click(document.querySelectorAll('.configurator-choice button')[1]);
-    expect(screen.queryByText('configurator.labels.type-guessed')).toBeNull();
+    expect(pressed()).toEqual(['false', 'true']);
   });
 
   it('checks and clears all the channels of the current device only, keeping the picks of the other devices', () => {

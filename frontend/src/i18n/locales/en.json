@@ -1304,7 +1304,6 @@
          "show-service": "Show service devices ({{count}})",
          "add-hint": "Check the channels that make the device: they can come from different controller devices. The set can be changed later in the settings.",
          "value": "Value: {{value}}",
-         "type-guessed": "the type of {{count}} is chosen automatically, check the ones marked yellow",
          "picked-channels": "Selected channels",
          "unpick": "Remove the channel \"{{name}}\" from the selection",
          "picked-count": "picked: {{count}}",

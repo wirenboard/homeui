@@ -59,8 +59,6 @@ export interface AddDialogProps {
 export interface PickedChannel {
   checked: boolean;
   type: string;
-  // тип поставлен автоматически у неоднозначного канала и ещё не подтверждён
-  isGuessed?: boolean;
 }
 
 export interface UnsupportedChannel {

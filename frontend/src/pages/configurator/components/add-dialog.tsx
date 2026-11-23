@@ -7,8 +7,7 @@ import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
 import {
-  CHANNEL_CLASSES, configuratorStore, findType, isAmbiguousClass, primaryRole, splitKey,
-  type ChannelClass, type NewDeviceRow,
+  CHANNEL_CLASSES, configuratorStore, findType, primaryRole, splitKey, type NewDeviceRow,
 } from '@/stores/configurator';
 import type { Cell } from '@/stores/devices';
 import type { AddDialogProps, PickedChannel } from '../types';
@@ -75,13 +74,10 @@ export const AddDialog = observer(({
     .map((channel) => ({ ...channel, deviceId: id })));
   const pickedCount = (id: string) => chosen.filter((channel) => channel.deviceId === id).length;
 
-  // Тип неоднозначного канала ставится первым из подходящих и помечается как предположение.
-  const check = (cls: ChannelClass, types: string[]): PickedChannel =>
-    ({ checked: true, type: types[0], isGuessed: isAmbiguousClass(cls) });
+  // Отмеченному каналу ставится первый подходящий тип; его видно в строке и можно сменить.
+  const check = (types: string[]): PickedChannel => ({ checked: true, type: types[0] });
 
   const pick = (key: string, choice: PickedChannel) => setPicked({ ...picked, [key]: choice });
-  // Сколько выбранных каналов получили тип автоматически и ждут проверки.
-  const guessed = chosen.filter(({ choice }) => choice.isGuessed).length;
 
   // Все свободные каналы текущего устройства; уже отмеченные сохраняют свой тип.
   const free = typed.filter(({ isUsed }) => !isUsed);
@@ -90,7 +86,7 @@ export const AddDialog = observer(({
     ...picked,
     ...Object.fromEntries(free
       .filter(({ choice }) => !choice.checked)
-      .map(({ cell, classification, types }) => [cell.id, check(classification.cls, types)])),
+      .map(({ cell, types }) => [cell.id, check(types)])),
   });
 
   const pickNone = () => setPicked(Object.fromEntries(
@@ -216,7 +212,9 @@ export const AddDialog = observer(({
                   </span>
                 </div>
                 <ul className="configurator-channels">
-                  {typed.map(({ cell, classification, types, choice, isUsed }) => (
+                  {typed.map(({
+                    cell, types, choice, isUsed,
+                  }) => (
                     <li key={cell.controlId} className="configurator-channel">
                       <div className="configurator-channelHead">
                         <Checkbox
@@ -226,7 +224,7 @@ export const AddDialog = observer(({
                           isDisabled={isUsed}
                           onChange={(checked) => pick(
                             cell.id,
-                            checked ? check(classification.cls, types) : { checked: false, type: '' },
+                            checked ? check(types) : { checked: false, type: '' },
                           )}
                         />
                         <span className="configurator-channelValue">
@@ -263,25 +261,14 @@ export const AddDialog = observer(({
       {current && !isTilesShown && (
         <section className="configurator-picked">
           <p className="configurator-pickedSummary">
-            <span>{t('configurator.labels.selected-count', { ...UNESCAPED, count: chosen.length })}</span>
-            {!!guessed && (
-              <span className="configurator-pickedGuessed">
-                {t('configurator.labels.type-guessed', { ...UNESCAPED, count: guessed })}
-              </span>
-            )}
+            {t('configurator.labels.selected-count', { ...UNESCAPED, count: chosen.length })}
           </p>
           {!!chosen.length && (
             <ul className="configurator-pickedItems" aria-label={t('configurator.labels.picked-channels')}>
               {chosen.map(({ cell, deviceId, choice }) => {
                 const TypeIcon = TYPE_ICONS[choice.type];
                 return (
-                  <li
-                    key={cell.id}
-                    className={classNames('configurator-pickedItem', {
-                      'configurator-pickedItemGuessed': choice.isGuessed,
-                    })}
-                    title={typeName(choice.type)}
-                  >
+                  <li key={cell.id} className="configurator-pickedItem" title={typeName(choice.type)}>
                     {TypeIcon && <TypeIcon className="configurator-typeIcon" aria-hidden="true" />}
                     {`${cell.name} · ${deviceTitle(deviceId)}`}
                     <button
