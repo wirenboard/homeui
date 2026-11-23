@@ -85,6 +85,19 @@
     flex-basis: 43%;
 }
 
+.deviceSettingsEditor-allowedValues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Dropdown is wrapped in a display: contents div, so it gets its own class */
+.deviceSettingsEditor-allowedValuesDropdown,
+.deviceSettingsEditor-allowedValues > .input {
+    flex: 1 1 0;
+    min-width: 120px;
+}
+
 .deviceSettingsEditor-shouldStoreInConfig .dropdown__control,
 .deviceSettingsEditor-shouldStoreInConfig input {
     border-left: 4px solid var(--gray-color);

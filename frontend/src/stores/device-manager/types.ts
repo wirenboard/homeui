@@ -1,4 +1,4 @@
-import type { JsonEditorOptions, TranslationsByLocale, JsonSchema } from '@/stores/json-schema-editor';
+import type { AllowedValue, JsonEditorOptions, TranslationsByLocale, JsonSchema } from '@/stores/json-schema-editor';
 
 export interface DmRpcTcpPortConfig {
   address: string;
@@ -193,6 +193,7 @@ export interface WbDeviceTemplateParameter {
   default?: number;
   min?: number;
   max?: number;
+  allowed_values?: AllowedValue[];
   order?: number;
   required?: boolean;
   description?: string;

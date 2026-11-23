@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.290.0) stable; urgency=medium
+
+  * Add support for allowed_values in template parameters
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Mon, 23 Nov 2026 19:58:56 +0300
+
 wb-mqtt-homeui (2.289.3) stable; urgency=medium
 
   * Add nexus registry
