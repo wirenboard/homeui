@@ -6,7 +6,6 @@ import CloseIcon from '@/assets/icons/close.svg';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
-import { Tag } from '@/components/tag';
 import {
   CHANNEL_CLASSES, configuratorStore, findType, isAmbiguousClass, primaryRole, splitKey,
   type ChannelClass, type NewDeviceRow,
@@ -81,6 +80,8 @@ export const AddDialog = observer(({
     ({ checked: true, type: types[0], isGuessed: isAmbiguousClass(cls) });
 
   const pick = (key: string, choice: PickedChannel) => setPicked({ ...picked, [key]: choice });
+  // Сколько выбранных каналов получили тип автоматически и ждут проверки.
+  const guessed = chosen.filter(({ choice }) => choice.isGuessed).length;
 
   // Все свободные каналы текущего устройства; уже отмеченные сохраняют свой тип.
   const free = typed.filter(({ isUsed }) => !isUsed);
@@ -232,7 +233,6 @@ export const AddDialog = observer(({
                           {isUsed ? t('configurator.labels.already-used') : (
                             <>
                               {t('configurator.labels.value', { ...UNESCAPED, value: formatValue(cell) })}
-                              {choice.isGuessed && <Tag variant="warn">{t('configurator.labels.type-guessed')}</Tag>}
                             </>
                           )}
                         </span>
@@ -260,32 +260,47 @@ export const AddDialog = observer(({
           </section>
         </div>
       )}
-      {!isTilesShown && !!chosen.length && (
-        <ul className="configurator-picked" aria-label={t('configurator.labels.picked-channels')}>
-          {chosen.map(({ cell, deviceId, choice }) => {
-            const TypeIcon = TYPE_ICONS[choice.type];
-            return (
-              <li key={cell.id} className="configurator-pickedItem" title={typeName(choice.type)}>
-                {TypeIcon && <TypeIcon className="configurator-typeIcon" aria-hidden="true" />}
-                {`${cell.name} · ${deviceTitle(deviceId)}`}
-                <button
-                  type="button"
-                  className="configurator-pickedRemove"
-                  aria-label={t('configurator.labels.unpick', { ...UNESCAPED, name: cell.name })}
-                  onClick={() => pick(cell.id, { checked: false, type: '' })}
-                >
-                  <CloseIcon />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+      {current && !isTilesShown && (
+        <section className="configurator-picked">
+          <p className="configurator-pickedSummary">
+            <span>{t('configurator.labels.selected-count', { ...UNESCAPED, count: chosen.length })}</span>
+            {!!guessed && (
+              <span className="configurator-pickedGuessed">
+                {t('configurator.labels.type-guessed', { ...UNESCAPED, count: guessed })}
+              </span>
+            )}
+          </p>
+          {!!chosen.length && (
+            <ul className="configurator-pickedItems" aria-label={t('configurator.labels.picked-channels')}>
+              {chosen.map(({ cell, deviceId, choice }) => {
+                const TypeIcon = TYPE_ICONS[choice.type];
+                return (
+                  <li
+                    key={cell.id}
+                    className={classNames('configurator-pickedItem', {
+                      'configurator-pickedItemGuessed': choice.isGuessed,
+                    })}
+                    title={typeName(choice.type)}
+                  >
+                    {TypeIcon && <TypeIcon className="configurator-typeIcon" aria-hidden="true" />}
+                    {`${cell.name} · ${deviceTitle(deviceId)}`}
+                    <button
+                      type="button"
+                      className="configurator-pickedRemove"
+                      aria-label={t('configurator.labels.unpick', { ...UNESCAPED, name: cell.name })}
+                      onClick={() => pick(cell.id, { checked: false, type: '' })}
+                    >
+                      <CloseIcon />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
       )}
       <footer className="configurator-dialogFooter">
-        <span>
-          {current && !isTilesShown
-            && t('configurator.labels.selected-count', { ...UNESCAPED, count: chosen.length })}
-        </span>
+        <span />
         <Button variant="secondary" label={t('modal.labels.cancel')} onClick={onClose} />
         {isTilesShown && target && (
           <Button
