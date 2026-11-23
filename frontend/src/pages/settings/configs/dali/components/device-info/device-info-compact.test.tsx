@@ -45,6 +45,19 @@ describe('DeviceInfoCompact', () => {
     expect(screen.getByRole('button', { name: 'dali.labels.info-device' })).toBeEnabled();
   });
 
+  test('hides the info button when the dialog would have nothing to show', () => {
+    render(<DeviceInfoCompact description={{ brand_name: 'Skydance', product_name: 'DA5-L' }} />);
+
+    expect(screen.getByText('Skydance DA5-L')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'dali.labels.info-device' })).toBeNull();
+  });
+
+  test('shows the info button for a device with only the fields', () => {
+    render(<DeviceInfoCompact description={{ firmware_version: '1.2' }} />);
+
+    expect(screen.getByRole('button', { name: 'dali.labels.info-device' })).toBeEnabled();
+  });
+
   test('opens a dialog with the decoded types and all the fields from the info button, closing removes it', () => {
     render(<DeviceInfoCompact description={description} />);
     openDialog();

@@ -95,7 +95,6 @@
     background: transparent;
     border: 0;
     padding: 0;
-    opacity: 0;
     transition: opacity ease 150ms, text-shadow ease 150ms;
     border-radius: 4px;
     width: 16px;
@@ -103,8 +102,8 @@
     overflow: hidden;
     cursor: pointer;
 
-    @media (--max-mobile-width) {
-        opacity: 1;
+    @media (hover: hover) {
+        opacity: 0;
     }
 }
 

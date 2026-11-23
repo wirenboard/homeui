@@ -2,7 +2,20 @@ wb-mqtt-homeui (2.290.0) stable; urgency=medium
 
   * Add the device configurator page (Integrations -> Device configurator)
 
- -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 18 Nov 2026 10:29:44 +0300
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Mon, 23 Nov 2026 10:54:19 +0300
+
+wb-mqtt-homeui (2.289.2) stable; urgency=medium
+
+  * Card and table action buttons are always visible on touch screens
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 20 Nov 2026 12:20:26 +0500
+
+wb-mqtt-homeui (2.289.1) stable; urgency=medium
+
+  * DALI: the device info dialog title no longer runs into the close button,
+    the info button is hidden when there is nothing to show
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 19 Nov 2026 16:36:42 +0500
 
 wb-mqtt-homeui (2.289.0) stable; urgency=medium
 
