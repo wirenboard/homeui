@@ -26,7 +26,7 @@ const MODULE_ID = 'matter';
 
 // The network problems this page has its own words for. Any other code means a service
 // newer than the page, and then its English sentence is better than nothing.
-const NETWORK_CODES = new Set(['no_ipv6']);
+const NETWORK_CODES = new Set(['no_ipv6', 'config_unread']);
 
 /**
  * Re-renders once a second while a window is open, so the countdown moves between the

@@ -1500,6 +1500,7 @@
          "unreachable": "The wb-mqtt-matter-bridge service does not answer. Check whether it is running.",
          "config-error": "The device config cannot be read: {{- error}}",
          "network-no_ipv6": "Matter is not running: no network card of the controller has an IPv6 address. Matter works over IPv6, and without it the controller can be neither found nor paired. Enable IPv6 on the network interface of the controller and restart the wb-mqtt-matter-bridge service.",
+         "network-config_unread": "The bridge is off the network: the device config cannot be read. Until it can, the bridge does not announce itself - or the apps would take its devices for removed. Fix the config, and the bridge goes onto the network by itself.",
          "network-error": "Matter is not running: {{- reason}}",
          "broker-lost": "The bridge lost its connection to the MQTT broker. The states below are the last ones it knew, and commands from the apps do not reach the devices.",
          "pairing": "Pairing",
