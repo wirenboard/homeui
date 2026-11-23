@@ -16,7 +16,7 @@ const relayConfig: Config = {
     name: 'Реле',
     type: 'switch',
     module: 'wb-gpio',
-    area: 'Прихожая',
+    group: 'Прихожая',
     adapter_settings: { matter: true },
     services: [{
       sid: 1,
@@ -287,7 +287,7 @@ describe('fromConfig / toConfig', () => {
     expect(fromConfig(built.config).devices[0].rows[0].unit).toBe('lvl');
   });
 
-  it('writes the device group into the area of every channel', () => {
+  it('writes the device group into the group of every channel', () => {
     const live = liveOf({ 'r/K1': { type: 'switch' }, 'r/K2': { type: 'switch' } });
     const built = toConfig({
       raw: [],
@@ -300,12 +300,12 @@ describe('fromConfig / toConfig', () => {
       })],
     }, live, {});
 
-    expect(built.config.devices.map((item) => item.area)).toEqual(['Коридор', 'Коридор']);
+    expect(built.config.devices.map((item) => item.group)).toEqual(['Коридор', 'Коридор']);
   });
 
-  it('takes the first filled area of the channels as the device group', () => {
-    const entry = (did: number, area?: string) => ({
-      did, name: `n${did}`, type: 'switch', module: 'Щит', ...(area ? { area } : {}),
+  it('takes the first filled group of the channels as the device group', () => {
+    const entry = (did: number, group?: string) => ({
+      did, name: `n${did}`, type: 'switch', module: 'Щит', ...(group ? { group } : {}),
       services: [{ sid: 1, role: 'on_off', binding: { state: `/devices/r/controls/K${did}` } }],
     });
 

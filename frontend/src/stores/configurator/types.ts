@@ -114,7 +114,7 @@ export interface ConfigDevice {
   name: string;
   type: string;
   module: string;
-  area?: string;
+  group?: string;
   adapter_settings?: Record<string, boolean>;
   services: ConfigService[];
 }
@@ -137,7 +137,7 @@ export interface DeviceRow {
 // Строка при добавлении: did назначает стор.
 export type NewDeviceRow = Omit<DeviceRow, 'did'>;
 
-// Устройство приложений: name пишется в module конфига, group — в area каждого канала.
+// Устройство приложений: name пишется в module конфига, group — в group каждого канала.
 export interface Device {
   id: string;
   name: string;

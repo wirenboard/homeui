@@ -101,7 +101,7 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     } else if (target.matter !== matter) {
       mixed[id] = true;
     }
-    target.group ||= String(device.area || '').trim();
+    target.group ||= String(device.group || '').trim();
     target.rows.push(row);
   });
 
@@ -159,7 +159,7 @@ export const toConfig = (
   const drafts: Draft[] = [];
 
   const makeDevice = (
-    did: number, name: string, type: string, module: string, area: string, matter: boolean,
+    did: number, name: string, type: string, module: string, group: string, matter: boolean,
     services: [RoleId, string, string][], rawUnit?: string,
   ): ConfigDevice => {
     const unit = rawUnit?.trim();
@@ -168,7 +168,7 @@ export const toConfig = (
       name: name.trim() || `did ${did}`,
       type,
       module,
-      ...(area?.trim() ? { area: area.trim() } : {}),
+      ...(group?.trim() ? { group: group.trim() } : {}),
       adapter_settings: { matter },
       services: services.map(([role, deviceId, controlId], index) => {
         const service = buildService(index + 1, role, deviceId, controlId, live, orig[did]?.[role]);
