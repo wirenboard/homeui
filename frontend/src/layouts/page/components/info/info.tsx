@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import InfoIcon from '@/assets/icons/info.svg';
+import { InfoIconButton } from '@/components/info-icon-button';
 import { Popup } from '@/components/popup';
 import './styles.css';
 
@@ -30,7 +30,7 @@ export const Info = ({ link }: { link?: string }) => {
       }
       onOpenChange={setIsOpen}
     >
-      <InfoIcon className="info-icon" />
+      <InfoIconButton aria-label={t('page.labels.info')} />
     </Popup>
   );
 };
