@@ -398,9 +398,40 @@
 
 .configurator-channelTitle {
     display: inline-flex;
+    flex: 1;
     align-items: center;
     gap: 8px;
+    min-width: 0;
     font-weight: 600;
+}
+
+.configurator-channelText {
+    overflow-wrap: anywhere;
+}
+
+.configurator-channelName {
+    flex: 1;
+    min-width: 0;
+}
+
+.configurator-collapse {
+    display: inline-flex;
+    padding: 4px;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background: var(--container-background);
+    }
+
+    svg {
+        width: 12px;
+        height: 12px;
+    }
 }
 
 .configurator-typeIcon {

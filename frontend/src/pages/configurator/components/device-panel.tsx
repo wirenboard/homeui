@@ -1,5 +1,9 @@
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
+import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
@@ -7,8 +11,9 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
+import { Input } from '@/components/input';
 import {
-  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, rowServices, splitKey, topicOf,
+  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, rowServices, splitKey,
   type ChannelClass,
   type DeviceRow,
   type RoleId,
@@ -16,7 +21,7 @@ import {
 import { devicesStore, type Cell } from '@/stores/devices';
 import type { DevicePanelProps } from '../types';
 import {
-  classifyCell, defaultName, deviceControls, formatValue, listDevices, liveControls, roleLabel,
+  classifyCell, defaultName, deviceControls, listDevices, liveControls, roleLabel,
   TYPE_ICONS, typeName, UNESCAPED,
 } from '../utils';
 import { AdapterSwitches } from './adapter-switches';
@@ -30,21 +35,14 @@ export const DevicePanel = observer(({
   const { t } = useTranslation();
   const devices = listDevices(true);
 
-  const cellLabel = (cell: Cell) => `${cell.name} · ${formatValue(cell)} [${cell.id}]`;
+  // Свёрнутые каналы карточки по их did.
+  const [collapsed, setCollapsed] = useState<number[]>([]);
+  const [editedName, setEditedName] = useState<number | null>(null);
+  const isAllCollapsed = item.rows.every((row) => collapsed.includes(row.did));
 
-  const roleOptions = (role: RoleId, current: string): Option<string>[] => {
-    const options: Option<string>[] = devices.flatMap((deviceId) => deviceControls(deviceId)
-      .filter((cell) => CHANNEL_CLASSES[classifyCell(cell).cls].fits.includes(role))
-      .map((cell) => ({ label: cellLabel(cell), value: cell.id })));
-    if (current && !options.some((option) => option.value === current)) {
-      const cell = devicesStore.cells.get(current);
-      const label = cell
-        ? cellLabel(cell)
-        : t('configurator.labels.channel-lost', { ...UNESCAPED, topic: topicOf(...splitKey(current)) });
-      options.unshift({ label, value: current });
-    }
-    return options;
-  };
+  // Необязательная роль показывается, только если на контроллере есть канал, который ей подходит.
+  const hasFit = (role: RoleId) => devices.some((deviceId) => deviceControls(deviceId)
+    .some((cell) => CHANNEL_CLASSES[classifyCell(cell).cls].fits.includes(role)));
 
   const bindRole = (row: DeviceRow, role: RoleId, key: string | null) => {
     const primary = primaryRole(row.type);
@@ -125,14 +123,24 @@ export const DevicePanel = observer(({
             {t('configurator.labels.channels')}
             {!!item.rows.length && ` (${item.rows.length})`}
           </h3>
-          <Button
-            size="small"
-            variant="secondary"
-            icon={<PlusIcon />}
-            label={t('configurator.buttons.add-channel')}
-            aria-haspopup="dialog"
-            onClick={onAddRows}
-          />
+          <div className="configurator-listActions">
+            {item.rows.length > 1 && (
+              <Button
+                size="small"
+                variant="secondary"
+                label={t(`configurator.buttons.${isAllCollapsed ? 'expand-all' : 'collapse-all'}`)}
+                onClick={() => setCollapsed(isAllCollapsed ? [] : item.rows.map((row) => row.did))}
+              />
+            )}
+            <Button
+              size="small"
+              variant="secondary"
+              icon={<PlusIcon />}
+              label={t('configurator.buttons.add-channel')}
+              aria-haspopup="dialog"
+              onClick={onAddRows}
+            />
+          </div>
         </div>
         {!item.rows.length && <p className="configurator-empty">{t('configurator.labels.channels-none')}</p>}
         <ul className="configurator-channels configurator-cards">
@@ -140,7 +148,9 @@ export const DevicePanel = observer(({
             const { missing } = rowServices(row);
             const TypeIcon = TYPE_ICONS[row.type];
             const roles = findType(row.type).roles
-              .filter(([role, isRequired]) => isRequired || row.bind[role] || roleOptions(role, '').length);
+              .filter(([role, isRequired]) => isRequired || row.bind[role] || hasFit(role));
+            const isCollapsed = collapsed.includes(row.did);
+            const title = row.name || typeName(row.type);
             const primary = primaryChannel(row);
             const classTypes = primary ? CHANNEL_CLASSES[primary.cls].types : [];
             const types = !classTypes.length || classTypes.includes(row.type) ? classTypes : [row.type, ...classTypes];
@@ -148,9 +158,42 @@ export const DevicePanel = observer(({
               <li key={row.did} className="configurator-card">
                 <div className="configurator-channelHead configurator-cardHead">
                   <span className="configurator-channelTitle">
+                    <button
+                      type="button"
+                      className="configurator-collapse"
+                      aria-expanded={!isCollapsed}
+                      aria-label={t('configurator.labels.toggle-channel', { ...UNESCAPED, name: title })}
+                      onClick={() => setCollapsed(isCollapsed
+                        ? collapsed.filter((did) => did !== row.did)
+                        : [...collapsed, row.did])}
+                    >
+                      {isCollapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}
+                    </button>
                     <span className="configurator-cardNumber">{index + 1}</span>
-                    <TypeIcon className="configurator-typeIcon" />
-                    {typeName(row.type)}
+                    <TypeIcon className="configurator-typeIcon" aria-label={typeName(row.type)} />
+                    {editedName === row.did ? (
+                      <Input
+                        className="configurator-channelName"
+                        value={row.name}
+                        ariaLabel={t('configurator.labels.name-in-apps')}
+                        autoFocus
+                        onChange={(name) => configuratorStore.updateRow(row, { name: String(name) })}
+                        onEnter={() => setEditedName(null)}
+                        onBlur={() => setEditedName(null)}
+                      />
+                    ) : (
+                      <>
+                        <span className="configurator-channelText">{title}</span>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          icon={<EditSquareIcon />}
+                          aria-label={t('configurator.buttons.edit-channel-name', { ...UNESCAPED, name: title })}
+                          isOutlined
+                          onClick={() => setEditedName(row.did)}
+                        />
+                      </>
+                    )}
                   </span>
                   <Button
                     size="small"
@@ -160,50 +203,48 @@ export const DevicePanel = observer(({
                     onClick={() => configuratorStore.removeRow(item, row.did)}
                   />
                 </div>
-                <div className="configurator-channelBody configurator-cardBody">
-                  <div className="configurator-fields">
-                    <StringField
-                      title={t('configurator.labels.name-in-apps')}
-                      value={row.name}
-                      onChange={(name) => configuratorStore.updateRow(row, { name: String(name) })}
-                    />
+                {!isCollapsed && (
+                  <div className="configurator-channelBody configurator-cardBody">
                     {hasUnit(row.type) && (
-                      <UnitField
-                        value={row.unit ?? ''}
-                        onChange={(unit) => configuratorStore.updateRow(row, { unit })}
+                      <div className="configurator-fields">
+                        <UnitField
+                          value={row.unit ?? ''}
+                          onChange={(unit) => configuratorStore.updateRow(row, { unit })}
+                        />
+                      </div>
+                    )}
+                    {types.length > 1 && (
+                      <TypeChoice
+                        types={types}
+                        value={row.type}
+                        ariaLabel={`${t('configurator.labels.type')}: ${row.name}`}
+                        onChange={(typeId) => changeType(row, primary.cell, primary.cls, typeId)}
                       />
                     )}
+                    {roles.map(([role, isRequired]) => (
+                      <div key={role} className="configurator-role">
+                        <span className="configurator-choiceLabel">{roleLabel(role)}</span>
+                        <Dropdown
+                          options={devicesStore.topicsWithoutSystem}
+                          value={row.bind[role] ?? null}
+                          placeholder={t(`configurator.labels.${isRequired ? 'choose-channel' : 'none'}`)}
+                          ariaLabel={t('configurator.labels.channel-for-role', { ...UNESCAPED, role: roleLabel(role) })}
+                          isInvalid={isRequired && !row.bind[role]}
+                          isCreatable
+                          isSearchable
+                          isClearable
+                          menuPortal
+                          onChange={(option: Option<string>) => bindRole(row, role, option?.value || null)}
+                        />
+                      </div>
+                    ))}
+                    {!!missing.length && (
+                      <Alert variant="warn" size="small" className="configurator-alertInline">
+                        {t('configurator.labels.role-required', { ...UNESCAPED, role: roleLabel(missing[0]) })}
+                      </Alert>
+                    )}
                   </div>
-                  {types.length > 1 && (
-                    <TypeChoice
-                      types={types}
-                      value={row.type}
-                      ariaLabel={`${t('configurator.labels.type')}: ${row.name}`}
-                      onChange={(typeId) => changeType(row, primary.cell, primary.cls, typeId)}
-                    />
-                  )}
-                  {roles.map(([role, isRequired]) => (
-                    <div key={role} className="configurator-role">
-                      <span className="configurator-choiceLabel">{roleLabel(role)}</span>
-                      <Dropdown
-                        options={roleOptions(role, row.bind[role] ?? '')}
-                        value={row.bind[role] ?? null}
-                        placeholder={t(isRequired ? 'configurator.labels.choose-channel' : 'configurator.labels.none')}
-                        ariaLabel={t('configurator.labels.channel-for-role', { ...UNESCAPED, role: roleLabel(role) })}
-                        isInvalid={isRequired && !row.bind[role]}
-                        isSearchable
-                        isClearable
-                        menuPortal
-                        onChange={(option: Option<string>) => bindRole(row, role, option?.value ?? null)}
-                      />
-                    </div>
-                  ))}
-                  {!!missing.length && (
-                    <Alert variant="warn" size="small" className="configurator-alertInline">
-                      {t('configurator.labels.role-required', { ...UNESCAPED, role: roleLabel(missing[0]) })}
-                    </Alert>
-                  )}
-                </div>
+                )}
               </li>
             );
           })}
