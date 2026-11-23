@@ -1,5 +1,6 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
+import type { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
@@ -21,8 +22,13 @@ import { FabricMenu } from './fabric-menu';
  *
  * On a phone that comparison is not on offer anyway: at 375 px the four columns ask for 394,
  * so the link state is clipped and the actions column falls off the right edge entirely.
+ *
+ * What is put inside the card goes under the list: the page puts the pairing window there,
+ * so that the way to add a fabric is the last line of the list of fabrics.
  */
-export const FabricsCard = ({ fabrics, fabricsSince, onAction }: FabricsCardProps) => {
+export const FabricsCard = ({
+  fabrics, fabricsSince, onAction, children,
+}: PropsWithChildren<FabricsCardProps>) => {
   const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   // Matching the rest of the interface rather than inventing a format for this page.
@@ -163,6 +169,7 @@ export const FabricsCard = ({ fabrics, fabricsSince, onAction }: FabricsCardProp
           ))}
         </Table>
       )}
+      {children}
       <p className="matter-hint">{t('matter.labels.fabrics-hint')}</p>
     </Card>
   );

@@ -1,5 +1,5 @@
 import type {
-  MatterDevice, MatterDevices, MatterFabric, MatterSettings,
+  MatterDevice, MatterDevices, MatterFabric, MatterPairing, MatterSettings,
 } from '@/stores/matter';
 
 /**
@@ -56,6 +56,20 @@ export interface FabricsCardProps {
   // of their own. Null or undefined from a service that keeps none.
   fabricsSince?: number | null;
   onAction: (_fabric: MatterFabric, _action: FabricMenuAction) => void;
+}
+
+export interface PairingWindowProps {
+  // The open window as the bridge reports it, or null while it is closed.
+  pairing: MatterPairing | null;
+  // No fabric is paired yet: the closed window is then an invitation and not a remark.
+  isEmpty: boolean;
+  // What is left of an open window, as the text to show.
+  left: string;
+  isChanging: boolean;
+  hasFailed: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onNewCode: () => void;
 }
 
 export interface DevicesCardProps {

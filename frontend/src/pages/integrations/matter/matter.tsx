@@ -2,21 +2,19 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
 import { Confirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
-import { type MatterDevice, type MatterFabric, matterStore, pairingQrUrl } from '@/stores/matter';
+import { type MatterDevice, type MatterFabric, matterStore } from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
-import { CopyField } from './components/copy-field';
 import { DevicesCard } from './components/devices-card';
 import { FabricLabelDialog } from './components/fabric-label-dialog';
 import { FabricsCard } from './components/fabrics-card';
+import { PairingWindow } from './components/pairing-window';
 import { SettingsCard } from './components/settings-card';
 import { FabricMenuAction } from './types';
-import { configuratorSelection, fabricDisplayLabel, groupManualCode, timeLeft } from './utils';
+import { configuratorSelection, fabricDisplayLabel, timeLeft } from './utils';
 import './styles.css';
 
 // The menu entry is shipped by wb-mqtt-matter-bridge itself, so its id in the custom
@@ -133,101 +131,22 @@ const MatterPage = observer(() => {
         <>
           <p className="matter-subtitle">{t('matter.labels.subtitle')}</p>
 
-          {/* The bridge comes up with the window closed, so this card has two faces: a
-              button that opens one, and the code while it is open. Pairing starts when
-              a person asks for it and never on its own - see R15 in
-              docs/design-config-and-pairing.md of wb-mqtt-matter-bridge. */}
-          {!status.pairing && (
-            <Card className="matter-card" heading={t('matter.labels.pairing')}>
-              <p className="matter-windowText">
-                {t(status.paired ? 'matter.labels.window-closed-paired' : 'matter.labels.window-closed')}
-              </p>
-              <p className="matter-windowText">{t('matter.labels.window-closed-why')}</p>
-              <div className="matter-windowActions">
-                <Button
-                  variant="primary"
-                  label={t('matter.buttons.open-window')}
-                  isLoading={matterStore.isChangingWindow}
-                  disabled={matterStore.isChangingWindow}
-                  onClick={() => matterStore.openWindow()}
-                />
-                {/* Only here, with the window closed: the bridge refuses to change the
-                    code under an open window, which runs on the code it was opened
-                    with. Offering the button there would be offering a refusal. */}
-                <Button
-                  size="small"
-                  variant="secondary"
-                  label={t('matter.buttons.new-code')}
-                  disabled={matterStore.isChangingWindow}
-                  onClick={() => setChangingCode(true)}
-                />
-                {matterStore.hasWindowFailed && (
-                  <span className="matter-dialogError">{t('matter.labels.window-failed')}</span>
-                )}
-              </div>
-            </Card>
-          )}
-
-          {status.pairing && (
-            <Card className="matter-card" heading={t('matter.labels.pairing')}>
-              <div className="matter-pairing">
-                <div className="matter-qr">
-                  <img
-                    className="matter-qrImage"
-                    src={pairingQrUrl(status.pairing.qr_version)}
-                    alt={t('matter.labels.qr-alt')}
-                  />
-                </div>
-
-                <div className="matter-pairingBody">
-                  <ol className="matter-steps">
-                    <li>{t('matter.labels.step-app')}</li>
-                    <li>{t('matter.labels.step-add')}</li>
-                    <li>{t('matter.labels.step-scan')}</li>
-                  </ol>
-
-                  <div className="matter-fields">
-                    <CopyField
-                      label={t('matter.labels.manual-code')}
-                      text={groupManualCode(status.pairing.manual_code)}
-                      value={status.pairing.manual_code}
-                    />
-                    <CopyField
-                      label={t('matter.labels.payload')}
-                      text={status.pairing.payload}
-                      value={status.pairing.payload}
-                    />
-                  </div>
-
-                  <div className="matter-windowActions">
-                    <span className="matter-countdown">
-                      {t('matter.labels.window-left', {
-                        left: timeLeft(status.pairing.closes_at, now + matterStore.clockOffset),
-                      })}
-                    </span>
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      label={t('matter.buttons.close-window')}
-                      isLoading={matterStore.isChangingWindow}
-                      disabled={matterStore.isChangingWindow}
-                      onClick={() => matterStore.closeWindow()}
-                    />
-                  </div>
-                  <p className="matter-hint">{t('matter.labels.window-new-code')}</p>
-                  {matterStore.hasWindowFailed && (
-                    <p className="matter-dialogError">{t('matter.labels.window-failed')}</p>
-                  )}
-                </div>
-              </div>
-            </Card>
-          )}
-
           <FabricsCard
             fabrics={status.fabrics}
             fabricsSince={status.fabrics_since}
             onAction={chooseFabricAction}
-          />
+          >
+            <PairingWindow
+              pairing={status.pairing}
+              isEmpty={status.fabrics.length === 0}
+              left={status.pairing ? timeLeft(status.pairing.closes_at, now + matterStore.clockOffset) : ''}
+              isChanging={matterStore.isChangingWindow}
+              hasFailed={matterStore.hasWindowFailed}
+              onOpen={() => matterStore.openWindow()}
+              onClose={() => matterStore.closeWindow()}
+              onNewCode={() => setChangingCode(true)}
+            />
+          </FabricsCard>
 
           <DevicesCard devices={status.devices} onOpen={openInConfigurator} />
 
