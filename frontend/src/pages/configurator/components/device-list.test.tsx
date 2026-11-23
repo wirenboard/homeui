@@ -16,10 +16,17 @@ const show = (groups: string[]) => {
   render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onAddWb={vi.fn()} onClear={vi.fn()} onSelect={vi.fn()} />);
 };
 
-const sections = () => Array.from(document.querySelectorAll('section')).map((section) => [
-  section.querySelector('h4')?.textContent ?? null,
-  Array.from(section.querySelectorAll('.configurator-listTitle')).map((title) => title.textContent),
-]);
+// Ветки дерева верхнего уровня: заголовок группы (null у плоского списка) и устройства в ней.
+const sections = () => {
+  const top = Array.from(document.querySelectorAll('[role="tree"] > [role="treeitem"]'));
+  if (!top.some((node) => node.querySelector('.configurator-treeGroup'))) {
+    return [[null, top.map((node) => node.querySelector('.configurator-listTitle').textContent)]];
+  }
+  return top.map((node) => [
+    node.querySelector('.configurator-treeGroup').textContent,
+    Array.from(node.querySelectorAll('.configurator-listTitle')).map((title) => title.textContent),
+  ]);
+};
 
 // Меню рисуется в общий контейнер всплывающих блоков приложения.
 const openMenu = () => {
@@ -59,5 +66,20 @@ describe('DeviceList', () => {
       expect(way).toHaveBeenCalledTimes(1);
       expect(screen.queryByRole('menu')).toBeNull();
     });
+  });
+
+  it('selects a device by a click in the tree and ignores a click on a group', () => {
+    const onSelect = vi.fn();
+    runInAction(() => {
+      configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: 'Кухня', matter: true, rows: [] }];
+    });
+    render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onAddWb={vi.fn()} onClear={vi.fn()} onSelect={onSelect} />);
+
+    fireEvent.click(screen.getByText('Кухня'));
+    expect(onSelect).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('Лампа'));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(configuratorStore.selection).toEqual({ id: 'd0' });
   });
 });

@@ -267,12 +267,20 @@
     gap: 6px;
 }
 
-.configurator-listGroup {
-    margin: 0 0 4px;
-    padding: 0 8px;
-    font-size: inherit;
-    font-weight: 400;
-    color: var(--gray-color);
+.configurator-tree {
+    margin-top: var(--content-gap);
+}
+
+.configurator-treeDevice {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.configurator-treeGroup {
+    font-weight: 600;
     overflow-wrap: anywhere;
 }
 

@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +8,7 @@ import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Popup } from '@/components/popup';
 import { Tag } from '@/components/tag';
+import { Tree, type TreeItem } from '@/components/tree';
 import { configuratorStore, stable, type Device } from '@/stores/configurator';
 import type { AddWay, DeviceListProps } from '../types';
 import { hasLostBinding } from '../utils';
@@ -43,6 +43,39 @@ export const DeviceList = observer(({
     }
     return saved.get(device.id) !== stable(device) ? t('configurator.labels.changed') : null;
   };
+
+  const item = (device: Device): TreeItem => {
+    const tag = mark(device);
+    return {
+      id: device.id,
+      label: (
+        <span className="configurator-treeDevice">
+          <span className="configurator-listText">
+            <span className="configurator-listTitle">{device.name || t('configurator.labels.new-device')}</span>
+            <span>
+              {device.rows.length
+                ? t('configurator.labels.channels-count', { count: device.rows.length })
+                : t('configurator.labels.channels-none')}
+            </span>
+          </span>
+          {hasLostBinding(device) && <Tag variant="warn">{t('configurator.labels.not-found')}</Tag>}
+          {configuratorStore.nameConflicts.has(device.id) && (
+            <Tag variant="warn">{t('configurator.labels.name-duplicate')}</Tag>
+          )}
+          {tag && <Tag variant="gray">{tag}</Tag>}
+        </span>
+      ),
+    };
+  };
+
+  // Группы — ветки дерева; пока ни у кого нет группы, список плоский.
+  const tree: TreeItem[] = groups.some(Boolean)
+    ? groups.map((group) => ({
+      id: `group:${group}`,
+      label: <span className="configurator-treeGroup">{group || t('configurator.labels.no-group')}</span>,
+      children: shown.filter((device) => device.group.trim() === group).map(item),
+    }))
+    : shown.map(item);
 
   return (
     <Card
@@ -95,48 +128,20 @@ export const DeviceList = observer(({
         onChange={(value) => setQuery(String(value))}
       />
 
-      {groups.map((group) => (
-        <section key={group} className="configurator-listSection">
-          {groups.some(Boolean) && (
-            <h4 className="configurator-listGroup">{group || t('configurator.labels.no-group')}</h4>
-          )}
-          <ul className="configurator-listItems">
-            {shown.filter((device) => device.group.trim() === group).map((device) => {
-              const isSelected = !isOverview && selection?.id === device.id;
-              const tag = mark(device);
-              return (
-                <li key={device.id}>
-                  <button
-                    type="button"
-                    className={classNames('configurator-listItem', { 'configurator-listItemSelected': isSelected })}
-                    aria-current={isSelected || undefined}
-                    onClick={() => {
-                      configuratorStore.select({ id: device.id });
-                      onSelect();
-                    }}
-                  >
-                    <span className="configurator-listText">
-                      <span className="configurator-listTitle">
-                        {device.name || t('configurator.labels.new-device')}
-                      </span>
-                      <span>
-                        {device.rows.length
-                          ? t('configurator.labels.channels-count', { count: device.rows.length })
-                          : t('configurator.labels.channels-none')}
-                      </span>
-                    </span>
-                    {hasLostBinding(device) && <Tag variant="warn">{t('configurator.labels.not-found')}</Tag>}
-                    {configuratorStore.nameConflicts.has(device.id) && (
-                      <Tag variant="warn">{t('configurator.labels.name-duplicate')}</Tag>
-                    )}
-                    {tag && <Tag variant="gray">{tag}</Tag>}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+      {!!shown.length && (
+        <div className="configurator-tree">
+          <Tree
+            data={tree}
+            activeId={isOverview ? '' : selection?.id ?? ''}
+            onItemClick={({ id }) => {
+              if (devices.some((device) => device.id === id)) {
+                configuratorStore.select({ id });
+                onSelect();
+              }
+            }}
+          />
+        </div>
+      )}
 
       {!shown.length && (
         <p className="configurator-empty">
