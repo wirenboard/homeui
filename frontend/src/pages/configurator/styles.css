@@ -243,6 +243,11 @@
     opacity: 0.6;
 }
 
+.configurator-wbName {
+    flex: 1;
+    min-width: 0;
+}
+
 .configurator-wbCount {
     min-width: 22px;
     margin-left: auto;

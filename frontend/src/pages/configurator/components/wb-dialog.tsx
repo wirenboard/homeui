@@ -4,15 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
+import { Input } from '@/components/input';
 import { Tag } from '@/components/tag';
 import {
   CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, recipeModels, recipeModelTitle, recipeRows,
-  recipeSkipped, recipeSplit, type NewDeviceRow, type RecipeFit,
+  recipeSkipped, recipeSplit, splitKey, topicOf, type NewDeviceRow, type RecipeFit,
 } from '@/stores/configurator';
-import type { WbDialogProps, WbUnit } from '../types';
+import type { WbControl, WbDialogProps, WbUnit } from '../types';
 import {
-  classifyCell, controlMeta, deviceControls, deviceTitle, isModbusDevice, listDevices, recipeRowName, TYPE_ICONS,
-  typeName, UNESCAPED,
+  classifyCell, controlMeta, deviceControls, deviceTitle, formatValue, isModbusDevice, listDevices, recipeRowName,
+  TYPE_ICONS, typeName, UNESCAPED,
 } from '../utils';
 import { TypeChoice } from './type-choice';
 
@@ -22,11 +23,13 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
   const [model, setModel] = useState<string | null>(null);
   const [skipped, setSkipped] = useState<string[]>([]);
   const [types, setTypes] = useState<Record<string, string>>({});
+  const [names, setNames] = useState<Record<string, string>>({});
 
   const open = (title: string | null) => {
     setModel(title);
     setSkipped([]);
     setTypes({});
+    setNames({});
   };
 
   useEffect(() => {
@@ -55,6 +58,10 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
       };
       return { ...item, row, choices: CHANNEL_CLASSES[classifyCell(cell).cls].types };
     });
+    const controlsOf = (row: NewDeviceRow): WbControl[] => Object.values(row.bind).map((key) => {
+      const cell = cells.find((item) => item.id === key);
+      return { name: cell?.name ?? key, value: formatValue(cell), topic: topicOf(...splitKey(key)) };
+    });
     const split = recipeSplit(id, serial);
     const units: WbUnit[] = [];
     items.forEach((item, at) => {
@@ -62,6 +69,7 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
       const unit = split && units.find((other) => other.key === key);
       if (unit) {
         unit.rows.push(item.row);
+        unit.controls.push(...controlsOf(item.row));
         unit.choices = [];
       } else if (split || !units.length) {
         const label = split === 'index'
@@ -72,12 +80,14 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
           name: split ? `${deviceTitle(id)} · ${label}` : deviceTitle(id),
           label: split ? label : deviceTitle(id),
           rows: [item.row],
+          controls: controlsOf(item.row),
           // Тип можно менять, только пока в строке один канал с несколькими подходящими типами.
           choices: split && item.choices.includes(item.row.type) ? item.choices : [],
           suggest: item.suggest,
         });
       } else {
         units[0].rows.push(item.row);
+        units[0].controls.push(...controlsOf(item.row));
       }
     });
     return {
@@ -92,6 +102,11 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
   const opened = found.filter((device) => device.model === model);
   const chosen = opened.flatMap(({ units }) => units).filter(({ key }) => !skipped.includes(key));
   const typeOf = (unit: WbUnit) => types[unit.key] ?? unit.suggest ?? unit.rows[0].type;
+  const nameOf = (unit: WbUnit) => (names[unit.key] ?? unit.name).trim();
+  // Имя занято другой карточкой или другой отмеченной строкой; пустое тоже не годится.
+  const taken = new Set(configuratorStore.devices.map((device) => device.name.trim().toLowerCase()));
+  const isBadName = (unit: WbUnit) => !nameOf(unit) || taken.has(nameOf(unit).toLowerCase())
+    || chosen.some((other) => other !== unit && nameOf(other).toLowerCase() === nameOf(unit).toLowerCase());
 
   // Строка под выбранный тип: привязки ролей, которых у типа нет, отбрасываются.
   const typed = (row: NewDeviceRow, type: string): NewDeviceRow => ({
@@ -104,7 +119,7 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
 
   const create = () => {
     const created = chosen.map((unit) => configuratorStore.addDevice(
-      unit.name,
+      nameOf(unit),
       unit.choices.length ? [typed(unit.rows[0], typeOf(unit))] : unit.rows,
     ));
     if (created.length > 1) {
@@ -140,11 +155,18 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
                     <div className="configurator-channelHead">
                       <Checkbox
                         checked={!skipped.includes(unit.key)}
-                        title={unit.label}
-                        ariaLabel={unit.name}
+                        ariaLabel={unit.label}
                         onChange={(checked) => {
                           setSkipped(checked ? skipped.filter((key) => key !== unit.key) : [...skipped, unit.key]);
                         }}
+                      />
+                      <Input
+                        className="configurator-wbName"
+                        value={names[unit.key] ?? unit.name}
+                        ariaLabel={t('configurator.labels.wb-name', { ...UNESCAPED, label: unit.label })}
+                        isInvalid={!skipped.includes(unit.key) && isBadName(unit)}
+                        isFullWidth
+                        onChange={(value) => setNames({ ...names, [unit.key]: String(value) })}
                       />
                       <span className="configurator-wbModelIcons" aria-hidden="true">
                         {icons(unit.choices.length ? [typeOf(unit)] : unit.rows.map((row) => row.type))}
@@ -158,9 +180,14 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
                         onChange={(typeId) => setTypes({ ...types, [unit.key]: typeId })}
                       />
                     )}
-                    {unit.rows.length > 1 && (
-                      <p className="configurator-adapterNote">{unit.rows.map((row) => row.name).join(', ')}</p>
-                    )}
+                    <p className="configurator-adapterNote">
+                      {unit.controls.map((control, at) => (
+                        <span key={control.topic} title={control.topic}>
+                          {at > 0 && ', '}
+                          {`${control.name} · ${control.value}`}
+                        </span>
+                      ))}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -234,7 +261,7 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
             />
             <Button
               label={t('configurator.buttons.create-devices')}
-              disabled={!chosen.length}
+              disabled={!chosen.length || chosen.some(isBadName)}
               onClick={create}
             />
           </>

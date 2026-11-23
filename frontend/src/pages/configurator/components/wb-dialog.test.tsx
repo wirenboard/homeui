@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { runInAction } from 'mobx';
 import { configuratorStore } from '@/stores/configurator';
-import { fireEvent, render, screen } from '@/test/render';
+import { act, fireEvent, render, screen } from '@/test/render';
 import { WbDialog } from './wb-dialog';
 
 const { controls, CLASSES } = vi.hoisted(() => ({
@@ -41,7 +41,9 @@ const tiles = () => Array.from(document.querySelectorAll('.configurator-wbModelF
 const openModel = (title: string) => fireEvent.click(
   Array.from(document.querySelectorAll('.configurator-wbModelFound')).find((tile) => tile.textContent.includes(title)),
 );
-const create = () => fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.create-devices' }));
+const createButton = () =>
+  screen.getByRole('button', { name: 'configurator.buttons.create-devices' }) as HTMLButtonElement;
+const create = () => fireEvent.click(createButton());
 const typeButtons = (unit: number) =>
   Array.from(document.querySelectorAll('.configurator-channel')[unit].querySelectorAll('.configurator-choice button'));
 const made = () => configuratorStore.devices.map((device) => [
@@ -83,6 +85,9 @@ describe('WbDialog setup step', () => {
   it('makes a separate device of every checked relay output, a light by default, and opens the overview', () => {
     const onAdded = show({ 'wb-mrps6_12': ['K1', 'K2'] });
     openModel('WB-MRPS6');
+    screen.getAllByRole('textbox').forEach((field, index) => {
+      fireEvent.change(field, { target: { value: `Output ${index + 1}` } });
+    });
 
     expect(typeButtons(0).map((button) => button.getAttribute('aria-pressed'))).toEqual(['false', 'false', 'true']);
     create();
@@ -91,7 +96,7 @@ describe('WbDialog setup step', () => {
       [expect.objectContaining({ type: 'light', bind: { on_off: 'wb-mrps6_12/K1' } })],
       [expect.objectContaining({ type: 'light', bind: { on_off: 'wb-mrps6_12/K2' } })],
     ]);
-    expect(new Set(configuratorStore.devices.map((device) => device.name)).size).toBe(2);
+    expect(configuratorStore.devices.map((device) => device.name)).toEqual(['Output 1', 'Output 2']);
     expect(configuratorStore.isOverview).toBe(true);
     expect(onAdded).not.toHaveBeenCalled();
   });
@@ -150,5 +155,36 @@ describe('WbDialog setup step', () => {
 
     expect(tiles()).toEqual([['WB-MRPS6', '1']]);
     expect(configuratorStore.devices).toEqual([]);
+  });
+
+  it('names the devices by the fields and blocks creation while a name is empty or taken', () => {
+    show({ 'wb-mrps6_12': ['K1', 'K2'] });
+    act(() => runInAction(() => {
+      configuratorStore.devices = [{ id: 'x', name: 'Hall', group: '', matter: true, rows: [] }];
+    }));
+    openModel('WB-MRPS6');
+    const [first, second] = screen.getAllByRole('textbox') as HTMLInputElement[];
+
+    fireEvent.change(first, { target: { value: 'hall' } });
+    expect(createButton().disabled).toBe(true);
+    fireEvent.change(first, { target: { value: 'Kitchen' } });
+    fireEvent.change(second, { target: { value: 'Kitchen ' } });
+    expect(createButton().disabled).toBe(true);
+    fireEvent.change(second, { target: { value: 'Corridor' } });
+    create();
+
+    expect(configuratorStore.devices.map((device) => device.name)).toEqual(['Hall', 'Kitchen', 'Corridor']);
+  });
+
+  it('shows the controller channels each device is made of, with the topic on hover', () => {
+    show({ 'wb-mdm3_7': ['K1', 'Channel 1'] });
+    openModel('WB-MDM3');
+
+    const channels = Array.from(document.querySelectorAll('.configurator-channel .configurator-adapterNote span'));
+
+    expect(channels.map((item) => [item.textContent.replace(/^, /, ''), item.getAttribute('title')])).toEqual([
+      ['K1 · —', '/devices/wb-mdm3_7/controls/K1'],
+      ['Channel 1 · —', '/devices/wb-mdm3_7/controls/Channel 1'],
+    ]);
   });
 });

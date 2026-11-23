@@ -90,9 +90,17 @@ export interface WbUnit {
   name: string;
   label: string;
   rows: NewDeviceRow[];
+  // каналы контроллера, из которых собирается устройство
+  controls: WbControl[];
   // типы, между которыми можно выбрать; пусто — выбора нет
   choices: string[];
   suggest?: string;
+}
+
+export interface WbControl {
+  name: string;
+  value: string;
+  topic: string;
 }
 
 export interface WbDialogProps {
