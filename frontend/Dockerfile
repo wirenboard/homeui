@@ -1,8 +1,9 @@
 FROM node:alpine as npm-cache
 WORKDIR /app
+ARG NPM_REGISTRY_URL=https://nexus.hq.wirenboard.com/repository/npm-group/
 COPY package*.json ./
 RUN apk add --update --no-cache build-base python3
-RUN npm install
+RUN npm install --registry ${NPM_REGISTRY_URL}
 
 FROM npm-cache as build-stage
 COPY . .
