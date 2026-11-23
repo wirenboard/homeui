@@ -1,41 +1,98 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CheckIcon from '@/assets/icons/check.svg';
 import { Card } from '@/components/card';
-import { Table, TableCell, TableRow } from '@/components/table';
+import { Table, TableCell, TableRow, type TableCellSortDirection } from '@/components/table';
 import { Tag } from '@/components/tag';
 import { configuratorStore, type Adapter, type AdapterId, type Device } from '@/stores/configurator';
-import type { OverviewProps } from '../types';
-import { adapterLabel, hasLostBinding, isAdapterShown, sortByGroup, UNESCAPED } from '../utils';
+import type { OverviewColumn, OverviewProps } from '../types';
+import { adapterLabel, hasLostBinding, isAdapterShown, UNESCAPED } from '../utils';
 
 export const Overview = observer(({ onSelect }: OverviewProps) => {
   const { t, i18n } = useTranslation();
   const adapters = configuratorStore.adapters.filter((adapter) => isAdapterShown(adapter, i18n.language));
 
-  const state = (device: Device, adapter: Adapter) => {
+  const [column, setColumn] = useState<OverviewColumn>('group');
+  const [direction, setDirection] = useState<TableCellSortDirection>('asc');
+
+  // Состояние адаптера у устройства: 0 — передаётся, 1 — служба остановлена, 2 — нет пакета, 3 — выключено.
+  const rank = (device: Device, adapter: Adapter) => {
     if (!device[adapter.id as AdapterId]) {
-      return <Tag variant="gray">{t('configurator.labels.adapter-off')}</Tag>;
+      return 3;
     }
     if (!adapter.installed) {
-      return <Tag variant="warn">{t('configurator.labels.adapter-no-package')}</Tag>;
+      return 2;
     }
-    return adapter.active
-      ? <Tag variant="success">{t('configurator.labels.adapter-on')}</Tag>
-      : <Tag variant="warn">{t('configurator.labels.adapter-service-stopped')}</Tag>;
+    return adapter.active ? 0 : 1;
   };
+
+  // Зелёная галочка — передаётся; серая — включено, но не передаётся; пусто — выключено.
+  const STATE_KEYS = ['adapter-on', 'adapter-service-stopped', 'adapter-no-package', 'adapter-off'];
+  const stateOf = (device: Device, adapter: Adapter): ReactNode => {
+    const value = rank(device, adapter);
+    const text = t(`configurator.labels.${STATE_KEYS[value]}`);
+    return (
+      <span className="configurator-adapterState" title={text}>
+        {value < 3 && (
+          <CheckIcon
+            className={classNames('configurator-adapterCheck', { 'configurator-adapterCheckOn': !value })}
+            aria-hidden="true"
+          />
+        )}
+        <span className="sr-only">{text}</span>
+      </span>
+    );
+  };
+
+  // Пустые имена и группы остаются внизу в любом направлении; при равенстве порядок по имени.
+  const byText = (a: string, b: string) => Number(!a) - Number(!b)
+    || (direction === 'asc' ? a.localeCompare(b) : b.localeCompare(a));
+  const compare = (a: Device, b: Device) => {
+    const sign = direction === 'asc' ? 1 : -1;
+    if (column === 'name') {
+      return byText(a.name.trim(), b.name.trim());
+    }
+    if (column === 'group') {
+      return byText(a.group.trim(), b.group.trim()) || a.name.localeCompare(b.name);
+    }
+    if (column === 'channels') {
+      return sign * (a.rows.length - b.rows.length) || a.name.localeCompare(b.name);
+    }
+    const adapter = adapters.find(({ id }) => `adapter:${id}` === column);
+    return adapter ? sign * (rank(a, adapter) - rank(b, adapter)) || a.name.localeCompare(b.name) : 0;
+  };
+  const sorted = [...configuratorStore.devices].sort(compare);
+
+  const toggle = (next: OverviewColumn) => {
+    setDirection(next === column && direction === 'asc' ? 'desc' : 'asc');
+    setColumn(next);
+  };
+
+  // Заголовок, сортирующий по нажатию и на название, и на значок рядом.
+  const heading = (key: OverviewColumn, label: string) => (
+    <TableCell
+      key={key}
+      sort={{
+        onSort: () => toggle(key), isActive: column === key, direction: column === key ? direction : undefined, label,
+      }}
+    >
+      <button type="button" className="configurator-sortLabel" onClick={() => toggle(key)}>{label}</button>
+    </TableCell>
+  );
 
   return (
     <Card heading={t('configurator.labels.overview')}>
       <Table isFullWidth>
         <TableRow isHeading>
-          <TableCell>{t('configurator.labels.device')}</TableCell>
-          <TableCell>{t('configurator.labels.group')}</TableCell>
-          <TableCell>{t('configurator.labels.channels')}</TableCell>
-          {adapters.map((adapter) => (
-            <TableCell key={adapter.id}>{adapterLabel(adapter, i18n.language)}</TableCell>
-          ))}
+          {heading('name', t('configurator.labels.device'))}
+          {heading('group', t('configurator.labels.group'))}
+          {heading('channels', t('configurator.labels.channels'))}
+          {adapters.map((adapter) => heading(`adapter:${adapter.id}`, adapterLabel(adapter, i18n.language)))}
         </TableRow>
 
-        {sortByGroup(configuratorStore.devices).map((device) => (
+        {sorted.map((device) => (
           <TableRow
             key={device.id}
             className="configurator-overviewRow"
@@ -53,7 +110,7 @@ export const Overview = observer(({ onSelect }: OverviewProps) => {
             </TableCell>
             <TableCell>{device.group.trim()}</TableCell>
             <TableCell>{device.rows.length}</TableCell>
-            {adapters.map((adapter) => <TableCell key={adapter.id}>{state(device, adapter)}</TableCell>)}
+            {adapters.map((adapter) => <TableCell key={adapter.id}>{stateOf(device, adapter)}</TableCell>)}
           </TableRow>
         ))}
       </Table>

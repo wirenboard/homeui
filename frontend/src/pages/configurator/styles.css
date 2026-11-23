@@ -298,6 +298,30 @@
     opacity: 0.7;
 }
 
+.configurator-sortLabel {
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.configurator-adapterState {
+    display: inline-flex;
+    min-height: 20px;
+}
+
+.configurator-adapterCheck {
+    width: 20px;
+    height: 20px;
+    color: var(--gray-color);
+}
+
+.configurator-adapterCheckOn {
+    color: var(--primary-color);
+}
+
 .configurator-overviewRow {
     cursor: pointer;
 }

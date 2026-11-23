@@ -18,7 +18,7 @@ const show = (adapter: Adapter, onSelect = vi.fn()) => {
   return onSelect;
 };
 
-const rows = () => screen.getAllByRole('button').map((row) => row.textContent);
+const rows = () => screen.getAllByRole('button').filter((row) => row.tagName === 'TR').map((row) => row.textContent);
 
 describe('Overview', () => {
   it('lists devices by group with the adapter state of each: off in the config or on', () => {
@@ -47,5 +47,31 @@ describe('Overview', () => {
     fireEvent.click(screen.getByText('Лампа'));
 
     expect(onSelect).toHaveBeenCalledWith('b');
+  });
+
+  it('sorts by the clicked column and reverses on the second click, empty groups stay at the bottom', () => {
+    runInAction(() => {
+      configuratorStore.adapters = [matter];
+      configuratorStore.devices = [
+        { id: 'a', name: 'Бра', group: 'Спальня', matter: true, rows: [] },
+        { id: 'b', name: 'Акустика', group: '', matter: false, rows: [] },
+        { id: 'c', name: 'Вентилятор', group: 'Кухня', matter: true, rows: [] },
+      ];
+    });
+    render(<Overview onSelect={vi.fn()} />);
+    const names = () => screen.getAllByRole('button')
+      .filter((row) => row.tagName === 'TR')
+      .map((row) => row.querySelector('.configurator-overviewName').textContent);
+
+    expect(names()).toEqual(['Вентилятор', 'Бра', 'Акустика']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'configurator.labels.group' }));
+    expect(names()).toEqual(['Бра', 'Вентилятор', 'Акустика']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'configurator.labels.device' }));
+    expect(names()).toEqual(['Акустика', 'Бра', 'Вентилятор']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Matter' }));
+    expect(names()).toEqual(['Бра', 'Вентилятор', 'Акустика']);
   });
 });

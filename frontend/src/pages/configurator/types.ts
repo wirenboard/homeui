@@ -109,6 +109,9 @@ export interface WbDialogProps {
   onAdded: () => void;
 }
 
+// Столбец обзора, по которому идёт сортировка; адаптер — по его id.
+export type OverviewColumn = 'name' | 'group' | 'channels' | `adapter:${string}`;
+
 export interface OverviewProps {
   onSelect: (_deviceId: string) => void;
 }

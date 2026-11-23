@@ -141,13 +141,6 @@ export const adapterLabel = (adapter: Adapter, language: string) =>
 export const isAdapterShown = (adapter: Adapter, language: string) =>
   ADAPTER_IDS.includes(adapter.id) && (!adapter.languages || adapter.languages.includes(language));
 
-// Группы по алфавиту, устройства без группы в конце; порядок внутри группы сохраняется.
-export const sortByGroup = (devices: Device[]) => {
-  const groups = Array.from(new Set(devices.map((device) => device.group.trim())))
-    .sort((a, b) => Number(!a) - Number(!b) || a.localeCompare(b));
-  return groups.flatMap((group) => devices.filter((device) => device.group.trim() === group));
-};
-
 // Имя канала по рецепту: «Канал N» у повторяющихся, иначе название основной роли.
 export const recipeRowName = ({ row, index }: RecipeRow) => (index
   ? t('configurator.labels.recipe-channel', { index })
