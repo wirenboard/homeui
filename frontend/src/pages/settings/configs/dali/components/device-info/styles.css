@@ -105,18 +105,6 @@
     color: var(--gray-color);
 }
 
-.button.button-outlined.daliDeviceInfo-infoButton {
-    height: auto;
-    padding-top: 0;
-    padding-bottom: 0;
-    color: var(--gray-color);
-}
-
-.button-s.daliDeviceInfo-infoButton .button-icon {
-    width: 20px;
-    height: 20px;
-}
-
 .dialog.daliDeviceInfoDialog {
     width: fit-content;
 }

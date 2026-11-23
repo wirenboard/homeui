@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import InfoIcon from '@/assets/icons/info.svg';
-import { Button } from '@/components/button';
-import { Tooltip } from '@/components/tooltip';
+import { InfoIconButton } from '@/components/info-icon-button';
 import { getDevicePictureUrl } from '@/stores/dali/device-store';
 import { DeviceInfoDialog } from './device-info-dialog';
 import { getDeviceInfoFields, getDeviceNames, getShortDeviceTypes } from './device-info-fields';
@@ -21,17 +19,12 @@ export const DeviceInfoCompact = ({ description }: DeviceInfoCompactProps) => {
       {!!types && <span className="daliDeviceInfo-compactTypes" title={types}>{types}</span>}
       {(!!types || !!getDeviceInfoFields(description, t).length) && (
         <>
-          <Tooltip text={t('dali.labels.info-device')}>
-            <Button
-              className="daliDeviceInfo-infoButton"
-              icon={<InfoIcon />}
-              aria-label={t('dali.labels.info-device')}
-              variant="secondary"
-              size="small"
-              isOutlined
-              onClick={() => setIsDialogOpened(true)}
-            />
-          </Tooltip>
+          <InfoIconButton
+            className="daliDeviceInfo-infoButton"
+            aria-label={t('dali.labels.info-device')}
+            tooltip={t('dali.labels.info-device')}
+            onClick={() => setIsDialogOpened(true)}
+          />
           <DeviceInfoDialog
             key={getDevicePictureUrl(description)}
             description={description}
