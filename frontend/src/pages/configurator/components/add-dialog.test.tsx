@@ -26,6 +26,7 @@ vi.mock('@/components/dialog', () => ({
 
 const channelBoxes = () => screen.getAllByRole('checkbox', { name: /show-channel/ }) as HTMLInputElement[];
 const checkedCount = () => channelBoxes().filter((input) => input.checked).length;
+const allBox = () => screen.getByRole('checkbox', { name: 'configurator.labels.all-channels' }) as HTMLInputElement;
 const pickedList = () => screen.getByRole('list', { name: 'configurator.labels.picked-channels' });
 const addButton = (label: string) => screen.getByRole('button', { name: label }) as HTMLButtonElement;
 
@@ -36,12 +37,12 @@ beforeEach(() => {
 });
 
 describe('AddDialog channel selection', () => {
-  it('checks nothing in advance and checks all the channels of the device by the button', () => {
+  it('checks nothing in advance and checks all the channels of the device by the all box', () => {
     render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
     expect(checkedCount()).toBe(0);
     expect(addButton('configurator.buttons.add-device').disabled).toBe(true);
 
-    fireEvent.click(addButton('configurator.buttons.pick-all'));
+    fireEvent.click(allBox());
 
     expect(checkedCount()).toBe(2);
     expect(addButton('configurator.buttons.add-device').disabled).toBe(false);
@@ -98,14 +99,16 @@ describe('AddDialog channel selection', () => {
     fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
     fireEvent.click(channelBoxes()[0]);
     fireEvent.click(screen.getByRole('button', { name: /Relay/ }));
-    expect(addButton('configurator.buttons.pick-none').disabled).toBe(true);
+    expect([allBox().checked, allBox().indeterminate]).toEqual([false, false]);
+    fireEvent.click(channelBoxes()[0]);
+    expect([allBox().checked, allBox().indeterminate]).toEqual([false, true]);
 
-    fireEvent.click(addButton('configurator.buttons.pick-all'));
+    fireEvent.click(allBox());
     expect(checkedCount()).toBe(2);
-    expect(addButton('configurator.buttons.pick-all').disabled).toBe(true);
+    expect([allBox().checked, allBox().indeterminate]).toEqual([true, false]);
     expect(pickedList().children).toHaveLength(3);
 
-    fireEvent.click(addButton('configurator.buttons.pick-none'));
+    fireEvent.click(allBox());
     expect(checkedCount()).toBe(0);
     expect(pickedList().textContent).toBe('Level · Dimmer');
   });
@@ -114,7 +117,7 @@ describe('AddDialog channel selection', () => {
     render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
     expect(screen.queryByRole('list', { name: 'configurator.labels.picked-channels' })).toBeNull();
 
-    fireEvent.click(addButton('configurator.buttons.pick-all'));
+    fireEvent.click(allBox());
     fireEvent.click(screen.getAllByRole('button', { name: 'configurator.labels.unpick' })[0]);
 
     expect(pickedList().textContent).toBe('K2 · Relay');

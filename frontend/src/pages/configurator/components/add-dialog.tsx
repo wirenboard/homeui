@@ -93,6 +93,8 @@ export const AddDialog = observer(({
     Object.entries(picked).filter(([key]) => !free.some(({ cell }) => cell.id === key)),
   ));
 
+  const isAllPicked = !!free.length && free.every(({ choice }) => choice.checked);
+
   const add = (name: string, rows: NewDeviceRow[]) => {
     if (target) {
       configuratorStore.addRows(target, rows);
@@ -193,23 +195,15 @@ export const AddDialog = observer(({
               <>
                 <h3 className="configurator-sectionTitle">{`${deviceTitle(current)} (${current})`}</h3>
                 <p>{t('configurator.labels.add-hint')}</p>
-                <div className="configurator-actions configurator-addSuitable">
-                  <span className="configurator-addBulk">
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      label={t('configurator.buttons.pick-all')}
-                      disabled={free.every(({ choice }) => choice.checked)}
-                      onClick={pickAll}
-                    />
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      label={t('configurator.buttons.pick-none')}
-                      disabled={!free.some(({ choice }) => choice.checked)}
-                      onClick={pickNone}
-                    />
-                  </span>
+                <div className="configurator-addAll">
+                  <Checkbox
+                    checked={isAllPicked}
+                    indeterminate={!isAllPicked && free.some(({ choice }) => choice.checked)}
+                    title={t('configurator.labels.all-channels')}
+                    ariaLabel={t('configurator.labels.all-channels')}
+                    isDisabled={!free.length}
+                    onChange={() => (isAllPicked ? pickNone() : pickAll())}
+                  />
                 </div>
                 <ul className="configurator-channels">
                   {typed.map(({

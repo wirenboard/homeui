@@ -147,14 +147,9 @@
 
 }
 
-.configurator-addSuitable {
-    align-items: center;
-    margin: 0 0 8px;
-}
-
-.configurator-addBulk {
-    display: inline-flex;
-    gap: 6px;
+.configurator-addAll {
+    padding: 8px 0;
+    border-top: 1px solid var(--light-gray-color);
 }
 
 .configurator-picked {
