@@ -2,11 +2,11 @@ import { debounce } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import InfoIcon from '@/assets/icons/info.svg';
 import { DateTimePicker } from '@/components/datetime-picker';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { BooleanField } from '@/components/form';
 import { FormGroup } from '@/components/form-group';
+import { InfoIconLink } from '@/components/info-icon-button';
 import { Input } from '@/components/input';
 import { ToggleButton } from '@/components/toggle-button';
 import { Tooltip } from '@/components/tooltip';
@@ -116,15 +116,14 @@ export const LogsFilters = observer((
           </Tooltip>
         </FormGroup>
 
-        <Tooltip text={t('logs.labels.help')} placement="bottom">
-          <a
-            href="https://www.pcre.org/current/doc/html/pcre2syntax.html"
-            target="_blank"
-            className="logsFilters-info"
-          >
-            <InfoIcon className="logsFilters-info" />
-          </a>
-        </Tooltip>
+        <InfoIconLink
+          href="https://www.pcre.org/current/doc/html/pcre2syntax.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t('logs.labels.help')}
+          tooltip={t('logs.labels.help')}
+          tooltipPlacement="bottom"
+        />
       </div>
 
       <div className="logsFilters-liveUpdate">
