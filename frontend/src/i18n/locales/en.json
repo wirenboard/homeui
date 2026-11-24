@@ -1299,6 +1299,8 @@
          "service-device": "service",
          "virtual-device": "virtual",
          "suitable": "Suitable channels: {{count}}",
+         "found-count": "Channels found: {{count}}",
+         "add-search": "Search by device, channel or MQTT topic",
          "suitable-used": "Suitable channels: {{count}}, already used: {{used}}",
          "show-service": "Show service devices ({{count}})",
          "add-hint": "Check the channels that make the device: they can come from different controller devices. The set can be changed later in the settings.",

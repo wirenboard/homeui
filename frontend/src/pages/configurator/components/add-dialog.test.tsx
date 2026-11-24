@@ -123,4 +123,38 @@ describe('AddDialog channel selection', () => {
     expect(pickedList().textContent).toBe('K2 · Relay');
     expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
   });
+
+  it('finds devices by name and channels by name or MQTT topic, opening the first device found', () => {
+    const search = (text: string) => fireEvent.change(
+      screen.getByRole('searchbox', { name: 'configurator.labels.add-search' }),
+      { target: { value: text } },
+    );
+    const devicesShown = () => Array.from(document.querySelectorAll('.configurator-listItem'))
+      .map((button) => button.textContent);
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+
+    search('dimm');
+    expect(devicesShown()).toEqual([expect.stringMatching(/^Dimmer/)]);
+    expect(channelBoxes()).toHaveLength(1);
+
+    search('/devices/relay/controls/K2');
+    expect(devicesShown()).toEqual([expect.stringMatching(/^Relay.*configurator\.labels\.found-count/)]);
+    expect(channelBoxes()).toHaveLength(1);
+    expect([screen.queryByText('K1'), screen.queryByText('K2')].map(Boolean)).toEqual([false, true]);
+
+    search('nothing');
+    expect(screen.getAllByText('configurator.labels.nothing-found').length).toBeGreaterThan(0);
+  });
+
+  it('checks only the channels found by the all box and keeps them after the search is cleared', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    const box = screen.getByRole('searchbox', { name: 'configurator.labels.add-search' });
+
+    fireEvent.change(box, { target: { value: 'k2' } });
+    fireEvent.click(allBox());
+    fireEvent.change(box, { target: { value: '' } });
+
+    expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
+    expect(pickedList().textContent).toBe('K2 · Relay');
+  });
 });

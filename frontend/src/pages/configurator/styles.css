@@ -587,6 +587,14 @@
     gap: 8px;
 }
 
+.configurator-addSearch {
+    padding: var(--content-gap) var(--content-gap) 0;
+
+    @media (--max-mobile-width) {
+        padding: 0 0 var(--content-gap);
+    }
+}
+
 .configurator-addLayout {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);

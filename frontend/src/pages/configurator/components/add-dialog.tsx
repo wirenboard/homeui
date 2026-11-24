@@ -9,6 +9,7 @@ import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
+import { Input } from '@/components/input';
 import {
   CHANNEL_CLASSES, configuratorStore, findType, primaryRole, splitKey, type NewDeviceRow,
 } from '@/stores/configurator';
@@ -34,16 +35,24 @@ export const AddDialog = observer(({
   const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   // Выбор по всем устройствам контроллера: ключ — «устройство/контрол».
   const [picked, setPicked] = useState<Record<string, PickedChannel>>({});
+  const [query, setQuery] = useState('');
+  const needle = query.trim().toLowerCase();
 
   const used = configuratorStore.usedKeys;
   const suitableControls = (id: string) =>
     deviceControls(id).filter((cell) => CHANNEL_CLASSES[classifyCell(cell).cls].types.length);
   const hasFree = (id: string) => suitableControls(id).some((cell) => !used.has(cell.id));
 
-  const allDevices = listDevices(showSystem);
+  // Совпало устройство — видны все его каналы, иначе только совпавшие по имени, id или топику.
+  const isDeviceFound = (id: string) => !needle || `${deviceTitle(id)} ${id}`.toLowerCase().includes(needle);
+  const isCellFound = (cell: Cell) => [cell.name, cell.id, `/devices/${splitKey(cell.id).join('/controls/')}`]
+    .some((text) => String(text).toLowerCase().includes(needle));
+  const foundCells = (id: string) => deviceControls(id).filter((cell) => isDeviceFound(id) || isCellFound(cell));
+
+  const allDevices = listDevices(showSystem).filter((id) => foundCells(id).length);
   const devices = [...allDevices.filter(hasFree), ...allDevices.filter((id) => !hasFree(id))];
   const systemCount = listDevices(true).filter(isSystemDevice).length;
-  const current = deviceId && devices.includes(deviceId) ? deviceId : null;
+  const current = deviceId && devices.includes(deviceId) ? deviceId : (needle && devices[0]) || null;
 
   useEffect(() => {
     if (!isOpened) {
@@ -51,6 +60,7 @@ export const AddDialog = observer(({
     }
     setIsTilesShown(!!isEmpty);
     setPicked({});
+    setQuery('');
     setIsChannelsStep(false);
     const bound = target?.rows.flatMap((row) => Object.values(row.bind).map((key) => splitKey(key)[0])) ?? [];
     const fromTarget = listDevices(true).find((id) => bound.includes(id) && hasFree(id));
@@ -72,7 +82,9 @@ export const AddDialog = observer(({
     };
   });
 
-  const channels = current ? channelsOf(current) : [];
+  const channels = current
+    ? channelsOf(current).filter(({ cell }) => isDeviceFound(current) || isCellFound(cell))
+    : [];
   const typed = channels.filter((channel) => channel.types.length);
   const unsupported = channels.filter((channel) => !channel.types.length);
   const pickedDevices = Array.from(new Set(Object.keys(picked).map((key) => splitKey(key)[0])));
@@ -147,9 +159,13 @@ export const AddDialog = observer(({
     } else if (isVirtualDevice(id)) {
       kind = t('configurator.labels.virtual-device');
     }
-    const count = usedCount
+    const found = isDeviceFound(id) ? 0 : foundCells(id).length;
+    let count = usedCount
       ? t('configurator.labels.suitable-used', { ...UNESCAPED, count: suitable.length, used: usedCount })
       : t('configurator.labels.suitable', { ...UNESCAPED, count: suitable.length });
+    if (found) {
+      count = t('configurator.labels.found-count', { ...UNESCAPED, count: found });
+    }
     const pickedHere = pickedCount(id);
     const pickedText = pickedHere ? t('configurator.labels.picked-count', { ...UNESCAPED, count: pickedHere }) : '';
     return [id, kind, count, pickedText].filter(Boolean).join(' · ');
@@ -169,116 +185,132 @@ export const AddDialog = observer(({
           <TypeTiles onPick={addEmpty} />
         </div>
       ) : (
-        <div className="configurator-addLayout">
+        <>
           {(!isMobile || !isChannelsStep) && (
-            <section className="configurator-addDevices">
-              <h3 className="configurator-sectionTitle">{t('configurator.labels.controller-devices')}</h3>
-              <ul className="configurator-listItems">
-                {devices.map((id) => (
-                  <li key={id}>
-                    <button
-                      type="button"
-                      className={classNames('configurator-listItem', {
-                        'configurator-listItemSelected': id === current,
-                      })}
-                      aria-pressed={id === current}
-                      onClick={() => {
-                        setDeviceId(id);
-                        setIsChannelsStep(true);
-                      }}
-                    >
-                      <span className="configurator-listText">
-                        <span className="configurator-listTitle">{deviceTitle(id)}</span>
-                        <span>{deviceHint(id)}</span>
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              {!devices.length && (
-                <p className="configurator-empty">{t('configurator.labels.no-controller-devices')}</p>
-              )}
-              <Checkbox
-                checked={showSystem}
-                title={t('configurator.labels.show-service', { ...UNESCAPED, count: systemCount })}
-                onChange={setShowSystem}
+            <div className="configurator-addSearch">
+              <Input
+                type="search"
+                value={query}
+                placeholder={t('configurator.labels.add-search')}
+                ariaLabel={t('configurator.labels.add-search')}
+                isFullWidth
+                onChange={(value) => setQuery(String(value))}
               />
-            </section>
+            </div>
           )}
-
-          {(!isMobile || isChannelsStep) && (
-            <section className="configurator-addChannels">
-              {isMobile && (
-                <Button
-                  className="configurator-addBack"
-                  size="small"
-                  variant="secondary"
-                  icon={<ArrowLeftIcon />}
-                  label={t('configurator.buttons.to-controller-devices')}
-                  onClick={() => setIsChannelsStep(false)}
+          <div className="configurator-addLayout">
+            {(!isMobile || !isChannelsStep) && (
+              <section className="configurator-addDevices">
+                <h3 className="configurator-sectionTitle">{t('configurator.labels.controller-devices')}</h3>
+                <ul className="configurator-listItems">
+                  {devices.map((id) => (
+                    <li key={id}>
+                      <button
+                        type="button"
+                        className={classNames('configurator-listItem', {
+                          'configurator-listItemSelected': id === current,
+                        })}
+                        aria-pressed={id === current}
+                        onClick={() => {
+                          setDeviceId(id);
+                          setIsChannelsStep(true);
+                        }}
+                      >
+                        <span className="configurator-listText">
+                          <span className="configurator-listTitle">{deviceTitle(id)}</span>
+                          <span>{deviceHint(id)}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {!devices.length && (
+                  <p className="configurator-empty">
+                    {t(`configurator.labels.${needle ? 'nothing-found' : 'no-controller-devices'}`)}
+                  </p>
+                )}
+                <Checkbox
+                  checked={showSystem}
+                  title={t('configurator.labels.show-service', { ...UNESCAPED, count: systemCount })}
+                  onChange={setShowSystem}
                 />
-              )}
-              {current ? (
-                <>
-                  <h3 className="configurator-sectionTitle">{`${deviceTitle(current)} (${current})`}</h3>
-                  <p>{t('configurator.labels.add-hint')}</p>
-                  <div className="configurator-addAll">
-                    <Checkbox
-                      checked={isAllPicked}
-                      indeterminate={!isAllPicked && free.some(({ choice }) => choice.checked)}
-                      title={t('configurator.labels.all-channels')}
-                      ariaLabel={t('configurator.labels.all-channels')}
-                      isDisabled={!free.length}
-                      onChange={() => (isAllPicked ? pickNone() : pickAll())}
-                    />
-                  </div>
-                  <ul className="configurator-channels">
-                    {typed.map(({
-                      cell, types, choice, isUsed,
-                    }) => (
-                      <li key={cell.controlId} className="configurator-channel">
-                        <div className="configurator-channelHead">
-                          <Checkbox
-                            checked={choice.checked}
-                            title={cell.name}
-                            ariaLabel={t('configurator.labels.show-channel', { ...UNESCAPED, name: cell.name })}
-                            isDisabled={isUsed}
-                            onChange={(checked) => pick(
-                              cell.id,
-                              checked ? check(types) : { checked: false, type: '' },
-                            )}
-                          />
-                          <span className="configurator-channelValue">
-                            {isUsed ? t('configurator.labels.already-used') : (
-                              <>
-                                {t('configurator.labels.value', { ...UNESCAPED, value: formatValue(cell) })}
-                              </>
-                            )}
-                          </span>
-                        </div>
-                        {!isUsed && (
-                          <TypeChoice
-                            types={types}
-                            value={choice.type}
-                            ariaLabel={`${t('configurator.labels.type')}: ${cell.name}`}
-                            onChange={(typeId) => pick(cell.id, { checked: true, type: typeId })}
-                          />
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  <UnsupportedChannels
-                    items={unsupported.map(({ cell, classification }) => ({
-                      id: cell.controlId, name: cell.name, reason: whyText(classification),
-                    }))}
+              </section>
+            )}
+
+            {(!isMobile || isChannelsStep) && (
+              <section className="configurator-addChannels">
+                {isMobile && (
+                  <Button
+                    className="configurator-addBack"
+                    size="small"
+                    variant="secondary"
+                    icon={<ArrowLeftIcon />}
+                    label={t('configurator.buttons.to-controller-devices')}
+                    onClick={() => setIsChannelsStep(false)}
                   />
-                </>
-              ) : (
-                <p>{t('configurator.labels.no-controller-devices')}</p>
-              )}
-            </section>
-          )}
-        </div>
+                )}
+                {current ? (
+                  <>
+                    <h3 className="configurator-sectionTitle">{`${deviceTitle(current)} (${current})`}</h3>
+                    <p>{t('configurator.labels.add-hint')}</p>
+                    <div className="configurator-addAll">
+                      <Checkbox
+                        checked={isAllPicked}
+                        indeterminate={!isAllPicked && free.some(({ choice }) => choice.checked)}
+                        title={t('configurator.labels.all-channels')}
+                        ariaLabel={t('configurator.labels.all-channels')}
+                        isDisabled={!free.length}
+                        onChange={() => (isAllPicked ? pickNone() : pickAll())}
+                      />
+                    </div>
+                    <ul className="configurator-channels">
+                      {typed.map(({
+                        cell, types, choice, isUsed,
+                      }) => (
+                        <li key={cell.controlId} className="configurator-channel">
+                          <div className="configurator-channelHead">
+                            <Checkbox
+                              checked={choice.checked}
+                              title={cell.name}
+                              ariaLabel={t('configurator.labels.show-channel', { ...UNESCAPED, name: cell.name })}
+                              isDisabled={isUsed}
+                              onChange={(checked) => pick(
+                                cell.id,
+                                checked ? check(types) : { checked: false, type: '' },
+                              )}
+                            />
+                            <span className="configurator-channelValue">
+                              {isUsed ? t('configurator.labels.already-used') : (
+                                <>
+                                  {t('configurator.labels.value', { ...UNESCAPED, value: formatValue(cell) })}
+                                </>
+                              )}
+                            </span>
+                          </div>
+                          {!isUsed && (
+                            <TypeChoice
+                              types={types}
+                              value={choice.type}
+                              ariaLabel={`${t('configurator.labels.type')}: ${cell.name}`}
+                              onChange={(typeId) => pick(cell.id, { checked: true, type: typeId })}
+                            />
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                    <UnsupportedChannels
+                      items={unsupported.map(({ cell, classification }) => ({
+                        id: cell.controlId, name: cell.name, reason: whyText(classification),
+                      }))}
+                    />
+                  </>
+                ) : (
+                  <p>{t(`configurator.labels.${needle ? 'nothing-found' : 'no-controller-devices'}`)}</p>
+                )}
+              </section>
+            )}
+          </div>
+        </>
       )}
       {current && !isTilesShown && (
         <section className="configurator-picked">
