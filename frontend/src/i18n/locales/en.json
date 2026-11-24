@@ -1281,6 +1281,8 @@
          "wb-curtains": "Outputs in the curtain mode are not added, actuators: {{count}}",
          "wb-check-all": "All",
          "wb-check-device": "All rows of {{title}}",
+         "toggle-device": "Collapse or expand “{{title}}”",
+         "wb-search": "Search by device name or id",
          "wb-name": "Name of the device \"{{label}}\"",
          "wb-create-count": "Devices to be created: {{count}}",
          "device-settings": "Device settings",

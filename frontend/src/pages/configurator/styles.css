@@ -261,7 +261,7 @@
     min-width: 200px;
 
     @media (--max-mobile-width) {
-        flex: 1;
+        flex: 1 1 100%;
         min-width: 0;
     }
 }
@@ -291,8 +291,22 @@
 
 .configurator-wbOptions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px 12px;
+}
+
+.configurator-wbSearch {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.configurator-wbListHead {
+    display: flex;
+    align-items: center;
+    gap: 8px 12px;
+    min-height: 32px;
+    padding: 0 13px;
 }
 
 .configurator-wbGroup {
@@ -349,6 +363,21 @@
     > :not(.configurator-channelHead) {
         padding-left: 21px;
     }
+}
+
+.configurator-wbSummary {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    color: var(--gray-color);
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+}
+
+.configurator-wbFold {
+    margin-left: auto;
 }
 
 .configurator-wbName {

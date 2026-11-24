@@ -105,6 +105,20 @@ export interface BoundChannel {
 // Подмена каналов строки: роль → ключ канала, null — роль очищена.
 export type RoleBinds = Partial<Record<RoleId, string | null>>;
 
+export interface DeviceFoldProps {
+  title: string;
+  types: string[];
+  picked: number;
+  isFolded: boolean;
+  onToggle: () => void;
+}
+
+export interface UnitRolesProps {
+  rows: NewDeviceRow[];
+  deviceId: string;
+  onBind: (_at: number, _role: RoleId, _key: string | null) => void;
+}
+
 // Столбец обзора, по которому идёт сортировка; адаптер — по его id.
 export type OverviewColumn = 'name' | 'group' | 'channels' | `adapter:${string}`;
 

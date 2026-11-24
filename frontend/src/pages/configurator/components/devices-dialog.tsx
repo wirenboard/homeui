@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
-import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
@@ -15,11 +14,13 @@ import {
 } from '@/stores/configurator';
 import { DeviceType, devicesStore } from '@/stores/devices';
 import type { BoundChannel, DevicesDialogProps, RoleBinds, WbUnit } from '../types';
-import { fits, plainUnits, recipeUnits, retype } from '../units';
+import { plainUnits, recipeUnits, retype } from '../units';
 import {
   deviceControls, deviceTitle, formatValue, isSystemDevice, listDevices, roleLabel, TYPE_ICONS, UNESCAPED,
 } from '../utils';
+import { DeviceFold } from './device-fold';
 import { TypeChoice } from './type-choice';
+import { UnitRoles } from './unit-roles';
 
 // Модель устройств без рецепта.
 const OTHER = '';
@@ -46,6 +47,9 @@ export const DevicesDialog = observer(({
   const [binds, setBinds] = useState<Record<string, RoleBinds>>({});
   const [expanded, setExpanded] = useState<string[]>([]);
   const [kind, setKind] = useState(NO_SYSTEM);
+  const [query, setQuery] = useState('');
+  // Свёрнутость устройств, заданная руками; без неё одно показанное развёрнуто, несколько — свёрнуты.
+  const [folded, setFolded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (isOpened) {
@@ -57,6 +61,8 @@ export const DevicesDialog = observer(({
       setBinds({});
       setExpanded([]);
       setKind(NO_SYSTEM);
+      setQuery('');
+      setFolded({});
     }
   }, [isOpened]);
 
@@ -96,7 +102,11 @@ export const DevicesDialog = observer(({
 
   const models = Array.from(new Set(devices.map((device) => device.model).filter((title) => title !== OTHER)))
     .sort((a, b) => a.localeCompare(b));
-  const shown = devices.filter((device) => model === null || device.model === model);
+  const needle = query.trim().toLowerCase();
+  const shown = devices.filter((device) => (model === null || device.model === model)
+    && `${deviceTitle(device.id)} ${device.id}`.toLowerCase().includes(needle));
+  const isFolded = (id: string) => folded[id] ?? shown.length > 1;
+  const isAllFolded = shown.every(({ id }) => isFolded(id));
   const units = all.flatMap((device) => device.units);
   const chosen = units.filter(({ key }) => checked.includes(key));
   const typeOf = (unit: WbUnit) => types[unit.key] ?? unit.suggest ?? unit.rows[0].type;
@@ -149,17 +159,6 @@ export const DevicesDialog = observer(({
     ...Object.values(groups),
   ].filter(Boolean))).sort((a, b) => a.localeCompare(b)).map((group) => ({ label: group, value: group }));
 
-  // Каналы своего устройства — первыми и с пометкой, остальные как в сценариях.
-  const topicOptions = (id: string): Option<string>[] => {
-    const all = devicesStore.topicsWithoutSystem;
-    const isOwn = (group: Option<string>) => 'options' in group
-      && group.options.some((option) => String(option.value).startsWith(`${id}/`));
-    const own = all.filter(isOwn).map((group) => ({
-      ...group, label: `${group.label} · ${t('configurator.labels.this-device')}`,
-    }));
-    return [...own, ...all.filter((group) => !isOwn(group))];
-  };
-
   const create = () => {
     const created = chosen.map((unit) => {
       const rows = rowsOf(unit);
@@ -202,44 +201,6 @@ export const DevicesDialog = observer(({
     return <Icon key={type} className="configurator-typeIcon" />;
   });
 
-  const roles = (unit: WbUnit, id: string) => rowsOf(unit).map((row, at) => (
-    <div key={at} className="configurator-wbRoles">
-      {unit.rows.length > 1 && <span className="configurator-choiceLabel">{row.name}</span>}
-      {findType(row.type).roles
-        .filter(([role, isRequired]) => isRequired || row.bind[role])
-        .map(([role, isRequired]) => {
-          const cell = row.bind[role] ? devicesStore.cells.get(row.bind[role]) : null;
-          return (
-            <div key={role}>
-              <div className="configurator-role">
-                <span className="configurator-choiceLabel">{roleLabel(role)}</span>
-                <Dropdown
-                  options={topicOptions(id)}
-                  value={row.bind[role] ?? null}
-                  placeholder={t(`configurator.labels.${isRequired ? 'choose-channel' : 'none'}`)}
-                  ariaLabel={t('configurator.labels.channel-for-role', { ...UNESCAPED, role: roleLabel(role) })}
-                  isInvalid={isRequired && !row.bind[role]}
-                  isCreatable
-                  isSearchable
-                  isClearable
-                  menuPortal
-                  onChange={(option: Option<string>) => {
-                    const key = `${unit.key}#${at}`;
-                    setBinds({ ...binds, [key]: { ...binds[key], [role]: option?.value || null } });
-                  }}
-                />
-              </div>
-              {cell && !fits(cell, role) && (
-                <Alert variant="warn" size="small" className="configurator-alertInline">
-                  {t('configurator.labels.role-mismatch', { ...UNESCAPED, role: roleLabel(role) })}
-                </Alert>
-              )}
-            </div>
-          );
-        })}
-    </div>
-  ));
-
   return (
     <Dialog
       className="configurator-addDialog configurator-devicesDialog"
@@ -253,6 +214,14 @@ export const DevicesDialog = observer(({
           {t(all.length ? 'configurator.labels.devices-hint' : 'configurator.labels.devices-none')}
         </p>
         <div className="configurator-wbOptions">
+          <Input
+            className="configurator-wbSearch"
+            type="search"
+            value={query}
+            placeholder={t('configurator.labels.wb-search')}
+            ariaLabel={t('configurator.labels.wb-search')}
+            onChange={(value) => setQuery(String(value))}
+          />
           <Dropdown
             className="configurator-wbKind"
             value={kind}
@@ -263,11 +232,6 @@ export const DevicesDialog = observer(({
               setModel(null);
             }}
           />
-          {groupBox(
-            shown.flatMap((device) => device.units.map(({ key }) => key)),
-            t('configurator.labels.wb-check-all'),
-            t('configurator.labels.wb-check-all'),
-          )}
         </div>
         {!!models.length && (
           <div className="configurator-wbFilters" role="group" aria-label={t('configurator.labels.filter-models')}>
@@ -275,6 +239,24 @@ export const DevicesDialog = observer(({
             {models.map((title) => modelChip(
               title, title, devices.filter((device) => device.model === title).length,
             ))}
+          </div>
+        )}
+        {!!shown.length && (
+          <div className="configurator-wbListHead">
+            {groupBox(
+              shown.flatMap((device) => device.units.map(({ key }) => key)),
+              t('configurator.labels.wb-check-all'),
+              t('configurator.labels.wb-check-all'),
+            )}
+            {shown.length > 1 && (
+              <Button
+                className="configurator-wbFold"
+                size="small"
+                variant="secondary"
+                label={t(`configurator.buttons.${isAllFolded ? 'expand-all' : 'collapse-all'}`)}
+                onClick={() => setFolded(Object.fromEntries(shown.map(({ id }) => [id, !isAllFolded])))}
+              />
+            )}
           </div>
         )}
         {shown.map(({ id, units: deviceUnits, skipped: curtains }) => (
@@ -287,93 +269,114 @@ export const DevicesDialog = observer(({
                 )}
                 <h3 className="configurator-sectionTitle configurator-wbDeviceTitle">{deviceTitle(id)}</h3>
               </span>
+              <DeviceFold
+                title={deviceTitle(id)}
+                types={deviceUnits.flatMap((unit) => rowsOf(unit).map((row) => row.type))}
+                picked={deviceUnits.filter(({ key }) => checked.includes(key)).length}
+                isFolded={isFolded(id)}
+                onToggle={() => setFolded({ ...folded, [id]: !isFolded(id) })}
+              />
             </div>
-            <ul className="configurator-channels configurator-cardBody">
-              {deviceUnits.map((unit) => {
-                const isExpanded = expanded.includes(unit.key);
-                const unitRows = rowsOf(unit);
-                return (
-                  <li key={unit.key} className="configurator-channel">
-                    <div className="configurator-channelHead">
-                      <Checkbox
-                        checked={checked.includes(unit.key)}
-                        ariaLabel={unit.label}
-                        onChange={(isOn) => check([unit.key], isOn)}
-                      />
-                      <Input
-                        className="configurator-wbName"
-                        value={names[unit.key] ?? unit.name}
-                        ariaLabel={t('configurator.labels.wb-name', { ...UNESCAPED, label: unit.label })}
-                        isInvalid={checked.includes(unit.key) && isBadName(unit)}
-                        isFullWidth
-                        onChange={(value) => {
-                          setNames({ ...names, [unit.key]: String(value) });
-                          check([unit.key], true);
-                        }}
-                      />
-                      <span className="configurator-wbModelIcons" aria-hidden="true">
-                        {icons(unitRows.map((row) => row.type))}
-                      </span>
-                    </div>
-                    {unit.choices.length > 1 && (
-                      <TypeChoice
-                        types={unit.choices}
-                        value={typeOf(unit)}
-                        ariaLabel={`${t('configurator.labels.type')}: ${unit.label}`}
-                        onChange={(typeId) => setTypes({ ...types, [unit.key]: typeId })}
-                      />
-                    )}
-                    <div className="configurator-role configurator-wbGroup">
-                      <span className="configurator-choiceLabel">{t('configurator.labels.group')}</span>
-                      <Dropdown
-                        options={groupOptions}
-                        value={groups[unit.key] || null}
-                        placeholder={t('configurator.labels.no-group')}
-                        ariaLabel={`${t('configurator.labels.group')}: ${unit.label}`}
-                        isSearchable
-                        isClearable
-                        isCreatable
-                        menuPortal
-                        onChange={(option: Option<string>) => {
-                          setGroups({ ...groups, [unit.key]: option?.value.trim() ?? '' });
-                          check([unit.key], true);
-                        }}
-                      />
-                    </div>
-                    <div className="configurator-wbControls">
-                      <ul className="configurator-adapterNote configurator-wbBinds">
-                        {unitRows.flatMap(boundOf)
-                          .filter((bound, at, all) => all.findIndex(({ role, topic }) => role === bound.role
+            {!isFolded(id) && (
+              <ul className="configurator-channels configurator-cardBody">
+                {deviceUnits.map((unit) => {
+                  const isExpanded = expanded.includes(unit.key);
+                  const unitRows = rowsOf(unit);
+                  return (
+                    <li key={unit.key} className="configurator-channel">
+                      <div className="configurator-channelHead">
+                        <Checkbox
+                          checked={checked.includes(unit.key)}
+                          ariaLabel={unit.label}
+                          onChange={(isOn) => check([unit.key], isOn)}
+                        />
+                        <Input
+                          className="configurator-wbName"
+                          value={names[unit.key] ?? unit.name}
+                          ariaLabel={t('configurator.labels.wb-name', { ...UNESCAPED, label: unit.label })}
+                          isInvalid={checked.includes(unit.key) && isBadName(unit)}
+                          isFullWidth
+                          onChange={(value) => {
+                            setNames({ ...names, [unit.key]: String(value) });
+                            check([unit.key], true);
+                          }}
+                        />
+                        <span className="configurator-wbModelIcons" aria-hidden="true">
+                          {icons(unitRows.map((row) => row.type))}
+                        </span>
+                      </div>
+                      {unit.choices.length > 1 && (
+                        <TypeChoice
+                          types={unit.choices}
+                          value={typeOf(unit)}
+                          ariaLabel={`${t('configurator.labels.type')}: ${unit.label}`}
+                          onChange={(typeId) => setTypes({ ...types, [unit.key]: typeId })}
+                        />
+                      )}
+                      <div className="configurator-role configurator-wbGroup">
+                        <span className="configurator-choiceLabel">{t('configurator.labels.group')}</span>
+                        <Dropdown
+                          options={groupOptions}
+                          value={groups[unit.key] || null}
+                          placeholder={t('configurator.labels.no-group')}
+                          ariaLabel={`${t('configurator.labels.group')}: ${unit.label}`}
+                          isSearchable
+                          isClearable
+                          isCreatable
+                          menuPortal
+                          onChange={(option: Option<string>) => {
+                            setGroups({ ...groups, [unit.key]: option?.value.trim() ?? '' });
+                            check([unit.key], true);
+                          }}
+                        />
+                      </div>
+                      <div className="configurator-wbControls">
+                        <ul className="configurator-adapterNote configurator-wbBinds">
+                          {unitRows.flatMap(boundOf)
+                            .filter((bound, at, all) => all.findIndex(({ role, topic }) => role === bound.role
                             && topic === bound.topic) === at)
-                          .map((bound) => (
-                            <li key={`${bound.role}:${bound.topic}`} title={bound.topic}>
-                              {`${roleLabel(bound.role)} · ${bound.name} · ${bound.value}`}
-                            </li>
-                          ))}
-                      </ul>
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        icon={isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-                        label={t('configurator.buttons.channels')}
-                        aria-expanded={isExpanded}
-                        onClick={() => setExpanded(isExpanded
-                          ? expanded.filter((key) => key !== unit.key)
-                          : [...expanded, unit.key])}
-                      />
-                    </div>
-                    {isExpanded && roles(unit, id)}
-                  </li>
-                );
-              })}
-            </ul>
-            {!!curtains && (
+                            .map((bound) => (
+                              <li key={`${bound.role}:${bound.topic}`} title={bound.topic}>
+                                {`${roleLabel(bound.role)} · ${bound.name} · ${bound.value}`}
+                              </li>
+                            ))}
+                        </ul>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          icon={isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                          label={t('configurator.buttons.channels')}
+                          aria-expanded={isExpanded}
+                          onClick={() => setExpanded(isExpanded
+                            ? expanded.filter((key) => key !== unit.key)
+                            : [...expanded, unit.key])}
+                        />
+                      </div>
+                      {isExpanded && (
+                        <UnitRoles
+                          rows={rowsOf(unit)}
+                          deviceId={id}
+                          onBind={(at, role, value) => {
+                            const key = `${unit.key}#${at}`;
+                            setBinds({ ...binds, [key]: { ...binds[key], [role]: value } });
+                          }}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {!isFolded(id) && !!curtains && (
               <p className="configurator-adapterNote configurator-wbCurtains">
                 {t('configurator.labels.wb-curtains', { count: curtains })}
               </p>
             )}
           </section>
         ))}
+        {!shown.length && !!all.length && (
+          <p className="configurator-empty">{t('configurator.labels.nothing-found')}</p>
+        )}
         <Button
           className="configurator-wbCompose"
           size="small"

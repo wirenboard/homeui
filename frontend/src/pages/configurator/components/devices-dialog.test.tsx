@@ -96,4 +96,38 @@ describe('DevicesDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.compose' }));
     expect(onCompose).toHaveBeenCalledTimes(1);
   });
+
+  it('folds the devices when several are shown, keeps the device box working and expands them all at once', () => {
+    show({ 'wb-mrps6_12': ['K1', 'K2'], gpio: ['K1'] });
+    const toggles = () => screen.getAllByRole('button', { name: 'configurator.labels.toggle-device' });
+    expect(toggles().map((button) => button.getAttribute('aria-expanded'))).toEqual(['false', 'false']);
+    expect(rowBoxes()).toHaveLength(0);
+
+    fireEvent.click(screen.getAllByRole('checkbox', { name: 'configurator.labels.wb-check-device' })[0]);
+    expect(document.querySelector('.configurator-wbSummary').textContent).toContain('configurator.labels.picked-count');
+
+    fireEvent.click(toggles()[1]);
+    expect(rowBoxes()).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.collapse-all' }));
+    expect(rowBoxes()).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.expand-all' }));
+    expect(rowBoxes().map((box) => box.checked)).toEqual([true, true, false]);
+  });
+
+  it('finds a device by its name or id and expands it when it is the only one found', () => {
+    show({ 'wb-mrps6_12': ['K1'], gpio: ['K1'] });
+    const titles = () => screen.queryAllByRole('heading', { level: 3 }).map((heading) => heading.textContent);
+    const search = (text: string) => fireEvent.change(
+      screen.getByRole('searchbox', { name: 'configurator.labels.wb-search' }),
+      { target: { value: text } },
+    );
+
+    search('mrps');
+    expect(titles()).toEqual(['WB-MRPS6_12']);
+    expect(rowBoxes()).toHaveLength(1);
+
+    search('nothing');
+    expect(titles()).toEqual([]);
+    expect(screen.getByText('configurator.labels.nothing-found')).toBeTruthy();
+  });
 });
