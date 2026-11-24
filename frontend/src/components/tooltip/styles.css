@@ -12,6 +12,7 @@
 
 .wb-tooltip-container {
     width: inherit;
+    min-width: 0;
     display: inherit;
 }
 

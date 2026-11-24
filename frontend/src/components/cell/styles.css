@@ -35,6 +35,13 @@
     flex-shrink: 0;
 }
 
+.cellButton .button-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
 .deviceCell:has(.deviceCell-alert):not(:hover) {
     gap: 0;
 }
