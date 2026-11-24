@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.290.0) stable; urgency=medium
+
+  * Device settings: fields that depend on another field are shown only when
+    that field has a matching value (e.g. the string size of a custom channel)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 24 Nov 2026 12:22:44 +0500
+
 wb-mqtt-homeui (2.289.5) stable; urgency=medium
 
   * Fix opening the root page when the default dashboard has a non-Latin ID
