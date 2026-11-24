@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.290.3) stable; urgency=medium
+
+  * backend: reduce memory usage
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 24 Nov 2026 16:00:15 +0400
+
 wb-mqtt-homeui (2.290.2) stable; urgency=medium
 
   * Fix long control values/titles and long button labels overlapping or wrapping instead of being truncated with an ellipsis

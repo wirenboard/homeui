@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import shutil
@@ -767,10 +768,8 @@ class SecurityCheckHandlerTest(unittest.TestCase):
     def test_run_security_check_cooldown_publishes_not_found(self):
         config = json.dumps({"probeOpenPorts": True})
         with patch("wb.homeui_backend.security.open", mock_open(read_data=config)):
-            with patch("wb.homeui_backend.security.requests.post") as mock_post:
-                mock_response = MagicMock()
-                mock_response.json.return_value = {"result": "cooldown"}
-                mock_post.return_value = mock_response
+            with patch("wb.homeui_backend.security.urllib.request.urlopen") as mock_urlopen:
+                mock_urlopen.return_value = io.BytesIO(b'{"result": "cooldown"}')
                 with patch("wb.homeui_backend.security.MQTTClient") as mock_mqtt_client_cls:
                     mock_client = MagicMock()
                     mock_mqtt_client_cls.return_value = mock_client
