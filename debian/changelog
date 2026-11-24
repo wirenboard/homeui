@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.290.2) stable; urgency=medium
+
+  * Fix long control values/titles and long button labels overlapping or wrapping instead of being truncated with an ellipsis
+  * Fix the dashboard list's "in nav" toggle not updating the sidebar until a reload
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 24 Nov 2026 14:15:00 +0300
+
 wb-mqtt-homeui (2.290.1) stable; urgency=medium
 
   * Remove nexus registry

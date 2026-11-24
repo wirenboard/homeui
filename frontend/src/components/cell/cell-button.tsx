@@ -26,6 +26,7 @@ export const CellButton = observer(({ cell, name, isReadOnly, isDisabled, hideHi
   return (
     <>
       <Button
+        className="cellButton"
         label={name || cell.name}
         size="small"
         variant={cell.error ? 'danger' : 'primary'}
