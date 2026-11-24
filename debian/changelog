@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.290.2) stable; urgency=medium
+
+  * backend: reduce memory usage
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 24 Nov 2026 14:15:15 +0400
+
 wb-mqtt-homeui (2.290.1) stable; urgency=medium
 
   * Remove nexus registry
