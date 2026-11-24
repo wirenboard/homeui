@@ -1,7 +1,9 @@
 import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
-import type { MatterDevice, MatterFabric } from '@/stores/matter';
-import { FabricLabelSource, LinkState, PairedDateKind } from './types';
+import type { MatterDevice, MatterFabric, MatterFabricDevice } from '@/stores/matter';
+import {
+  type DeclaredMatter, FabricLabelSource, LinkState, PairedDateKind, type WatchedDevices, WatchingKind,
+} from './types';
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service
@@ -44,6 +46,14 @@ const KNOWN_VENDORS = new Map<number, string>([
 export const vendorKey = (vendorId: number) => KNOWN_VENDORS.get(vendorId) ?? null;
 
 /**
+ * The vendor of a fabric in words: ours for the one this page translates, else the
+ * official name the bridge sends, else null.
+ */
+const vendorLabel = ({ vendor_id: vendorId, vendor_name: vendorName }: MatterFabric, t: TFunction) => (
+  vendorKey(vendorId) ? t(`matter.labels.vendor-${vendorKey(vendorId)}`) : (vendorName || null)
+);
+
+/**
  * Which of the four sources the label shown for a fabric comes from.
  *
  * One function instead of several predicates: the order here *is* the rule, and the page
@@ -57,7 +67,7 @@ export const fabricLabelSource = (fabric: MatterFabric): FabricLabelSource => {
   if (fabric.adminFabricLabel) {
     return FabricLabelSource.Admin;
   }
-  return vendorKey(fabric.vendor_id) ? FabricLabelSource.Vendor : FabricLabelSource.None;
+  return vendorKey(fabric.vendor_id) || fabric.vendor_name ? FabricLabelSource.Vendor : FabricLabelSource.None;
 };
 
 /**
@@ -80,7 +90,7 @@ export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => {
     case FabricLabelSource.Admin:
       return fabric.adminFabricLabel;
     case FabricLabelSource.Vendor:
-      return t(`matter.labels.vendor-${vendorKey(fabric.vendor_id)}`);
+      return vendorLabel(fabric, t);
     default:
       return t('matter.labels.fabric-unlabelled', { index: fabric.index });
   }
@@ -95,9 +105,8 @@ export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => {
  */
 export const replacedFabricLabel = (fabric: MatterFabric, t: TFunction) => (
   fabric.adminFabricLabel
-  || (vendorKey(fabric.vendor_id)
-    ? t(`matter.labels.vendor-${vendorKey(fabric.vendor_id)}`)
-    : t('matter.labels.fabric-unlabelled', { index: fabric.index }))
+  || vendorLabel(fabric, t)
+  || t('matter.labels.fabric-unlabelled', { index: fabric.index })
 );
 
 /**
@@ -132,6 +141,58 @@ export const linkState = ({ online, last_seen: lastSeen }: MatterFabric): LinkSt
     return LinkState.Online;
   }
   return Number.isFinite(lastSeen) ? LinkState.Quiet : LinkState.Offline;
+};
+
+/**
+ * The verdicts of the bridge that the row says in their own words. The rest - on the
+ * line, or nobody asked yet - read as the row always did.
+ */
+const LINK_WORDS = new Set(['partly', 'left', 'removed', 'forgot', 'offline']);
+
+export const linkWord = ({ link }: MatterFabric) => (link && LINK_WORDS.has(link.code) ? link.code : null);
+
+export const deviceNameOf = (devices: MatterDevice[], did: number) => (
+  devices.find((device) => device.did === did)?.name ?? null
+);
+
+/** What the bridge says a fabric follows, against the devices that reached Matter. */
+export const watchedDevices = (
+  { watching, subscriptions }: MatterFabric,
+  devices: MatterDevice[],
+): WatchedDevices => {
+  const of = devices.filter((device) => device.exposed).length;
+  if (!watching || !subscriptions) {
+    return { kind: WatchingKind.None, count: 0, of, missing: [] };
+  }
+  if (watching.missing.length === 0) {
+    return { kind: WatchingKind.All, count: watching.dids.length, of, missing: [] };
+  }
+  return {
+    kind: WatchingKind.Some,
+    count: watching.dids.length,
+    of,
+    missing: watching.missing.map((did) => deviceNameOf(devices, did) ?? `#${did}`),
+  };
+};
+
+/**
+ * The Matter the devices of a fabric declared: one entry while they all declared the same,
+ * which is the usual case, and one per version when a home has hubs of different ages.
+ */
+export const declaredMatter = (devices: MatterFabricDevice[], nameless: string): DeclaredMatter[] => {
+  const declared: DeclaredMatter[] = [];
+  devices.filter(({ matter }) => matter).forEach(({ matter, name }) => {
+    const key = [
+      matter.specification_version, matter.data_model_revision, matter.interaction_model_revision,
+    ].join('-');
+    const same = declared.find((entry) => entry.key === key);
+    if (same) {
+      same.names.push(name ?? nameless);
+    } else {
+      declared.push({ key, matter, names: [name ?? nameless] });
+    }
+  });
+  return declared;
 };
 
 /**

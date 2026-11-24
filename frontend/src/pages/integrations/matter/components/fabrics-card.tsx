@@ -1,16 +1,19 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
+import ChevronUpIcon from '@/assets/icons/chevron-up.svg';
 import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import type { MatterFabric } from '@/stores/matter';
 import { FabricLabelSource, type FabricsCardProps, LinkState, PairedDateKind } from '../types';
 import {
-  fabricDisplayLabel, fabricLabelSource, linkState, pairedDateKind, replacedFabricLabel,
+  fabricDisplayLabel, fabricLabelSource, linkState, linkWord, pairedDateKind, replacedFabricLabel,
 } from '../utils';
+import { FabricDetails } from './fabric-details';
 import { FabricMenu } from './fabric-menu';
 
 /**
@@ -27,10 +30,17 @@ import { FabricMenu } from './fabric-menu';
  * so that the way to add a fabric is the last line of the list of fabrics.
  */
 export const FabricsCard = ({
-  fabrics, fabricsSince, onAction, children,
+  fabrics, fabricsSince, onAction, devices = [], now, checkingIndex = null, hasCheckFailed = false,
+  onCheck, children,
 }: PropsWithChildren<FabricsCardProps>) => {
   const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
+  // By index and not by position: a poll reorders nothing, but a fabric that leaves
+  // must not hand its open details to the one below it.
+  const [opened, setOpened] = useState<number[]>([]);
+  const toggle = (index: number) => setOpened((before) => (
+    before.includes(index) ? before.filter((one) => one !== index) : [...before, index]
+  ));
   // Matching the rest of the interface rather than inventing a format for this page.
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy, HH:mm' : 'dd/MM/yyyy, HH:mm';
   // The bound on an unknown pairing has no business carrying minutes: the moment it
@@ -68,12 +78,16 @@ export const FabricsCard = ({
    * that instead of showing an empty cell.
    */
   const linkText = (fabric: MatterFabric) => {
+    // What the bridge found out by asking wins over what the page works out by itself.
+    if (linkWord(fabric)) {
+      return t(`matter.labels.link-is-${linkWord(fabric)}`);
+    }
     switch (linkState(fabric)) {
       case LinkState.Online:
         return t('matter.labels.link-online');
       case LinkState.Quiet:
         return t('matter.labels.link-quiet', {
-          ago: formatDistanceToNow(fabric.last_seen, { addSuffix: true, locale: dateLocale }),
+          ago: formatDistanceToNow(fabric.last_seen, { locale: dateLocale }),
         });
       default:
         return t('matter.labels.link-offline');
@@ -103,10 +117,33 @@ export const FabricsCard = ({
     ? 'matter-fabricLink matter-fabricLinkOnline'
     : 'matter-fabricLink');
 
+  const detailsButton = (fabric: MatterFabric) => (
+    <button
+      type="button"
+      className="matter-detailsToggle"
+      aria-expanded={opened.includes(fabric.index)}
+      aria-label={t('matter.buttons.fabric-details', { label: fabricDisplayLabel(fabric, t) })}
+      onClick={() => toggle(fabric.index)}
+    >
+      {opened.includes(fabric.index) ? <ChevronUpIcon aria-hidden="true" /> : <ChevronDownIcon aria-hidden="true" />}
+    </button>
+  );
+
+  const details = (fabric: MatterFabric) => (
+    <FabricDetails
+      fabric={fabric}
+      devices={devices}
+      now={now ?? Date.now()}
+      isChecking={checkingIndex === fabric.index}
+      hasCheckFailed={hasCheckFailed && checkingIndex === null}
+      onCheck={() => onCheck?.(fabric)}
+    />
+  );
+
   const fabricRows = (
     <ul className="matter-rows">
       {fabrics.map((fabric) => (
-        <li className="matter-row" key={fabric.index}>
+        <li className="matter-row matter-rowWithDetails" key={fabric.index}>
           <div className="matter-rowMain">
             <span className="matter-rowName">{fabricDisplayLabel(fabric, t)}</span>
             <span className="matter-rowLine">
@@ -118,20 +155,26 @@ export const FabricsCard = ({
             {labelNote(fabric) && <span className="matter-rowLine">{labelNote(fabric)}</span>}
           </div>
           <div className="matter-rowAction">
+            {detailsButton(fabric)}
             <FabricMenu
               label={fabricDisplayLabel(fabric, t)}
               fabric={fabric}
               onChoose={(action) => onAction(fabric, action)}
             />
           </div>
+          {opened.includes(fabric.index) && details(fabric)}
         </li>
       ))}
     </ul>
   );
 
   return (
-    <Card className="matter-card" heading={t('matter.labels.fabrics')}>
-      {fabrics.length === 0 && <p className="matter-empty">{t('matter.labels.fabrics-empty')}</p>}
+    <Card className="matter-card matter-fabrics" heading={t('matter.labels.fabrics')}>
+      {/* Said by the card only when it stands alone: with the way to add a fabric under
+          it, the invitation there is all an empty list has to say. */}
+      {fabrics.length === 0 && !children && (
+        <p className="matter-empty">{t('matter.labels.fabrics-empty')}</p>
+      )}
       {fabrics.length > 0 && isMobile && fabricRows}
       {fabrics.length > 0 && !isMobile && (
         <Table isFullWidth>
@@ -144,7 +187,7 @@ export const FabricsCard = ({
             </TableCell>
           </TableRow>
 
-          {fabrics.map((fabric) => (
+          {fabrics.flatMap((fabric) => [
             <TableRow key={fabric.index}>
               <TableCell>
                 <span className="matter-fabricLabel">{fabricDisplayLabel(fabric, t)}</span>
@@ -159,18 +202,25 @@ export const FabricsCard = ({
                 <span className={linkClass(fabric)}>{linkText(fabric)}</span>
               </TableCell>
               <TableCell>
-                <FabricMenu
-                  label={fabricDisplayLabel(fabric, t)}
-                  fabric={fabric}
-                  onChoose={(action) => onAction(fabric, action)}
-                />
+                <span className="matter-rowButtons">
+                  {detailsButton(fabric)}
+                  <FabricMenu
+                    label={fabricDisplayLabel(fabric, t)}
+                    fabric={fabric}
+                    onChoose={(action) => onAction(fabric, action)}
+                  />
+                </span>
               </TableCell>
-            </TableRow>
-          ))}
+            </TableRow>,
+            opened.includes(fabric.index) && (
+              <TableRow key={`${fabric.index}-details`} className="matter-detailsRow">
+                <TableCell colSpan={4}>{details(fabric)}</TableCell>
+              </TableRow>
+            ),
+          ])}
         </Table>
       )}
       {children}
-      <p className="matter-hint">{t('matter.labels.fabrics-hint')}</p>
     </Card>
   );
 };

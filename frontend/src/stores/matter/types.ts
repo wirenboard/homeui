@@ -1,3 +1,85 @@
+/** Whose way in a fabric came through, as the bridge wrote it down when it paired. */
+export interface MatterPairedVia {
+  by: 'page' | 'app';
+  vendor_id?: number;
+  vendor_name?: string | null;
+}
+
+/** Which devices of the bridge the subscriptions of a fabric name, by did. */
+export interface MatterWatching {
+  all: boolean;
+  dids: number[];
+  missing: number[];
+}
+
+/** The commands of a fabric since the bridge started. */
+export interface MatterCommands {
+  count: number;
+  last_at: number;
+  last_did: number;
+}
+
+/**
+ * What a controller declared when it opened a session. The version is null for one that
+ * declared nothing: it is older than Matter 1.3, and that is all the bridge knows.
+ */
+export interface MatterDeclared {
+  version: string | null;
+  specification_version: number;
+  data_model_revision: number | null;
+  interaction_model_revision: number | null;
+}
+
+/** For how long the certificate of a pairing holds; no end is null. */
+export interface MatterCertificate {
+  valid_from: number;
+  valid_until: number | null;
+}
+
+/** One device a fabric talks to the bridge from. */
+export interface MatterFabricDevice {
+  // Null until the device said its name, or the bridge saw its MAC.
+  name: string | null;
+  mac: string | null;
+  address: string | null;
+  online: boolean;
+  subscriptions: number;
+  heard_at?: number;
+  matter?: MatterDeclared;
+}
+
+export type MatterLinkCode = 'online' | 'partly' | 'stale' | 'left' | 'removed' | 'forgot' | 'offline'
+  | 'unseen' | 'quiet';
+
+/** What the bridge asked a fabric and what came back; a question nobody put is absent. */
+export interface MatterLinkAnswers {
+  subscriptions?: number;
+  missing?: number;
+  report_live?: 'success' | 'invalid' | 'none';
+  report_dead?: 'success' | 'invalid' | 'none';
+  session?: 'accepted' | 'refused' | 'none';
+  ping?: 'answers' | 'silent';
+  // Present when the bridge had no session and no address to ask by.
+  known?: 'no';
+}
+
+/** A check as the three things a person asks; a key is absent while nothing asked can tell. */
+export interface MatterLinkSummary {
+  in_network?: 'yes' | 'no';
+  answers_bridge?: 'yes' | 'no';
+  // 'dropped': the fabric refused a subscription the bridge still held.
+  holds_subscriptions?: 'yes' | 'no' | 'dropped';
+}
+
+/** The verdict of the bridge about the link to a fabric: the code is put into words here. */
+export interface MatterLink {
+  code: MatterLinkCode;
+  says: string;
+  checked_at?: number;
+  answers?: MatterLinkAnswers;
+  summary?: MatterLinkSummary;
+}
+
 export interface MatterFabric {
   index: number;
   // The label the fabric gave itself: FabricDescriptorStruct.Label, written by the app
@@ -20,6 +102,17 @@ export interface MatterFabric {
   // missing both for an app that has never dropped and for every app right after the
   // service restarts - see FabricHistory#seen in the bridge.
   last_seen?: number;
+  // Everything below is undefined from a bridge older than this page.
+  vendor_name?: string | null;
+  paired_via?: MatterPairedVia;
+  sessions?: number;
+  subscriptions?: number;
+  heard_at?: number;
+  watching?: MatterWatching;
+  commands?: MatterCommands;
+  devices?: MatterFabricDevice[];
+  link?: MatterLink;
+  certificate?: MatterCertificate;
 }
 
 export interface MatterPairing {
@@ -70,6 +163,8 @@ export interface MatterDevice {
   // the driver says cannot be written. The page names them; why, in a sentence, is in
   // the journal of the service, like every other detail kept for support.
   ignored_roles?: string[];
+  // The fabrics, by index, that follow other devices and not this one.
+  not_followed_by?: number[];
 }
 
 export interface MatterDevices {

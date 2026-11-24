@@ -8,7 +8,7 @@ import { Table, TableCell, TableRow } from '@/components/table';
 import { Tag } from '@/components/tag';
 import type { MatterDevice } from '@/stores/matter';
 import type { DevicesCardProps } from '../types';
-import { detailParts, isColour } from '../utils';
+import { detailParts, fabricDisplayLabel, isColour } from '../utils';
 
 /** The states this page has words for. Anything else is a reading, and is shown as it is. */
 const TRANSLATED_STATES = new Set(['on', 'off']);
@@ -20,7 +20,7 @@ const TRANSLATED_STATES = new Set(['on', 'off']);
  * block instead. The room is dropped where no device has one - the configurator leaves it
  * empty until somebody fills it in, and a column of blanks costs a sixth of the width.
  */
-export const DevicesCard = ({ devices, onOpen }: DevicesCardProps) => {
+export const DevicesCard = ({ devices, onOpen, fabrics = [] }: DevicesCardProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
   const hasAreas = devices.list.some((device) => device.area);
@@ -82,6 +82,12 @@ export const DevicesCard = ({ devices, onOpen }: DevicesCardProps) => {
     );
   };
 
+  const notTakenBy = (device: MatterDevice) => (device.not_followed_by ?? [])
+    .map((index) => fabrics.find((fabric) => fabric.index === index))
+    .filter(Boolean)
+    .map((fabric) => fabricDisplayLabel(fabric, t))
+    .join(', ');
+
   const deviceRows = (
     <ul className="matter-rows">
       {devices.list.map((device) => (
@@ -101,6 +107,11 @@ export const DevicesCard = ({ devices, onOpen }: DevicesCardProps) => {
               {device.exposed && ignoredRoles(device) !== '' && (
                 <span className="matter-rowLine">
                   {t('matter.labels.ignored-roles', { roles: ignoredRoles(device) })}
+                </span>
+              )}
+              {notTakenBy(device) !== '' && (
+                <span className="matter-rowLine">
+                  {t('matter.labels.not-followed-by', { fabrics: notTakenBy(device) })}
                 </span>
               )}
             </span>
@@ -142,6 +153,11 @@ export const DevicesCard = ({ devices, onOpen }: DevicesCardProps) => {
                 {device.exposed && ignoredRoles(device) !== '' && (
                   <span className="matter-ignored">
                     {t('matter.labels.ignored-roles', { roles: ignoredRoles(device) })}
+                  </span>
+                )}
+                {notTakenBy(device) !== '' && (
+                  <span className="matter-ignored">
+                    {t('matter.labels.not-followed-by', { fabrics: notTakenBy(device) })}
                   </span>
                 )}
               </TableCell>

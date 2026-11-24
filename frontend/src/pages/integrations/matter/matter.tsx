@@ -134,31 +134,38 @@ const MatterPage = observer(() => {
           <FabricsCard
             fabrics={status.fabrics}
             fabricsSince={status.fabrics_since}
+            devices={status.devices.list}
+            now={Date.now() + matterStore.clockOffset}
+            checkingIndex={matterStore.checkingIndex}
+            hasCheckFailed={matterStore.hasCheckFailed}
             onAction={chooseFabricAction}
+            onCheck={(fabric) => matterStore.checkLink(fabric.index)}
           >
             <PairingWindow
               pairing={status.pairing}
               isEmpty={status.fabrics.length === 0}
+              devicesCount={status.devices.exposed}
               left={status.pairing ? timeLeft(status.pairing.closes_at, now + matterStore.clockOffset) : ''}
               isChanging={matterStore.isChangingWindow}
               hasFailed={matterStore.hasWindowFailed}
+              hasExpired={matterStore.hasWindowExpired}
+              isOffline={Boolean(status.network_error)}
               onOpen={() => matterStore.openWindow()}
               onClose={() => matterStore.closeWindow()}
-              onNewCode={() => setChangingCode(true)}
             />
           </FabricsCard>
 
-          <DevicesCard devices={status.devices} onOpen={openInConfigurator} />
+          <DevicesCard devices={status.devices} fabrics={status.fabrics} onOpen={openInConfigurator} />
 
-          {/* A bridge older than this page has no settings, and then there is no card. */}
-          {status.settings && (
-            <SettingsCard
-              settings={status.settings}
-              isSaving={matterStore.isSavingSettings}
-              hasFailed={matterStore.hasSettingsFailed}
-              onChange={matterStore.setSettings}
-            />
-          )}
+          <SettingsCard
+            settings={status.settings}
+            isSaving={matterStore.isSavingSettings}
+            hasFailed={matterStore.hasSettingsFailed}
+            canChangeCode={!status.pairing}
+            isCodeBusy={matterStore.isChangingWindow}
+            onChange={matterStore.setSettings}
+            onNewCode={() => setChangingCode(true)}
+          />
 
           <Confirm
             isOpened={isChangingCode}
@@ -176,7 +183,6 @@ const MatterPage = observer(() => {
           >
             <p className="matter-dialogText">{t('matter.labels.new-code-why')}</p>
             <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.new-code-cost')}</p>
-            <p className="matter-dialogText">{t('matter.labels.new-code-when')}</p>
             {matterStore.hasWindowFailed && (
               <p className="matter-dialogText matter-dialogError">{t('matter.labels.new-code-failed')}</p>
             )}

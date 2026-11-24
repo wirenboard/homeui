@@ -49,6 +49,7 @@ const PAIRED_AND_OPEN = {
 const cardOf = (element: Element) => element.closest('.card');
 
 const fabricsCard = () => cardOf(screen.getByText('matter.labels.fabrics'));
+const settingsCard = () => cardOf(screen.getByText('matter.labels.settings'));
 
 /** Whether the first element comes before the second on the page. */
 const isAbove = (first: Element, second: Element) => (
@@ -56,10 +57,11 @@ const isAbove = (first: Element, second: Element) => (
 );
 
 /**
- * The fabrics that are paired and the way to pair the next one are one card: they used to
- * be two, and it was not plain why, or which of the two to look at first.
+ * The fabrics that are paired and the way to add the next one are one card, and the button,
+ * the code and the way to call it off share one place in it: under the list, where the new
+ * fabric will appear. They used to be two cards, and it was not plain which to look at.
  */
-describe('MatterPage, fabrics and the pairing window in one card', () => {
+describe('MatterPage, fabrics and the way to add one in one card', () => {
   beforeEach(() => {
     vi.mocked(authStore.hasRights).mockReturnValue(true);
     vi.mocked(getMatterStatus).mockReset();
@@ -71,6 +73,7 @@ describe('MatterPage, fabrics and the pairing window in one card', () => {
       matterStore.isUnreachable = false;
       matterStore.isChangingWindow = false;
       matterStore.hasWindowFailed = false;
+      matterStore.hasWindowExpired = false;
     });
   });
 
@@ -78,19 +81,38 @@ describe('MatterPage, fabrics and the pairing window in one card', () => {
     matterStore.stopWatching();
   });
 
-  it('says nothing is paired and invites to pair in the same card, the invitation last', async () => {
+  it('invites an empty bridge to its first app in the card of fabrics, and says so once', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(EMPTY as any);
     render(<MatterPage />);
 
-    const invitation = await screen.findByText('matter.labels.window-closed');
-    const nothing = screen.getByText('matter.labels.fabrics-empty');
+    const invitation = await screen.findByText('matter.labels.fabrics-empty');
     expect(cardOf(invitation)).toBe(fabricsCard());
-    expect(cardOf(nothing)).toBe(fabricsCard());
-    expect(isAbove(nothing, invitation)).toBe(true);
+    // Once: the invitation is all an empty list has to say, and it used to be said twice.
+    expect(screen.getAllByText('matter.labels.fabrics-empty')).toHaveLength(1);
+    expect(cardOf(screen.getByText('matter.labels.window-closed'))).toBe(fabricsCard());
     expect(cardOf(screen.getByText('matter.buttons.open-window'))).toBe(fabricsCard());
   });
 
-  it('puts the button that opens a window under the fabrics that are paired', async () => {
+  it('warns the first app will get nothing only while the bridge gives no device away', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue(EMPTY as any);
+    const { unmount } = render(<MatterPage />);
+    expect(await screen.findByText('matter.labels.window-no-devices')).toBeInTheDocument();
+    unmount();
+    matterStore.stopWatching();
+
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...EMPTY, devices: { ...EMPTY.devices, configured: 3, exposed: 3 },
+    } as any);
+    runInAction(() => {
+      matterStore.status = null;
+      matterStore.isLoading = true;
+    });
+    render(<MatterPage />);
+    await screen.findByText('matter.labels.fabrics-empty');
+    expect(screen.queryByText('matter.labels.window-no-devices')).not.toBeInTheDocument();
+  });
+
+  it('puts the button that adds a fabric under the fabrics that are paired', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 
@@ -102,7 +124,7 @@ describe('MatterPage, fabrics and the pairing window in one card', () => {
     expect(screen.queryByText('matter.labels.fabrics-empty')).not.toBeInTheDocument();
   });
 
-  it('shows the code of an open window under the fabrics, where the new one will appear', async () => {
+  it('shows the code where the button stood: under the fabrics, where the new one will appear', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED_AND_OPEN as any);
     render(<MatterPage />);
 
@@ -111,32 +133,84 @@ describe('MatterPage, fabrics and the pairing window in one card', () => {
     expect(cardOf(picture)).toBe(fabricsCard());
     expect(isAbove(fabric, picture)).toBe(true);
     expect(cardOf(screen.getByText('matter.labels.window-left'))).toBe(fabricsCard());
+    expect(cardOf(screen.getByText('matter.buttons.close-window'))).toBe(fabricsCard());
+    expect(screen.queryByText('matter.buttons.open-window')).not.toBeInTheDocument();
   });
 
-  it('still says nothing is paired while the first window is open', async () => {
+  it('shows the wait alone while the first fabric is being added: no invitation beside the code', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue({ ...PAIRED_AND_OPEN, paired: false, fabrics: [] } as any);
     render(<MatterPage />);
 
     const picture = await screen.findByAltText('matter.labels.qr-alt');
-    expect(isAbove(screen.getByText('matter.labels.fabrics-empty'), picture)).toBe(true);
+    expect(cardOf(picture)).toBe(fabricsCard());
+    expect(screen.getByText('matter.labels.window-left')).toBeInTheDocument();
+    expect(screen.queryByText('matter.labels.fabrics-empty')).not.toBeInTheDocument();
   });
 
-  it('has no card of its own for pairing any more', async () => {
+  it('draws no coloured block inside the card of fabrics, whatever the bridge is doing', async () => {
+    for (const state of [EMPTY, PAIRED, PAIRED_AND_OPEN]) {
+      vi.mocked(getMatterStatus).mockResolvedValue(state as any);
+      runInAction(() => {
+        matterStore.status = null;
+        matterStore.isLoading = true;
+      });
+      const { unmount } = render(<MatterPage />);
+      await screen.findByText('matter.labels.fabrics');
+      expect(fabricsCard().querySelector('.alertMessage')).toBeNull();
+      unmount();
+      matterStore.stopWatching();
+    }
+  });
+
+  it('keeps the change of the code in the settings, away from the button that adds', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
+    render(<MatterPage />);
+
+    await screen.findByText('Yandex');
+    expect(cardOf(screen.getByText('matter.buttons.new-code'))).toBe(settingsCard());
+    expect(screen.getByText('matter.labels.pairing-code-hint')).toBeInTheDocument();
+  });
+
+  it('says in the settings why the code cannot be changed while a fabric is being added', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue(PAIRED_AND_OPEN as any);
+    render(<MatterPage />);
+
+    await screen.findByText('Yandex');
+    expect(screen.queryByText('matter.buttons.new-code')).not.toBeInTheDocument();
+    expect(cardOf(screen.getByText('matter.labels.pairing-code-busy'))).toBe(settingsCard());
+  });
+
+  it('locks the button and points at the top of the page when Matter has not started', async () => {
+    vi.mocked(getMatterStatus).mockResolvedValue({
+      ...PAIRED, network_error: { code: 'no_ipv6', reason: 'no IPv6 address' },
+    } as any);
+    render(<MatterPage />);
+
+    await screen.findByText('Yandex');
+    expect(screen.getByRole('button', { name: 'matter.buttons.open-window' })).toBeDisabled();
+    expect(screen.getByText('matter.labels.window-offline')).toBeInTheDocument();
+  });
+
+  it('has three cards and none of its own for pairing', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 
     await screen.findByText('Yandex');
     const headings = [...document.querySelectorAll('.card-title')].map((heading) => heading.textContent);
-    expect(headings).toEqual(['matter.labels.fabrics', 'matter.labels.devices']);
+    expect(headings).toEqual(['matter.labels.fabrics', 'matter.labels.devices', 'matter.labels.settings']);
   });
 
-  it('has the words in both languages, and they name how long a window lasts', () => {
-    for (const labels of [ru.matter.labels, en.matter.labels]) {
-      expect(labels['window-closed']).toMatch(/15/);
-      expect(labels['window-closed-paired']).toMatch(/15/);
+  it('has the words in both languages: the button names the goal and nothing speaks of a window', () => {
+    for (const { labels, buttons } of [ru.matter, en.matter]) {
+      expect(buttons['open-window']).toMatch(/фабрик|fabric/);
+      expect(labels['window-closed']).toMatch(/\{\{count\}\}/);
       expect(labels['window-left']).toMatch(/\{\{left\}\}/);
-      // The hint under the list pointed at "the button above", which is now below.
-      expect(labels['fabrics-hint']).not.toMatch(/выше|above/);
+      expect(labels['window-expired']).toMatch(/15/);
+      for (const text of [...Object.values(labels), ...Object.values(buttons)]) {
+        expect(text).not.toMatch(/окн|window/i);
+        // No one ecosystem is singled out by name beside the others that fit as well.
+        expect(text).not.toMatch(/алис|alice/i);
+      }
     }
   });
 });

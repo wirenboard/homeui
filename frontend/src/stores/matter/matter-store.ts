@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import {
-  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow, setLocalFabricLabel,
-  setMatterSettings, unpairFabric,
+  changeMatterCode, checkFabricLink, closeMatterWindow, getMatterStatus, openMatterWindow,
+  setLocalFabricLabel, setMatterSettings, unpairFabric,
 } from './api';
 import type { MatterSettings, MatterStatus, MatterWindow } from './types';
 
@@ -12,6 +12,9 @@ import type { MatterSettings, MatterStatus, MatterWindow } from './types';
  * socket on the controller itself.
  */
 export const POLL_INTERVAL_MS = 5000;
+
+// How far before its time a window may end and still count as run out.
+const WINDOW_END_SLACK_MS = 2000;
 
 export default class MatterStore {
   status: MatterStatus | null = null;
@@ -29,12 +32,19 @@ export default class MatterStore {
   // open at separate times, and one flag would show a failed label inside the unpair
   // dialog of the next fabric the operator opens.
   hasLabelFailed = false;
+  // The fabric whose link the bridge is checking right now.
+  checkingIndex: number | null = null;
+  hasCheckFailed = false;
   // The window is being opened or closed right now, so the button cannot be pressed
   // twice and says it is busy.
   isChangingWindow = false;
   // The bridge refused or did not answer. 409 lands here too: it means somebody is
   // pairing at this very moment, and the page says so rather than pretending.
   hasWindowFailed = false;
+  // The last window ran out of time and nobody was added. Kept until the next window
+  // opens, because without it the code simply vanishes from the page and the person
+  // who went to fetch a phone cannot tell a timeout from a fault.
+  hasWindowExpired = false;
   // A switch of the page is on its way to the bridge, so it cannot be thrown twice.
   isSavingSettings = false;
   // The last change of a switch did not go through. Cleared when the next one starts.
@@ -73,10 +83,11 @@ export default class MatterStore {
       }
       this.#shown = asked;
       runInAction(() => {
-        this.status = status;
         if (Number.isFinite(status?.now)) {
           this.clockOffset = status.now - Date.now();
         }
+        this.#noteWindowEnd(status);
+        this.status = status;
         this.isUnreachable = false;
         this.isLoading = false;
       });
@@ -112,6 +123,24 @@ export default class MatterStore {
     runInAction(() => {
       this.unpairingIndex = null;
       this.hasUnpairFailed = !ok;
+    });
+    return ok;
+  }
+
+  /** Has the bridge check the link to one fabric; what came of it is read from /status. */
+  async checkLink(index: number) {
+    this.checkingIndex = index;
+    this.hasCheckFailed = false;
+    let ok = true;
+    try {
+      await checkFabricLink(index);
+    } catch {
+      ok = false;
+    }
+    await this.fetch();
+    runInAction(() => {
+      this.checkingIndex = null;
+      this.hasCheckFailed = !ok;
     });
     return ok;
   }
@@ -188,6 +217,9 @@ export default class MatterStore {
     // The store is a singleton and the page mounts twice under StrictMode, so a second
     // start without a stop would leave the first timer running forever.
     this.stopWatching();
+    // A page opened anew starts clean: "time is up" is for the person who was here when
+    // it ran out, not for whoever comes back the next day.
+    this.hasWindowExpired = false;
     void this.fetch();
     this.#timer = setInterval(() => {
       if (document.visibilityState === 'visible') {
@@ -203,6 +235,26 @@ export default class MatterStore {
       this.#timer = null;
     }
     document.removeEventListener('visibilitychange', this.#onVisibilityChange);
+  }
+
+  /**
+   * Tells a window that ran out from one that was closed. A window ends before its time
+   * when a fabric is added or somebody closes it, and at its time when nobody came - the
+   * clock of the controller is the one that says which, since closes_at is on it. The
+   * slack is for the poll that lands a moment before the bridge closes the window.
+   */
+  #noteWindowEnd(next: MatterStatus) {
+    if (!next || !this.status) {
+      return;
+    }
+    if (next.pairing || next.fabrics.length > this.status.fabrics.length) {
+      this.hasWindowExpired = false;
+      return;
+    }
+    const was = this.status.pairing;
+    if (was) {
+      this.hasWindowExpired = Date.now() + this.clockOffset >= was.closes_at - WINDOW_END_SLACK_MS;
+    }
   }
 
   async #changeWindow(call: () => Promise<MatterWindow>) {

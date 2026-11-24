@@ -130,7 +130,8 @@ describe('MatterPage', () => {
     render(<MatterPage />);
 
     expect(await screen.findByText('2333-171-2339')).toBeInTheDocument();
-    expect(screen.getByText('MT:Y.K9042C00KA0648G00')).toBeInTheDocument();
+    // The payload is what the picture encodes; as text it is for tools, not for this page.
+    expect(screen.queryByText('MT:Y.K9042C00KA0648G00')).not.toBeInTheDocument();
   });
 
   it('points the picture at the service, with the version and not the payload', async () => {
@@ -289,7 +290,7 @@ describe('MatterPage', () => {
 
   it('offers no way to unpair while no fabric is connected', async () => {
     render(<MatterPage />);
-    await screen.findByText('matter.labels.fabrics-empty');
+    await screen.findByText('2333-171-2339');
 
     expect(screen.queryByText('matter.buttons.unpair')).not.toBeInTheDocument();
   });

@@ -1,6 +1,50 @@
+import type { ReactNode } from 'react';
 import type {
-  MatterDevice, MatterDevices, MatterFabric, MatterPairing, MatterSettings,
+  MatterDeclared, MatterDevice, MatterDevices, MatterFabric, MatterPairing, MatterSettings,
 } from '@/stores/matter';
+
+export enum WatchingKind {
+  None = 'none',
+  All = 'all',
+  Some = 'some',
+}
+
+/** Which devices of the bridge a fabric follows, counted against the ones Matter has. */
+export interface WatchedDevices {
+  kind: WatchingKind;
+  count: number;
+  of: number;
+  // The names of the devices it does not follow.
+  missing: string[];
+}
+
+/** One Matter the devices of a fabric declared, and which of them did. */
+export interface DeclaredMatter {
+  key: string;
+  matter: MatterDeclared;
+  names: string[];
+}
+
+export interface DetailsSectionProps {
+  title: string;
+  children: ReactNode;
+}
+
+export interface DetailsFactsProps {
+  // A label and what stands beside it.
+  rows: ReadonlyArray<readonly [string, ReactNode]>;
+}
+
+export interface FabricDetailsProps {
+  fabric: MatterFabric;
+  // For the names of the devices the bridge refers to by did.
+  devices: MatterDevice[];
+  // The clock of the controller, in milliseconds: the times of the bridge are on it.
+  now: number;
+  isChecking: boolean;
+  hasCheckFailed: boolean;
+  onCheck: () => void;
+}
 
 /**
  * What the page can honestly say about when an app paired. Three cases and not two: an
@@ -56,6 +100,12 @@ export interface FabricsCardProps {
   // of their own. Null or undefined from a service that keeps none.
   fabricsSince?: number | null;
   onAction: (_fabric: MatterFabric, _action: FabricMenuAction) => void;
+  devices?: MatterDevice[];
+  now?: number;
+  // The fabric whose link is being checked, by index.
+  checkingIndex?: number | null;
+  hasCheckFailed?: boolean;
+  onCheck?: (_fabric: MatterFabric) => void;
 }
 
 export interface PairingWindowProps {
@@ -63,18 +113,26 @@ export interface PairingWindowProps {
   pairing: MatterPairing | null;
   // No fabric is paired yet: the closed window is then an invitation and not a remark.
   isEmpty: boolean;
+  // How many devices the bridge gives away, for the invitation to say what the first
+  // fabric will get - and that it will get nothing while none is picked.
+  devicesCount: number;
   // What is left of an open window, as the text to show.
   left: string;
   isChanging: boolean;
   hasFailed: boolean;
+  // The last window ran out of time with nobody added: said, or the code just vanishes.
+  hasExpired: boolean;
+  // Matter has not started, so the button cannot help and says why instead.
+  isOffline: boolean;
   onOpen: () => void;
   onClose: () => void;
-  onNewCode: () => void;
 }
 
 export interface DevicesCardProps {
   devices: MatterDevices;
   onOpen: (_device: MatterDevice) => void;
+  // For the names of the fabrics that did not take a device.
+  fabrics?: MatterFabric[];
 }
 
 export interface FabricLabelDialogProps {
@@ -93,9 +151,15 @@ export interface CopyFieldProps {
 }
 
 export interface SettingsCardProps {
-  // As the bridge holds them: the switch shows this and not what was clicked.
-  settings: MatterSettings;
+  // As the bridge holds them: the switch shows this and not what was clicked. Undefined
+  // from a bridge older than this page, and then the card has no switch.
+  settings?: MatterSettings;
   isSaving: boolean;
   hasFailed: boolean;
   onChange: (_settings: Partial<MatterSettings>) => void;
+  // The line about the pairing code is drawn only when there is a way to change it.
+  onNewCode?: () => void;
+  // False while a fabric is being added: the bridge will not change the code then.
+  canChangeCode?: boolean;
+  isCodeBusy?: boolean;
 }

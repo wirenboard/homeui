@@ -56,6 +56,14 @@ export const unpairFabric = async (index: number) => {
 };
 
 /**
+ * Has the bridge ask one fabric whether it is still there. It answers once the app has
+ * answered or not, which can take a quarter of a minute.
+ */
+export const checkFabricLink = async (index: number) => {
+  await request.post('/matter/fabric-check', { index });
+};
+
+/**
  * Sets the label this controller keeps for one fabric. An empty value clears it, and the
  * page falls back to adminFabricLabel or to the fabric number.
  *

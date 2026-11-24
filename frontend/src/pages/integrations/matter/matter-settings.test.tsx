@@ -50,12 +50,13 @@ describe('MatterPage, the settings', () => {
     matterStore.stopWatching();
   });
 
-  it('has no settings card for a bridge that sends no settings', async () => {
+  it('has no switch for a bridge that sends no settings, only the line about the code', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 
     await screen.findByText('Aqara');
-    expect(screen.queryByText('matter.labels.settings')).not.toBeInTheDocument();
+    expect(screen.getByText('matter.labels.settings')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.pairing-code')).toBeInTheDocument();
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 

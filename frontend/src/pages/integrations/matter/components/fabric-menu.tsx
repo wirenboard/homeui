@@ -73,6 +73,7 @@ export const FabricMenu = ({ label, fabric, onChoose }: FabricMenuProps) => {
         variant="secondary"
         icon={<MoreIcon />}
         aria-label={t('matter.buttons.fabric-actions', { label })}
+        isOutlined
       />
     </Popup>
   );
