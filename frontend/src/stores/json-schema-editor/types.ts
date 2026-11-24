@@ -57,6 +57,8 @@ export interface InputAttributes {
   placeholder?: string;
 }
 
+export type DependencyChoice = string | number | boolean | (string | number | boolean)[];
+
 export interface JsonEditorOptions {
   hidden?: boolean;
   compact?: boolean;
@@ -69,6 +71,9 @@ export interface JsonEditorOptions {
   inputAttributes?: InputAttributes;
   patternmessage?: string; // Message for pattern validation error
   enum_titles?: string[]; // Titles for enum values
+
+  // Sibling key -> required value(s), the property is shown and saved only when all of them match
+  dependencies?: Record<string, DependencyChoice>;
 
   wb?: WbOptions;
 }

@@ -1,7 +1,15 @@
-import { makeObservable, action, computed, observable } from 'mobx';
+import { makeObservable, action, comparer, computed, observable } from 'mobx';
+import { exactNumberEquals } from '@/utils/exact-number';
 import { MistypedValue } from './mistyped-value';
 import { type StoreBuilder } from './store-builder';
-import type { JsonSchema, PropertyStore, JsonObject } from './types';
+import type { JsonSchema, PropertyStore, JsonObject, DependencyChoice } from './types';
+
+const matchesDependencyChoice = (value: unknown, choice: DependencyChoice): boolean => {
+  if (Array.isArray(choice)) {
+    return choice.some((item) => exactNumberEquals(value, item));
+  }
+  return exactNumberEquals(value, choice);
+};
 
 export class ObjectParamStore {
   public key: string;
@@ -72,7 +80,6 @@ export function comparePropertyOrder([key1, schema1], [key2, schema2]) {
 
 export class ObjectStore implements PropertyStore {
   public schema: JsonSchema;
-  public params: ObjectParamStore[] = [];
   public required: boolean;
   public isUndefined: boolean = false;
 
@@ -80,6 +87,8 @@ export class ObjectStore implements PropertyStore {
   readonly error = undefined;
   readonly defaultText = '';
 
+  // All params, including the ones hidden by options.dependencies
+  private _params: ObjectParamStore[] = [];
   private _paramByKey: Record<string, ObjectParamStore> = {};
   private _initialIsUndefined: boolean = false;
 
@@ -97,7 +106,7 @@ export class ObjectStore implements PropertyStore {
             return;
           }
           const param = new ObjectParamStore(key, store, initialValueToSet);
-          this.params.push(param);
+          this._params.push(param);
           this._paramByKey[key] = param;
         });
     }
@@ -111,8 +120,10 @@ export class ObjectStore implements PropertyStore {
     }
     this._initialIsUndefined = this.isUndefined;
 
-    makeObservable(this, {
+    makeObservable<ObjectStore, '_params'>(this, {
       isUndefined: observable,
+      _params: observable.ref,
+      params: computed({ equals: comparer.shallow }),
       value: computed,
       hasErrors: computed,
       isDirty: computed,
@@ -121,7 +132,31 @@ export class ObjectStore implements PropertyStore {
       setUndefined: action,
       setDefault: action,
       setValue: action,
+      removeParamByKey: action,
     });
+  }
+
+  get params(): ObjectParamStore[] {
+    const visibility = new Map<ObjectParamStore, boolean>();
+    const resolve = (param: ObjectParamStore): boolean => {
+      if (visibility.has(param)) {
+        return visibility.get(param);
+      }
+      // Provisional value, so a cycle back to this param resolves as hidden instead of recursing forever
+      visibility.set(param, false);
+      const visible = Object.entries(param.store.schema.options?.dependencies ?? {}).every(([key, choice]) => {
+        if (key === param.key) {
+          return true;
+        }
+        const sibling = this.getParamByKey(key);
+        return !!sibling &&
+          resolve(sibling) &&
+          matchesDependencyChoice(sibling.disabled ? undefined : sibling.store.value, choice);
+      });
+      visibility.set(param, visible);
+      return visible;
+    };
+    return this._params.filter(resolve);
   }
 
   get hasErrors() {
@@ -133,7 +168,7 @@ export class ObjectStore implements PropertyStore {
   }
 
   get hasProperties() {
-    return !!this.params.length;
+    return !!this._params.length;
   }
 
   get value(): JsonObject | undefined {
@@ -157,11 +192,11 @@ export class ObjectStore implements PropertyStore {
 
   setUndefined() {
     this.isUndefined = true;
-    this.params.forEach((param) => param.store.setUndefined());
+    this._params.forEach((param) => param.store.setUndefined());
   }
 
   setDefault() {
-    this.params.forEach((param) => {
+    this._params.forEach((param) => {
       const createProperty = param.store.required ||
         param.store.schema.options?.wb?.show_editor ||
         param.store.schema.defaultProperties?.includes(param.key);
@@ -193,14 +228,14 @@ export class ObjectStore implements PropertyStore {
   }
 
   commit() {
-    this.params.forEach((param) => {
+    this._params.forEach((param) => {
       param.store.commit();
     });
     this._initialIsUndefined = this.isUndefined;
   }
 
   reset() {
-    this.params.forEach((param) => {
+    this._params.forEach((param) => {
       param.store.reset();
     });
     this.isUndefined = this._initialIsUndefined;
@@ -216,7 +251,7 @@ export class ObjectStore implements PropertyStore {
     const param = this._paramByKey[key];
     if (param) {
       delete this._paramByKey[key];
-      this.params = this.params.filter((p) => p !== param);
+      this._params = this._params.filter((p) => p !== param);
     }
   }
 }
