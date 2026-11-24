@@ -343,6 +343,14 @@
     padding: 0 12px 12px;
 }
 
+.configurator-devicesDialog .configurator-cardBody > .configurator-channel {
+    margin-left: 21px;
+
+    > :not(.configurator-channelHead) {
+        padding-left: 21px;
+    }
+}
+
 .configurator-wbName {
     flex: 1;
     min-width: 0;
