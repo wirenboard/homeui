@@ -9,10 +9,11 @@ export const homeRedirect: MiddlewareFunction = async () => {
   const dashboard = defaultDashboardId ? dashboards.get(defaultDashboardId) : undefined;
 
   if (dashboard) {
+    const encodedId = encodeURIComponent(defaultDashboardId);
     throw redirect(
       dashboard.isSvg
-        ? `/dashboards/svg/view/${defaultDashboardId}`
-        : `/dashboards/${defaultDashboardId}`,
+        ? `/dashboards/svg/view/${encodedId}`
+        : `/dashboards/${encodedId}`,
     );
   }
 
