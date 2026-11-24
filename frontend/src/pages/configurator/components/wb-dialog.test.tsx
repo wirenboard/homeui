@@ -187,4 +187,22 @@ describe('WbDialog setup step', () => {
       ['Channel 1 · —', '/devices/wb-mdm3_7/controls/Channel 1'],
     ]);
   });
+
+  it('checks and clears all the rows of one device or of every device of the model at once', () => {
+    show({ 'wb-mrps6_12': ['K1'], 'wb-mrps6_13': ['K1'] });
+    openModel('WB-MRPS6');
+    const allBox = () => screen.getByRole('checkbox', { name: 'configurator.labels.wb-check-all' }) as HTMLInputElement;
+    const deviceBoxes = () =>
+      screen.getAllByRole('checkbox', { name: 'configurator.labels.wb-check-device' }) as HTMLInputElement[];
+
+    fireEvent.click(allBox());
+    expect(createButton().disabled).toBe(true);
+    expect(deviceBoxes().map((box) => box.checked)).toEqual([false, false]);
+
+    fireEvent.click(deviceBoxes()[1]);
+    expect([allBox().checked, allBox().indeterminate]).toEqual([false, true]);
+    create();
+
+    expect(configuratorStore.devices.map((device) => device.rows[0].bind)).toEqual([{ on_off: 'wb-mrps6_13/K1' }]);
+  });
 });

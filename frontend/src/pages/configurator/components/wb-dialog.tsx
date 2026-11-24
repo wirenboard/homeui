@@ -130,6 +130,22 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
     onClose();
   };
 
+  // Флажок над набором строк: отмечены все, часть или ни одной.
+  const groupBox = (keys: string[], label: string, title?: string) => {
+    const checked = keys.filter((key) => !skipped.includes(key)).length;
+    return (
+      <Checkbox
+        checked={checked === keys.length}
+        indeterminate={!!checked && checked < keys.length}
+        title={title}
+        ariaLabel={label}
+        onChange={() => setSkipped(checked === keys.length
+          ? Array.from(new Set([...skipped, ...keys]))
+          : skipped.filter((key) => !keys.includes(key)))}
+      />
+    );
+  };
+
   const icons = (rowTypes: string[]) => Array.from(new Set(rowTypes)).map((type) => {
     const Icon = TYPE_ICONS[type];
     return <Icon key={type} className="configurator-typeIcon" />;
@@ -146,10 +162,23 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
       {model ? (
         <div className="configurator-addNew configurator-wbSections">
           <p>{t('configurator.labels.wb-step-hint')}</p>
+          {opened.length > 1 && groupBox(
+            opened.flatMap(({ units }) => units.map(({ key }) => key)),
+            t('configurator.labels.wb-check-all'),
+            t('configurator.labels.wb-check-all'),
+          )}
           {opened.map(({ id, units, skipped: curtains }) => (
-            <section key={id}>
-              <h3 className="configurator-sectionTitle">{deviceTitle(id)}</h3>
-              <ul className="configurator-channels">
+            <section key={id} className="configurator-card">
+              <div className="configurator-channelHead configurator-cardHead">
+                <span className="configurator-channelTitle">
+                  {opened.length > 1 && groupBox(
+                    units.map(({ key }) => key),
+                    t('configurator.labels.wb-check-device', { ...UNESCAPED, title: deviceTitle(id) }),
+                  )}
+                  <h3 className="configurator-sectionTitle configurator-wbDeviceTitle">{deviceTitle(id)}</h3>
+                </span>
+              </div>
+              <ul className="configurator-channels configurator-cardBody">
                 {units.map((unit) => (
                   <li key={unit.key} className="configurator-channel">
                     <div className="configurator-channelHead">
@@ -192,7 +221,7 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
                 ))}
               </ul>
               {!!curtains && (
-                <p className="configurator-adapterNote">
+                <p className="configurator-adapterNote configurator-wbCurtains">
                   {t('configurator.labels.wb-curtains', { count: curtains })}
                 </p>
               )}
@@ -222,17 +251,11 @@ export const WbDialog = observer(({ isOpened, onClose, onAdded }: WbDialogProps)
                 </li>
               );
             })}
-            {absent.map(({ title, types: rowTypes, count }) => (
+            {absent.map(({ title, types: rowTypes }) => (
               <li key={title} className="configurator-wbModel configurator-wbModelAbsent">
-                <span className="configurator-wbModelIcons" aria-hidden="true">
-                  {icons(rowTypes)}
-                  {count > 1 && `× ${count}`}
-                </span>
+                <span className="configurator-wbModelIcons" aria-hidden="true">{icons(rowTypes)}</span>
                 <span className="configurator-listTitle">{title}</span>
-                <span className="sr-only">
-                  {rowTypes.map(typeName).join(', ')}
-                  {count > 1 && ` × ${count}`}
-                </span>
+                <span className="sr-only">{rowTypes.map(typeName).join(', ')}</span>
               </li>
             ))}
           </ul>
