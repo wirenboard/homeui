@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MoreIcon from '@/assets/icons/more.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
-import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
+import { Popup } from '@/components/popup';
 import { Tag } from '@/components/tag';
 import { Tree, type TreeItem } from '@/components/tree';
 import { configuratorStore, stable, type Device } from '@/stores/configurator';
@@ -18,6 +18,7 @@ export const DeviceList = observer(({
 }: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [isMenuOpen, setMenuOpen] = useState(false);
   const { devices, selection, savedModel, isOverview } = configuratorStore;
   const saved = new Map(savedModel.devices.map((device) => [device.id, stable(device)]));
   const needle = query.trim().toLowerCase();
@@ -30,6 +31,11 @@ export const DeviceList = observer(({
 
   const groups = Array.from(new Set(shown.map((device) => device.group.trim())))
     .sort((a, b) => Number(!a) - Number(!b) || a.localeCompare(b));
+
+  const choose = (action: () => void) => {
+    setMenuOpen(false);
+    action();
+  };
 
   const mark = (device: Device) => {
     if (!saved.has(device.id)) {
@@ -85,15 +91,35 @@ export const DeviceList = observer(({
             aria-haspopup="dialog"
             onClick={onAddEmpty}
           />
-          <Button
-            size="small"
-            variant="secondary"
-            icon={<MoreIcon />}
-            aria-label={t('configurator.buttons.from-controller')}
-            title={t('configurator.buttons.from-controller')}
-            aria-haspopup="dialog"
-            onClick={onAdd}
-          />
+          <Popup
+            isOpen={isMenuOpen}
+            placement="bottom-end"
+            content={(
+              <div className="configurator-menu">
+                <button type="button" className="configurator-menuItem" onClick={() => choose(onAdd)}>
+                  {t('configurator.labels.devices-title')}
+                </button>
+                {!!devices.length && (
+                  <button
+                    type="button"
+                    className="configurator-menuItem configurator-menuItemDanger"
+                    onClick={() => choose(onClear)}
+                  >
+                    {t('configurator.buttons.clear-all')}
+                  </button>
+                )}
+              </div>
+            )}
+            onOpenChange={setMenuOpen}
+          >
+            <Button
+              size="small"
+              variant="secondary"
+              icon={<MoreIcon />}
+              aria-label={t('configurator.buttons.more-actions')}
+              title={t('configurator.buttons.more-actions')}
+            />
+          </Popup>
         </div>
       )}
     >
@@ -125,19 +151,6 @@ export const DeviceList = observer(({
         <p className="configurator-empty">
           {devices.length ? t('configurator.labels.nothing-found') : t('configurator.labels.no-devices')}
         </p>
-      )}
-
-      {!!devices.length && (
-        <div className="configurator-actions">
-          <Button
-            size="small"
-            variant="danger"
-            icon={<TrashIcon />}
-            label={t('configurator.buttons.clear-all')}
-            aria-haspopup="dialog"
-            onClick={onClear}
-          />
-        </div>
       )}
     </Card>
   );

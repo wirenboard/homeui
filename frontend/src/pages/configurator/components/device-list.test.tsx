@@ -5,7 +5,6 @@ import { fireEvent, render, screen } from '@/test/render';
 import { DeviceList } from './device-list';
 
 vi.mock('@/assets/icons/plus.svg', () => ({ default: () => null }));
-vi.mock('@/assets/icons/trash.svg', () => ({ default: () => null }));
 
 const show = (groups: string[]) => {
   runInAction(() => {
@@ -45,15 +44,28 @@ describe('DeviceList', () => {
     expect(sections()).toEqual([[null, ['Устройство 0', 'Устройство 1']]]);
   });
 
-  it('adds a device by type with the main button and from the controller with the other one', () => {
+  it('adds a device by type with the main button, from the controller and removes all from the more menu', async () => {
     const onAdd = vi.fn();
     const onAddEmpty = vi.fn();
-    render(<DeviceList onAdd={onAdd} onAddEmpty={onAddEmpty} onClear={vi.fn()} onSelect={vi.fn()} />);
+    const onClear = vi.fn();
+    runInAction(() => {
+      configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: '', matter: true, rows: [] }];
+    });
+    // Popup рисует меню в портал .floating из разметки приложения.
+    document.body.insertAdjacentHTML('beforeend', '<div class="floating"></div>');
+    render(<DeviceList onAdd={onAdd} onAddEmpty={onAddEmpty} onClear={onClear} onSelect={vi.fn()} />);
+    const choose = async (item: string) => {
+      fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.more-actions' }));
+      fireEvent.click(await screen.findByRole('button', { name: item }));
+    };
 
     fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.add' }));
-    expect([onAddEmpty.mock.calls.length, onAdd.mock.calls.length]).toEqual([1, 0]);
-    fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.from-controller' }));
-    expect([onAddEmpty.mock.calls.length, onAdd.mock.calls.length]).toEqual([1, 1]);
+    expect([onAddEmpty, onAdd, onClear].map((fn) => fn.mock.calls.length)).toEqual([1, 0, 0]);
+    await choose('configurator.labels.devices-title');
+    expect([onAddEmpty, onAdd, onClear].map((fn) => fn.mock.calls.length)).toEqual([1, 1, 0]);
+    expect(screen.queryByRole('button', { name: 'configurator.buttons.clear-all' })).toBeNull();
+    await choose('configurator.buttons.clear-all');
+    expect([onAddEmpty, onAdd, onClear].map((fn) => fn.mock.calls.length)).toEqual([1, 1, 1]);
   });
 
   it('selects a device by a click in the tree and ignores a click on a group', () => {

@@ -61,12 +61,12 @@
     display: flex;
     flex-shrink: 0;
 
-    .button:first-child {
+    > .button {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
 
-    .button:last-child {
+    .popup-trigger .button {
         padding: 4px 6px;
         border-left-width: 0;
         border-top-left-radius: 0;
@@ -76,6 +76,37 @@
             min-width: 44px;
         }
     }
+}
+
+.configurator-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 220px;
+    margin: -4px -6px;
+}
+
+.configurator-menuItem {
+    all: unset;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--light-gray-color);
+    }
+
+    &:focus-visible {
+        box-shadow: var(--input-active-shadow);
+    }
+}
+
+.configurator-menuItemDanger {
+    color: var(--danger-color);
 }
 
 .configurator-listActions {
@@ -627,13 +658,6 @@
     }
 }
 
-
-.configurator-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: var(--content-gap);
-}
 
 .configurator-fileInput {
     display: none;
