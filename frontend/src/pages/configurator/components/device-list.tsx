@@ -1,29 +1,23 @@
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import MoreIcon from '@/assets/icons/more.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
-import { Popup } from '@/components/popup';
 import { Tag } from '@/components/tag';
 import { Tree, type TreeItem } from '@/components/tree';
 import { configuratorStore, stable, type Device } from '@/stores/configurator';
-import type { AddWay, DeviceListProps } from '../types';
+import type { DeviceListProps } from '../types';
 import { hasLostBinding } from '../utils';
 
 export const DeviceList = observer(({
-  onAdd, onAddEmpty, onAddWb, onClear, onSelect,
+  onAdd, onAddEmpty, onClear, onSelect,
 }: DeviceListProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [isMenuOpened, setIsMenuOpened] = useState(false);
-  const ways: AddWay[] = [
-    { id: 'manual', onPick: onAddEmpty },
-    { id: 'from-device', onPick: onAdd },
-    { id: 'from-wb', onPick: onAddWb },
-  ];
   const { devices, selection, savedModel, isOverview } = configuratorStore;
   const saved = new Map(savedModel.devices.map((device) => [device.id, stable(device)]));
   const needle = query.trim().toLowerCase();
@@ -83,40 +77,24 @@ export const DeviceList = observer(({
       heading={t('configurator.labels.devices')}
       variant="secondary"
       indicator={(
-        <Popup
-          isOpen={isMenuOpened}
-          placement="bottom-end"
-          className="configurator-addMenu"
-          content={(
-            <ul className="configurator-addMenuItems" role="menu">
-              {ways.map(({ id, onPick }) => (
-                <li key={id} role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="configurator-addMenuItem"
-                    onClick={() => {
-                      setIsMenuOpened(false);
-                      onPick();
-                    }}
-                  >
-                    <span className="configurator-listTitle">{t(`configurator.labels.add-${id}`)}</span>
-                    <span>{t(`configurator.labels.add-${id}-text`)}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          onOpenChange={setIsMenuOpened}
-        >
+        <div className="configurator-splitButton">
           <Button
             size="small"
             icon={<PlusIcon />}
             label={t('configurator.buttons.add')}
-            aria-haspopup="menu"
-            aria-expanded={isMenuOpened}
+            aria-haspopup="dialog"
+            onClick={onAddEmpty}
           />
-        </Popup>
+          <Button
+            size="small"
+            variant="secondary"
+            icon={<MoreIcon />}
+            aria-label={t('configurator.buttons.from-controller')}
+            title={t('configurator.buttons.from-controller')}
+            aria-haspopup="dialog"
+            onClick={onAdd}
+          />
+        </div>
       )}
     >
       <Input

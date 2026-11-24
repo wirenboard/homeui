@@ -15,9 +15,9 @@ import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { AddDialog } from './components/add-dialog';
 import { DeviceList } from './components/device-list';
 import { DevicePanel } from './components/device-panel';
+import { DevicesDialog } from './components/devices-dialog';
 import { NewDevicesAlert } from './components/new-devices-alert';
 import { Overview } from './components/overview';
-import { WbDialog } from './components/wb-dialog';
 import type { ImportFile, PageStatus } from './types';
 import { liveControls, UNESCAPED } from './utils';
 import './styles.css';
@@ -31,7 +31,7 @@ const ConfiguratorPage = observer(() => {
   const [addDeviceId, setAddDeviceId] = useState<string | null>(null);
   const [addTarget, setAddTarget] = useState<Device | null>(null);
   const [isAddEmpty, setIsAddEmpty] = useState(false);
-  const [isWbOpened, setIsWbOpened] = useState(false);
+  const [isDevicesOpened, setIsDevicesOpened] = useState(false);
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
@@ -77,6 +77,11 @@ const ConfiguratorPage = observer(() => {
     setAddTarget(target);
     setIsAddEmpty(isEmpty);
     setIsAddOpened(true);
+  };
+
+  const openDevices = () => {
+    configuratorStore.loadSerialDevices();
+    setIsDevicesOpened(true);
   };
 
   const save = async () => {
@@ -211,17 +216,13 @@ const ConfiguratorPage = observer(() => {
         </div>
       )}
 
-      {!isPanelMode && <NewDevicesAlert onConfigure={() => openAdd(null)} />}
+      {!isPanelMode && <NewDevicesAlert onConfigure={openDevices} />}
 
       <div ref={layoutRef} className="configurator-layout">
         {!isPanelMode && (
           <DeviceList
-            onAdd={() => openAdd(null)}
+            onAdd={openDevices}
             onAddEmpty={() => openAdd(null, null, true)}
-            onAddWb={() => {
-              configuratorStore.loadSerialDevices();
-              setIsWbOpened(true);
-            }}
             onClear={() => setIsClearOpened(true)}
             onSelect={() => setIsPanelShown(true)}
           />
@@ -262,10 +263,14 @@ const ConfiguratorPage = observer(() => {
         onClose={() => setIsAddOpened(false)}
       />
 
-      <WbDialog
-        isOpened={isWbOpened}
+      <DevicesDialog
+        isOpened={isDevicesOpened}
         onAdded={() => setIsPanelShown(true)}
-        onClose={() => setIsWbOpened(false)}
+        onClose={() => setIsDevicesOpened(false)}
+        onCompose={() => {
+          setIsDevicesOpened(false);
+          openAdd(null);
+        }}
       />
 
       <Confirm

@@ -1,4 +1,4 @@
-import type { Device, NewDeviceRow } from '@/stores/configurator';
+import type { Device, NewDeviceRow, RoleId } from '@/stores/configurator';
 
 export interface PageStatus {
   variant: 'success' | 'danger' | 'info';
@@ -20,16 +20,9 @@ export interface TypeTilesProps {
   onPick: (_typeId: string) => void;
 }
 
-// Способ добавления устройства в меню «Добавить».
-export interface AddWay {
-  id: 'manual' | 'from-device' | 'from-wb';
-  onPick: () => void;
-}
-
 export interface DeviceListProps {
   onAdd: () => void;
   onAddEmpty: () => void;
-  onAddWb: () => void;
   onClear: () => void;
   onSelect: () => void;
 }
@@ -88,24 +81,29 @@ export interface WbUnit {
   name: string;
   label: string;
   rows: NewDeviceRow[];
-  // каналы контроллера, из которых собирается устройство
-  controls: WbControl[];
   // типы, между которыми можно выбрать; пусто — выбора нет
   choices: string[];
   suggest?: string;
 }
 
-export interface WbControl {
+export interface DevicesDialogProps {
+  isOpened: boolean;
+  onClose: () => void;
+  onAdded: () => void;
+  // переход к сборке устройства из каналов разных устройств
+  onCompose: () => void;
+}
+
+// Канал, привязанный к роли будущего устройства.
+export interface BoundChannel {
+  role: RoleId;
   name: string;
   value: string;
   topic: string;
 }
 
-export interface WbDialogProps {
-  isOpened: boolean;
-  onClose: () => void;
-  onAdded: () => void;
-}
+// Подмена каналов строки: роль → ключ канала, null — роль очищена.
+export type RoleBinds = Partial<Record<RoleId, string | null>>;
 
 // Столбец обзора, по которому идёт сортировка; адаптер — по его id.
 export type OverviewColumn = 'name' | 'group' | 'channels' | `adapter:${string}`;

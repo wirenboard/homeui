@@ -13,7 +13,7 @@ const show = (groups: string[]) => {
       id: `d${index}`, name: `Устройство ${index}`, group, matter: true, rows: [],
     }));
   });
-  render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onAddWb={vi.fn()} onClear={vi.fn()} onSelect={vi.fn()} />);
+  render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onClear={vi.fn()} onSelect={vi.fn()} />);
 };
 
 // Ветки дерева верхнего уровня: заголовок группы (null у плоского списка) и устройства в ней.
@@ -26,14 +26,6 @@ const sections = () => {
     node.querySelector('.configurator-treeGroup').textContent,
     Array.from(node.querySelectorAll('.configurator-listTitle')).map((title) => title.textContent),
   ]);
-};
-
-// Меню рисуется в общий контейнер всплывающих блоков приложения.
-const openMenu = () => {
-  if (!document.querySelector('.floating')) {
-    document.body.appendChild(Object.assign(document.createElement('div'), { className: 'floating' }));
-  }
-  fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.add' }));
 };
 
 describe('DeviceList', () => {
@@ -53,19 +45,15 @@ describe('DeviceList', () => {
     expect(sections()).toEqual([[null, ['Устройство 0', 'Устройство 1']]]);
   });
 
-  it('offers three ways to add a device in a menu, each closes the menu and starts its own way', () => {
-    const ways = [vi.fn(), vi.fn(), vi.fn()];
-    render(
-      <DeviceList onAddEmpty={ways[0]} onAdd={ways[1]} onAddWb={ways[2]} onClear={vi.fn()} onSelect={vi.fn()} />,
-    );
+  it('adds a device by type with the main button and from the controller with the other one', () => {
+    const onAdd = vi.fn();
+    const onAddEmpty = vi.fn();
+    render(<DeviceList onAdd={onAdd} onAddEmpty={onAddEmpty} onClear={vi.fn()} onSelect={vi.fn()} />);
 
-    ways.forEach((way, index) => {
-      openMenu();
-      fireEvent.click(screen.getAllByRole('menuitem')[index]);
-
-      expect(way).toHaveBeenCalledTimes(1);
-      expect(screen.queryByRole('menu')).toBeNull();
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.add' }));
+    expect([onAddEmpty.mock.calls.length, onAdd.mock.calls.length]).toEqual([1, 0]);
+    fireEvent.click(screen.getByRole('button', { name: 'configurator.buttons.from-controller' }));
+    expect([onAddEmpty.mock.calls.length, onAdd.mock.calls.length]).toEqual([1, 1]);
   });
 
   it('selects a device by a click in the tree and ignores a click on a group', () => {
@@ -73,7 +61,7 @@ describe('DeviceList', () => {
     runInAction(() => {
       configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: 'Кухня', matter: true, rows: [] }];
     });
-    render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onAddWb={vi.fn()} onClear={vi.fn()} onSelect={onSelect} />);
+    render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onClear={vi.fn()} onSelect={onSelect} />);
 
     fireEvent.click(screen.getByText('Кухня'));
     expect(onSelect).not.toHaveBeenCalled();

@@ -57,6 +57,27 @@
     font-weight: 600;
 }
 
+.configurator-splitButton {
+    display: flex;
+    flex-shrink: 0;
+
+    .button:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .button:last-child {
+        padding: 4px 6px;
+        border-left-width: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+
+        @media (--max-mobile-width) {
+            min-width: 44px;
+        }
+    }
+}
+
 .configurator-listActions {
     display: flex;
     flex-shrink: 0;
@@ -111,40 +132,6 @@
     flex-direction: column;
     min-width: 0;
     overflow-wrap: anywhere;
-}
-
-.configurator-addMenu {
-    padding: 4px;
-}
-
-.configurator-addMenuItems {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    max-width: 320px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.configurator-addMenuItem {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
-    padding: 8px;
-    text-align: left;
-    color: var(--text-color);
-    background: transparent;
-    border: 0;
-    border-radius: var(--input-border-radius);
-    cursor: pointer;
-
-    &:hover:not(:disabled),
-    &:focus-visible {
-        background: var(--background-accent-color);
-    }
-
 }
 
 .configurator-addAll {
@@ -212,6 +199,102 @@
     gap: var(--content-gap);
 }
 
+.configurator-wbFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.configurator-modelChip {
+    gap: 6px;
+}
+
+.configurator-modelCount {
+    min-width: 20px;
+    padding: 0 6px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+    color: var(--text-color);
+    background: var(--border-color);
+    border-radius: 10px;
+
+    .button-primary & {
+        color: var(--primary-color);
+        background: var(--button-text-color);
+    }
+}
+
+.configurator-wbKind {
+    min-width: 200px;
+
+    @media (--max-mobile-width) {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+.configurator-wbCompose {
+    align-self: flex-start;
+}
+
+.configurator-wbHint {
+    @media (--max-mobile-width) {
+        display: none;
+    }
+}
+
+.configurator-devicesDialog {
+    @media (--max-mobile-width) {
+        display: flex;
+        flex-direction: column;
+        height: calc(100dvh - 32px);
+
+        .dialog-content {
+            flex: 1;
+            max-height: none;
+        }
+    }
+}
+
+.configurator-wbOptions {
+    display: flex;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.configurator-wbGroup {
+    margin-top: 8px;
+}
+
+.configurator-wbControls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+
+    p {
+        margin: 0;
+    }
+}
+
+.configurator-wbBinds {
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-wbRoles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--background-accent-color);
+    border-radius: var(--container-border-radius);
+}
+
 .configurator-wbDeviceTitle {
     margin: 0;
 }
@@ -229,57 +312,9 @@
     padding: 0 12px 12px;
 }
 
-.configurator-wbTags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.configurator-wbModels {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.configurator-wbModel {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 100%;
-    height: 100%;
-    padding: 8px 12px;
-    text-align: left;
-    color: var(--text-color);
-    background: transparent;
-    border: 1px solid var(--light-gray-color);
-    border-radius: var(--container-border-radius);
-}
-
-.configurator-wbModelFound {
-    border: 2px solid var(--primary-color);
-    cursor: pointer;
-}
-
-.configurator-wbModelAbsent {
-    opacity: 0.6;
-}
-
 .configurator-wbName {
     flex: 1;
     min-width: 0;
-}
-
-.configurator-wbCount {
-    min-width: 22px;
-    margin-left: auto;
-    padding: 0 6px;
-    color: var(--button-text-color);
-    text-align: center;
-    background: var(--primary-color);
-    border-radius: 11px;
 }
 
 .configurator-wbModelIcons {
