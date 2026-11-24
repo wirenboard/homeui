@@ -47,6 +47,15 @@ describe('homeRedirect', () => {
     expect(redirect).toHaveBeenCalledWith('/dashboards');
   });
 
+  test('encodes a non-ASCII default dashboard ID so the redirect Location header stays valid', async () => {
+    dashboardsStoreMock.defaultDashboardId = 'мой дашборд';
+    dashboardsStoreMock.dashboards.set('мой дашборд', { isSvg: false });
+
+    await expect(homeRedirect({} as any, vi.fn() as any)).rejects.toEqual({
+      __redirect: '/dashboards/%D0%BC%D0%BE%D0%B9%20%D0%B4%D0%B0%D1%88%D0%B1%D0%BE%D1%80%D0%B4',
+    });
+  });
+
   test('redirects to /dashboards when default ID is set but not found', async () => {
     dashboardsStoreMock.defaultDashboardId = 'deleted';
 
