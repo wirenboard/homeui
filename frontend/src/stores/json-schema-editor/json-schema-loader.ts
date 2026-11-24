@@ -164,6 +164,12 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
   if (Array.isArray(source.enum_titles)) {
     dest.enum_titles = source.enum_titles;
   }
+  if (isObject(source.dependencies) && !Array.isArray(source.dependencies)) {
+    // Object choices are not supported, such a key is dropped and doesn't constrain
+    dest.dependencies = Object.fromEntries(
+      Object.entries(source.dependencies).filter(([, choice]) => Array.isArray(choice) || typeof choice !== 'object'),
+    );
+  }
 };
 
 const sanitizeBooleanSchema = (schema: JsonSchema): JsonSchema => {

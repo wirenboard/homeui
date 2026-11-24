@@ -21,12 +21,6 @@
     gap: 6px;
 }
 
-.logsFilters-info {
-    width: 18px;
-    height: 18px;
-    color: var(--text-color);
-}
-
 .logsFilters-liveUpdate {
     display: flex;
     align-items: center;

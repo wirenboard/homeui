@@ -1,0 +1,25 @@
+.infoIconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--gray-color);
+}
+
+.infoIconButton:hover {
+    color: var(--link-color);
+    cursor: pointer;
+    transition: color 200ms;
+}
+
+.infoIconButton:focus {
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+}
+
+.infoIconButton-icon {
+    width: 20px;
+    height: 20px;
+}
