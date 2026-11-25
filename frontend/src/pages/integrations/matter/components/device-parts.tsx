@@ -29,7 +29,7 @@ export const DeviceName = ({ device, onOpen }: DeviceNameProps) => {
       >
         {device.name}
       </button>
-      <span className="matter-rowLine">{device.area ? `${type} · ${device.area}` : type}</span>
+      <span className="matter-rowLine">{device.group ? `${type} · ${device.group}` : type}</span>
     </>
   );
 };

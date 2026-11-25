@@ -7,7 +7,7 @@ const LAMP = {
   name: 'Kitchen lamp',
   type: 'light',
   module: 'wb-led_150',
-  area: 'Kitchen',
+  group: 'Kitchen',
   roles: ['on_off', 'brightness', 'color_temperature'],
   exposed: true,
   reason_code: null,
@@ -85,7 +85,7 @@ describe('DeviceDetails', () => {
   });
 
   it('says a word for what is not there, rather than dropping the row', () => {
-    show({ area: null, matter: { type: 'Light', power: null, endpoint: null } });
+    show({ group: null, matter: { type: 'Light', power: null, endpoint: null } });
 
     expect(factIn('given', 'matter.labels.fact-matter-group')).toBe('matter.labels.none');
     expect(factIn('given', 'matter.labels.fact-power')).toBe('matter.labels.unknown');

@@ -73,7 +73,7 @@ export const DeviceDetails = ({ device, fabrics, onOpen }: DeviceDetailsProps) =
               [label('matter-name'), device.name],
               [
                 label('matter-group'),
-                device.area ? t('matter.labels.group-as-room', { group: device.area }) : t('matter.labels.none'),
+                device.group ? t('matter.labels.group-as-room', { group: device.group }) : t('matter.labels.none'),
               ],
               [label('power'), matter.power ? t(`matter.labels.power-${matter.power}`) : unknown],
               [label('endpoint'), matter.endpoint ?? unknown],

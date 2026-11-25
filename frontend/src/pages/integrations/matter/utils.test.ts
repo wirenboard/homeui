@@ -23,7 +23,7 @@ describe('configuratorSelection', () => {
     name: 'Kitchen light',
     type: 'switch',
     module: 'wb-mr6c_21',
-    area: null,
+    group: null,
     roles: ['on_off'],
     exposed: true,
     reason_code: null,

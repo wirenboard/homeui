@@ -261,7 +261,8 @@ export interface MatterDevice {
   // The card of the configurator this device was made from: a WB device id, or the name
   // of a device composed by hand. Null in a config written by hand.
   module: string | null;
-  area: string | null;
+  // What the operator put the device into: `group` of the config. Matter is told it as a room.
+  group: string | null;
   roles: string[];
   // Whether the device became a Matter endpoint, and why not: the code is what this page
   // puts into words, the sentence is the detail of the service, in English like its
