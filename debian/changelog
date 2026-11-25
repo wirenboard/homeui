@@ -4,6 +4,12 @@ wb-mqtt-homeui (2.291.0) stable; urgency=medium
 
  -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 24 Nov 2026 16:06:12 +0300
 
+wb-mqtt-homeui (2.290.4) stable; urgency=medium
+
+  * Remove nexus registry
+
+ -- Victor Zharikov <victor.zharikov@wirenboard.com>  Tue, 24 Nov 2026 16:00:00 +0300
+
 wb-mqtt-homeui (2.290.3) stable; urgency=medium
 
   * backend: reduce memory usage
