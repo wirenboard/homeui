@@ -15,7 +15,6 @@ const FREE_TEXT: [string, string, string][] = [
   ['labels', 'config-error', 'error'],
   ['labels', 'network-error', 'reason'],
   ['labels', 'status-quiet', 'ago'],
-  ['labels', 'fabric-label-instead', 'label'],
   ['labels', 'unpair-where', 'label'],
   ['labels', 'open-device', 'name'],
   ['labels', 'apps-no', 'names'],

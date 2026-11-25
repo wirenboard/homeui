@@ -41,7 +41,13 @@ const ONLINE_FABRIC = {
   vendor_id: 4660,
   online: true,
   label: { source: 'admin', text: 'Yandex' },
-  status: { word: 'online' },
+  overview: {
+    link: { status: 'ok', word: 'online' },
+    devices: {
+      status: 'ok', kind: 'all', followed: 2, of: 2,
+    },
+    commands: { status: 'off', last_at: null },
+  },
 };
 
 const devicesOf = (list: unknown[]) => ({

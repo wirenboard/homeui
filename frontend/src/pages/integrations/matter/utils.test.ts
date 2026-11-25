@@ -1,7 +1,7 @@
 import { type TFunction } from 'i18next';
 import type { MatterDevice, MatterFabric } from '@/stores/matter';
 import {
-  configuratorSelection, fabricDisplayLabel, fabricLabelNote, groupManualCode, timeLeft, vendorHex,
+  configuratorSelection, fabricDisplayLabel, groupManualCode, replacedLabelText, timeLeft, vendorHex,
 } from './utils';
 
 describe('groupManualCode', () => {
@@ -102,12 +102,12 @@ describe('the label of a fabric in words', () => {
     expect(fabricDisplayLabel(fabric({}), t)).toBe('matter.labels.fabric-unlabelled');
   });
 
-  it('notes what a label typed here replaced, that there is no label at all, and nothing otherwise', () => {
-    const local = { source: 'local', text: 'Hall', replaced: { source: 'vendor', text: 'Yandex' } } as const;
+  it('says what a label typed here replaced: the label of the app, or that there was none', () => {
+    const over = (replaced: unknown) => fabric({ label: { source: 'local', text: 'Hall', replaced } as any });
 
-    expect(fabricLabelNote(fabric({ label: local }), t)).toBe('matter.labels.fabric-label-instead');
-    expect(fabricLabelNote(fabric({ label: { source: 'none', text: null } }), t))
-      .toBe('matter.labels.fabric-no-label');
-    expect(fabricLabelNote(fabric({ label: { source: 'admin', text: 'Home' } }), t)).toBeNull();
+    expect(replacedLabelText(over({ source: 'admin', text: 'Home' }), t)).toBe('Home');
+    expect(replacedLabelText(over({ source: 'none', text: null }), t)).toBe('matter.labels.none');
+    // Nothing was typed here, so nothing was replaced.
+    expect(replacedLabelText(fabric({ label: { source: 'admin', text: 'Home' } }), t)).toBeNull();
   });
 });

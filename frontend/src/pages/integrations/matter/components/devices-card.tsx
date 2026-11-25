@@ -10,9 +10,7 @@ import { useOpened } from '../hooks';
 import type { DevicesCardProps } from '../types';
 import { DetailsToggle } from './details';
 import { DeviceDetails } from './device-details';
-import {
-  DeviceApps, DeviceChannels, DeviceCounts, DeviceName,
-} from './device-parts';
+import { DeviceApps, DeviceChannels, DeviceName } from './device-parts';
 
 /**
  * The devices of the config and what became of each in Matter: what of it is passed, and
@@ -66,15 +64,15 @@ export const DevicesCard = ({ devices, onOpen, fabrics = [] }: DevicesCardProps)
   return (
     <Card className="matter-card matter-devices" heading={t('matter.labels.devices')}>
       {devices.list.length === 0 && <p className="matter-empty">{t('matter.labels.devices-empty')}</p>}
-      {/* A bridge older than this page does not count. */}
-      {devices.list.length > 0 && devices.outcomes && <DeviceCounts outcomes={devices.outcomes} />}
       {devices.list.length > 0 && isMobile && deviceRows}
       {devices.list.length > 0 && !isMobile && (
         <Table isFullWidth>
           <TableRow isHeading>
             <TableCell width="26%">{t('matter.labels.column-name')}</TableCell>
-            <TableCell>{t('matter.labels.column-passed')}</TableCell>
-            {hasApps && <TableCell width="26%">{t('matter.labels.column-apps')}</TableCell>}
+            <TableCell className="matter-linesCell">{t('matter.labels.column-passed')}</TableCell>
+            {hasApps && (
+              <TableCell className="matter-linesCell" width="26%">{t('matter.labels.column-apps')}</TableCell>
+            )}
             <TableCell>
               <span className="matter-srOnly">{t('matter.labels.column-actions')}</span>
             </TableCell>
@@ -83,9 +81,13 @@ export const DevicesCard = ({ devices, onOpen, fabrics = [] }: DevicesCardProps)
           {devices.list.flatMap((device) => [
             <TableRow key={device.did} className={classNames({ 'matter-rowOff': !device.exposed })}>
               <TableCell verticalAlign="top">{nameOf(device)}</TableCell>
-              <TableCell verticalAlign="top"><DeviceChannels device={device} /></TableCell>
+              <TableCell className="matter-linesCell" verticalAlign="top">
+                <DeviceChannels device={device} />
+              </TableCell>
               {hasApps && (
-                <TableCell verticalAlign="top"><DeviceApps device={device} fabrics={fabrics} /></TableCell>
+                <TableCell className="matter-linesCell" verticalAlign="top">
+                  <DeviceApps device={device} fabrics={fabrics} />
+                </TableCell>
               )}
               <TableCell verticalAlign="top">{toggleOf(device)}</TableCell>
             </TableRow>,

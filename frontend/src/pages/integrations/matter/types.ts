@@ -1,11 +1,24 @@
 import type { ReactNode } from 'react';
 import type {
-  MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterOutcome, MatterPairing, MatterSettings,
+  MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterFabricDevice, MatterOutcome, MatterPairing,
+  MatterSettings,
 } from '@/stores/matter';
 
-export interface MarkProps {
-  // The three of the bridge, and an app that cannot be asked.
-  status: MatterOutcome | 'unknown';
+export interface StatusLineProps {
+  // How the line came out: a problem carries the sign, one with nothing to say is grey.
+  status: MatterOutcome;
+  children: ReactNode;
+}
+
+export interface NamedLineProps {
+  status: MatterOutcome;
+  name: string;
+  // The first line of a block goes without its name.
+  isFirst?: boolean;
+  // Said after the name and a dash, in place of a value.
+  reason?: string;
+  // The value, where there is no reason.
+  children?: ReactNode;
 }
 
 export interface DetailsProps {
@@ -28,8 +41,8 @@ export interface DetailsSectionProps {
 }
 
 export interface DetailsFactsProps {
-  // A label and what stands beside it. The label of a channel or of an app carries its sign.
-  rows: ReadonlyArray<readonly [ReactNode, ReactNode]>;
+  // A name, what stands beside it, and - where the row is a check - how it came out.
+  rows: ReadonlyArray<readonly [ReactNode, ReactNode, MatterOutcome?]>;
 }
 
 export interface FabricDetailsProps {
@@ -47,11 +60,25 @@ export enum FabricMenuAction {
 }
 
 export interface FabricMenuProps {
-  // Shown as the heading of the menu: an overflow menu opens away from its row, and
-  // without it there is nothing saying which fabric the two actions will hit.
+  // Said to a screen reader by the button that opens the menu.
   label: string;
-  fabric: MatterFabric;
   onChoose: (_action: FabricMenuAction) => void;
+}
+
+export interface FabricProps {
+  fabric: MatterFabric;
+}
+
+export interface FabricLinesProps extends FabricProps {
+  // The clock of the controller, in milliseconds.
+  now: number;
+}
+
+export interface FabricControllerProps {
+  controller: MatterFabricDevice;
+  // When the fabric was paired, for the controller it was paired from.
+  pairedAt?: number;
+  now: number;
 }
 
 export interface FabricsCardProps {
@@ -93,10 +120,6 @@ export interface DevicesCardProps {
   onOpen: (_device: MatterDevice) => void;
   // For the names of the apps that follow a device, or do not.
   fabrics?: MatterFabric[];
-}
-
-export interface DeviceCountsProps {
-  outcomes: Record<MatterOutcome, number>;
 }
 
 export interface DeviceProps {

@@ -9,6 +9,7 @@ import type {
   DetailsFactsProps, DetailsProps, DetailsSectionProps, DetailsToggleProps,
 } from '../types';
 import { detailsText } from '../utils';
+import { StatusLine } from './status-line';
 
 /** The button of a row that opens its details and closes them. */
 export const DetailsToggle = ({ isOpened, label, onToggle }: DetailsToggleProps) => (
@@ -30,17 +31,25 @@ export const Section = ({ title, children }: DetailsSectionProps) => (
   </section>
 );
 
-export const Facts = ({ rows }: DetailsFactsProps) => (
-  <dl className="matter-facts">
-    {rows.map(([name, value], order) => (
-      // With its place: two commands of one second carry the same label.
-      <div className="matter-fact" key={`${String(name)}-${order}`}>
-        <dt>{name}</dt>
-        <dd>{value}</dd>
-      </div>
-    ))}
-  </dl>
-);
+/**
+ * Facts as a list: a name and what stands beside it. A row may also say how it came out;
+ * where any row of the list does, every name keeps the place of a sign - so the names
+ * stay in one column, and the one that is a problem carries its triangle.
+ */
+export const Facts = ({ rows }: DetailsFactsProps) => {
+  const hasSigns = rows.some(([, , status]) => status);
+  return (
+    <dl className="matter-facts">
+      {rows.map(([name, value, status], order) => (
+        // With its place: two commands of one second carry the same label.
+        <div className="matter-fact" key={`${String(name)}-${order}`}>
+          <dt>{hasSigns ? <StatusLine status={status ?? 'ok'}>{name}</StatusLine> : name}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+};
 
 /**
  * The details of a row, of a fabric or of a device alike: sections of facts, and in the

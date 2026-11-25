@@ -3,13 +3,12 @@ import type { Selection } from '@/stores/configurator';
 import type {
   MatterAnswer, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome,
 } from '@/stores/matter';
-import type { MarkProps } from './types';
 
-/** The three outcomes in the order the page says them: from what is well to what is not there. */
-export const OUTCOMES: MatterOutcome[] = ['ok', 'error', 'off'];
-
-/** The sign of what an app answered: an app that cannot be asked has a sign of its own. */
-export const MARK_OF_ANSWER: Record<MatterAnswer, MarkProps['status']> = { yes: 'ok', no: 'error', unknown: 'unknown' };
+/**
+ * How the answer of an app about a device is drawn: one that did not take it is a
+ * problem, one that cannot be asked now has nothing to say.
+ */
+export const STATUS_OF_ANSWER: Record<MatterAnswer, MatterOutcome> = { yes: 'ok', no: 'error', unknown: 'off' };
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service
@@ -63,13 +62,24 @@ export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => (
   labelText(fabric.label ?? NO_LABEL, fabric, t)
 );
 
-/** What stands beside the label: what a label typed here replaced, or that there is none at all. */
-export const fabricLabelNote = (fabric: MatterFabric, t: TFunction) => {
+/**
+ * Whose a fabric is, for the line under its name: the official name of its vendor, and
+ * its number only where the bridge has no name for it. Always the vendor, also under a
+ * fabric that is named by its vendor: the name above may be a word of this page
+ * ("Яндекс"), the line under it is what the vendor is called in the list of the standard.
+ */
+export const fabricVendor = (fabric: MatterFabric) => fabric.vendor_name ?? vendorHex(fabric.vendor_id);
+
+/**
+ * The label the app gave a fabric, where one typed on this controller stands instead of
+ * it; null where none was typed here.
+ */
+export const replacedLabelText = (fabric: MatterFabric, t: TFunction) => {
   const { source, replaced } = fabric.label ?? NO_LABEL;
-  if (source === 'local') {
-    return t('matter.labels.fabric-label-instead', { label: labelText(replaced ?? NO_LABEL, fabric, t) });
+  if (source !== 'local') {
+    return null;
   }
-  return source === 'none' ? t('matter.labels.fabric-no-label') : null;
+  return replaced && replaced.source !== 'none' ? labelText(replaced, fabric, t) : t('matter.labels.none');
 };
 
 /** What an app is called, by the index of its fabric; a bare number for one the page was not told of. */

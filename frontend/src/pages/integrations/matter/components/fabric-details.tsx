@@ -1,14 +1,12 @@
-import { format, formatDistance } from 'date-fns';
-import { enUS, ru } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
-import type { MatterCommand, MatterFabricDevice } from '@/stores/matter';
+import type { MatterCommand } from '@/stores/matter';
+import { useTimes } from '../hooks';
 import type { DetailsFactsProps, FabricDetailsProps } from '../types';
-import { fabricDisplayLabel, roleSaysKey, vendorHex } from '../utils';
+import { fabricDisplayLabel, replacedLabelText, vendorHex } from '../utils';
 import { Details, Facts, Section } from './details';
-
-// More names than this in one cell push everything below them off the screen.
-const MISSING_SHOWN = 3;
+import { FabricController } from './fabric-controller';
+import { StatusLine } from './status-line';
 
 // The verdicts with nothing to advise in the section of the status: all is well, or the
 // advice is about what one controller follows and stands with that controller.
@@ -17,27 +15,22 @@ const NO_STATUS_ADVICE = ['online', 'partly'];
 /**
  * What the bridge knows of one fabric, under its row: first the short facts of the fabric
  * as a whole - the pairing, the commands, the status - and then its controllers, which
- * are the long part. Every controller shows the same rows in the same order, so two of
- * them are compared by reading down; what is not known is said in a word, not left out.
+ * are the long part (FabricController).
  *
- * Everything here is worked out by the bridge and only put into words.
+ * A problem the row marked is marked here again, with the same sign, at the fact that
+ * says it. Everything is worked out by the bridge and only put into words.
  */
 export const FabricDetails = ({
   fabric, now, isChecking, hasCheckFailed, onCheck,
 }: FabricDetailsProps) => {
-  const { t, i18n } = useTranslation();
-  const isRussian = i18n.language === 'ru';
-  const ago = (at: number) => formatDistance(at, now, { locale: isRussian ? ru : enUS, addSuffix: true });
-  const day = (at: number) => format(at, isRussian ? 'dd.MM.yyyy' : 'dd/MM/yyyy');
-  const minute = (at: number) => format(at, isRussian ? 'dd.MM.yyyy, HH:mm' : 'dd/MM/yyyy, HH:mm');
-  const second = (at: number) => format(at, isRussian ? 'dd.MM.yyyy, HH:mm:ss' : 'dd/MM/yyyy, HH:mm:ss');
+  const { t } = useTranslation();
+  const { ago, day, second } = useTimes(now);
   const label = (name: string) => t(`matter.labels.fact-${name}`);
-  const unknown = t('matter.labels.unknown');
-  const none = t('matter.labels.none');
   const deviceName = (name: string | undefined, did: number) => name ?? `#${did}`;
 
   const controllers = fabric.devices ?? [];
   const { link, commands } = fabric;
+  const hasLinkTrouble = fabric.overview?.link.status === 'error';
 
   const vendor = fabric.vendor_name
     ? `${fabric.vendor_name} (${vendorHex(fabric.vendor_id)})`
@@ -87,60 +80,7 @@ export const FabricDetails = ({
     ]);
   };
 
-  const roleTitle = ({ role, role_name: roleName, name }: MatterFabricDevice) => {
-    if (!role || !roleName) {
-      return name ?? t('matter.labels.device-nameless');
-    }
-    const isDated = Number.isFinite(fabric.paired_at);
-    return (
-      <>
-        <span className="matter-detailsRole">{t(`matter.labels.role-${roleName.replace(/_/g, '-')}`)}</span>
-        {` - ${t(`matter.labels.${roleSaysKey(role, isDated)}`, isDated ? { date: minute(fabric.paired_at) } : {})}`}
-      </>
-    );
-  };
-
-  const missing = (names: string[]) => {
-    const shown = names.slice(0, MISSING_SHOWN).join(', ');
-    return (
-      <span className="matter-detailsMissing">
-        {names.length > MISSING_SHOWN
-          ? t('matter.labels.missing-more', { names: shown, count: names.length - MISSING_SHOWN })
-          : shown}
-      </span>
-    );
-  };
-
   const reply = (answer?: string) => t(`matter.labels.reply-${answer ?? 'unknown'}`);
-
-  const revision = (number?: number | null) => (Number.isFinite(number)
-    ? t('matter.labels.revision', { revision: number })
-    : unknown);
-
-  // The same rows for every controller, in the same order.
-  const controllerRows = (controller: MatterFabricDevice): DetailsFactsProps['rows'] => {
-    const { matter, watching } = controller;
-    // A controller with no session follows nothing; a bridge that does not count says nothing.
-    const follows = {
-      all: t('matter.labels.watching-all', { count: watching?.of }),
-      some: t('matter.labels.watching-some', { count: watching?.dids.length, of: watching?.of }),
-      none,
-    }[watching ? watching.kind : 'none'] ?? unknown;
-    return [
-      [label('device-name'), controller.name ?? t('matter.labels.device-nameless')],
-      [label('device-mac'), controller.mac ?? unknown],
-      [label('device-address'), controller.address ?? unknown],
-      [label('subscriptions'), controller.subscriptions > 0 ? controller.subscriptions : none],
-      [label('watching'), follows],
-      ...(watching?.kind === 'some'
-        ? [[label('not-watching'), missing(watching.missing_names ?? [])] as const]
-        : []),
-      [label('heard'), Number.isFinite(controller.heard_at) ? ago(controller.heard_at) : unknown],
-      [label('matter'), matter ? matter.version ?? t('matter.labels.specification-old') : unknown],
-      [label('data-model'), revision(matter?.data_model_revision)],
-      [label('interaction-model'), revision(matter?.interaction_model_revision)],
-    ];
-  };
 
   return (
     <Details title={fabricDisplayLabel(fabric, t)}>
@@ -148,6 +88,8 @@ export const FabricDetails = ({
         <Facts
           rows={[
             [label('vendor'), vendor],
+            // The label of the app, where one typed on this controller stands instead of it.
+            ...(replacedLabelText(fabric, t) ? [[label('app-label'), replacedLabelText(fabric, t)] as const] : []),
             [label('paired-via'), pairedVia()],
             ...(fabric.certificate ? [[label('certificate'), certificate()] as const] : []),
           ]}
@@ -180,7 +122,11 @@ export const FabricDetails = ({
             ]]}
           />
           {!NO_STATUS_ADVICE.includes(link.code) && (
-            <span className="matter-detailsAdvice">{t(`matter.labels.link-advice-${link.code}`)}</span>
+            <span className="matter-detailsAdvice">
+              {hasLinkTrouble
+                ? <StatusLine status="error">{t(`matter.labels.link-advice-${link.code}`)}</StatusLine>
+                : t(`matter.labels.link-advice-${link.code}`)}
+            </span>
           )}
           <div className="matter-detailsCheck" data-nocopy>
             <Button
@@ -219,13 +165,12 @@ export const FabricDetails = ({
             {t(controllers.length === 0 ? 'matter.labels.controllers-none' : 'matter.labels.controllers-about')}
           </span>
           {controllers.map((controller, order) => (
-            <div className="matter-detailsDevice" key={`${controller.address}-${controller.mac}-${order}`}>
-              <h5 className="matter-detailsDeviceTitle">{roleTitle(controller)}</h5>
-              <Facts rows={controllerRows(controller)} />
-              {controller.watching?.kind === 'some' && (
-                <span className="matter-detailsAdvice">{t('matter.labels.link-advice-partly')}</span>
-              )}
-            </div>
+            <FabricController
+              key={`${controller.address}-${controller.mac}-${order}`}
+              controller={controller}
+              pairedAt={fabric.paired_at}
+              now={now}
+            />
           ))}
         </Section>
       )}

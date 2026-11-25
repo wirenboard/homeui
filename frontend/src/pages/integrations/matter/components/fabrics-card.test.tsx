@@ -70,36 +70,40 @@ describe('FabricsCard', () => {
     expect(screen.getByText('matter.labels.paired-unknown')).toBeInTheDocument();
   });
 
-  it('says the status in the word the bridge gave, and "away" for a bridge that gives none', () => {
-    const WORDS = ['online', 'quiet', 'away', 'partly', 'left', 'removed', 'forgot', 'offline'] as const;
-    for (const word of WORDS) {
-      const { unmount } = render(
-        <FabricsCard fabrics={[fabric({ status: { word, since: 1_700_000_000_000 } })]} onAction={vi.fn()} />,
-      );
-      expect(screen.getByText(`matter.labels.status-${word}`), word).toBeInTheDocument();
-      unmount();
-    }
-
+  it('has a column for the fabric, for when it was paired and for its status, and one for the buttons', () => {
     render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
-    expect(screen.getByText('matter.labels.status-away')).toBeInTheDocument();
+
+    expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual([
+      'matter.labels.column-fabric', 'matter.labels.column-paired', 'matter.labels.column-status',
+      'matter.labels.column-actions',
+    ]);
   });
 
-  it('marks an unlabelled fabric beside the number, not inside the label', () => {
-    // Folded into the label in the same weight, the note read as part of the label - the
-    // row said "Fabric no. 15 (no label set)" as if that were what it is called.
+  it('says the status of a fabric in the three lines the bridge gave it, and whose it is under its name', () => {
+    // What each line says and how it is drawn: fabric-parts.test.tsx.
+    const overview = {
+      link: { status: 'ok', word: 'online' },
+      devices: {
+        status: 'error', kind: 'some', followed: 7, of: 9,
+      },
+      commands: { status: 'off', last_at: null },
+    } as const;
+    render(<FabricsCard fabrics={[fabric({ overview, vendor_name: 'Yandex' })]} onAction={vi.fn()} />);
+
+    expect(screen.getByText('Yandex')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.status-online')).toBeInTheDocument();
+    expect(screen.getByText(/matter\.labels\.follows-some/)).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.commands-never')).toBeInTheDocument();
+  });
+
+  it('names a fabric with no label by its number, with its vendor under it like under any other', () => {
     render(<FabricsCard fabrics={[fabric({ label: { source: 'none', text: null } })]} onAction={vi.fn()} />);
 
     expect(screen.getByText('matter.labels.fabric-unlabelled')).toBeInTheDocument();
-    expect(screen.getByText('matter.labels.fabric-no-label')).toBeInTheDocument();
+    expect(screen.getByText('0x132F')).toBeInTheDocument();
   });
 
-  it('says nothing of the sort about a fabric that carries a label of its own', () => {
-    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
-
-    expect(screen.queryByText('matter.labels.fabric-no-label')).not.toBeInTheDocument();
-  });
-
-  it('marks a label set on this controller with what it replaced', () => {
+  it('says what a label typed on this controller replaced in the details, not in the row', () => {
     // A label typed here exists nowhere else, so an operator comparing this page with the
     // app's own screen has to be able to see which of the two names is ours - and what
     // clearing it would bring back.
@@ -109,8 +113,11 @@ describe('FabricsCard', () => {
     render(<FabricsCard fabrics={[fabric({ label })]} onAction={vi.fn()} />);
 
     expect(screen.getByText('Hall phone')).toBeInTheDocument();
-    expect(screen.getByText('matter.labels.fabric-label-instead')).toBeInTheDocument();
-    expect(screen.queryByText('matter.labels.fabric-no-label')).not.toBeInTheDocument();
+    expect(screen.queryByText('Home Assistant')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'matter.buttons.fabric-details' }));
+    expect(screen.getByText('matter.labels.fact-app-label').closest('.matter-fact').querySelector('dd').textContent)
+      .toBe('Home Assistant');
   });
 
   it('keeps unpairing behind the menu, so a stray click cannot reach it', () => {
@@ -122,14 +129,15 @@ describe('FabricsCard', () => {
     expect(screen.queryByText('matter.buttons.unpair')).not.toBeInTheDocument();
   });
 
-  it('names the fabric in the menu and shows the vendor that identifies it', () => {
-    render(<FabricsCard fabrics={[fabric({ adminFabricLabel: '' })]} onAction={vi.fn()} />);
+  it('has two actions in the menu and nothing above them: the row says whose menu it is', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
 
     fireEvent.click(menuButton());
 
-    expect(screen.getByText('matter.labels.fabric-ids')).toBeInTheDocument();
-    expect(screen.getByText('matter.buttons.set-label')).toBeInTheDocument();
-    expect(screen.getByText('matter.buttons.unpair')).toBeInTheDocument();
+    const menu = screen.getByText('matter.buttons.set-label').closest('.matter-fabricMenuContent');
+    expect([...menu.children].map((item) => item.textContent)).toEqual([
+      'matter.buttons.set-label', 'matter.buttons.unpair',
+    ]);
   });
 
   it('reports which fabric and which action were chosen', () => {
@@ -180,7 +188,7 @@ describe('FabricsCard', () => {
 
     // A column heading, and a pointer press: useDismiss watches pointerdown and decides
     // by the event target, so pressing the bare document proves less than pressing
-    // something real. Not the row's own name - the open menu repeats it in its heading.
+    // something real.
     fireEvent.pointerDown(screen.getByText('matter.labels.column-paired'));
 
     expect(screen.queryByText('matter.buttons.set-label')).not.toBeInTheDocument();

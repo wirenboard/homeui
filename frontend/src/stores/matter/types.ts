@@ -99,19 +99,29 @@ export interface MatterLabel {
 
 export type MatterPairedKind = 'dated' | 'before' | 'unknown';
 
-export type MatterStatusWord = 'online' | 'quiet' | 'away' | 'partly' | 'left' | 'removed' | 'forgot' | 'offline';
-
-/** The state of a fabric in one word; `since` goes with 'quiet'. */
-export interface MatterFabricStatus {
-  word: MatterStatusWord;
-  since?: number;
-}
-
 /**
- * Passed, something to fix, not passed and nothing to fix. The bridge says the same three
- * of a channel, of the reason a device is not given, and in its counts.
+ * Passed, something to do, nothing to say. The bridge says the same three of a channel of
+ * a device, of the reason a device is not given, of a line of a fabric, and in its counts.
  */
 export type MatterOutcome = 'ok' | 'error' | 'off';
+
+// The link to a fabric in one word: on the line; silent, or away with no moment known;
+// or the trouble a check of the bridge found.
+export type MatterLinkWord = 'online' | 'quiet' | 'away' | 'left' | 'removed' | 'forgot' | 'offline';
+
+// Which of the devices given to Matter a fabric follows. 'nothing' - the bridge gives none;
+// 'unknown' - the fabric holds no subscription now and cannot be asked.
+export type MatterFollowsKind = 'all' | 'some' | 'none' | 'nothing' | 'unknown';
+
+/** The row of a fabric in three lines, each with how it came out. */
+export interface MatterFabricOverview {
+  // `since` goes with 'quiet': the moment it went silent.
+  link: { status: MatterOutcome; word: MatterLinkWord; since?: number };
+  // It follows `followed` of the `of` devices; both absent for 'nothing' and 'unknown'.
+  devices: { status: MatterOutcome; kind: MatterFollowsKind; followed?: number; of?: number };
+  // Its last command since the bridge started, or null.
+  commands: { status: MatterOutcome; last_at: number | null };
+}
 
 /** One role of a device of the config, and what became of it in Matter. */
 export interface MatterChannel {
@@ -208,7 +218,8 @@ export interface MatterFabric {
   // Everything below is undefined from a bridge older than this page.
   label?: MatterLabel;
   paired_kind?: MatterPairedKind;
-  status?: MatterFabricStatus;
+  // Undefined from a service older than this page.
+  overview?: MatterFabricOverview;
   vendor_name?: string | null;
   paired_via?: MatterPairedVia;
   sessions?: number;
@@ -273,8 +284,6 @@ export interface MatterDevices {
   exposed: number;
   skipped: number;
   config_error: string | null;
-  // How many devices of the list came to what.
-  outcomes?: Record<MatterOutcome, number>;
   list: MatterDevice[];
 }
 

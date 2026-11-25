@@ -4,11 +4,10 @@ import MoreIcon from '@/assets/icons/more.svg';
 import { Button } from '@/components/button';
 import { Popup } from '@/components/popup';
 import { FabricMenuAction, type FabricMenuProps } from '../types';
-import { vendorHex } from '../utils';
 
 /**
- * The two things that can be done to one connected fabric, and the vendor that identifies
- * it when its label does not.
+ * The two things that can be done to one connected fabric, and nothing above them: whose
+ * menu this is, the row it opens from says - its name, and its vendor under the name.
  *
  * Unpairing lives in here rather than beside every row because it cannot be undone from
  * this page: the app keeps the bridge in its own list until somebody deletes it there,
@@ -21,7 +20,7 @@ import { vendorHex } from '../utils';
  * flattened by `.wb-tableCell * { z-index: 1 }` and drawn under the rows below it, and it
  * could not flip away from the bottom edge of the screen either.
  */
-export const FabricMenu = ({ label, fabric, onChoose }: FabricMenuProps) => {
+export const FabricMenu = ({ label, onChoose }: FabricMenuProps) => {
   const { t } = useTranslation();
   const [isOpen, setOpen] = useState(false);
 
@@ -36,18 +35,6 @@ export const FabricMenu = ({ label, fabric, onChoose }: FabricMenuProps) => {
       placement="bottom-end"
       content={(
         <div className="matter-fabricMenuContent">
-          {/* An overflow menu opens away from its row, so without this there is nothing
-              saying which app the two actions below will hit. */}
-          <div className="matter-fabricMenuHead">
-            <span className="matter-fabricMenuLabel">{label}</span>
-            <span className="matter-fabricMenuIds">
-              {t('matter.labels.fabric-ids', {
-                vendor: vendorHex(fabric.vendor_id),
-                index: fabric.index,
-              })}
-            </span>
-          </div>
-
           <button
             type="button"
             className="matter-fabricMenuItem"

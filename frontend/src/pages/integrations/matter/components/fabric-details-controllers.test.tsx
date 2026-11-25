@@ -83,8 +83,13 @@ const sections = () => screen.getAllByRole('heading', { level: 4 }).map((heading
 const sectionOf = (title: string) => screen.getByRole('heading', { level: 4, name: title }).closest('section');
 const controllers = () => Array.from(document.querySelectorAll<HTMLElement>('.matter-detailsDevice'));
 const labelsOf = (block: HTMLElement) => Array.from(block.querySelectorAll('dt')).map((label) => label.textContent);
+// By the row and not by the next element: a name that carries a sign stands one element deeper.
 const valueIn = (block: HTMLElement, label: string) => (
-  within(block).getByText(label).nextElementSibling?.textContent
+  within(block).getByText(label).closest('.matter-fact').querySelector('dd').textContent
+);
+/** Whether the row of a name carries the sign of a problem. */
+const isMarked = (block: HTMLElement, label: string) => (
+  within(block).getByText(label).closest('.matter-fact').querySelector('svg.matter-sign') !== null
 );
 
 const ROWS = [
@@ -224,6 +229,26 @@ describe('FabricDetails, the controllers of a fabric', () => {
     expect(within(quiet).queryByText('matter.labels.link-advice-partly')).not.toBeInTheDocument();
   });
 
+  it('marks the problem of a controller at the facts that say it and at the advice, and nothing else', () => {
+    show({
+      devices: [hub({
+        subscriptions: 3,
+        watching: {
+          all: false, kind: 'some', of: 2, dids: [10], missing: [11], missing_names: ['Hall socket'],
+        },
+      }), phone()],
+    });
+    const [partial, quiet] = controllers();
+
+    expect(isMarked(partial, 'matter.labels.fact-watching')).toBe(true);
+    expect(isMarked(partial, 'matter.labels.fact-not-watching')).toBe(true);
+    expect(isMarked(partial, 'matter.labels.fact-subscriptions')).toBe(false);
+    expect(within(partial).getByText('matter.labels.link-advice-partly').closest('.matter-line')
+      .querySelector('svg.matter-sign')).not.toBeNull();
+    // A controller with no problem has no sign and no place kept for one.
+    expect(quiet.querySelector('.matter-sign')).toBeNull();
+  });
+
   it('names the first three of many devices a controller does not follow and counts the rest', () => {
     const names = [20, 21, 22, 23, 24].map((did) => `Relay ${did}`);
     show({
@@ -344,10 +369,9 @@ describe('FabricDetails, the status of a fabric', () => {
     });
 
     expect(statusSection().getByText('matter.labels.link-advice-forgot')).toBeInTheDocument();
-    expect(statusSection().getByText('matter.labels.fact-in-network').nextElementSibling?.textContent)
-      .toBe('matter.labels.reply-yes');
-    expect(statusSection().getByText('matter.labels.fact-answers-bridge').nextElementSibling?.textContent)
-      .toBe('matter.labels.reply-no');
+    const status = sectionOf('matter.labels.section-status');
+    expect(valueIn(status, 'matter.labels.fact-in-network')).toBe('matter.labels.reply-yes');
+    expect(valueIn(status, 'matter.labels.fact-answers-bridge')).toBe('matter.labels.reply-no');
   });
 
   it('says so when a check did not go through', () => {

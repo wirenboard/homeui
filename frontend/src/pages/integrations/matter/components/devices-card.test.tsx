@@ -41,22 +41,27 @@ const AQARA = { index: 2, vendor_id: 4447, label: { source: 'admin', text: 'Aqar
 
 const TOGGLE = { name: 'matter.buttons.device-details' };
 
-const show = (
-  list: unknown[],
-  { fabrics = [] as unknown[], outcomes = undefined as unknown, onOpen = vi.fn() } = {},
-) => render(
+const show = (list: unknown[], { fabrics = [] as unknown[], onOpen = vi.fn() } = {}) => render(
   <DevicesCard
     devices={{
-      configured: list.length, exposed: list.length, skipped: 0, config_error: null, outcomes, list,
+      configured: list.length, exposed: list.length, skipped: 0, config_error: null, list,
     } as any}
     fabrics={fabrics as any}
     onOpen={onOpen}
   />,
 );
 
-/** The sign that stands on the line of a text: 'ok', 'error', 'off' or 'unknown'. */
-const markOf = (text: string | RegExp) => screen.getByText(text).closest('.matter-line')
-  .querySelector('.matter-mark').getAttribute('class').replace('matter-mark matter-mark-', '');
+/** How the line of a text is drawn: 'problem' with the triangle, 'quiet' in grey, 'plain' otherwise. */
+const drawn = (text: string | RegExp) => {
+  const line = screen.getByText(text).closest('.matter-line');
+  if (line.querySelector('svg.matter-sign')) {
+    return 'problem';
+  }
+  return line.classList.contains('matter-lineQuiet') ? 'quiet' : 'plain';
+};
+
+/** The words a status of the bridge is drawn by. */
+const HOW = { ok: 'plain', error: 'problem', off: 'quiet' } as const;
 
 describe('DevicesCard on a wide screen', () => {
   it('puts the type and the group under the name, and spends no column on either', () => {
@@ -79,21 +84,10 @@ describe('DevicesCard on a wide screen', () => {
   });
 
   it('says the config has no devices instead of drawing an empty table', () => {
-    show([], { outcomes: { ok: 0, error: 0, off: 0 } });
+    show([]);
 
     expect(screen.getByText('matter.labels.devices-empty')).toBeInTheDocument();
     expect(document.querySelector('table')).toBeNull();
-    expect(screen.queryByText('matter.labels.count-ok')).not.toBeInTheDocument();
-  });
-
-  it('shows the counts the bridge made, each with its sign, and none for a bridge that does not count', () => {
-    const { unmount } = show([SOCKET, NOT_GIVEN], { outcomes: { ok: 1, error: 0, off: 1 } });
-    expect(['ok', 'error', 'off'].map((outcome) => markOf(`matter.labels.count-${outcome}`)))
-      .toEqual(['ok', 'error', 'off']);
-    unmount();
-
-    show([SOCKET, NOT_GIVEN]);
-    expect(screen.queryByText('matter.labels.count-ok')).not.toBeInTheDocument();
   });
 
   it('opens a row into the details of its device and of no other, and closes it again', () => {
@@ -144,10 +138,10 @@ describe('DevicesCard, what a row says is passed', () => {
     })]);
 
     // The tag of a switch is a word of the page; a reading is the text of the bridge.
-    expect(markOf('matter.labels.state-on')).toBe('ok');
+    expect(drawn('matter.labels.state-on')).toBe('plain');
     expect(screen.queryByText('configurator.roles.on_off')).not.toBeInTheDocument();
     expect(screen.getByText('configurator.roles.brightness')).toBeInTheDocument();
-    expect(markOf('50 %')).toBe('ok');
+    expect(drawn('50 %')).toBe('plain');
   });
 
   it('shows the reading of a sensor as it is, and draws the one the bridge marked as a colour', () => {
@@ -166,23 +160,23 @@ describe('DevicesCard, what a row says is passed', () => {
     ['error', 'silent'],
     ['error', 'unit_unknown'],
     ['off', 'role_unused'],
-  ])('names a channel that is not passed and says why, under the sign of "%s" for %s', (status, code) => {
+  ] as const)('names a channel that is not passed and says why, drawn as "%s" for %s', (status, code) => {
     // The first channel too: with no reading there is nothing else to tell it by.
     show([lamp({ role: 'color_temperature', control: 'lamp/cct', status, code })]);
 
     expect(screen.getByText('configurator.roles.color_temperature')).toBeInTheDocument();
-    expect(markOf(new RegExp(`matter\\.labels\\.reason-${code}`))).toBe(status);
+    expect(drawn(new RegExp(`matter\\.labels\\.reason-${code}`))).toBe(HOW[status]);
   });
 
   it.each([
-    ['off', 'off'],
-    ['error', 'error'],
+    ['off', 'quiet'],
+    ['error', 'problem'],
     // No reason yet: the endpoint of the device is being built this second.
-    [null, 'off'],
-  ])('says a device that is not given in one line, with the sign of its reason "%s"', (status, mark) => {
+    [null, 'quiet'],
+  ])('says a device that is not given in one line, drawn by its reason "%s"', (status, how) => {
     show([{ ...NOT_GIVEN, reason_status: status }]);
 
-    expect(markOf('matter.labels.not-passed')).toBe(mark);
+    expect(drawn('matter.labels.not-passed')).toBe(how);
     // The reason is the translated code, not the English sentence of the service.
     expect(screen.getByText(/matter\.labels\.reason-type_unsupported/)).toBeInTheDocument();
   });
@@ -201,7 +195,7 @@ describe('DevicesCard, what a row says is passed', () => {
     show([{ ...SOCKET, channels: undefined, matter: undefined, followed_by: undefined }], { fabrics: [YANDEX] });
 
     expect(screen.getByText('Kitchen socket')).toBeInTheDocument();
-    expect(document.querySelector('.matter-mark')).toBeNull();
+    expect(document.querySelector('.matter-line')).toBeNull();
   });
 });
 
@@ -214,14 +208,14 @@ describe('DevicesCard, which apps a row says show the device', () => {
   });
 
   it.each([
-    ['all of them in two words', followed('yes', 'yes', 'yes'), 'matter.labels.apps-all', 'ok'],
-    ['the single app by its name', followed('yes', 'yes'), 'Yandex', 'ok'],
-    ['the ones that did not take it', followed('no', 'yes', 'no'), 'matter.labels.apps-no', 'error'],
-    ['the ones that cannot be asked', followed('unknown', 'yes', 'unknown'), 'matter.labels.apps-unknown', 'unknown'],
-  ])('names %s', (_what, device, text, mark) => {
+    ['all of them in two words', followed('yes', 'yes', 'yes'), 'matter.labels.apps-all', 'plain'],
+    ['the single app by its name', followed('yes', 'yes'), 'Yandex', 'plain'],
+    ['the ones that did not take it', followed('no', 'yes', 'no'), 'matter.labels.apps-no', 'problem'],
+    ['the ones that cannot be asked', followed('unknown', 'yes', 'unknown'), 'matter.labels.apps-unknown', 'quiet'],
+  ])('names %s', (_what, device, text, how) => {
     show([device], { fabrics: [YANDEX, AQARA] });
 
-    expect(markOf(text)).toBe(mark);
+    expect(drawn(text)).toBe(how);
   });
 
   it('says nothing of the apps for a device that is not given to any', () => {

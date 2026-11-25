@@ -87,12 +87,7 @@ const NOT_PAIRED = {
     qr_version: 'abcdef12',
   },
   devices: {
-    configured: 2,
-    exposed: 1,
-    skipped: 0,
-    config_error: null,
-    outcomes: { ok: 1, error: 0, off: 1 },
-    list: [WB_DEVICE, OWN_DEVICE],
+    configured: 2, exposed: 1, skipped: 0, config_error: null, list: [WB_DEVICE, OWN_DEVICE],
   },
 };
 
@@ -178,11 +173,10 @@ describe('MatterPage', () => {
     expect(screen.getByText('matter.buttons.open-window')).toBeInTheDocument();
   });
 
-  it('says how many devices came to what, as the bridge counted them', async () => {
+  it('says where the devices are picked, and nothing of skipped ones while there are none', async () => {
     render(<MatterPage />);
 
-    expect(await screen.findByText('matter.labels.count-ok')).toBeInTheDocument();
-    expect(screen.getByText('matter.labels.count-off')).toBeInTheDocument();
+    expect(await screen.findByText(/matter\.labels\.devices-hint/)).toBeInTheDocument();
     expect(screen.queryByText(/matter\.labels\.devices-skipped/)).not.toBeInTheDocument();
   });
 

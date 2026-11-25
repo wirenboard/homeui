@@ -86,8 +86,7 @@
     font-variant-numeric: tabular-nums;
 }
 
-.matter-waiting::before,
-.matter-fabricLink::before {
+.matter-waiting::before {
     content: '';
     display: inline-block;
     width: 8px;
@@ -242,32 +241,16 @@
     height: 44px;
 }
 
-.matter-mark {
+.matter-sign {
     flex: none;
     width: 16px;
     height: 16px;
     margin-top: 2px;
-}
-
-.matter-mark-ok {
-    color: var(--success-color);
-}
-
-.matter-mark-error {
     color: var(--warn-color);
 }
 
-.matter-mark-off {
+.matter-lineQuiet {
     color: var(--gray-color);
-}
-
-.matter-mark-unknown {
-    box-sizing: border-box;
-    width: 12px;
-    height: 12px;
-    margin: 4px 2px 0;
-    border: 1.5px dashed var(--gray-color);
-    border-radius: 50%;
 }
 
 .matter-lines {
@@ -304,11 +287,12 @@
     white-space: nowrap;
 }
 
-.matter-counts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 20px;
-    margin: 0 0 var(--content-gap);
+.matter-card .wb-tableCell.matter-linesCell {
+    padding-left: 28px;
+}
+
+.matter-linesCell .matter-line {
+    margin-left: -22px;
 }
 
 @media (--max-mobile-width) {
@@ -354,27 +338,9 @@
     }
 }
 
-.matter-fabricLabel {
-    font-weight: 600;
-}
-
-.matter-fabricNote {
-    margin-left: 8px;
-    font-size: var(--font-size-small);
-    color: var(--gray-color);
-}
-
 .matter-fabricWhen {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-}
-
-.matter-fabricLink {
-    white-space: nowrap;
-}
-
-.matter-fabricLinkOnline::before {
-    background: var(--success-color);
 }
 
 .matter-fabrics .wb-tableCell:last-of-type,
@@ -389,28 +355,6 @@
     flex-direction: column;
     gap: 2px;
     min-width: 200px;
-}
-
-.matter-fabricMenuHead {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin: -8px -12px 6px;
-    padding: 9px 12px;
-    background-color: var(--background-accent-color);
-    border-bottom: 1px solid var(--border-color);
-    border-radius: var(--input-border-radius) var(--input-border-radius) 0 0;
-}
-
-.matter-fabricMenuLabel {
-    font-size: var(--font-size-small);
-    font-weight: 600;
-}
-
-.matter-fabricMenuIds {
-    font-size: var(--font-size-small);
-    color: var(--gray-color);
-    font-variant-numeric: tabular-nums;
 }
 
 .matter-fabricMenuItem {
@@ -642,7 +586,7 @@
 }
 
 .matter-detailsDevice .matter-facts {
-    grid-template-columns: 186px minmax(0, 1fr);
+    grid-template-columns: 208px minmax(0, 1fr);
 }
 
 .matter-detailsDeviceTitle {
@@ -670,16 +614,6 @@
 
 .matter-detailsMissing {
     font-weight: 600;
-}
-
-.matter-detailsMissing::before {
-    content: "";
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-right: 8px;
-    border-radius: 50%;
-    background: var(--warn-color);
 }
 
 .matter-detailsCheck {

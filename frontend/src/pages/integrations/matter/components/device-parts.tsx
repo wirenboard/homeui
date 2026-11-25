@@ -1,30 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { Tag } from '@/components/tag';
 import type {
-  ChannelProps, DeviceAppsProps, DeviceCountsProps, DeviceNameProps, DeviceProps,
+  ChannelProps, DeviceAppsProps, DeviceNameProps, DeviceProps,
 } from '../types';
 import {
-  appLabel, deviceReason, MARK_OF_ANSWER, OUTCOMES, reasonText,
+  appLabel, deviceReason, reasonText, STATUS_OF_ANSWER,
 } from '../utils';
-import { Mark } from './mark';
+import { NamedLine, StatusLine } from './status-line';
 
 // The readings this page has a word for. Any other is shown as the bridge formatted it.
 const TRANSLATED_READINGS = new Set(['on', 'off']);
-
-/** How many devices came to what, and with that the legend of the three signs. */
-export const DeviceCounts = ({ outcomes }: DeviceCountsProps) => {
-  const { t } = useTranslation();
-  return (
-    <p className="matter-counts">
-      {OUTCOMES.map((outcome) => (
-        <span className="matter-line" key={outcome}>
-          <Mark status={outcome} />
-          {t(`matter.labels.count-${outcome}`, { count: outcomes[outcome] })}
-        </span>
-      ))}
-    </p>
-  );
-};
 
 /**
  * The name of a device, which leads to its card in the configurator, and under it what it
@@ -64,42 +49,35 @@ export const ChannelReading = ({ channel }: ChannelProps) => {
 };
 
 /**
- * What of a device is passed to Matter: every channel with its sign, the reading of one
- * that is passed and the reason of one that is not. A device that is not given at all is
- * one line with its reason.
+ * What of a device is passed to Matter, a line a channel: the reading of one that is
+ * passed, the reason of one that is not. A device that is not given at all is one line
+ * with its reason.
  */
 export const DeviceChannels = ({ device }: DeviceProps) => {
   const { t } = useTranslation();
-  const role = (name: string) => t(`configurator.roles.${name}`, { defaultValue: name });
 
   if (!device.exposed) {
     return (
-      <span className="matter-line">
-        <Mark status={device.reason_status ?? 'off'} />
-        <span>
-          {t('matter.labels.not-passed')}
-          {deviceReason(device, t) && <span className="matter-lineReason">{` — ${deviceReason(device, t)}`}</span>}
-        </span>
-      </span>
+      <NamedLine
+        status={device.reason_status ?? 'off'}
+        name={t('matter.labels.not-passed')}
+        reason={deviceReason(device, t)}
+      />
     );
   }
   return (
     <ul className="matter-lines">
       {(device.channels ?? []).map((channel, place) => (
-        <li className="matter-line" key={channel.role}>
-          <Mark status={channel.status} />
-          {channel.status === 'ok' ? (
-            <span>
-              {/* The first channel is what the device is read by: its name is the type above. */}
-              {place > 0 && <span className="matter-lineName">{role(channel.role)}</span>}
-              <ChannelReading channel={channel} />
-            </span>
-          ) : (
-            <span>
-              <span className={channel.status === 'error' ? 'matter-lineWhat' : undefined}>{role(channel.role)}</span>
-              <span className="matter-lineReason">{` — ${reasonText(channel.code, t)}`}</span>
-            </span>
-          )}
+        <li key={channel.role}>
+          <NamedLine
+            status={channel.status}
+            name={t(`configurator.roles.${channel.role}`, { defaultValue: channel.role })}
+            // The first channel is what the device is read by: its name is the type above.
+            isFirst={place === 0}
+            reason={channel.status === 'ok' ? undefined : reasonText(channel.code, t)}
+          >
+            <ChannelReading channel={channel} />
+          </NamedLine>
         </li>
       ))}
     </ul>
@@ -124,9 +102,10 @@ export const DeviceApps = ({ device, fabrics }: DeviceAppsProps) => {
   const everyApp = followed.of === 1 ? names : t('matter.labels.apps-all', { count: followed.of });
 
   return (
-    <span className="matter-line">
-      <Mark status={MARK_OF_ANSWER[followed.answer]} />
-      <span>{followed.answer === 'yes' ? everyApp : t(`matter.labels.apps-${followed.answer}`, { names })}</span>
-    </span>
+    <StatusLine status={STATUS_OF_ANSWER[followed.answer]}>
+      <span className={followed.answer === 'no' ? 'matter-lineWhat' : undefined}>
+        {followed.answer === 'yes' ? everyApp : t(`matter.labels.apps-${followed.answer}`, { names })}
+      </span>
+    </StatusLine>
   );
 };

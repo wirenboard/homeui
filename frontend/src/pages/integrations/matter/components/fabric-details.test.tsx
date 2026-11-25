@@ -25,7 +25,7 @@ const show = (over: Partial<MatterFabric> = {}) => render(
 /** What stands beside a label in one section of the details. */
 const factIn = (section: string, label: string) => {
   const block = screen.getByRole('heading', { level: 4, name: section }).closest('section');
-  return within(block).getByText(label).nextElementSibling?.textContent;
+  return within(block).getByText(label).closest('.matter-fact').querySelector('dd').textContent;
 };
 const pairing = (label: string) => factIn('matter.labels.section-pairing', label);
 const status = (label: string) => factIn('matter.labels.section-status', label);

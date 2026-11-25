@@ -2,11 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import type { DetailsFactsProps, DeviceDetailsProps } from '../types';
 import {
-  appLabel, deviceReason, MARK_OF_ANSWER, reasonText,
+  appLabel, deviceReason, reasonText, STATUS_OF_ANSWER,
 } from '../utils';
 import { Details, Facts, Section } from './details';
 import { ChannelReading } from './device-parts';
-import { Mark } from './mark';
 
 /**
  * What the bridge knows of one device, under its row: what every app says of it, every
@@ -21,23 +20,21 @@ export const DeviceDetails = ({ device, fabrics, onOpen }: DeviceDetailsProps) =
   const unknown = t('matter.labels.unknown');
   const { matter, followed_by: followed } = device;
 
+  // Each row with how it came out: the app that did not take the device and the channel
+  // that has a problem carry the sign the row of the table marked them with.
   const appRows: DetailsFactsProps['rows'] = (followed?.answers ?? []).map(({ index, answer }) => [
-    <span className="matter-line" key={index}>
-      <Mark status={MARK_OF_ANSWER[answer]} />
-      {appLabel(fabrics, index, t)}
-    </span>,
+    appLabel(fabrics, index, t),
     t(`matter.labels.app-says-${answer}`),
+    STATUS_OF_ANSWER[answer],
   ]);
 
   const channelRows: DetailsFactsProps['rows'] = (device.channels ?? []).map((channel) => [
-    <span className="matter-line" key={channel.role}>
-      <Mark status={channel.status} />
-      {t(`configurator.roles.${channel.role}`, { defaultValue: channel.role })}
-    </span>,
+    t(`configurator.roles.${channel.role}`, { defaultValue: channel.role }),
     <span className="matter-detailsCommand" key={channel.role}>
       {channel.status === 'ok' ? <ChannelReading channel={channel} /> : <span>{reasonText(channel.code, t)}</span>}
       {channel.control && <span className="matter-detailsNote">{channel.control}</span>}
     </span>,
+    channel.status,
   ]);
 
   return (
