@@ -10,6 +10,7 @@ interface BaseInputProps {
   min?: number;
   max?: number;
   step?: number;
+  maxLength?: number;
   autoFocus?: boolean;
   isDisabled?: boolean;
   required?: boolean;

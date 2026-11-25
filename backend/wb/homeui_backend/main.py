@@ -32,7 +32,7 @@ from .dashboards import (
     SeedConfigError,
     detect_board,
 )
-from .db import open_db
+from .db import IncompatibleDbError, open_db
 from .fonts import FontsStore
 from .gates import CUSTOM_MENU_DIR, apply_gates
 from .http_response import (
@@ -53,6 +53,13 @@ from .rate_limiter import RateLimiter
 from .security import SecurityCheckingThread
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
+from .webauthn import (
+    UnknownCredentialError,
+    WebAuthnChallengeStore,
+    WebAuthnService,
+    rp_id_for_host,
+)
+from .webauthn_storage import WebAuthnCredentialsStorage
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
@@ -84,12 +91,14 @@ def check_password(password: str, password_hash: str) -> bool:
 UNKNOWN_LOGIN_PASSWORD_HASH = make_password_hash(secrets.token_hex(16))
 
 
-def make_id_cookie(session: Session) -> cookies.SimpleCookie:
+def make_id_cookie(session: Session, secure: bool = False) -> cookies.SimpleCookie:
     cookie = cookies.SimpleCookie()
     cookie["id"] = session.id
     cookie["id"]["path"] = "/"
     cookie["id"]["httponly"] = True
     cookie["id"]["samesite"] = "Lax"
+    if secure:
+        cookie["id"]["secure"] = True
     expires = session.start_date + DEFAULT_COOKIE_LIFETIME
     cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return cookie
@@ -221,6 +230,8 @@ class WebRequestHandlerContext:  # pylint: disable=too-many-instance-attributes
     security_check_thread: SecurityCheckingThread
     dashboards_store: DashboardsStore
     fonts_store: FontsStore
+    webauthn_credentials_storage: WebAuthnCredentialsStorage
+    webauthn_challenges: WebAuthnChallengeStore
     session: Optional[Session] = None
 
 
@@ -335,6 +346,170 @@ def auth_who_am_i_handler(
     return response_401()
 
 
+def webauthn_request_host(request: BaseHTTPRequestHandler) -> str:
+    """The domain the request itself arrived on (port stripped, lowercased). nginx forwards the
+    original `Host` header on every WebAuthn endpoint."""
+    return (urlparse(f"//{request.headers.get('Host', '')}").hostname or "").rstrip(".")
+
+
+def resolve_webauthn_service(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> Optional[WebAuthnService]:
+    """Builds a WebAuthnService scoped to the request's Host -- None when WebAuthn isn't
+    available for this address."""
+    rp_id = rp_id_for_host(webauthn_request_host(request), context.sn)
+    if rp_id is None:
+        return None
+    return WebAuthnService(rp_id, context.webauthn_credentials_storage, context.webauthn_challenges)
+
+
+def webauthn_config_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    res = {
+        "enabled": rp_id_for_host(webauthn_request_host(request), context.sn) is not None,
+        "has_credentials": context.webauthn_credentials_storage.has_any_credentials(),
+    }
+    return response_200([["Content-type", "application/json"]], json.dumps(res))
+
+
+def resolve_webauthn_target_user(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext, path_len: int
+) -> tuple[Optional[User], Optional[HttpResponse]]:
+    """The user from /auth/webauthn/users/<id>/...: passkeys are managed by admins only."""
+    if context.session is None:
+        return None, response_401()
+    if context.session.user.type != UserType.ADMIN:
+        return None, response_403()
+    parts = urlparse(request.path).path.split("/")
+    if len(parts) != path_len:
+        return None, response_404()
+    target_user = context.users_storage.get_user_by_id(unquote(parts[4]))
+    if target_user is None:
+        return None, response_404()
+    return target_user, None
+
+
+def webauthn_registration_options_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
+        return response_404()
+    user, error = resolve_webauthn_target_user(request, context, 7)
+    if error is not None:
+        return error
+    return response_200(
+        [["Content-type", "application/json"]],
+        json.dumps(service.begin_registration(user)),
+    )
+
+
+def webauthn_registration_complete_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
+        return response_404()
+    user, error = resolve_webauthn_target_user(request, context, 7)
+    if error is not None:
+        return error
+    form, error = read_json_object_body(request)
+    if error is not None:
+        return error
+    try:
+        credential = service.complete_registration(
+            user,
+            form.get("challenge_id", ""),
+            form.get("name", ""),
+            form.get("response", {}),
+        )
+    except (KeyError, TypeError, ValueError) as e:
+        logging.warning("WebAuthn registration failed for user=%r: %s", user.login, e)
+        return response_400("WebAuthn registration failed")
+    return response_201(
+        [["Content-type", "application/json"]],
+        json.dumps(service.credential_to_dict(credential)),
+    )
+
+
+def webauthn_authentication_options_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
+        return response_404()
+    # No login lookup: the client discovers its own resident credentials for this
+    # rp_id, so this response never depends on (and can't leak) which logins exist.
+    return response_200([["Content-type", "application/json"]], json.dumps(service.begin_authentication()))
+
+
+def webauthn_authentication_complete_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    service = resolve_webauthn_service(request, context)
+    if service is None:
+        return response_404()
+    form, error = read_json_object_body(request)
+    if error is not None:
+        return response_401()
+    try:
+        user_id = service.complete_authentication(form.get("challenge_id", ""), form.get("response", {}))
+        user = context.users_storage.get_user_by_id(user_id)
+        if user is None:
+            return response_401()
+    except UnknownCredentialError as e:
+        # Deleting a passkey here can't remove it from the device, so tell the UI to say so
+        logging.warning("WebAuthn authentication failed: %s", e)
+        return HttpResponse(401, body="unknown-credential")
+    except (KeyError, TypeError, ValueError) as e:
+        logging.warning("WebAuthn authentication failed: %s", e)
+        return response_401()
+
+    logging.info("WebAuthn login successful: user=%r type=%s", user.login, user.type.value)
+    session = context.sessions_storage.add_session(user)
+    res = {"user_type": user.type.value, "user_id": user.user_id}
+    return response_200(
+        headers=[
+            make_set_cookie_header(make_id_cookie(session, secure=True)),
+            ["Content-type", "application/json"],
+        ],
+        body=json.dumps(res),
+    )
+
+
+def webauthn_credentials_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    # Listing/deleting passkeys doesn't need a live ceremony rp_id, so it's not gated on the
+    # current Host (unlike the four endpoints above): it works the same from any address.
+    user, error = resolve_webauthn_target_user(request, context, 6)
+    if error is not None:
+        return error
+    credentials = context.webauthn_credentials_storage.get_credentials_by_user(user.user_id)
+    return response_200(
+        [["Content-type", "application/json"]],
+        json.dumps([WebAuthnService.credential_to_dict(item) for item in credentials]),
+    )
+
+
+def webauthn_delete_credential_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    user, error = resolve_webauthn_target_user(request, context, 7)
+    if error is not None:
+        return error
+    credential_id = unquote(urlparse(request.path).path.split("/")[6])
+    try:
+        deleted = context.webauthn_credentials_storage.delete_credential(
+            user.user_id,
+            WebAuthnService.decode_credential_id(credential_id),
+        )
+    except ValueError:
+        return response_400("Invalid credential id")
+    return response_204() if deleted else response_404()
+
+
 def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     try:
         length = int(request.headers.get("Content-Length", 0))
@@ -430,6 +605,7 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     if user.type == UserType.ADMIN and context.users_storage.count_users_by_type(UserType.ADMIN) == 1:
         return response_400("Can't delete the last admin")
     context.sessions_storage.delete_sessions_by_user(user)
+    context.webauthn_credentials_storage.delete_credentials_by_user(user_id)
     context.users_storage.delete_user(user_id)
     return response_204()
 
@@ -862,6 +1038,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     config: Config
     dashboards_store: DashboardsStore
     fonts_store: FontsStore
+    webauthn_credentials_storage: WebAuthnCredentialsStorage
+    webauthn_challenges: WebAuthnChallengeStore
 
     def process_response(self, response: HttpResponse) -> None:
         if 200 <= response.status < 300 or response.status == 304:
@@ -903,6 +1081,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 self.security_check_thread,
                 self.dashboards_store,
                 self.fonts_store,
+                self.webauthn_credentials_storage,
+                self.webauthn_challenges,
                 session,
             ),
         )
@@ -927,6 +1107,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                     fn=auth_check_handler, rate_per_minute_limit=1000, rate_limit_per_client=True
                 ),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
+                "/auth/webauthn/config": RequestHandler(fn=webauthn_config_handler),
+                "/auth/webauthn/users/*/credentials": RequestHandler(fn=webauthn_credentials_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
@@ -944,6 +1126,22 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": RequestHandler(fn=add_user_handler),
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
+                "/auth/webauthn/users/*/register/options": RequestHandler(
+                    fn=webauthn_registration_options_handler, rate_per_minute_limit=10
+                ),
+                "/auth/webauthn/users/*/register/complete": RequestHandler(
+                    fn=webauthn_registration_complete_handler, rate_per_minute_limit=10
+                ),
+                "/auth/webauthn/login/options": RequestHandler(
+                    fn=webauthn_authentication_options_handler,
+                    rate_per_minute_limit=30,
+                    rate_limit_per_client=True,
+                ),
+                "/auth/webauthn/login/complete": RequestHandler(
+                    fn=webauthn_authentication_complete_handler,
+                    rate_per_minute_limit=30,
+                    rate_limit_per_client=True,
+                ),
                 "/api/https/request_cert": RequestHandler(
                     fn=https_request_cert_handler, rate_per_minute_limit=5
                 ),
@@ -972,6 +1170,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.process_request(
             {
                 "/users/*": RequestHandler(fn=delete_user_handler),
+                "/auth/webauthn/users/*/credentials/*": RequestHandler(fn=webauthn_delete_credential_handler),
                 "/api/dashboards/*": RequestHandler(fn=delete_dashboard_handler),
                 "/api/fonts/*": RequestHandler(fn=delete_font_handler),
             }
@@ -1018,7 +1217,13 @@ def main():
         format="%(levelname)s:%(message)s",
     )
 
-    con = open_db(args.db_file)
+    try:
+        con = open_db(args.db_file)
+    except IncompatibleDbError:
+        # Left by a newer package after a downgrade: restarting won't help, so exit with
+        # a RestartPreventExitStatus code (6, LSB "not configured") instead of restart-looping.
+        logging.exception("Users database is incompatible with this version; refusing to start")
+        raise SystemExit(6) from None
 
     sn = get_sn()
 
@@ -1027,6 +1232,8 @@ def main():
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    WebRequestHandler.webauthn_credentials_storage = WebAuthnCredentialsStorage(con)
+    WebRequestHandler.webauthn_challenges = WebAuthnChallengeStore()
     usable_change_handler = make_certificate_usable_change_handler(sn, WebRequestHandler.config)
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn,

@@ -36,14 +36,9 @@
     padding-right: 36px;
 }
 
-.password-inputLargeDots {
-    font-size: 18px;
-}
-
-@supports (-moz-appearance: none) {
+@supports not (-moz-appearance: none) {
     .password-inputLargeDots {
-        font-size: 8px;
-        letter-spacing: 2px;
+        font-size: 18px;
     }
 }
 

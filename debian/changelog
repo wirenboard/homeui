@@ -1,3 +1,15 @@
+wb-mqtt-homeui (2.291.0) stable; urgency=medium
+
+  * Passkey sign-in on the login page (HTTPS by domain name only)
+  * Settings → Users: manage user passkeys (admins only)
+  * Users and passkeys lists shown as cards on mobile
+  * Fix too small password dots in Firefox
+
+    Co-authored-by: Victor Vedenin <victor.vedenin@wirenboard.com>
+    Co-authored-by: Anton Akinin <anton@akinin.su>
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 25 Nov 2026 12:02:16 +0500
+
 wb-mqtt-homeui (2.290.4) stable; urgency=medium
 
   * Remove nexus registry

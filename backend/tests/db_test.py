@@ -4,7 +4,12 @@ import sqlite3
 import tempfile
 import unittest
 
-from wb.homeui_backend.db import DB_SCHEMA_VERSION, check_db, open_db
+from wb.homeui_backend.db import (
+    DB_SCHEMA_VERSION,
+    IncompatibleDbError,
+    check_db,
+    open_db,
+)
 
 
 class OpenDbTest(unittest.TestCase):
@@ -50,7 +55,7 @@ class OpenDbTest(unittest.TestCase):
                 row[0]
                 for row in con.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
             ],
-            ["sessions", "users"],
+            ["sessions", "users", "webauthn_credentials"],
         )
         with open(db_target, "rb") as f:
             self.assertNotEqual(f.read(), damaged_content)
@@ -136,3 +141,20 @@ class OpenDbTest(unittest.TestCase):
         self.assertFalse(check_db(nul_filled))
         self.assertFalse(check_db(empty))
         self.assertFalse(check_db(os.path.join(self.tmp_dir, "missing.db")))
+
+    def test_refuses_database_of_newer_version(self):
+        """
+        A database left by a newer backend is neither opened nor recreated.
+        """
+        db_file = os.path.join(self.tmp_dir, "users.db")
+        con = sqlite3.connect(db_file)
+        con.execute("CREATE TABLE future_feature (x TEXT)")
+        con.execute(f"PRAGMA user_version = {DB_SCHEMA_VERSION + 1}")
+        con.close()
+
+        with self.assertRaises(IncompatibleDbError):
+            open_db(db_file)
+
+        con = sqlite3.connect(db_file)
+        self.addCleanup(con.close)
+        self.assertEqual(con.execute("PRAGMA user_version").fetchone()[0], DB_SCHEMA_VERSION + 1)
