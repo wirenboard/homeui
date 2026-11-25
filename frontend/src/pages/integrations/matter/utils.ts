@@ -1,9 +1,8 @@
 import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
-import type { MatterDevice, MatterFabric, MatterFabricDevice } from '@/stores/matter';
-import {
-  type DeclaredMatter, FabricLabelSource, LinkState, PairedDateKind, type WatchedDevices, WatchingKind,
-} from './types';
+import type {
+  MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel,
+} from '@/stores/matter';
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service
@@ -33,81 +32,38 @@ export const configuratorSelection = ({ module }: MatterDevice): Selection => (
   module ? { id: `module:${module}` } : null
 );
 
-/**
- * Only the vendor ids seen on a live fabric: there is no list to import, and an app
- * whose vendor is missing falls back to its number. Needed because Yandex leaves the
- * label of a fabric empty - see docs/ecosystems.md of wb-mqtt-matter-bridge, Я3.
- */
-const KNOWN_VENDORS = new Map<number, string>([
-  // 0x132F.
-  [4911, 'yandex'],
-]);
-
-export const vendorKey = (vendorId: number) => KNOWN_VENDORS.get(vendorId) ?? null;
+const NO_LABEL: MatterLabel = { source: 'none', text: null };
 
 /**
- * The vendor of a fabric in words: ours for the one this page translates, else the
- * official name the bridge sends, else null.
+ * A label of a fabric in words. Which source won is the bridge's answer; the page has a
+ * word of its own for a vendor it translates, and says the number of a fabric that offers
+ * nothing - that number has to stay visible, or two unlabelled fabrics are two identical
+ * rows.
  */
-const vendorLabel = ({ vendor_id: vendorId, vendor_name: vendorName }: MatterFabric, t: TFunction) => (
-  vendorKey(vendorId) ? t(`matter.labels.vendor-${vendorKey(vendorId)}`) : (vendorName || null)
-);
-
-/**
- * Which of the four sources the label shown for a fabric comes from.
- *
- * One function instead of several predicates: the order here *is* the rule, and the page
- * needs both the winner's text and which source won - to mark a label chosen on this
- * controller, and to say so when there is no label at all.
- */
-export const fabricLabelSource = (fabric: MatterFabric): FabricLabelSource => {
-  if (fabric.localFabricLabel) {
-    return FabricLabelSource.Local;
-  }
-  if (fabric.adminFabricLabel) {
-    return FabricLabelSource.Admin;
-  }
-  return vendorKey(fabric.vendor_id) || fabric.vendor_name ? FabricLabelSource.Vendor : FabricLabelSource.None;
-};
-
-/**
- * What to show for a fabric, best source first.
- *
- * A label typed here wins, because it is the only one a person on this controller chose.
- * Then the one the fabric gave itself, which Yandex leaves empty. Then a vendor we
- * recognise. A fabric that offers none of the three is shown by its number, and that
- * number has to stay visible: two unlabelled fabrics would be two identical rows, and the
- * operator could not tell which one to remove.
- *
- * Here and not in the page because three places need the same answer - the table, the
- * menu heading and the unpair dialog - and a label that differed between them would read
- * as three different fabrics.
- */
-export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => {
-  switch (fabricLabelSource(fabric)) {
-    case FabricLabelSource.Local:
-      return fabric.localFabricLabel;
-    case FabricLabelSource.Admin:
-      return fabric.adminFabricLabel;
-    case FabricLabelSource.Vendor:
-      return vendorLabel(fabric, t);
-    default:
+export const labelText = ({ source, text }: MatterLabel, fabric: MatterFabric, t: TFunction) => {
+  switch (source) {
+    case 'vendor':
+      return t(`matter.labels.vendor-${fabric.vendor_id}`, { defaultValue: text });
+    case 'none':
       return t('matter.labels.fabric-unlabelled', { index: fabric.index });
+    default:
+      return text;
   }
 };
 
-/**
- * What the label typed here replaced, for the note beside it.
- *
- * The fabric's own label when it had one, and the number it would fall back to when it
- * did not. Showing what it was answers the second half of the question: a mark alone says
- * the label is ours, this says what clearing it would bring back.
- */
-export const replacedFabricLabel = (fabric: MatterFabric, t: TFunction) => (
-  fabric.adminFabricLabel
-  || vendorLabel(fabric, t)
-  || t('matter.labels.fabric-unlabelled', { index: fabric.index })
+/** What a fabric is called everywhere on the page: the table, the menu, the unpair dialog. */
+export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => (
+  labelText(fabric.label ?? NO_LABEL, fabric, t)
 );
+
+/** What stands beside the label: what a label typed here replaced, or that there is none at all. */
+export const fabricLabelNote = (fabric: MatterFabric, t: TFunction) => {
+  const { source, replaced } = fabric.label ?? NO_LABEL;
+  if (source === 'local') {
+    return t('matter.labels.fabric-label-instead', { label: labelText(replaced ?? NO_LABEL, fabric, t) });
+  }
+  return source === 'none' ? t('matter.labels.fabric-no-label') : null;
+};
 
 /**
  * The vendor id the way every Matter document and every log line writes it. Decimal
@@ -115,84 +71,17 @@ export const replacedFabricLabel = (fabric: MatterFabric, t: TFunction) => (
  */
 export const vendorHex = (vendorId: number) => `0x${vendorId.toString(16).toUpperCase().padStart(4, '0')}`;
 
-/**
- * Which of the three things the page may say about when an app paired.
- *
- * `since` is when this controller started keeping dates at all. An app older than that
- * gets Before, not a blank: the bridge genuinely does not know the day, and saying so is
- * better than a gap the reader has to interpret.
- */
-export const pairedDateKind = ({ paired_at: pairedAt }: MatterFabric, since?: number | null): PairedDateKind => {
-  if (Number.isFinite(pairedAt)) {
-    return PairedDateKind.Dated;
-  }
-  return Number.isFinite(since) ? PairedDateKind.Before : PairedDateKind.Unknown;
-};
-
-/**
- * Which of the three things the page may say about the channel to an app.
- *
- * Quiet needs both halves to be true - no channel now, and a moment on record when the
- * last one went - because the bridge writes that moment down only at the break. Every
- * app is Offline for a while after the service restarts, and that is normal.
- */
-export const linkState = ({ online, last_seen: lastSeen }: MatterFabric): LinkState => {
-  if (online) {
-    return LinkState.Online;
-  }
-  return Number.isFinite(lastSeen) ? LinkState.Quiet : LinkState.Offline;
-};
-
-/**
- * The verdicts of the bridge that the row says in their own words. The rest - on the
- * line, or nobody asked yet - read as the row always did.
- */
-const LINK_WORDS = new Set(['partly', 'left', 'removed', 'forgot', 'offline']);
-
-export const linkWord = ({ link }: MatterFabric) => (link && LINK_WORDS.has(link.code) ? link.code : null);
-
-export const deviceNameOf = (devices: MatterDevice[], did: number) => (
-  devices.find((device) => device.did === did)?.name ?? null
-);
-
-/** What the bridge says a fabric follows, against the devices that reached Matter. */
-export const watchedDevices = (
-  { watching, subscriptions }: MatterFabric,
-  devices: MatterDevice[],
-): WatchedDevices => {
-  const of = devices.filter((device) => device.exposed).length;
-  if (!watching || !subscriptions) {
-    return { kind: WatchingKind.None, count: 0, of, missing: [] };
-  }
-  if (watching.missing.length === 0) {
-    return { kind: WatchingKind.All, count: watching.dids.length, of, missing: [] };
-  }
-  return {
-    kind: WatchingKind.Some,
-    count: watching.dids.length,
-    of,
-    missing: watching.missing.map((did) => deviceNameOf(devices, did) ?? `#${did}`),
-  };
-};
-
-/**
- * The Matter the devices of a fabric declared: one entry while they all declared the same,
- * which is the usual case, and one per version when a home has hubs of different ages.
- */
-export const declaredMatter = (devices: MatterFabricDevice[], nameless: string): DeclaredMatter[] => {
-  const declared: DeclaredMatter[] = [];
-  devices.filter(({ matter }) => matter).forEach(({ matter, name }) => {
-    const key = [
-      matter.specification_version, matter.data_model_revision, matter.interaction_model_revision,
-    ].join('-');
-    const same = declared.find((entry) => entry.key === key);
-    if (same) {
-      same.names.push(name ?? nameless);
-    } else {
-      declared.push({ key, matter, names: [name ?? nameless] });
-    }
-  });
-  return declared;
+/** What the role means for this controller, said after its name. A pairing with no date kept has its own wording. */
+export const roleSaysKey = (role: MatterDeviceRole, isDated: boolean) => {
+  const key = {
+    works: 'role-says-works',
+    works_paired: 'role-says-works-paired',
+    paired: 'role-says-paired',
+    paired_alone: 'role-says-paired',
+    silent: 'role-says-silent',
+    idle: 'role-says-idle',
+  }[role];
+  return (role === 'works' || role === 'silent' || role === 'idle' || isDated) ? key : `${key}-undated`;
 };
 
 /**
@@ -204,16 +93,3 @@ export const timeLeft = (closesAt: number, now: number) => {
   const seconds = Math.max(0, Math.round((closesAt - now) / 1000));
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 };
-
-/**
- * A colour the bridge formatted as hex. The page draws a swatch for it, because a person
- * reads a colour by looking at it and not by parsing six digits.
- */
-export const isColour = (part: string) => /^#[0-9A-F]{6}$/.test(part);
-
-/**
- * What the bridge carries beside the state, split the way it joined it. One string with
- * several readings in it - "50 % · #FF0000" - is one string to the service and several
- * things to a person.
- */
-export const detailParts = ({ detail }: MatterDevice) => (detail ?? '').split(' · ').filter(Boolean);

@@ -25,7 +25,9 @@ const CONFIG_ERROR = 'cannot parse /var/lib/wb-converter-ext/devices.yaml: bad i
 const WAITING = {
   version: '1.0.1',
   paired: true,
-  fabrics: [{ index: 1, adminFabricLabel: 'Aqara', vendor_id: 4447 }],
+  fabrics: [{
+    index: 1, adminFabricLabel: 'Aqara', vendor_id: 4447, label: { source: 'admin', text: 'Aqara' },
+  }],
   pairing: null,
   network_error: {
     code: 'config_unread',

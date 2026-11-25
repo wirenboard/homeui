@@ -21,7 +21,9 @@ vi.mock('@/stores/matter/api', async (importOriginal) => ({
 const FINE = {
   version: '1.0.0',
   paired: true,
-  fabrics: [{ index: 1, adminFabricLabel: 'Aqara', vendor_id: 4447 }],
+  fabrics: [{
+    index: 1, adminFabricLabel: 'Aqara', vendor_id: 4447, label: { source: 'admin', text: 'Aqara' },
+  }],
   pairing: null,
   network_error: null,
   broker_error: null,

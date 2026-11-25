@@ -19,6 +19,8 @@ export const SettingsCard = ({
   const { t } = useTranslation();
   const labelId = useId();
   const hintId = useId();
+  const detailsLabelId = useId();
+  const detailsHintId = useId();
 
   return (
     <Card className="matter-card" heading={t('matter.labels.settings')}>
@@ -35,6 +37,22 @@ export const SettingsCard = ({
             ariaLabelledby={labelId}
             ariaDescribedby={hintId}
             onChange={(value) => onChange({ name_in_model: value })}
+          />
+        </div>
+      )}
+      {/* Off unless the bridge says on: one older than the switch says nothing of it. */}
+      {settings && (
+        <div className="matter-setting">
+          <div className="matter-settingText">
+            <span id={detailsLabelId} className="matter-settingLabel">{t('matter.labels.fabric-details')}</span>
+            <p id={detailsHintId} className="matter-settingHint">{t('matter.labels.fabric-details-hint')}</p>
+          </div>
+          <Switch
+            value={Boolean(settings.fabric_details)}
+            isDisabled={isSaving}
+            ariaLabelledby={detailsLabelId}
+            ariaDescribedby={detailsHintId}
+            onChange={(value) => onChange({ fabric_details: value })}
           />
         </div>
       )}

@@ -1,29 +1,7 @@
 import type { ReactNode } from 'react';
 import type {
-  MatterDeclared, MatterDevice, MatterDevices, MatterFabric, MatterPairing, MatterSettings,
+  MatterDevice, MatterDevices, MatterFabric, MatterPairing, MatterSettings,
 } from '@/stores/matter';
-
-export enum WatchingKind {
-  None = 'none',
-  All = 'all',
-  Some = 'some',
-}
-
-/** Which devices of the bridge a fabric follows, counted against the ones Matter has. */
-export interface WatchedDevices {
-  kind: WatchingKind;
-  count: number;
-  of: number;
-  // The names of the devices it does not follow.
-  missing: string[];
-}
-
-/** One Matter the devices of a fabric declared, and which of them did. */
-export interface DeclaredMatter {
-  key: string;
-  matter: MatterDeclared;
-  names: string[];
-}
 
 export interface DetailsSectionProps {
   title: string;
@@ -37,48 +15,11 @@ export interface DetailsFactsProps {
 
 export interface FabricDetailsProps {
   fabric: MatterFabric;
-  // For the names of the devices the bridge refers to by did.
-  devices: MatterDevice[];
   // The clock of the controller, in milliseconds: the times of the bridge are on it.
   now: number;
   isChecking: boolean;
   hasCheckFailed: boolean;
   onCheck: () => void;
-}
-
-/**
- * What the page can honestly say about when an app paired. Three cases and not two: an
- * app paired before this controller started keeping dates has no date of its own, and
- * "before <date>" is true where a blank would read like a defect.
- */
-export enum PairedDateKind {
-  Dated = 'dated',
-  Before = 'before',
-  Unknown = 'unknown',
-}
-
-/**
- * What the page can say about the channel to an app. Quiet is separate from Offline
- * because the bridge only writes the time of a break down, so after a restart of the
- * service every app is Offline with no time to show - which is the usual case, not a
- * fault.
- */
-export enum LinkState {
-  Online = 'online',
-  Quiet = 'quiet',
-  Offline = 'offline',
-}
-
-/**
- * Which of the four sources the label on screen came from. The page marks the first one,
- * because a label chosen here should not look like one the app sent, and names the last
- * one so two unlabelled fabrics can still be told apart.
- */
-export enum FabricLabelSource {
-  Local = 'local',
-  Admin = 'admin',
-  Vendor = 'vendor',
-  None = 'none',
 }
 
 export enum FabricMenuAction {
@@ -100,12 +41,13 @@ export interface FabricsCardProps {
   // of their own. Null or undefined from a service that keeps none.
   fabricsSince?: number | null;
   onAction: (_fabric: MatterFabric, _action: FabricMenuAction) => void;
-  devices?: MatterDevice[];
   now?: number;
   // The fabric whose link is being checked, by index.
   checkingIndex?: number | null;
   hasCheckFailed?: boolean;
   onCheck?: (_fabric: MatterFabric) => void;
+  // Whether a row can be opened into its details: the setting of the page.
+  hasDetails?: boolean;
 }
 
 export interface PairingWindowProps {

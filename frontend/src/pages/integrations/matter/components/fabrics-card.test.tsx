@@ -4,9 +4,13 @@ import { fireEvent, render, screen } from '@/test/render';
 import { FabricMenuAction } from '../types';
 import { FabricsCard } from './fabrics-card';
 
-const fabric = (over: Partial<MatterFabric> = {}): MatterFabric => (
-  { index: 14, adminFabricLabel: 'Home Assistant', vendor_id: 0x132F, ...over }
-);
+const fabric = (over: Partial<MatterFabric> = {}): MatterFabric => ({
+  index: 14,
+  adminFabricLabel: 'Home Assistant',
+  vendor_id: 0x132F,
+  label: { source: 'admin', text: 'Home Assistant' },
+  ...over,
+});
 
 /** The menu button of a row, which carries the only label it has. */
 const menuButton = (index = 0) => screen.getAllByLabelText('matter.buttons.fabric-actions')[index];
@@ -38,13 +42,24 @@ describe('FabricsCard', () => {
   it('shows the pairing date as an absolute date, so rows can be compared', () => {
     // The column beside it is relative and this one is not, on purpose: this is the
     // reference fact, and "3 days ago" cannot be lined up between rows.
-    render(<FabricsCard fabrics={[fabric({ paired_at: Date.UTC(2026, 10, 14, 9, 5) })]} onAction={vi.fn()} />);
+    render(
+      <FabricsCard
+        fabrics={[fabric({ paired_at: Date.UTC(2026, 10, 14, 9, 5), paired_kind: 'dated' })]}
+        onAction={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText(/14\/11\/2026/)).toBeInTheDocument();
   });
 
   it('says "before" for a fabric that was paired before the bridge kept dates', () => {
-    render(<FabricsCard fabrics={[fabric()]} fabricsSince={Date.UTC(2026, 10, 1)} onAction={vi.fn()} />);
+    render(
+      <FabricsCard
+        fabrics={[fabric({ paired_kind: 'before' })]}
+        fabricsSince={Date.UTC(2026, 10, 1)}
+        onAction={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText('matter.labels.paired-before')).toBeInTheDocument();
   });
@@ -55,25 +70,24 @@ describe('FabricsCard', () => {
     expect(screen.getByText('matter.labels.paired-unknown')).toBeInTheDocument();
   });
 
-  it('shows a fabric with no channel as plain offline, with no time invented for it', () => {
-    // The usual case: the moment of a break is only written down when one happens, so
-    // after a restart of the service no fabric has one.
-    render(<FabricsCard fabrics={[fabric({ online: false })]} onAction={vi.fn()} />);
+  it('says the status in the word the bridge gave, and "away" for a bridge that gives none', () => {
+    const WORDS = ['online', 'quiet', 'away', 'partly', 'left', 'removed', 'forgot', 'offline'] as const;
+    for (const word of WORDS) {
+      const { unmount } = render(
+        <FabricsCard fabrics={[fabric({ status: { word, since: 1_700_000_000_000 } })]} onAction={vi.fn()} />,
+      );
+      expect(screen.getByText(`matter.labels.status-${word}`), word).toBeInTheDocument();
+      unmount();
+    }
 
-    expect(screen.getByText('matter.labels.link-offline')).toBeInTheDocument();
-    expect(screen.queryByText('matter.labels.link-quiet')).not.toBeInTheDocument();
-  });
-
-  it('marks a fabric that is on the line, and not by colour alone', () => {
-    render(<FabricsCard fabrics={[fabric({ online: true })]} onAction={vi.fn()} />);
-
-    expect(screen.getByText('matter.labels.link-online')).toBeInTheDocument();
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+    expect(screen.getByText('matter.labels.status-away')).toBeInTheDocument();
   });
 
   it('marks an unlabelled fabric beside the number, not inside the label', () => {
     // Folded into the label in the same weight, the note read as part of the label - the
     // row said "Fabric no. 15 (no label set)" as if that were what it is called.
-    render(<FabricsCard fabrics={[fabric({ adminFabricLabel: '', vendor_id: 0x1037 })]} onAction={vi.fn()} />);
+    render(<FabricsCard fabrics={[fabric({ label: { source: 'none', text: null } })]} onAction={vi.fn()} />);
 
     expect(screen.getByText('matter.labels.fabric-unlabelled')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.fabric-no-label')).toBeInTheDocument();
@@ -89,9 +103,10 @@ describe('FabricsCard', () => {
     // A label typed here exists nowhere else, so an operator comparing this page with the
     // app's own screen has to be able to see which of the two names is ours - and what
     // clearing it would bring back.
-    render(
-      <FabricsCard fabrics={[fabric({ localFabricLabel: 'Hall phone' })]} onAction={vi.fn()} />,
-    );
+    const label = {
+      source: 'local', text: 'Hall phone', replaced: { source: 'admin', text: 'Home Assistant' },
+    } as const;
+    render(<FabricsCard fabrics={[fabric({ label })]} onAction={vi.fn()} />);
 
     expect(screen.getByText('Hall phone')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.fabric-label-instead')).toBeInTheDocument();

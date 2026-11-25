@@ -24,12 +24,14 @@ vi.mock('@/stores/matter/api', async (importOriginal) => ({
 const PAIRED = {
   version: '1.0.0',
   paired: true,
-  fabrics: [{ index: 1, adminFabricLabel: 'Aqara', vendor_id: 4447 }],
+  fabrics: [{
+    index: 1, adminFabricLabel: 'Aqara', vendor_id: 4447, label: { source: 'admin', text: 'Aqara' },
+  }],
   pairing: null,
   devices: { configured: 0, exposed: 0, skipped: 0, config_error: null, list: [] },
 };
 
-const theSwitch = () => screen.getByRole('checkbox') as HTMLInputElement;
+const theSwitch = () => screen.getByRole('checkbox', { name: 'matter.labels.name-in-model' }) as HTMLInputElement;
 
 describe('MatterPage, the settings', () => {
   beforeEach(() => {

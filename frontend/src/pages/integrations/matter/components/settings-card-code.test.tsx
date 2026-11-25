@@ -57,6 +57,6 @@ describe('SettingsCard, the pairing code', () => {
     render(cardOf({ onNewCode: undefined }));
 
     expect(screen.queryByText('matter.labels.pairing-code')).not.toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.getAllByRole('checkbox')).toHaveLength(2);
   });
 });

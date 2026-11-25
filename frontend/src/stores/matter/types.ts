@@ -5,11 +5,32 @@ export interface MatterPairedVia {
   vendor_name?: string | null;
 }
 
+export type MatterWatchingKind = 'all' | 'some' | 'none';
+
 /** Which devices of the bridge the subscriptions of a fabric name, by did. */
 export interface MatterWatching {
   all: boolean;
+  // How many of the devices given to Matter are followed, and out of how many.
+  kind?: MatterWatchingKind;
+  of?: number;
   dids: number[];
   missing: number[];
+  // What a person calls the devices in `missing`.
+  missing_names?: string[];
+}
+
+/** One command of a fabric: what it asked of which device, and which controller sent it. */
+export interface MatterCommand {
+  at: number;
+  did: number;
+  // The name of that device.
+  name?: string;
+  // What was written to the controls of the device for it.
+  asked: { role: string; value: string }[];
+  // A plain switching in one word; null for anything else.
+  action?: 'on' | 'off' | null;
+  // The controller of the fabric the command came from; null for what it did not tell.
+  from: { name: string | null; address: string | null };
 }
 
 /** The commands of a fabric since the bridge started. */
@@ -17,6 +38,9 @@ export interface MatterCommands {
   count: number;
   last_at: number;
   last_did: number;
+  last_name?: string;
+  // The last few, newest first. Absent from a bridge that keeps the count alone.
+  recent?: MatterCommand[];
 }
 
 /**
@@ -36,6 +60,16 @@ export interface MatterCertificate {
   valid_until: number | null;
 }
 
+/**
+ * What a device does for its fabric, as the bridge worked it out: holds subscriptions,
+ * was the one the fabric was paired from, both, or neither. `paired_alone` is the pairing
+ * device of a fabric nobody works for, `silent` any other device of such a fabric.
+ */
+export type MatterDeviceRole = 'works' | 'works_paired' | 'paired' | 'paired_alone' | 'silent' | 'idle';
+
+/** What the standard calls a device of a fabric by its role. */
+export type MatterRoleName = 'controller' | 'commissioner' | 'controller_commissioner';
+
 /** One device a fabric talks to the bridge from. */
 export interface MatterFabricDevice {
   // Null until the device said its name, or the bridge saw its MAC.
@@ -44,8 +78,39 @@ export interface MatterFabricDevice {
   address: string | null;
   online: boolean;
   subscriptions: number;
+  // What this device alone follows. Absent for one with no session.
+  watching?: MatterWatching;
   heard_at?: number;
   matter?: MatterDeclared;
+  // Absent from a bridge older than this page.
+  role?: MatterDeviceRole;
+  role_name?: MatterRoleName;
+}
+
+export type MatterLabelSource = 'local' | 'admin' | 'vendor' | 'none';
+
+/** What to call a fabric and where that came from; a label typed here carries what it replaced. */
+export interface MatterLabel {
+  source: MatterLabelSource;
+  // Null for a fabric that offers nothing: the page then says its number.
+  text: string | null;
+  replaced?: MatterLabel;
+}
+
+export type MatterPairedKind = 'dated' | 'before' | 'unknown';
+
+export type MatterStatusWord = 'online' | 'quiet' | 'away' | 'partly' | 'left' | 'removed' | 'forgot' | 'offline';
+
+/** The state of a fabric in one word; `since` goes with 'quiet'. */
+export interface MatterFabricStatus {
+  word: MatterStatusWord;
+  since?: number;
+}
+
+/** One reading a device carries beside its state; a colour is also drawn. */
+export interface MatterReading {
+  text: string;
+  colour?: string;
 }
 
 export type MatterLinkCode = 'online' | 'partly' | 'stale' | 'left' | 'removed' | 'forgot' | 'offline'
@@ -103,6 +168,9 @@ export interface MatterFabric {
   // service restarts - see FabricHistory#seen in the bridge.
   last_seen?: number;
   // Everything below is undefined from a bridge older than this page.
+  label?: MatterLabel;
+  paired_kind?: MatterPairedKind;
+  status?: MatterFabricStatus;
   vendor_name?: string | null;
   paired_via?: MatterPairedVia;
   sessions?: number;
@@ -155,10 +223,9 @@ export interface MatterDevice {
   reason: string | null;
   // The value of the bound control, as the bridge last saw it.
   state: 'on' | 'off' | null;
-  // Everything the endpoint carries beside that reading: the brightness of a lamp, as
-  // "50 %". Null when there is nothing to add - and undefined when the service is older
-  // than this page, which is why every reader of it has a fallback.
-  detail?: string | null;
+  // Everything the endpoint carries beside that reading: the brightness of a lamp, its
+  // colour. Undefined when the service is older than this page.
+  details?: MatterReading[];
   // Roles of the config this endpoint does not carry: colour, or a brightness channel
   // the driver says cannot be written. The page names them; why, in a sentence, is in
   // the journal of the service, like every other detail kept for support.
@@ -186,6 +253,9 @@ export interface MatterSettings {
   // device card, and neither shows the name. See docs/ecosystems.md of
   // wb-mqtt-matter-bridge, finding Я31.
   name_in_model: boolean;
+  // The page shows the details of a fabric. A switch of the page alone: the bridge gathers
+  // and tells them whether it is on or not, so turning it on shows them at once.
+  fabric_details?: boolean;
 }
 
 /** Why the bridge is not doing its job: a code for the page, a sentence for support. */

@@ -8,7 +8,7 @@ import { Table, TableCell, TableRow } from '@/components/table';
 import { Tag } from '@/components/tag';
 import type { MatterDevice } from '@/stores/matter';
 import type { DevicesCardProps } from '../types';
-import { detailParts, fabricDisplayLabel, isColour } from '../utils';
+import { fabricDisplayLabel } from '../utils';
 
 /** The states this page has words for. Anything else is a reading, and is shown as it is. */
 const TRANSLATED_STATES = new Set(['on', 'off']);
@@ -17,7 +17,7 @@ const TRANSLATED_STATES = new Set(['on', 'off']);
  * The devices the config gives to Matter: columns on a wide screen, stacked lines on a phone.
  *
  * At 375 px the four columns ask for 384 and the state is clipped, so each device becomes a
- * block instead. The room is dropped where no device has one - the configurator leaves it
+ * block instead. The group is dropped where no device has one - the configurator leaves it
  * empty until somebody fills it in, and a column of blanks costs a sixth of the width.
  */
 export const DevicesCard = ({ devices, onOpen, fabrics = [] }: DevicesCardProps) => {
@@ -72,10 +72,10 @@ export const DevicesCard = ({ devices, onOpen, fabrics = [] }: DevicesCardProps)
         <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{text}</Tag>
         {/* Readings, not words: "50 %", "#FF0000", "3000 K". Beside the tag and not
             inside it - the tag is translated by a dictionary, a reading is not. */}
-        {detailParts(device).map((part) => (
-          <span className="matter-detail" key={part}>
-            {isColour(part) && <i className="matter-swatch" style={{ background: part }} />}
-            {part}
+        {(device.details ?? []).map(({ text, colour }) => (
+          <span className="matter-detail" key={text}>
+            {colour && <i className="matter-swatch" style={{ background: colour }} />}
+            {text}
           </span>
         ))}
       </>
@@ -131,7 +131,7 @@ export const DevicesCard = ({ devices, onOpen, fabrics = [] }: DevicesCardProps)
           <TableRow isHeading>
             <TableCell>{t('matter.labels.column-name')}</TableCell>
             <TableCell>{t('matter.labels.column-type')}</TableCell>
-            {hasAreas && <TableCell>{t('matter.labels.column-room')}</TableCell>}
+            {hasAreas && <TableCell>{t('matter.labels.column-group')}</TableCell>}
             <TableCell>{t('matter.labels.column-state')}</TableCell>
           </TableRow>
 

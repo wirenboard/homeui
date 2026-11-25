@@ -9,10 +9,8 @@ import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import type { MatterFabric } from '@/stores/matter';
-import { FabricLabelSource, type FabricsCardProps, LinkState, PairedDateKind } from '../types';
-import {
-  fabricDisplayLabel, fabricLabelSource, linkState, linkWord, pairedDateKind, replacedFabricLabel,
-} from '../utils';
+import type { FabricsCardProps } from '../types';
+import { fabricDisplayLabel, fabricLabelNote } from '../utils';
 import { FabricDetails } from './fabric-details';
 import { FabricMenu } from './fabric-menu';
 
@@ -30,8 +28,8 @@ import { FabricMenu } from './fabric-menu';
  * so that the way to add a fabric is the last line of the list of fabrics.
  */
 export const FabricsCard = ({
-  fabrics, fabricsSince, onAction, devices = [], now, checkingIndex = null, hasCheckFailed = false,
-  onCheck, children,
+  fabrics, fabricsSince, onAction, now, checkingIndex = null, hasCheckFailed = false,
+  onCheck, hasDetails = false, children,
 }: PropsWithChildren<FabricsCardProps>) => {
   const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
@@ -50,17 +48,14 @@ export const FabricsCard = ({
   const dateLocale = i18n.language === 'ru' ? ru : enUS;
 
   /**
-   * When a fabric paired, as an absolute date and time.
-   *
-   * Absolute, while the column beside it is relative, and that is the rule rather than an
-   * oversight: this is a reference fact that gets compared between rows, so it has to
-   * line up and carry a year. How long ago it happened is not what anybody asks of it.
+   * When a fabric paired. Absolute, while the status beside it is relative: this is a fact
+   * compared between rows, so it has to line up and carry a year.
    */
   const pairedText = (fabric: MatterFabric) => {
-    switch (pairedDateKind(fabric, fabricsSince)) {
-      case PairedDateKind.Dated:
+    switch (fabric.paired_kind) {
+      case 'dated':
         return format(fabric.paired_at, dateFormat);
-      case PairedDateKind.Before:
+      case 'before':
         return t('matter.labels.paired-before', {
           date: format(fabricsSince, boundFormat, { locale: dateLocale }),
         });
@@ -69,55 +64,16 @@ export const FabricsCard = ({
     }
   };
 
-  /**
-   * Whether a fabric is on the line, and if not, since when.
-   *
-   * Relative, because the only question here is how fresh it is. The time is missing far
-   * more often than it is present - the bridge writes it down only when a channel breaks,
-   * so a restart of the service clears it for everybody - and the third case says exactly
-   * that instead of showing an empty cell.
-   */
-  const linkText = (fabric: MatterFabric) => {
-    // What the bridge found out by asking wins over what the page works out by itself.
-    if (linkWord(fabric)) {
-      return t(`matter.labels.link-is-${linkWord(fabric)}`);
-    }
-    switch (linkState(fabric)) {
-      case LinkState.Online:
-        return t('matter.labels.link-online');
-      case LinkState.Quiet:
-        return t('matter.labels.link-quiet', {
-          ago: formatDistanceToNow(fabric.last_seen, { locale: dateLocale }),
-        });
-      default:
-        return t('matter.labels.link-offline');
-    }
-  };
+  /** The status of a fabric: the word of the bridge, and for how long where it went silent. */
+  const statusText = ({ status }: MatterFabric) => t(`matter.labels.status-${status?.word ?? 'away'}`, {
+    ago: Number.isFinite(status?.since) ? formatDistanceToNow(status.since, { locale: dateLocale }) : '',
+  });
 
-  /**
-   * What the row says beside the label, when the label alone would be misleading.
-   *
-   * A label typed on this controller is marked with what it replaced, because it exists
-   * nowhere else: an operator comparing this page with the app's own screen has to be
-   * able to see which of the two names is ours. A fabric that set no label at all is
-   * marked too, so that a row showing a bare number does not read as a defect.
-   */
-  const labelNote = (fabric: MatterFabric) => {
-    switch (fabricLabelSource(fabric)) {
-      case FabricLabelSource.Local:
-        return t('matter.labels.fabric-label-instead', { label: replacedFabricLabel(fabric, t) });
-      case FabricLabelSource.None:
-        return t('matter.labels.fabric-no-label');
-      default:
-        return null;
-    }
-  };
-
-  const linkClass = (fabric: MatterFabric) => (linkState(fabric) === LinkState.Online
+  const statusClass = (fabric: MatterFabric) => (fabric.online
     ? 'matter-fabricLink matter-fabricLinkOnline'
     : 'matter-fabricLink');
 
-  const detailsButton = (fabric: MatterFabric) => (
+  const detailsButton = (fabric: MatterFabric) => hasDetails && (
     <button
       type="button"
       className="matter-detailsToggle"
@@ -132,7 +88,6 @@ export const FabricsCard = ({
   const details = (fabric: MatterFabric) => (
     <FabricDetails
       fabric={fabric}
-      devices={devices}
       now={now ?? Date.now()}
       isChecking={checkingIndex === fabric.index}
       hasCheckFailed={hasCheckFailed && checkingIndex === null}
@@ -147,12 +102,12 @@ export const FabricsCard = ({
           <div className="matter-rowMain">
             <span className="matter-rowName">{fabricDisplayLabel(fabric, t)}</span>
             <span className="matter-rowLine">
-              <span className={linkClass(fabric)}>{linkText(fabric)}</span>
+              <span className={statusClass(fabric)}>{statusText(fabric)}</span>
             </span>
             <span className="matter-rowLine">
               {`${t('matter.labels.column-paired')}: ${pairedText(fabric)}`}
             </span>
-            {labelNote(fabric) && <span className="matter-rowLine">{labelNote(fabric)}</span>}
+            {fabricLabelNote(fabric, t) && <span className="matter-rowLine">{fabricLabelNote(fabric, t)}</span>}
           </div>
           <div className="matter-rowAction">
             {detailsButton(fabric)}
@@ -162,7 +117,7 @@ export const FabricsCard = ({
               onChoose={(action) => onAction(fabric, action)}
             />
           </div>
-          {opened.includes(fabric.index) && details(fabric)}
+          {hasDetails && opened.includes(fabric.index) && details(fabric)}
         </li>
       ))}
     </ul>
@@ -181,7 +136,7 @@ export const FabricsCard = ({
           <TableRow isHeading>
             <TableCell>{t('matter.labels.column-fabric')}</TableCell>
             <TableCell>{t('matter.labels.column-paired')}</TableCell>
-            <TableCell>{t('matter.labels.column-link')}</TableCell>
+            <TableCell>{t('matter.labels.column-status')}</TableCell>
             <TableCell>
               <span className="matter-srOnly">{t('matter.labels.column-actions')}</span>
             </TableCell>
@@ -191,15 +146,15 @@ export const FabricsCard = ({
             <TableRow key={fabric.index}>
               <TableCell>
                 <span className="matter-fabricLabel">{fabricDisplayLabel(fabric, t)}</span>
-                {labelNote(fabric) && (
-                  <span className="matter-fabricNote">{labelNote(fabric)}</span>
+                {fabricLabelNote(fabric, t) && (
+                  <span className="matter-fabricNote">{fabricLabelNote(fabric, t)}</span>
                 )}
               </TableCell>
               <TableCell>
                 <span className="matter-fabricWhen">{pairedText(fabric)}</span>
               </TableCell>
               <TableCell>
-                <span className={linkClass(fabric)}>{linkText(fabric)}</span>
+                <span className={statusClass(fabric)}>{statusText(fabric)}</span>
               </TableCell>
               <TableCell>
                 <span className="matter-rowButtons">
@@ -212,7 +167,7 @@ export const FabricsCard = ({
                 </span>
               </TableCell>
             </TableRow>,
-            opened.includes(fabric.index) && (
+            hasDetails && opened.includes(fabric.index) && (
               <TableRow key={`${fabric.index}-details`} className="matter-detailsRow">
                 <TableCell colSpan={4}>{details(fabric)}</TableCell>
               </TableRow>

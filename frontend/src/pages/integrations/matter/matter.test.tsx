@@ -87,7 +87,9 @@ const PAIRED = {
   ...NOT_PAIRED,
   paired: true,
   pairing: null,
-  fabrics: [{ index: 1, adminFabricLabel: 'Yandex', vendor_id: 4660 }],
+  fabrics: [{
+    index: 1, adminFabricLabel: 'Yandex', vendor_id: 4660, label: { source: 'admin', text: 'Yandex' },
+  }],
 };
 
 describe('MatterPage', () => {
@@ -216,30 +218,6 @@ describe('MatterPage', () => {
     await waitFor(() => expect(getMatterStatus).not.toHaveBeenCalled());
   });
 
-  it('names a fabric that set no label of its own', async () => {
-    // Yandex leaves the label of its fabric empty, and a bullet with nothing next to it
-    // is what the page showed before. See docs/ecosystems.md of the bridge, finding Я3.
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...PAIRED,
-      fabrics: [{ index: 1, adminFabricLabel: '', vendor_id: 4911 }],
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.vendor-yandex')).toBeInTheDocument();
-  });
-
-  it('names a fabric it does not know by its number, which is all it has', async () => {
-    // By the number and not by the vendor: a test vendor id is worn by several different
-    // controllers, so it tells two nameless apps apart no better than nothing would.
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...PAIRED,
-      fabrics: [{ index: 1, adminFabricLabel: '', vendor_id: 1234 }],
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.fabric-unlabelled')).toBeInTheDocument();
-  });
-
   it('names the app side first and only then offers to unpair here', async () => {
     // The order is the point: unpairing in the app leaves no litter there, unpairing
     // here does. See docs/ecosystems.md of the bridge, Я10 and Я11.
@@ -261,7 +239,9 @@ describe('MatterPage', () => {
   it('unpairs the fabric the dialog was opened for, and closes', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue({
       ...PAIRED,
-      fabrics: [{ index: 3, adminFabricLabel: 'Yandex', vendor_id: 4911 }],
+      fabrics: [{
+        index: 3, adminFabricLabel: 'Yandex', vendor_id: 4911, label: { source: 'admin', text: 'Yandex' },
+      }],
     } as any);
     render(<MatterPage />);
     fireEvent.click(await screen.findByLabelText('matter.buttons.fabric-actions'));
@@ -288,120 +268,6 @@ describe('MatterPage', () => {
     expect(screen.getByText('matter.labels.unpair-heading')).toBeInTheDocument();
   });
 
-  it('offers no way to unpair while no fabric is connected', async () => {
-    render(<MatterPage />);
-    await screen.findByText('2333-171-2339');
-
-    expect(screen.queryByText('matter.buttons.unpair')).not.toBeInTheDocument();
-  });
-
-  it('lists the devices of the config, not only how many there are', async () => {
-    render(<MatterPage />);
-
-    expect(await screen.findByText('Kitchen light')).toBeInTheDocument();
-    expect(screen.getByText('configurator.types.switch.name')).toBeInTheDocument();
-    expect(screen.getByText('Kitchen')).toBeInTheDocument();
-    expect(screen.getByText('Boiler')).toBeInTheDocument();
-    expect(screen.getByText('configurator.types.temperature_sensor.name')).toBeInTheDocument();
-  });
-
-  it('shows the value of an exposed device and the reason of one that is not', async () => {
-    render(<MatterPage />);
-    await screen.findByText('Kitchen light');
-
-    expect(screen.getByText('matter.labels.state-on')).toBeInTheDocument();
-    // The title is the translated code, not the English sentence of the service.
-    const notGiven = screen.getByText('matter.labels.not-exposed');
-    expect(notGiven).toHaveAttribute('title', 'matter.labels.reason-type_unsupported');
-  });
-
-  it('falls back to the sentence of the service when there is no code', async () => {
-    // Nothing to translate: the words of the service are better than nothing. A code
-    // this page does not know yet takes the same path through the default value of
-    // i18next, which the stub here cannot show.
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: {
-        ...NOT_PAIRED.devices,
-        list: [{ ...OWN_DEVICE, reason_code: null, reason: 'something new happened' }],
-      },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.not-exposed'))
-      .toHaveAttribute('title', 'something new happened');
-  });
-
-  it('marks an exposed device whose control said nothing yet', async () => {
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: { ...NOT_PAIRED.devices, list: [{ ...WB_DEVICE, state: null }] },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.state-silent')).toBeInTheDocument();
-  });
-
-  it('shows the reading of a sensor as it is, with no key around it', async () => {
-    // Only on and off have a translation. A temperature arrives as the text the service
-    // formatted ("10.0 C"), and without a default i18next prints the key it looked for -
-    // which is what the Matter page showed on the stand: "matter.labels.state-10.0 C".
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: { ...NOT_PAIRED.devices, list: [{ ...WB_DEVICE, state: '10.0 °C' }] },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('10.0 °C')).toBeInTheDocument();
-    expect(screen.queryByText(/matter\.labels\.state-/)).not.toBeInTheDocument();
-  });
-
-  it('shows the brightness of a lamp beside its state, not inside it', async () => {
-    // Two fields and not one string: the tag is translated by a dictionary and a
-    // reading is not, so "on" stays translatable while "50 %" stays a number.
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: {
-        ...NOT_PAIRED.devices,
-        list: [{
-          ...WB_DEVICE, type: 'light', roles: ['on_off', 'brightness'], state: 'on', detail: '50 %',
-        }],
-      },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.state-on')).toBeInTheDocument();
-    expect(screen.getByText('50 %')).toBeInTheDocument();
-  });
-
-  it('names the roles the bridge does not carry, in the words of the configurator', async () => {
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: {
-        ...NOT_PAIRED.devices,
-        list: [{
-          ...WB_DEVICE, type: 'light', roles: ['on_off', 'color'], state: 'on', ignored_roles: ['color'],
-        }],
-      },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.ignored-roles')).toBeInTheDocument();
-  });
-
-  it('survives a service too old to send the new fields', async () => {
-    // The page and the service are different packages and arrive apart. An older
-    // service says nothing about brightness, and that must read as "nothing to add".
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: { ...NOT_PAIRED.devices, list: [WB_DEVICE] },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.state-on')).toBeInTheDocument();
-    expect(screen.queryByText('matter.labels.ignored-roles')).not.toBeInTheDocument();
-  });
-
   it('opens the card of the device in the configurator', async () => {
     // The store of the configurator is the real one: the selection it keeps is what
     // makes its page open on this device, and no file of that page is touched for it.
@@ -411,14 +277,6 @@ describe('MatterPage', () => {
 
     expect(configuratorStore.selection).toEqual({ id: 'module:wb-mr6c_21' });
     expect(navigateMock).toHaveBeenCalledWith('/configurator');
-  });
-
-  it('opens a device whose services read another module under its own module', async () => {
-    render(<MatterPage />);
-
-    fireEvent.click(await screen.findByText('Boiler'));
-
-    expect(configuratorStore.selection).toEqual({ id: 'module:Boiler' });
   });
 
   it('goes to the configurator without a selection when there is no module', async () => {
@@ -434,19 +292,6 @@ describe('MatterPage', () => {
     // card that does not exist.
     expect(configuratorStore.selection).toEqual(null);
     expect(navigateMock).toHaveBeenCalledWith('/configurator');
-  });
-
-  it('says the config has no devices instead of showing an empty table', async () => {
-    vi.mocked(getMatterStatus).mockResolvedValue({
-      ...NOT_PAIRED,
-      devices: {
-        configured: 0, exposed: 0, skipped: 0, config_error: null, list: [],
-      },
-    } as any);
-    render(<MatterPage />);
-
-    expect(await screen.findByText('matter.labels.devices-empty')).toBeInTheDocument();
-    expect(screen.queryByText('matter.labels.column-name')).not.toBeInTheDocument();
   });
 
   it('waits for the menu instead of calling the service missing', async () => {

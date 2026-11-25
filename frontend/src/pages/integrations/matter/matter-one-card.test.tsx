@@ -32,7 +32,9 @@ const EMPTY = {
 const PAIRED = {
   ...EMPTY,
   paired: true,
-  fabrics: [{ index: 1, adminFabricLabel: 'Yandex', vendor_id: 4660, online: true }],
+  fabrics: [{
+    index: 1, adminFabricLabel: 'Yandex', vendor_id: 4660, online: true, label: { source: 'admin', text: 'Yandex' },
+  }],
 };
 
 const PAIRED_AND_OPEN = {

@@ -32,7 +32,12 @@ const PROBE = {
 };
 
 const ONLINE_FABRIC = {
-  index: 1, adminFabricLabel: 'Yandex', vendor_id: 4660, online: true,
+  index: 1,
+  adminFabricLabel: 'Yandex',
+  vendor_id: 4660,
+  online: true,
+  label: { source: 'admin', text: 'Yandex' },
+  status: { word: 'online' },
 };
 
 const devicesOf = (list: unknown[]) => ({
@@ -77,7 +82,7 @@ describe('the Matter page on a phone', () => {
 
     expect(document.querySelector('table')).toBeNull();
     expect(screen.getByText('Yandex')).toBeInTheDocument();
-    expect(screen.getByText('matter.labels.link-online')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.status-online')).toBeInTheDocument();
     expect(
       screen.getByText('matter.labels.column-paired: matter.labels.paired-unknown'),
     ).toBeInTheDocument();

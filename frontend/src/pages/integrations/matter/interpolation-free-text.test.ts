@@ -14,7 +14,7 @@ const section = (bundle: Record<string, any>, name: string) => bundle.matter[nam
 const FREE_TEXT: [string, string, string][] = [
   ['labels', 'config-error', 'error'],
   ['labels', 'network-error', 'reason'],
-  ['labels', 'link-quiet', 'ago'],
+  ['labels', 'status-quiet', 'ago'],
   ['labels', 'fabric-label-instead', 'label'],
   ['labels', 'unpair-where', 'label'],
   ['labels', 'open-device', 'name'],

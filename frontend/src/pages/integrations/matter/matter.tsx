@@ -134,10 +134,10 @@ const MatterPage = observer(() => {
           <FabricsCard
             fabrics={status.fabrics}
             fabricsSince={status.fabrics_since}
-            devices={status.devices.list}
             now={Date.now() + matterStore.clockOffset}
             checkingIndex={matterStore.checkingIndex}
             hasCheckFailed={matterStore.hasCheckFailed}
+            hasDetails={Boolean(status.settings?.fabric_details)}
             onAction={chooseFabricAction}
             onCheck={(fabric) => matterStore.checkLink(fabric.index)}
           >

@@ -535,6 +535,38 @@
     line-height: 1.5;
 }
 
+.matter-detailsDevice {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 12px;
+    border-left: 2px solid var(--light-gray-color);
+}
+
+.matter-detailsDevice + .matter-detailsDevice {
+    margin-top: 6px;
+}
+
+.matter-detailsDevice .matter-facts {
+    grid-template-columns: 186px minmax(0, 1fr);
+}
+
+.matter-detailsDeviceTitle {
+    margin: 0;
+    font-size: var(--font-size-small);
+    font-weight: 400;
+}
+
+.matter-detailsRole {
+    font-weight: 600;
+}
+
+.matter-detailsCommand {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
 .matter-detailsNote {
     font-size: var(--font-size-small);
     color: var(--gray-color);
@@ -616,7 +648,8 @@
         min-height: 44px;
     }
 
-    .matter-facts {
+    .matter-facts,
+    .matter-detailsDevice .matter-facts {
         grid-template-columns: minmax(0, 1fr);
         gap: 2px;
     }
