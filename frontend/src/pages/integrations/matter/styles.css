@@ -186,6 +186,25 @@
     overflow-wrap: anywhere;
 }
 
+.matter-cardName {
+    display: block;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.matter-deviceLink.matter-rowCard {
+    display: block;
+    margin-bottom: 4px;
+    font-size: var(--font-size-small);
+    color: var(--gray-color);
+    overflow-wrap: anywhere;
+}
+
+.matter-devices .matter-rowInCard .wb-tableCell.matter-cardCell,
+.matter-devices .matter-row.matter-rowInCard {
+    border-bottom-color: transparent;
+}
+
 .matter-deviceLink {
     padding: 0;
     border: 0;

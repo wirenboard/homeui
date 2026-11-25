@@ -1637,6 +1637,7 @@
          "devices": "Devices",
          "devices-empty": "The config has no devices for Matter yet.",
          "column-name": "Device",
+         "column-part": "Part",
          "column-passed": "What is passed",
          "column-apps": "In the apps",
          "not-passed": "not passed",
@@ -1680,6 +1681,9 @@
          "settings": "Settings",
          "name-in-model": "Device name in place of the model",
          "name-in-model-hint": "Some apps name a device by its model or show it in the device card. When on, the bridge gives the name from the configurator where the model goes - about 32 Latin or 16 Cyrillic letters. Turn it off to have the type name there: Outlet, Switch.",
+         "parts-apart": "Every part of a device is a device of its own in Matter",
+         "parts-apart-hint": "For compatibility: every app takes devices one by one.",
+         "setting-fixed": "Cannot be changed yet.",
          "settings-failed": "The setting could not be saved. Try again."
       },
       "buttons": {

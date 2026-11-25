@@ -64,14 +64,52 @@ const drawn = (text: string | RegExp) => {
 const HOW = { ok: 'plain', error: 'problem', off: 'quiet' } as const;
 
 describe('DevicesCard on a wide screen', () => {
-  it('puts the type and the group under the name, and spends no column on either', () => {
+  it('gives the device and its part a column each, the group under the device, the type under the part', () => {
     show([SOCKET, NOT_GIVEN]);
 
-    expect(screen.getByText('configurator.types.outlet.name · Kitchen')).toBeInTheDocument();
-    expect(screen.getByText('configurator.types.cover.name')).toBeInTheDocument();
     expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual([
-      'matter.labels.column-name', 'matter.labels.column-passed', 'matter.labels.column-actions',
+      'matter.labels.column-name', 'matter.labels.column-part', 'matter.labels.column-passed',
+      'matter.labels.column-actions',
     ]);
+    const [device, part] = Array.from(screen.getByText('Kitchen socket').closest('tr').querySelectorAll('td'));
+    // The device is its card of the configurator, and leads there; the part is what an app shows.
+    expect(device.textContent).toBe('wb-mr6c_21Kitchen');
+    expect(device.querySelector('button').textContent).toBe('wb-mr6c_21');
+    expect(part.textContent).toBe('Kitchen socketconfigurator.types.outlet.name');
+    expect(part.querySelector('button')).toBeNull();
+  });
+
+  it('names a device once, beside the first of its parts, and draws no line until the last', () => {
+    const part = (did: number, name: string, first: boolean, last: boolean) => ({
+      ...SOCKET, did, name, module: 'Board', card: {
+        name: 'Board', group: 'Switchboard', parts: 3, first, last,
+      },
+    });
+    const alone = {
+      ...SOCKET, did: 20, name: 'Probe', module: 'Sensor', card: {
+        name: 'Sensor', group: null, parts: 1, first: true, last: true,
+      },
+    };
+    show([
+      part(1, 'Socket A1', true, false), part(2, 'Socket A2', false, false), part(3, 'Socket A3', false, true), alone,
+    ]);
+
+    expect(screen.getAllByRole('button', { name: 'Board' })).toHaveLength(1);
+    expect(screen.getAllByText('Switchboard')).toHaveLength(1);
+    const rowOf = (name: string) => screen.getByText(name).closest('tr');
+    expect(rowOf('Socket A1').querySelector('td').textContent).toBe('BoardSwitchboard');
+    expect(rowOf('Socket A2').querySelector('td').textContent).toBe('');
+    const names = ['Socket A1', 'Socket A2', 'Socket A3', 'Probe'];
+    expect(names.map((name) => rowOf(name).classList.contains('matter-rowInCard')))
+      .toEqual([true, true, false, false]);
+  });
+
+  it('leaves a part with no card without a device, and says its group under its own name', () => {
+    show([{ ...SOCKET, module: null, card: null }]);
+
+    const [device, part] = Array.from(screen.getByText('Kitchen socket').closest('tr').querySelectorAll('td'));
+    expect(device.textContent).toBe('');
+    expect(part.textContent).toBe('Kitchen socketconfigurator.types.outlet.name · Kitchen');
   });
 
   it('has a column for the apps only when there is an app: without one it is a column of blanks', () => {
@@ -104,7 +142,7 @@ describe('DevicesCard on a wide screen', () => {
     expect(screen.queryByText('matter.labels.section-not-passed')).not.toBeInTheDocument();
   });
 
-  it('hands the device to the page when its name is clicked, and opens nothing by that', () => {
+  it('hands the device to the page when its card is clicked, and opens nothing by that', () => {
     const onOpen = vi.fn();
     show([SOCKET, NOT_GIVEN], { onOpen });
 

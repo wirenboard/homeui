@@ -14,11 +14,14 @@ import type { SettingsCardProps } from '../types';
  * is rare and has a cost, and next to the main action it looked like a part of adding.
  */
 export const SettingsCard = ({
-  settings, isSaving, hasFailed, onChange, canChangeCode, isCodeBusy, onNewCode,
+  settings, isSaving, hasFailed, onChange, fixed = [], canChangeCode, isCodeBusy, onNewCode,
 }: SettingsCardProps) => {
   const { t } = useTranslation();
   const labelId = useId();
   const hintId = useId();
+  const partsLabelId = useId();
+  const partsHintId = useId();
+  const isPartsFixed = fixed.includes('parts_apart');
 
   return (
     <Card className="matter-card" heading={t('matter.labels.settings')}>
@@ -35,6 +38,26 @@ export const SettingsCard = ({
             ariaLabelledby={labelId}
             ariaDescribedby={hintId}
             onChange={(value) => onChange({ name_in_model: value })}
+          />
+        </div>
+      )}
+      {/* The one way the bridge has so far, shown as a setting so that it is said: the
+          switch is there and cannot be thrown until the bridge learns the other way. */}
+      {settings?.parts_apart !== undefined && (
+        <div className="matter-setting">
+          <div className="matter-settingText">
+            <span id={partsLabelId} className="matter-settingLabel">{t('matter.labels.parts-apart')}</span>
+            <p id={partsHintId} className="matter-settingHint">
+              {t('matter.labels.parts-apart-hint')}
+              {isPartsFixed && ` ${t('matter.labels.setting-fixed')}`}
+            </p>
+          </div>
+          <Switch
+            value={settings.parts_apart}
+            isDisabled={isSaving || isPartsFixed}
+            ariaLabelledby={partsLabelId}
+            ariaDescribedby={partsHintId}
+            onChange={(value) => onChange({ parts_apart: value })}
           />
         </div>
       )}

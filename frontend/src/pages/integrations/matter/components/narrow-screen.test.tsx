@@ -68,7 +68,11 @@ describe('the Matter page on a phone', () => {
 
     expect(document.querySelector('table')).toBeNull();
     expect(screen.getByText('Kitchen light')).toBeInTheDocument();
-    expect(screen.getByText('configurator.types.switch.name · Kitchen')).toBeInTheDocument();
+    // No column for the device on a phone: it is a line over the name of its part.
+    const device = screen.getByRole('button', { name: 'wb-mr6c_21 · Kitchen' });
+    expect(device.compareDocumentPosition(screen.getByText('Kitchen light')) & Node.DOCUMENT_POSITION_FOLLOWING)
+      .toBeTruthy();
+    expect(screen.getByText('configurator.types.switch.name')).toBeInTheDocument();
     expect(screen.getByText('configurator.types.temperature_sensor.name')).toBeInTheDocument();
     expect(screen.getByText('matter.labels.state-on')).toBeInTheDocument();
     expect(screen.getByText('21.5 °C')).toBeInTheDocument();

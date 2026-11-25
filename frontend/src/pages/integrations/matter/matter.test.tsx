@@ -281,7 +281,8 @@ describe('MatterPage', () => {
     // makes its page open on this device, and no file of that page is touched for it.
     render(<MatterPage />);
 
-    fireEvent.click(await screen.findByText('Kitchen light'));
+    // The device, by the name its card has in the configurator.
+    fireEvent.click(await screen.findByRole('button', { name: 'wb-mr6c_21' }));
 
     expect(configuratorStore.selection).toEqual({ id: 'module:wb-mr6c_21' });
     expect(navigateMock).toHaveBeenCalledWith('/configurator');
@@ -294,7 +295,10 @@ describe('MatterPage', () => {
     } as any);
     render(<MatterPage />);
 
-    fireEvent.click(await screen.findByText('Kitchen light'));
+    // No card to name beside it: the way to the configurator is in its details.
+    await screen.findByText('Kitchen light');
+    fireEvent.click(screen.getByRole('button', { name: 'matter.buttons.device-details' }));
+    fireEvent.click(screen.getByRole('button', { name: 'matter.buttons.open-configurator' }));
 
     // Nothing to open: the page lets the configurator choose, instead of selecting a
     // card that does not exist.

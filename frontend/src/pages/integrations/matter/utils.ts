@@ -1,7 +1,7 @@
 import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
 import type {
-  MatterAnswer, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome,
+  MatterAnswer, MatterCard, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome,
 } from '@/stores/matter';
 
 /**
@@ -9,6 +9,21 @@ import type {
  * problem, one that cannot be asked now has nothing to say.
  */
 export const STATUS_OF_ANSWER: Record<MatterAnswer, MatterOutcome> = { yes: 'ok', no: 'error', unknown: 'off' };
+
+/**
+ * The card of the configurator a device is a part of, as the bridge says it. A bridge
+ * older than this page says nothing, and then every device is a card of its own.
+ */
+export const cardOf = (device: MatterDevice): MatterCard | null => {
+  if (device.card !== undefined) {
+    return device.card;
+  }
+  return device.module
+    ? {
+      name: device.module, group: device.group, parts: 1, first: true, last: true,
+    }
+    : null;
+};
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service

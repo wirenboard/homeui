@@ -158,6 +158,7 @@ const MatterPage = observer(() => {
 
           <SettingsCard
             settings={status.settings}
+            fixed={status.settings_fixed}
             isSaving={matterStore.isSavingSettings}
             hasFailed={matterStore.hasSettingsFailed}
             canChangeCode={!status.pairing}

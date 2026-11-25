@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Tag } from '@/components/tag';
 import type {
-  ChannelProps, DeviceAppsProps, DeviceNameProps, DeviceProps,
+  CardNameProps, ChannelProps, DeviceAppsProps, DeviceProps,
 } from '../types';
 import {
-  appLabel, deviceReason, reasonText, STATUS_OF_ANSWER,
+  appLabel, cardOf, deviceReason, reasonText, STATUS_OF_ANSWER,
 } from '../utils';
 import { NamedLine, StatusLine } from './status-line';
 
@@ -12,24 +12,44 @@ import { NamedLine, StatusLine } from './status-line';
 const TRANSLATED_READINGS = new Set(['on', 'off']);
 
 /**
- * The name of a device, which leads to its card in the configurator, and under it what it
- * is and where it stands. The type is named by the configurator, so the names of the types
- * live in one place.
+ * The device as the configurator has it - its card - which leads there, and its group.
+ * Said once for a card, at its first part: the parts after it have nothing to say here.
+ * In one line on a phone, where it stands over the name of the part.
  */
-export const DeviceName = ({ device, onOpen }: DeviceNameProps) => {
+export const CardName = ({ device, onOpen, isLine = false }: CardNameProps) => {
   const { t } = useTranslation();
-  const type = t(`configurator.types.${device.type}.name`, { defaultValue: device.type });
+  const card = cardOf(device);
+  if (!card?.first) {
+    return null;
+  }
   return (
     <>
       <button
         type="button"
-        className="matter-rowName matter-deviceLink"
-        title={t('matter.labels.open-device', { name: device.name })}
+        className={isLine ? 'matter-rowCard matter-deviceLink' : 'matter-cardName matter-deviceLink'}
+        title={t('matter.labels.open-device', { name: card.name })}
         onClick={onOpen}
       >
-        {device.name}
+        {isLine && card.group ? `${card.name} · ${card.group}` : card.name}
       </button>
-      <span className="matter-rowLine">{device.group ? `${type} · ${device.group}` : type}</span>
+      {!isLine && card.group && <span className="matter-rowLine">{card.group}</span>}
+    </>
+  );
+};
+
+/**
+ * A part of a device: what an app is given as one device. Its name is the one the app
+ * shows, and under it what it is. The type is named by the configurator, so the names of
+ * the types live in one place. A part with no card says its group itself.
+ */
+export const PartName = ({ device }: DeviceProps) => {
+  const { t } = useTranslation();
+  const type = t(`configurator.types.${device.type}.name`, { defaultValue: device.type });
+  const ownGroup = cardOf(device) ? null : device.group;
+  return (
+    <>
+      <span className="matter-rowName">{device.name}</span>
+      <span className="matter-rowLine">{ownGroup ? `${type} · ${ownGroup}` : type}</span>
     </>
   );
 };

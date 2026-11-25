@@ -50,6 +50,35 @@ describe('SettingsCard', () => {
     expect(theSwitch('matter.labels.name-in-model').disabled).toBe(true);
   });
 
+  it('shows the setting nobody can change yet as a switch that is on and cannot be thrown', () => {
+    const onChange = vi.fn();
+    render(card({ ...ALL_OFF, parts_apart: true }, { fixed: ['parts_apart'], onChange }));
+
+    const fixed = theSwitch('matter.labels.parts-apart');
+    expect([fixed.checked, fixed.disabled]).toEqual([true, true]);
+    // The explanation ends with why the switch does not move.
+    expect(document.getElementById(fixed.getAttribute('aria-describedby')).textContent)
+      .toBe('matter.labels.parts-apart-hint matter.labels.setting-fixed');
+    // And the one beside it is as free as it was.
+    expect(theSwitch('matter.labels.name-in-model').disabled).toBe(false);
+  });
+
+  it('lets that setting be thrown once the bridge stops naming it as fixed', () => {
+    const onChange = vi.fn();
+    render(card({ ...ALL_OFF, parts_apart: true }, { fixed: [], onChange }));
+
+    fireEvent.click(theSwitch('matter.labels.parts-apart'));
+
+    expect(onChange).toHaveBeenCalledWith({ parts_apart: false });
+    expect(screen.queryByText(/matter\.labels\.setting-fixed/)).not.toBeInTheDocument();
+  });
+
+  it('has no such switch for a bridge that does not know the setting', () => {
+    render(card(ALL_OFF));
+
+    expect(screen.queryByText('matter.labels.parts-apart')).not.toBeInTheDocument();
+  });
+
   it('says so when the change did not go through, and only then', () => {
     const { rerender } = render(card(ALL_OFF));
     expect(screen.queryByText('matter.labels.settings-failed')).not.toBeInTheDocument();

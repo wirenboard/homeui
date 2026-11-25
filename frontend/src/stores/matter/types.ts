@@ -252,6 +252,23 @@ export interface MatterWindow {
   closes_at: number | null;
 }
 
+/**
+ * The place of a device in a card of the configurator. What Matter is given as a device -
+ * one entry of the config - is to a person a part of what was put together there: the
+ * entries of one card. Worked out by the bridge, which also puts the parts of a card
+ * together in the list.
+ */
+export interface MatterCard {
+  name: string;
+  // One for the whole card, as the configurator keeps it.
+  group: string | null;
+  parts: number;
+  // Whether this device is the first part of its card, and the last: the page names the
+  // card at the first and draws no line until the last.
+  first: boolean;
+  last: boolean;
+}
+
 export interface MatterDevice {
   did: number;
   name: string;
@@ -263,6 +280,9 @@ export interface MatterDevice {
   module: string | null;
   // What the operator put the device into: `group` of the config. Matter is told it as a room.
   group: string | null;
+  // Null for a device with no card, a config written by hand. Undefined from a service
+  // older than this page.
+  card?: MatterCard | null;
   roles: string[];
   // Whether the device became a Matter endpoint, and why not: the code is what this page
   // puts into words, the sentence is the detail of the service, in English like its
@@ -298,6 +318,9 @@ export interface MatterSettings {
   // device card, and neither shows the name. See docs/ecosystems.md of
   // wb-mqtt-matter-bridge, finding Я31.
   name_in_model: boolean;
+  // Every part of a device is given to Matter as a device of its own. The one way the
+  // bridge has so far: shown as a setting, and named in settings_fixed of the status.
+  parts_apart?: boolean;
 }
 
 /** Why the bridge is not doing its job: a code for the page, a sentence for support. */
@@ -333,4 +356,6 @@ export interface MatterStatus {
   devices: MatterDevices;
   // Undefined from a service older than this page, which has no settings to show.
   settings?: MatterSettings;
+  // The settings that are shown and cannot be changed yet, by name.
+  settings_fixed?: string[];
 }

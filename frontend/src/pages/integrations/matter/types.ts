@@ -126,8 +126,10 @@ export interface DeviceProps {
   device: MatterDevice;
 }
 
-export interface DeviceNameProps extends DeviceProps {
+export interface CardNameProps extends DeviceProps {
   onOpen: () => void;
+  // One line, the group beside the name: the way it stands over a part on a phone.
+  isLine?: boolean;
 }
 
 export interface ChannelProps {
@@ -164,6 +166,8 @@ export interface SettingsCardProps {
   isSaving: boolean;
   hasFailed: boolean;
   onChange: (_settings: Partial<MatterSettings>) => void;
+  // The settings the bridge shows and does not let anybody change yet, by name.
+  fixed?: string[];
   // The line about the pairing code is drawn only when there is a way to change it.
   onNewCode?: () => void;
   // False while a fabric is being added: the bridge will not change the code then.
