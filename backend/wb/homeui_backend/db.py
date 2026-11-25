@@ -108,7 +108,7 @@ def open_db(db_file: str) -> sqlite3.Connection:
     con = sqlite3.connect(db_file)
     os.chmod(db_file, DB_FILE_MODE)
     if is_new:
-        con.execute(f"PRAGMA user_version = {DB_SCHEMA_VERSION}")
+        con.execute("PRAGMA user_version = 2")
     else:
         version = con.execute("PRAGMA user_version").fetchone()[0]
         if version > DB_SCHEMA_VERSION:
