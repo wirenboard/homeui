@@ -54,7 +54,13 @@ export const DeviceDetails = ({ device, fabrics, onOpen }: DeviceDetailsProps) =
         <Section title={t('matter.labels.section-apps')}>
           <Facts rows={appRows} />
           {followed.answer === 'no' && (
-            <span className="matter-detailsAdvice">{t('matter.labels.app-no-advice')}</span>
+            <div className="matter-detailsAdvice">
+              <span>{t('matter.labels.app-no-advice')}</span>
+              <ul>
+                <li>{t('matter.labels.app-no-added-later')}</li>
+                <li>{t('matter.labels.app-no-type')}</li>
+              </ul>
+            </div>
           )}
         </Section>
       )}

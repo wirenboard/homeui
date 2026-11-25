@@ -582,6 +582,11 @@
     line-height: 1.5;
 }
 
+.matter-detailsAdvice ul {
+    margin: 2px 0 0;
+    padding-left: 18px;
+}
+
 .matter-detailsFooter {
     display: flex;
     flex-wrap: wrap;

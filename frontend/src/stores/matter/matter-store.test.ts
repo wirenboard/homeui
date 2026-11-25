@@ -2,7 +2,7 @@
 import {
   changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow,
 } from './api';
-import MatterStore, { POLL_INTERVAL_MS } from './matter-store';
+import MatterStore, { POLL_INTERVAL_MS, STARTING_MS } from './matter-store';
 import type { MatterStatus } from './types';
 
 vi.mock('./api', () => ({
@@ -80,6 +80,26 @@ describe('MatterStore', () => {
 
     expect(store.isLoading).toBe(false);
     expect(store.status).toBeNull();
+  });
+
+  it('takes a service that has just gone quiet for one that is starting, and not for long', async () => {
+    vi.useFakeTimers();
+    vi.mocked(getMatterStatus).mockRejectedValue(new Error('502'));
+    await store.fetch();
+    expect([store.isUnreachable, store.isStarting]).toEqual([true, true]);
+
+    // Still quiet when it should have come back: that is a failure, and is said as one.
+    vi.advanceTimersByTime(STARTING_MS);
+    await store.fetch();
+    expect([store.isUnreachable, store.isStarting]).toEqual([true, false]);
+
+    // And the count starts again after an answer.
+    vi.mocked(getMatterStatus).mockResolvedValue(STATUS);
+    await store.fetch();
+    vi.mocked(getMatterStatus).mockRejectedValue(new Error('502'));
+    await store.fetch();
+    expect(store.isStarting).toBe(true);
+    vi.useRealTimers();
   });
 
   it('forgets the failure once the service answers again', async () => {

@@ -6,6 +6,12 @@ import {
 import type { MatterSettings, MatterStatus, MatterWindow } from './types';
 
 /**
+ * How long a bridge that does not answer is taken to be starting. It restarts by itself
+ * when the last app leaves, and comes back in three quarters of a minute on a controller.
+ */
+export const STARTING_MS = 120_000;
+
+/**
  * How often the page asks the bridge again. The state changes when somebody scans the
  * code with a phone, so the page has to notice without being reloaded; polling is
  * enough for something that changes once a month, and it costs one request to a unix
@@ -22,6 +28,10 @@ export default class MatterStore {
   isLoading = true;
   // The service is installed but does not answer: stopped, crashed, or still starting.
   isUnreachable = false;
+  // How long it has not answered, as of the last request that failed: the bridge takes
+  // most of a minute to start, and the page does not call that a failure.
+  silentFor = 0;
+  #silentSince: number | null = null;
   // The fabric being dropped right now, so the dialog can say so and cannot be used twice.
   unpairingIndex: number | null = null;
   // The last attempt did not go through. Cleared when the next one starts.
@@ -89,6 +99,8 @@ export default class MatterStore {
         this.#noteWindowEnd(status);
         this.status = status;
         this.isUnreachable = false;
+        this.silentFor = 0;
+        this.#silentSince = null;
         this.isLoading = false;
       });
     } catch {
@@ -100,9 +112,19 @@ export default class MatterStore {
         // The last known state is kept on purpose: a page that empties itself on one
         // failed request is worse than a page with a warning over the data.
         this.isUnreachable = true;
+        this.#silentSince ??= Date.now();
+        this.silentFor = Date.now() - this.#silentSince;
         this.isLoading = false;
       });
     }
+  }
+
+  /**
+   * The bridge does not answer, and has not for so short a time that it is most likely
+   * starting: after a restart of its own - the last app left - or of the package.
+   */
+  get isStarting() {
+    return this.isUnreachable && this.silentFor < STARTING_MS;
   }
 
   /**

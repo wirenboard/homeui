@@ -47,7 +47,10 @@ describe('DeviceDetails', () => {
     const { unmount } = show();
     expect(factIn('apps', 'Yandex')).toBe('matter.labels.app-says-yes');
     expect(factIn('apps', 'Aqara')).toBe('matter.labels.app-says-no');
-    expect(screen.getByText('matter.labels.app-no-advice')).toBeInTheDocument();
+    // What happened, and under it the two reasons, the one a person can act on first.
+    const advice = screen.getByText('matter.labels.app-no-advice').parentElement;
+    expect(Array.from(advice.querySelectorAll('li')).map((line) => line.textContent))
+      .toEqual(['matter.labels.app-no-added-later', 'matter.labels.app-no-type']);
     unmount();
 
     show({

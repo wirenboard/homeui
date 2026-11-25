@@ -98,7 +98,11 @@ const MatterPage = observer(() => {
   if (isMenuLoaded && !isInstalled) {
     errors.push({ variant: 'danger', text: t('matter.labels.unavailable') });
   } else if (isUnreachable) {
-    errors.push({ variant: 'danger', text: t('matter.labels.unreachable') });
+    // A bridge that has just gone quiet is starting, and says so calmly; one that stays
+    // quiet is the failure.
+    errors.push(matterStore.isStarting
+      ? { variant: 'info', text: t('matter.labels.starting') }
+      : { variant: 'danger', text: t('matter.labels.unreachable') });
   } else {
     // Not one instead of another: each of the three is true by itself, and a person who
     // fixed the first should not find the second only then.
@@ -146,9 +150,9 @@ const MatterPage = observer(() => {
               devicesCount={status.devices.exposed}
               left={status.pairing ? timeLeft(status.pairing.closes_at, now + matterStore.clockOffset) : ''}
               isChanging={matterStore.isChangingWindow}
-              hasFailed={matterStore.hasWindowFailed}
+              hasFailed={matterStore.hasWindowFailed && !isUnreachable}
               hasExpired={matterStore.hasWindowExpired}
-              isOffline={Boolean(status.network_error)}
+              isOffline={Boolean(status.network_error) || isUnreachable}
               onOpen={() => matterStore.openWindow()}
               onClose={() => matterStore.closeWindow()}
             />

@@ -201,11 +201,16 @@ describe('MatterPage', () => {
     expect(screen.getByText('2333-171-2339')).toBeInTheDocument();
   });
 
-  it('says the service does not answer when it does not', async () => {
+  it('says the bridge is starting when it has just gone quiet, and that it does not answer later', async () => {
     vi.mocked(getMatterStatus).mockRejectedValue(new Error('502'));
     render(<MatterPage />);
 
-    expect(await screen.findByTestId('page-error')).toHaveTextContent('matter.labels.unreachable');
+    // Calmly at first: the bridge restarts by itself, and that is not a failure.
+    expect(await screen.findByTestId('page-error')).toHaveTextContent('matter.labels.starting');
+    runInAction(() => {
+      matterStore.silentFor = 10 * 60 * 1000;
+    });
+    expect(await screen.findByText('matter.labels.unreachable')).toBeInTheDocument();
     expect(screen.queryByAltText('matter.labels.qr-alt')).not.toBeInTheDocument();
   });
 
