@@ -232,10 +232,9 @@ export default class ConfiguratorStore {
     return this.selected;
   }
 
-  // Новые строки встают первыми.
   addRows(device: Device, rows: NewDeviceRow[]) {
     const firstDid = this.nextDid();
-    device.rows.unshift(...rows.map((row, index) => ({ ...row, did: firstDid + index })));
+    device.rows.push(...rows.map((row, index) => ({ ...row, did: firstDid + index })));
   }
 
   removeRow(device: Device, did: number) {

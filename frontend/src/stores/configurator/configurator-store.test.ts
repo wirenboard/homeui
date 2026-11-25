@@ -257,7 +257,7 @@ describe('ConfiguratorStore editing', () => {
     expect(store.isDirty).toBe(true);
   });
 
-  it('puts added rows first and keeps the group of the device', () => {
+  it('puts added rows last and keeps the group of the device', () => {
     const store = new ConfiguratorStore();
     const device = store.addDevice('Щит', [relay('r/K1'), relay('r/K2')]);
     store.setGroup(device, 'Котельная');
@@ -266,10 +266,10 @@ describe('ConfiguratorStore editing', () => {
 
     expect(device.group).toBe('Котельная');
     expect(device.rows.map((row) => [row.did, row.name])).toEqual([
-      [12, 'r/K3'],
-      [13, 'r/K4'],
       [10, 'r/K1'],
       [11, 'r/K2'],
+      [12, 'r/K3'],
+      [13, 'r/K4'],
     ]);
   });
 

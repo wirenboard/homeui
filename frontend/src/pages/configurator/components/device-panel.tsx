@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -39,6 +39,18 @@ export const DevicePanel = observer(({
   const [collapsed, setCollapsed] = useState<number[]>([]);
   const [editedName, setEditedName] = useState<number | null>(null);
   const isAllCollapsed = item.rows.every((row) => collapsed.includes(row.did));
+  const listRef = useRef<HTMLUListElement>(null);
+  const knownDids = useRef(item.rows.map((row) => row.did));
+
+  // Добавленный канал встаёт в конец: прокручиваем к нему.
+  useEffect(() => {
+    const added = item.rows.find((row) => !knownDids.current.includes(row.did));
+    knownDids.current = item.rows.map((row) => row.did);
+    if (added) {
+      listRef.current?.querySelector(`[data-did="${added.did}"]`)
+        ?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    }
+  });
 
   // Необязательная роль показывается, только если на контроллере есть канал, который ей подходит.
   const hasFit = (role: RoleId) => devices.some((deviceId) => deviceControls(deviceId)
@@ -143,7 +155,7 @@ export const DevicePanel = observer(({
           </div>
         </div>
         {!item.rows.length && <p className="configurator-empty">{t('configurator.labels.channels-none')}</p>}
-        <ul className="configurator-channels configurator-cards">
+        <ul ref={listRef} className="configurator-channels configurator-cards">
           {item.rows.map((row, index) => {
             const { missing } = rowServices(row);
             const TypeIcon = TYPE_ICONS[row.type];
@@ -155,7 +167,7 @@ export const DevicePanel = observer(({
             const classTypes = primary ? CHANNEL_CLASSES[primary.cls].types : [];
             const types = !classTypes.length || classTypes.includes(row.type) ? classTypes : [row.type, ...classTypes];
             return (
-              <li key={row.did} className="configurator-card">
+              <li key={row.did} className="configurator-card" data-did={row.did}>
                 <div className="configurator-channelHead configurator-cardHead">
                   <span className="configurator-channelTitle">
                     <button
