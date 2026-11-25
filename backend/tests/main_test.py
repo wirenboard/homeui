@@ -12,6 +12,7 @@ from wb.homeui_backend.cert import CertificateState
 from wb.homeui_backend.gates import CUSTOM_MENU_DIR as GATES_CUSTOM_MENU_DIR
 from wb.homeui_backend.gates import ApplyResult
 from wb.homeui_backend.http_response import (
+    HttpResponse,
     response_200,
     response_204,
     response_304,
@@ -38,15 +39,25 @@ from wb.homeui_backend.main import (
     get_session,
     get_users_handler,
     make_certificate_usable_change_handler,
+    resolve_webauthn_service,
     security_check_handler,
     update_dashboards_handler,
     update_https_handler,
     update_user_handler,
+    webauthn_authentication_complete_handler,
+    webauthn_authentication_options_handler,
+    webauthn_config_handler,
+    webauthn_credentials_handler,
+    webauthn_delete_credential_handler,
+    webauthn_registration_complete_handler,
+    webauthn_registration_options_handler,
 )
 from wb.homeui_backend.rate_limiter import RateLimiter
 from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
+from wb.homeui_backend.webauthn import UnknownCredentialError, WebAuthnService
+from wb.homeui_backend.webauthn_storage import WebAuthnCredentialsStorage
 
 
 class GetIdCookieValuesTest(unittest.TestCase):
@@ -179,6 +190,7 @@ class DeleteUserHandlerTest(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
         self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.credentials_storage_mock = MagicMock(spec=WebAuthnCredentialsStorage)
         self.context = WebRequestHandlerContext(
             sn="",
             users_storage=self.users_storage_mock,
@@ -187,6 +199,8 @@ class DeleteUserHandlerTest(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=self.credentials_storage_mock,
+            webauthn_challenges=MagicMock(),
             session=Session(
                 "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
             ),
@@ -223,6 +237,16 @@ class DeleteUserHandlerTest(unittest.TestCase):
         self.users_storage_mock.delete_user.assert_called_once_with(user_id)
         self.assertEqual(response, response_204())
 
+    def test_success_also_deletes_webauthn_credentials(self):
+        self.request.path = "/users/123"
+        user_id = "123"
+        user = MagicMock()
+        user.user_id = user_id
+        self.users_storage_mock.get_user_by_id.return_value = user
+        delete_user_handler(self.request, self.context)
+
+        self.credentials_storage_mock.delete_credentials_by_user.assert_called_once_with(user_id)
+
 
 class GetUsersHandlerTests(unittest.TestCase):
     def test_admin(self):
@@ -244,6 +268,8 @@ class GetUsersHandlerTests(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
             session=session,
         )
 
@@ -272,6 +298,8 @@ class CheckAuthHandlerTests(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
         )
 
     def test_no_required_user_type_no_user_without_users(self):
@@ -352,6 +380,8 @@ class DashboardsAuthorizationTest(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
         )
 
     def _check(self, required: str, user_type: UserType) -> int:
@@ -386,6 +416,8 @@ class WhoAmIHandlerTests(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
         )
 
     def test_with_authenticated_user(self):
@@ -430,6 +462,8 @@ class DeviceInfoHandlerTests(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
         )
 
     def test_device_info_handler(self):
@@ -482,6 +516,8 @@ class AuthLoginHandlerTest(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
         )
 
     def _post(self, login, password):
@@ -539,6 +575,8 @@ class UpdateUserHandlerTest(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
         )
 
     def test_bad_url(self):
@@ -755,6 +793,8 @@ class SecurityCheckHandlerTest(unittest.TestCase):
             security_check_thread=MagicMock(),
             dashboards_store=MagicMock(),
             fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
             session=None,
         )
 
@@ -808,6 +848,8 @@ def make_handler():
     handler.security_check_thread = MagicMock()
     handler.dashboards_store = MagicMock()
     handler.fonts_store = MagicMock()
+    handler.webauthn_credentials_storage = MagicMock()
+    handler.webauthn_challenges = MagicMock()
     handler.sn = ""
     return handler
 
@@ -1057,3 +1099,358 @@ class UpdateDashboardsHandlerTest(unittest.TestCase):
 
         self.assertEqual(response.status, 400)
         context.dashboards_store.replace_collection.assert_not_called()
+
+
+class WebAuthnRegistrationHandlersTest(
+    unittest.TestCase
+):  # pylint: disable=too-many-instance-attributes  # one mock per setUp fixture
+    """Passkeys are managed by admins only, including a non-admin's own ones.
+    `resolve_webauthn_service` is mocked here -- its own Host handling is covered by
+    ResolveWebAuthnServiceTest and `rp_id_for_host` in webauthn_test.py."""
+
+    def setUp(self):
+        self.request = MagicMock()
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.webauthn_service_mock = MagicMock(spec=WebAuthnService)
+        self.admin_user = User("admin-id", "admin1", "hash", UserType.ADMIN, False)
+        self.self_user = User("self-id", "user1", "hash", UserType.USER, False)
+        self.other_user = User("other-id", "user2", "hash", UserType.USER, False)
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=self.users_storage_mock,
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
+            session=Session("s1", self.self_user, datetime.now(timezone.utc)),
+        )
+        resolve_patcher = patch(
+            "wb.homeui_backend.main.resolve_webauthn_service", return_value=self.webauthn_service_mock
+        )
+        self.resolve_mock = resolve_patcher.start()
+        self.addCleanup(resolve_patcher.stop)
+
+    def _as_admin(self):
+        self.context.session = Session("s2", self.admin_user, datetime.now(timezone.utc))
+        self.users_storage_mock.get_user_by_id.return_value = self.other_user
+
+    def _post_body(self, **fields):
+        body = json.dumps(fields)
+        self.request.headers = {"Content-Length": str(len(body))}
+        self.request.rfile.read.return_value = body.encode()
+
+    def test_options_host_not_a_webauthn_domain(self):
+        """WebAuthn isn't available for the request's Host (e.g. a bare IP) -- 404."""
+        self.resolve_mock.return_value = None
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/register/options"
+        response = webauthn_registration_options_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_options_no_session(self):
+        self.context.session = None
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/register/options"
+        response = webauthn_registration_options_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+
+    def test_options_bad_path(self):
+        self._as_admin()
+        self.request.path = "/auth/webauthn/users/register/options"
+        response = webauthn_registration_options_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_options_self_forbidden(self):
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/register/options"
+        response = webauthn_registration_options_handler(self.request, self.context)
+        self.assertEqual(response, response_403())
+        self.webauthn_service_mock.begin_registration.assert_not_called()
+
+    def test_options_other_by_admin(self):
+        self.context.session = Session("s2", self.admin_user, datetime.now(timezone.utc))
+        self.users_storage_mock.get_user_by_id.return_value = self.other_user
+        self.request.path = f"/auth/webauthn/users/{self.other_user.user_id}/register/options"
+        self.webauthn_service_mock.begin_registration.return_value = {"challenge_id": "c1", "options": {}}
+        response = webauthn_registration_options_handler(self.request, self.context)
+        self.users_storage_mock.get_user_by_id.assert_called_once_with(self.other_user.user_id)
+        self.webauthn_service_mock.begin_registration.assert_called_once_with(self.other_user)
+        self.assertEqual(response.status, 200)
+
+    def test_options_unknown_target(self):
+        self.context.session = Session("s2", self.admin_user, datetime.now(timezone.utc))
+        self.users_storage_mock.get_user_by_id.return_value = None
+        self.request.path = "/auth/webauthn/users/missing-id/register/options"
+        response = webauthn_registration_options_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_complete_self_forbidden(self):
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/register/complete"
+        self._post_body(challenge_id="c1", name="Key", response={})
+        response = webauthn_registration_complete_handler(self.request, self.context)
+        self.assertEqual(response, response_403())
+        self.webauthn_service_mock.complete_registration.assert_not_called()
+
+    def test_complete_by_admin(self):
+        self._as_admin()
+        self.request.path = f"/auth/webauthn/users/{self.other_user.user_id}/register/complete"
+        self._post_body(challenge_id="c1", name="Key", response={})
+        self.webauthn_service_mock.complete_registration.return_value = MagicMock()
+        self.webauthn_service_mock.credential_to_dict.return_value = {"id": "abc"}
+        response = webauthn_registration_complete_handler(self.request, self.context)
+        self.webauthn_service_mock.complete_registration.assert_called_once_with(
+            self.other_user, "c1", "Key", {}
+        )
+        self.assertEqual(response.status, 201)
+
+    def test_complete_invalid_ceremony(self):
+        self._as_admin()
+        self.request.path = f"/auth/webauthn/users/{self.other_user.user_id}/register/complete"
+        self._post_body(challenge_id="c1", name="Key", response={})
+        self.webauthn_service_mock.complete_registration.side_effect = ValueError("bad challenge")
+        response = webauthn_registration_complete_handler(self.request, self.context)
+        self.assertEqual(response, response_400("WebAuthn registration failed"))
+
+    def test_complete_host_not_a_webauthn_domain(self):
+        self.resolve_mock.return_value = None
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/register/complete"
+        self._post_body(challenge_id="c1", name="Key", response={})
+        response = webauthn_registration_complete_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+
+class WebAuthnAuthenticationHandlersTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.webauthn_service_mock = MagicMock(spec=WebAuthnService)
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.sessions_storage_mock = MagicMock()
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=self.users_storage_mock,
+            sessions_storage=self.sessions_storage_mock,
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
+            session=None,
+        )
+        resolve_patcher = patch(
+            "wb.homeui_backend.main.resolve_webauthn_service", return_value=self.webauthn_service_mock
+        )
+        self.resolve_mock = resolve_patcher.start()
+        self.addCleanup(resolve_patcher.stop)
+
+    def _post_body(self, **fields):
+        body = json.dumps(fields)
+        self.request.headers = {"Content-Length": str(len(body))}
+        self.request.rfile.read.return_value = body.encode()
+
+    def test_options_host_not_a_webauthn_domain(self):
+        self.resolve_mock.return_value = None
+        response = webauthn_authentication_options_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_complete_host_not_a_webauthn_domain(self):
+        self.resolve_mock.return_value = None
+        self._post_body(challenge_id="c1", response={})
+        response = webauthn_authentication_complete_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_complete_success(self):
+        self._post_body(challenge_id="c1", response={})
+        user = User("user-id", "admin1", "hash", UserType.ADMIN, False)
+        self.webauthn_service_mock.complete_authentication.return_value = user.user_id
+        self.users_storage_mock.get_user_by_id.return_value = user
+        response = webauthn_authentication_complete_handler(self.request, self.context)
+        self.assertEqual(response.status, 200)
+        self.sessions_storage_mock.add_session.assert_called_once_with(user)
+
+    def test_complete_invalid_ceremony(self):
+        self._post_body(challenge_id="c1", response={})
+        self.webauthn_service_mock.complete_authentication.side_effect = ValueError("bad challenge")
+        response = webauthn_authentication_complete_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+
+    def test_complete_unknown_credential_is_reported_as_such(self):
+        """A passkey deleted on the controller still sits on the device -- the 401 body tells
+        the UI to say so instead of a generic failure."""
+        self._post_body(challenge_id="c1", response={})
+        self.webauthn_service_mock.complete_authentication.side_effect = UnknownCredentialError("gone")
+        response = webauthn_authentication_complete_handler(self.request, self.context)
+        self.assertEqual(response, HttpResponse(401, body="unknown-credential"))
+
+    def test_complete_unknown_user(self):
+        """The credential's user_id doesn't resolve to an existing user (e.g. deleted since
+        registration) -- reject rather than crash."""
+        self._post_body(challenge_id="c1", response={})
+        self.webauthn_service_mock.complete_authentication.return_value = "ghost-id"
+        self.users_storage_mock.get_user_by_id.return_value = None
+        response = webauthn_authentication_complete_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+
+
+class WebAuthnCredentialsHandlersTest(unittest.TestCase):
+    """Listing/deleting passkeys is admin-only and works the same from any address -- unlike
+    the four ceremony endpoints above, it doesn't depend on the current Host (there's no
+    ceremony rp_id involved)."""
+
+    def setUp(self):
+        self.request = MagicMock()
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
+        self.credentials_storage_mock = MagicMock(spec=WebAuthnCredentialsStorage)
+        self.admin_user = User("admin-id", "admin1", "hash", UserType.ADMIN, False)
+        self.self_user = User("self-id", "user1", "hash", UserType.USER, False)
+        self.other_user = User("other-id", "user2", "hash", UserType.USER, False)
+        self.context = WebRequestHandlerContext(
+            sn="",
+            users_storage=self.users_storage_mock,
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            webauthn_credentials_storage=self.credentials_storage_mock,
+            webauthn_challenges=MagicMock(),
+            session=Session("s1", self.self_user, datetime.now(timezone.utc)),
+        )
+
+    def _as_admin(self):
+        self.context.session = Session("s2", self.admin_user, datetime.now(timezone.utc))
+        self.users_storage_mock.get_user_by_id.return_value = self.other_user
+
+    def test_list_no_session(self):
+        self.context.session = None
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials"
+        response = webauthn_credentials_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+
+    def test_list_self_forbidden(self):
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials"
+        response = webauthn_credentials_handler(self.request, self.context)
+        self.assertEqual(response, response_403())
+        self.credentials_storage_mock.get_credentials_by_user.assert_not_called()
+
+    def test_list_other_by_admin(self):
+        self.context.session = Session("s2", self.admin_user, datetime.now(timezone.utc))
+        self.users_storage_mock.get_user_by_id.return_value = self.other_user
+        self.request.path = f"/auth/webauthn/users/{self.other_user.user_id}/credentials"
+        self.credentials_storage_mock.get_credentials_by_user.return_value = []
+        response = webauthn_credentials_handler(self.request, self.context)
+        self.credentials_storage_mock.get_credentials_by_user.assert_called_once_with(self.other_user.user_id)
+        self.assertEqual(response.status, 200)
+
+    def test_delete_no_session(self):
+        self.context.session = None
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials/abc123"
+        response = webauthn_delete_credential_handler(self.request, self.context)
+        self.assertEqual(response, response_401())
+
+    def test_delete_bad_path(self):
+        self._as_admin()
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials"
+        response = webauthn_delete_credential_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_delete_self_forbidden(self):
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials/abc123"
+        response = webauthn_delete_credential_handler(self.request, self.context)
+        self.assertEqual(response, response_403())
+        self.credentials_storage_mock.delete_credential.assert_not_called()
+
+    def test_delete_not_found(self):
+        self._as_admin()
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials/abc123"
+        self.credentials_storage_mock.delete_credential.return_value = False
+        with patch.object(WebAuthnService, "decode_credential_id", return_value=b"decoded"):
+            response = webauthn_delete_credential_handler(self.request, self.context)
+        self.assertEqual(response, response_404())
+
+    def test_delete_invalid_id(self):
+        self._as_admin()
+        self.request.path = f"/auth/webauthn/users/{self.self_user.user_id}/credentials/bad!!"
+        with patch.object(WebAuthnService, "decode_credential_id", side_effect=ValueError("bad id")):
+            response = webauthn_delete_credential_handler(self.request, self.context)
+        self.assertEqual(response, response_400("Invalid credential id"))
+
+    def test_delete_other_by_admin(self):
+        self.context.session = Session("s2", self.admin_user, datetime.now(timezone.utc))
+        self.users_storage_mock.get_user_by_id.return_value = self.other_user
+        self.request.path = f"/auth/webauthn/users/{self.other_user.user_id}/credentials/abc123"
+        self.credentials_storage_mock.delete_credential.return_value = True
+        with patch.object(WebAuthnService, "decode_credential_id", return_value=b"decoded") as decode_mock:
+            response = webauthn_delete_credential_handler(self.request, self.context)
+        decode_mock.assert_called_once_with("abc123")
+        self.credentials_storage_mock.delete_credential.assert_called_once_with(
+            self.other_user.user_id, b"decoded"
+        )
+        self.assertEqual(response, response_204())
+
+
+class ResolveWebAuthnServiceTest(unittest.TestCase):
+    def setUp(self):
+        self.context = WebRequestHandlerContext(
+            sn="sn123",
+            users_storage=MagicMock(),
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            webauthn_credentials_storage=MagicMock(),
+            webauthn_challenges=MagicMock(),
+            session=None,
+        )
+        self.request = MagicMock()
+
+    def test_lan_subdomain_maps_to_parent_rp_id(self):
+        self.request.headers = {"Host": "192-168-1-39.SN123.ip.wirenboard.com:443"}
+        service = resolve_webauthn_service(self.request, self.context)
+        self.assertEqual(service.rp_id, "sn123.ip.wirenboard.com")
+
+
+class WebAuthnConfigHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.request.headers = {"Host": "sn123.ip.wirenboard.com"}
+        self.credentials_storage = MagicMock(spec=WebAuthnCredentialsStorage)
+        self.credentials_storage.has_any_credentials.return_value = False
+        self.context = WebRequestHandlerContext(
+            sn="sn123",
+            users_storage=MagicMock(),
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            dashboards_store=MagicMock(),
+            fonts_store=MagicMock(),
+            webauthn_credentials_storage=self.credentials_storage,
+            webauthn_challenges=MagicMock(),
+            session=None,
+        )
+
+    def test_enabled_for_lan_domain(self):
+        response = webauthn_config_handler(self.request, self.context)
+        self.assertEqual(
+            json.loads(response.body),
+            {
+                "enabled": True,
+                "has_credentials": False,
+            },
+        )
+
+    def test_disabled_for_bare_ip(self):
+        """Browsers refuse WebAuthn on an IP address, so it reports `enabled: false`."""
+        self.request.headers = {"Host": "10.200.200.1"}
+        response = webauthn_config_handler(self.request, self.context)
+        body = json.loads(response.body)
+        self.assertFalse(body["enabled"])
+
+    def test_has_credentials_reported_even_when_disabled(self):
+        """Credentials aren't deleted when WebAuthn is momentarily unavailable for this
+        address, so `has_credentials` must keep reflecting the database."""
+        self.request.headers = {"Host": "10.200.200.1"}
+        self.credentials_storage.has_any_credentials.return_value = True
+        response = webauthn_config_handler(self.request, self.context)
+        self.assertTrue(json.loads(response.body)["has_credentials"])

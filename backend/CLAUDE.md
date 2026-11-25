@@ -17,6 +17,9 @@ Entry point `wb/homeui_backend/main.py` (`BaseHTTPRequestHandler`); synchronous,
 
 - `users_storage`, `sessions_storage`, `keys_storage` — user/session/key persistence.
 - `rate_limiter` — login throttling.
+- `webauthn`, `webauthn_storage` — passkey login and admin-only passkey management under
+  `/auth/webauthn/*`. RP ID comes from the request Host (`<ip>.<sn>.ip.wirenboard.com` →
+  `<sn>.ip.wirenboard.com`); credentials live in the `webauthn_credentials` table of `users.db`.
 - `security`, `cert` — security check + TLS certificate state.
 - `dashboards` — owns `/etc/wb-webui.conf`: the lightweight index + lazy per-dashboard SVG
   endpoints (`GET/PUT /api/dashboards` for the collection, `GET /api/dashboards/<id>/svg` for the

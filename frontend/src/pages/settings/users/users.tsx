@@ -1,18 +1,25 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 import EditIcon from '@/assets/icons/edit.svg';
+import KeyIcon from '@/assets/icons/key.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
+import { Dialog } from '@/components/dialog';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { EditUserModal } from '@/pages/settings/users/components/edit-user';
-import { authStore, UserRole } from '@/stores/auth';
+import { Passkeys } from '@/pages/settings/users/components/passkeys';
+import { UsersList } from '@/pages/settings/users/components/users-list';
+import { canUseWebAuthn, getWebAuthnConfig } from '@/services/webauthn';
+import { authStore, type User, UserRole } from '@/stores/auth';
 import { useAsyncAction } from '@/utils/async-action';
 import { store } from './page-store';
 import './styles.css';
@@ -20,8 +27,11 @@ import './styles.css';
 const UsersPage = observer(() => {
   const { t, i18n } = useTranslation();
   const [deletedUserId, setDeletedUserId] = useState('');
+  const [passkeysUserId, setPasskeysUserId] = useState('');
+  const [passkeysDisabledHint, setPasskeysDisabledHint] = useState('');
   const [ confirm, isOpened, handleConfirm, handleClose ] = useConfirm<any>();
   const [ editedUser, setEditedUser ] = useState<any>();
+  const showCards = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
 
   const [loadUsers, isLoading] = useAsyncAction(async () => {
     if (authStore.hasRights(UserRole.Admin)) {
@@ -34,6 +44,16 @@ const UsersPage = observer(() => {
     store.showEnableHttpsConfirmModal = confirm;
   }, []);
 
+  useEffect(() => {
+    if (!canUseWebAuthn()) {
+      setPasskeysDisabledHint('users.labels.passkeys-unavailable');
+      return;
+    }
+    getWebAuthnConfig()
+      .then((config) => !config.enabled && setPasskeysDisabledHint('users.labels.passkeys-wrong-domain'))
+      .catch(() => {});
+  }, []);
+
   const [save, isSaving] = useAsyncAction(async (data) => {
     if (editedUser.id) {
       await store.editUser(editedUser, data);
@@ -43,6 +63,10 @@ const UsersPage = observer(() => {
 
     setEditedUser(null);
   });
+
+  const editUser = (user: User) => {
+    setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
+  };
 
   const [deleteUser, isDeleting] = useAsyncAction(async (id: string) => {
     await store.deleteUser(id);
@@ -74,66 +98,91 @@ const UsersPage = observer(() => {
     >
       {store.users.length ? (
         <>
-          <Table>
-            <TableRow isHeading>
-              <TableCell width="50%">
-                {t('users.labels.login')}
-              </TableCell>
-              <TableCell width="50%">
-                {t('users.labels.type')}
-              </TableCell>
-              <TableCell width={100} />
-            </TableRow>
-
-            {store.users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell ellipsis>
-                  <span id={`username-${user.login}`}>{user.login}</span>
+          {showCards ? (
+            <UsersList
+              users={store.users}
+              passkeysDisabledHint={passkeysDisabledHint}
+              onlyOneAdmin={store.onlyOneAdmin}
+              onEdit={editUser}
+              onPasskeys={(user) => setPasskeysUserId(user.id)}
+              onDelete={(user) => setDeletedUserId(user.id)}
+            />
+          ) : (
+            <Table>
+              <TableRow isHeading>
+                <TableCell width="50%">
+                  {t('users.labels.login')}
                 </TableCell>
-
-                <TableCell>
-                  {t('users.labels.' + user.type)}
+                <TableCell width="50%">
+                  {t('users.labels.type')}
                 </TableCell>
-
-                <TableCell align="right">
-                  <div className="users-actions">
-                    <Tooltip
-                      id={`edit-${user.login}`}
-                      text={t('users.buttons.edit')}
-                      aria-label={t('users.buttons.edit')}
-                    >
-                      <Button
-                        size="small"
-                        variant="primary"
-                        aria-labelledby={`username-${user.login} edit-${user.login}`}
-                        icon={<EditIcon />}
-                        aria-haspopup="dialog"
-                        onClick={() => {
-                          setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
-                        }}
-                      />
-                    </Tooltip>
-
-                    <Tooltip
-                      id={`delete-${user.login}`}
-                      text={t('users.buttons.delete')}
-                      aria-label={t('users.buttons.delete')}
-                    >
-                      <Button
-                        size="small"
-                        variant="danger"
-                        icon={<TrashIcon />}
-                        disabled={user.type === 'admin' && store.onlyOneAdmin}
-                        aria-labelledby={`username-${user.login} delete-${user.login}`}
-                        aria-haspopup="dialog"
-                        onClick={() => setDeletedUserId(user.id)}
-                      />
-                    </Tooltip>
-                  </div>
-                </TableCell>
+                <TableCell width={140} />
               </TableRow>
-            ))}
-          </Table>
+
+              {store.users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell ellipsis>
+                    <span id={`username-${user.login}`}>{user.login}</span>
+                  </TableCell>
+
+                  <TableCell>
+                    {t('users.labels.' + user.type)}
+                  </TableCell>
+
+                  <TableCell align="right">
+                    <div className="users-actions">
+                      <Tooltip
+                        id={`edit-${user.login}`}
+                        text={t('users.buttons.edit')}
+                        aria-label={t('users.buttons.edit')}
+                      >
+                        <Button
+                          size="small"
+                          variant="primary"
+                          aria-labelledby={`username-${user.login} edit-${user.login}`}
+                          icon={<EditIcon />}
+                          aria-haspopup="dialog"
+                          onClick={() => editUser(user)}
+                        />
+                      </Tooltip>
+
+                      <Tooltip
+                        id={`passkeys-${user.login}`}
+                        text={t(passkeysDisabledHint || 'users.buttons.passkeys')}
+                        aria-label={t(passkeysDisabledHint || 'users.buttons.passkeys')}
+                      >
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          aria-labelledby={`username-${user.login} passkeys-${user.login}`}
+                          icon={<KeyIcon />}
+                          aria-haspopup="dialog"
+                          disabled={!!passkeysDisabledHint}
+                          onClick={() => setPasskeysUserId(user.id)}
+                        />
+                      </Tooltip>
+
+                      <Tooltip
+                        id={`delete-${user.login}`}
+                        text={t('users.buttons.delete')}
+                        aria-label={t('users.buttons.delete')}
+                      >
+                        <Button
+                          size="small"
+                          variant="danger"
+                          icon={<TrashIcon />}
+                          disabled={user.type === 'admin' && store.onlyOneAdmin}
+                          aria-labelledby={`username-${user.login} delete-${user.login}`}
+                          aria-haspopup="dialog"
+                          onClick={() => setDeletedUserId(user.id)}
+                        />
+                      </Tooltip>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </Table>
+          )}
 
           <label className="users-autologin">
             {t('users.labels.autologin')}
@@ -223,6 +272,20 @@ const UsersPage = observer(() => {
               { name: authStore.users.find((user) => user.id === deletedUserId)?.login })
           }
         </Confirm>
+      )}
+
+      {passkeysUserId && (
+        <Dialog
+          width={760}
+          isOpened={!!passkeysUserId}
+          heading={t('users.labels.passkeys-heading', {
+            login: authStore.users.find((user) => user.id === passkeysUserId)?.login,
+            interpolation: { escapeValue: false },
+          })}
+          onClose={() => setPasskeysUserId('')}
+        >
+          <Passkeys userId={passkeysUserId} />
+        </Dialog>
       )}
     </PageLayout>
   );

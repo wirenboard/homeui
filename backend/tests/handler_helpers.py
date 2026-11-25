@@ -9,4 +9,6 @@ def make_placeholder_context_deps():
         "sessions_storage": MagicMock(),
         "certificate_thread": MagicMock(),
         "security_check_thread": MagicMock(),
+        "webauthn_credentials_storage": MagicMock(),
+        "webauthn_challenges": MagicMock(),
     }

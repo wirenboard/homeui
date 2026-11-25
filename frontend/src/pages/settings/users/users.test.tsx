@@ -2,7 +2,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import UsersPage from './users';
 
-const { storeMock, authMock } = vi.hoisted(() => ({
+const { storeMock, authMock, webauthnMock } = vi.hoisted(() => ({
   storeMock: {
     users: [] as any[],
     errors: [],
@@ -24,9 +24,14 @@ const { storeMock, authMock } = vi.hoisted(() => ({
     users: [] as any[],
     me: { id: 'u1', autologin: false },
   },
+  webauthnMock: {
+    getWebAuthnConfig: vi.fn(async () => ({ enabled: true })),
+    canUseWebAuthn: vi.fn(() => true),
+  },
 }));
 
 vi.mock('./page-store', () => ({ store: storeMock }));
+vi.mock('@/services/webauthn', () => webauthnMock);
 vi.mock('@/stores/auth', () => ({
   authStore: authMock,
   UserRole: { Admin: 'admin', Operator: 'operator', User: 'user' },
@@ -51,7 +56,20 @@ vi.mock('@/common/links', () => ({
   documentation: { en: { users: '#users-docs' } },
 }));
 vi.mock('@/assets/icons/edit.svg', () => ({ default: () => null }));
+vi.mock('@/assets/icons/key.svg', () => ({ default: () => null }));
 vi.mock('@/assets/icons/trash.svg', () => ({ default: () => null }));
+vi.mock('@/components/dialog', () => ({
+  Dialog: ({ isOpened, heading, onClose, children }: any) => isOpened ? (
+    <div data-testid="passkeys-dialog">
+      <div data-testid="passkeys-dialog-heading">{heading}</div>
+      {children}
+      <button data-testid="passkeys-dialog-close" onClick={onClose}>close</button>
+    </div>
+  ) : null,
+}));
+vi.mock('@/pages/settings/users/components/passkeys', () => ({
+  Passkeys: ({ userId }: any) => <div data-testid="passkeys" data-user-id={userId} />,
+}));
 vi.mock('@/components/tooltip', () => import('@/test/mocks/tooltip'));
 vi.mock('@/layouts/page', () => ({
   PageLayout: ({
@@ -126,6 +144,7 @@ const makeUser = (id: string, login: string, type = 'user') => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: true });
   authMock.hasRights.mockReturnValue(true);
   authMock.areUsersConfigured = true;
   authMock.users = [
@@ -246,6 +265,26 @@ describe('UsersPage', () => {
     fireEvent.click(screen.getByLabelText(/username-admin1 delete/));
     fireEvent.click(screen.getByTestId('confirm-cancel'));
     expect(screen.queryByTestId('confirm-dialog')).toBeNull();
+  });
+
+  test('passkeys button opens the passkeys dialog for that user', () => {
+    render(<UsersPage />);
+    expect(screen.queryByTestId('passkeys-dialog')).toBeNull();
+
+    fireEvent.click(screen.getByLabelText(/username-viewer passkeys/));
+
+    expect(screen.getByTestId('passkeys-dialog')).toBeDefined();
+    expect(screen.getByTestId('passkeys').getAttribute('data-user-id')).toBe('u2');
+  });
+
+  test('disables the passkeys button when WebAuthn is not enabled for this address', async () => {
+    webauthnMock.getWebAuthnConfig.mockResolvedValue({ enabled: false });
+    render(<UsersPage />);
+
+    await waitFor(() => {
+      const button = screen.getByLabelText(/username-viewer passkeys/) as HTMLButtonElement;
+      expect(button.disabled).toBe(true);
+    });
   });
 
   test('delete disabled for sole admin', () => {
