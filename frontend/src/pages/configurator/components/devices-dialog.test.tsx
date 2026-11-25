@@ -104,7 +104,8 @@ describe('DevicesDialog', () => {
     expect(rowBoxes()).toHaveLength(0);
 
     fireEvent.click(screen.getAllByRole('checkbox', { name: 'configurator.labels.wb-check-device' })[0]);
-    expect(document.querySelector('.configurator-wbSummary').textContent).toContain('configurator.labels.picked-count');
+    expect(document.querySelector('.configurator-wbSummary').textContent)
+      .toContain('configurator.labels.wb-devices-count');
 
     fireEvent.click(toggles()[1]);
     expect(rowBoxes()).toHaveLength(1);

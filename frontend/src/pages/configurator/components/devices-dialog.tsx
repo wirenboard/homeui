@@ -387,10 +387,10 @@ export const DevicesDialog = observer(({
         />
       </div>
       <footer className="configurator-dialogFooter">
-        <span>{t('configurator.labels.wb-create-count', { ...UNESCAPED, count: chosen.length })}</span>
+        <span />
         <Button variant="secondary" label={t('modal.labels.cancel')} onClick={onClose} />
         <Button
-          label={t('configurator.buttons.create-devices')}
+          label={t('configurator.buttons.create-devices', chosen.length ? { count: chosen.length } : {})}
           disabled={!chosen.length || chosen.some(isBadName)}
           onClick={create}
         />

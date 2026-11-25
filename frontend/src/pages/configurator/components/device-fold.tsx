@@ -17,7 +17,7 @@ export const DeviceFold = ({
           return <Icon key={type} className="configurator-typeIcon" />;
         })}
       </span>
-      {!!picked && t('configurator.labels.picked-count', { count: picked })}
+      {!!picked && t('configurator.labels.wb-devices-count', { count: picked })}
       <button
         type="button"
         className="configurator-collapse"
