@@ -136,9 +136,6 @@ export const defaultName = (typeId: string, cell: Cell | undefined, cls: Channel
 export const adapterLabel = (adapter: Adapter, language: string) =>
   adapter.title?.[language as 'ru' | 'en'] || adapter.title?.en || adapter.id;
 
-export const isAdapterShown = (adapter: Adapter, language: string) =>
-  !adapter.languages || adapter.languages.includes(language);
-
 export const isAdapterOn = (device: Device, adapter: Adapter) =>
   device.adapterSettings[adapter.id] ?? adapter.default ?? false;
 

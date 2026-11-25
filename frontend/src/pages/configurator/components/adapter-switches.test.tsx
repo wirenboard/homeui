@@ -26,12 +26,6 @@ const show = (adapters: Adapter[], target = device()) => {
 const matterBox = () => screen.getByRole('checkbox', { name: 'Matter' }) as HTMLInputElement;
 
 describe('AdapterSwitches', () => {
-  it('hides an adapter that is not available in the interface language (tests run in English)', () => {
-    show([{ ...matter, languages: ['ru'] }]);
-
-    expect(screen.queryByRole('checkbox')).toBeNull();
-  });
-
   it('shows a switch for every adapter of the registry and nothing when the registry is empty', () => {
     show([matter, { ...matter, id: 'homekit', title: { en: 'HomeKit' } }]);
     expect(screen.getAllByRole('checkbox')).toHaveLength(2);

@@ -8,11 +8,11 @@ import { Table, TableCell, TableRow, type TableCellSortDirection } from '@/compo
 import { Tag } from '@/components/tag';
 import { configuratorStore, type Adapter, type Device } from '@/stores/configurator';
 import type { OverviewColumn, OverviewProps } from '../types';
-import { adapterLabel, hasLostBinding, isAdapterOn, isAdapterShown, UNESCAPED } from '../utils';
+import { adapterLabel, hasLostBinding, isAdapterOn, UNESCAPED } from '../utils';
 
 export const Overview = observer(({ onSelect }: OverviewProps) => {
   const { t, i18n } = useTranslation();
-  const adapters = configuratorStore.adapters.filter((adapter) => isAdapterShown(adapter, i18n.language));
+  const { adapters } = configuratorStore;
 
   const [column, setColumn] = useState<OverviewColumn>('group');
   const [direction, setDirection] = useState<TableCellSortDirection>('asc');

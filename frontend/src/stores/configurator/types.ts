@@ -238,8 +238,6 @@ export interface Adapter {
   package?: string;
   service?: string;
   url?: string;
-  // языки интерфейса, на которых система доступна; без поля — на всех
-  languages?: string[];
   // передавать ли устройство без ключа адаптера в adapter_settings
   default?: boolean;
   // только в /status старого конвертера, где реестр лежал вместе с признаком установки

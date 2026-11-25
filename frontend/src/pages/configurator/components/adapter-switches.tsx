@@ -6,14 +6,13 @@ import { Alert } from '@/components/alert';
 import { Switch } from '@/components/switch';
 import { configuratorStore } from '@/stores/configurator';
 import type { AdapterSwitchesProps } from '../types';
-import { adapterLabel, isAdapterOn, isAdapterShown } from '../utils';
+import { adapterLabel, isAdapterOn } from '../utils';
 
 export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
   const { t, i18n } = useTranslation();
   const labelId = useId();
 
   const shown = configuratorStore.adapters
-    .filter((adapter) => isAdapterShown(adapter, i18n.language))
     .map((adapter) => ({
       ...adapter,
       label: adapterLabel(adapter, i18n.language),
