@@ -19,6 +19,7 @@ import {
   deviceControls, deviceTitle, formatValue, isSystemDevice, listDevices, roleLabel, TYPE_ICONS, UNESCAPED,
 } from '../utils';
 import { DeviceFold } from './device-fold';
+import { ModelChip } from './model-chip';
 import { TypeChoice } from './type-choice';
 import { UnitRoles } from './unit-roles';
 
@@ -120,8 +121,16 @@ export const DevicesDialog = observer(({
     return unit.name === title ? title : `${title} · ${unit.name}`;
   };
   const taken = new Set(configuratorStore.devices.map((device) => device.name.trim().toLowerCase()));
-  const isBadName = (unit: WbUnit) => !nameOf(unit) || taken.has(nameOf(unit).toLowerCase())
-    || chosen.some((other) => other !== unit && nameOf(other).toLowerCase() === nameOf(unit).toLowerCase());
+  const nameError = (unit: WbUnit) => {
+    const name = nameOf(unit);
+    if (!name) {
+      return t('configurator.labels.wb-name-empty');
+    }
+    const isTaken = taken.has(name.toLowerCase());
+    const isBad = isTaken || chosen.some((item) => item !== unit && nameOf(item).toLowerCase() === name.toLowerCase());
+    return isBad ? t(`configurator.labels.wb-name-${isTaken ? 'taken' : 'repeat'}`, { ...UNESCAPED, name }) : null;
+  };
+  const isBadName = (unit: WbUnit) => !!nameError(unit);
 
   // Строки будущего устройства с выбранным типом и подменёнными каналами.
   const rowsOf = (unit: WbUnit): NewDeviceRow[] => (
@@ -180,22 +189,6 @@ export const DevicesDialog = observer(({
     onClose();
   };
 
-  // Метка модели со счётчиком устройств; подпись Button — только строка, поэтому классы кнопки заданы вручную.
-  const modelChip = (title: string | null, label: string, count: number) => (
-    <button
-      key={title ?? ''}
-      type="button"
-      className={classNames('button button-s configurator-modelChip', model === title
-        ? 'button-primary'
-        : 'button-secondary')}
-      aria-pressed={model === title}
-      onClick={() => setModel(title)}
-    >
-      {label}
-      <span className="configurator-modelCount">{count}</span>
-    </button>
-  );
-
   const icons = (rowTypes: string[]) => Array.from(new Set(rowTypes)).map((type) => {
     const Icon = TYPE_ICONS[type];
     return <Icon key={type} className="configurator-typeIcon" />;
@@ -235,9 +228,14 @@ export const DevicesDialog = observer(({
         </div>
         {!!models.length && (
           <div className="configurator-wbFilters" role="group" aria-label={t('configurator.labels.filter-models')}>
-            {modelChip(null, t('configurator.labels.filter-all'), devices.length)}
-            {models.map((title) => modelChip(
-              title, title, devices.filter((device) => device.model === title).length,
+            {[null, ...models].map((title) => (
+              <ModelChip
+                key={title ?? ''}
+                label={title ?? t('configurator.labels.filter-all')}
+                count={devices.filter((device) => title === null || device.model === title).length}
+                isActive={model === title}
+                onClick={() => setModel(title)}
+              />
             ))}
           </div>
         )}
@@ -305,6 +303,9 @@ export const DevicesDialog = observer(({
                           {icons(unitRows.map((row) => row.type))}
                         </span>
                       </div>
+                      {checked.includes(unit.key) && isBadName(unit) && (
+                        <p className="configurator-wbNameError">{nameError(unit)}</p>
+                      )}
                       {unit.choices.length > 1 && (
                         <TypeChoice
                           types={unit.choices}

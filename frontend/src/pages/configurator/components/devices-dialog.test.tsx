@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { runInAction } from 'mobx';
 import { configuratorStore } from '@/stores/configurator';
-import { fireEvent, render, screen } from '@/test/render';
+import { act, fireEvent, render, screen } from '@/test/render';
 import { DevicesDialog } from './devices-dialog';
 
 const { controls, CLASSES } = vi.hoisted(() => ({
@@ -129,5 +129,24 @@ describe('DevicesDialog', () => {
     search('nothing');
     expect(titles()).toEqual([]);
     expect(screen.getByText('configurator.labels.nothing-found')).toBeTruthy();
+  });
+
+  it('explains under a checked row why its name does not fit: taken, repeated or empty', () => {
+    show({ 'wb-mrps6_12': ['K1', 'K2'] });
+    act(() => runInAction(() => {
+      configuratorStore.devices = [{ id: 'd0', name: 'Люстра', group: '', matter: true, rows: [] }];
+    }));
+    const names = screen.getAllByRole('textbox', { name: 'configurator.labels.wb-name' });
+    const errors = () => Array.from(document.querySelectorAll('.configurator-wbNameError'))
+      .map((error) => error.textContent);
+
+    fireEvent.change(names[0], { target: { value: 'Люстра' } });
+    expect(errors()).toEqual(['configurator.labels.wb-name-taken']);
+    fireEvent.change(names[0], { target: { value: 'Бра' } });
+    fireEvent.change(names[1], { target: { value: 'бра' } });
+    expect(errors()).toEqual(['configurator.labels.wb-name-repeat', 'configurator.labels.wb-name-repeat']);
+    fireEvent.change(names[1], { target: { value: ' ' } });
+    expect(errors()).toEqual(['configurator.labels.wb-name-empty']);
+    expect(createButton().disabled).toBe(true);
   });
 });

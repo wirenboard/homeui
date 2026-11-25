@@ -105,6 +105,13 @@ export interface BoundChannel {
 // Подмена каналов строки: роль → ключ канала, null — роль очищена.
 export type RoleBinds = Partial<Record<RoleId, string | null>>;
 
+export interface ModelChipProps {
+  label: string;
+  count: number;
+  isActive: boolean;
+  onClick: () => void;
+}
+
 export interface DeviceFoldProps {
   title: string;
   types: string[];

@@ -380,6 +380,12 @@
     margin-left: auto;
 }
 
+.configurator-wbNameError {
+    margin: 4px 0 0;
+    color: var(--danger-color);
+    font-size: var(--font-size-small);
+}
+
 .configurator-wbName {
     flex: 1;
     min-width: 0;
