@@ -123,7 +123,7 @@ describe('FabricDetails, the order of the sections', () => {
     );
 
     expect(sections()).toEqual(['matter.labels.section-pairing']);
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'matter.buttons.check-link' })).not.toBeInTheDocument();
   });
 });
 
@@ -328,7 +328,7 @@ describe('FabricDetails, the status of a fabric', () => {
     unmount();
 
     show({}, { isChecking: true });
-    expect(screen.getByRole('button')).toBeDisabled();
+    expect(statusSection().getByRole('button')).toBeDisabled();
     expect(statusSection().getByText('matter.labels.check-running')).toBeInTheDocument();
   });
 

@@ -2,7 +2,7 @@ import en from '@/i18n/locales/en.json';
 import ru from '@/i18n/locales/ru.json';
 
 /**
- * Every reason the bridge can give for leaving a device out of Matter.
+ * Every reason the bridge can give for leaving a device, or one channel of it, out of Matter.
  *
  * Copied from REASONS in src/matter/endpoints.js of wb-mqtt-matter-bridge, which is a
  * separate repository, so this list cannot be imported and has to be kept by hand. The
@@ -22,6 +22,9 @@ const REASON_CODES = [
   'scale_broken',
   'unit_unknown',
   'build_failed',
+  'role_unused',
+  'role_needs_others',
+  'silent',
 ];
 
 describe('the reasons a device is not given to Matter', () => {

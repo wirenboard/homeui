@@ -3,8 +3,9 @@ import { enUS, ru } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import type { MatterCommand, MatterFabricDevice } from '@/stores/matter';
-import type { DetailsFactsProps, DetailsSectionProps, FabricDetailsProps } from '../types';
-import { roleSaysKey, vendorHex } from '../utils';
+import type { DetailsFactsProps, FabricDetailsProps } from '../types';
+import { fabricDisplayLabel, roleSaysKey, vendorHex } from '../utils';
+import { Details, Facts, Section } from './details';
 
 // More names than this in one cell push everything below them off the screen.
 const MISSING_SHOWN = 3;
@@ -12,25 +13,6 @@ const MISSING_SHOWN = 3;
 // The verdicts with nothing to advise in the section of the status: all is well, or the
 // advice is about what one controller follows and stands with that controller.
 const NO_STATUS_ADVICE = ['online', 'partly'];
-
-const Section = ({ title, children }: DetailsSectionProps) => (
-  <section className="matter-detailsSection">
-    <h4 className="matter-detailsHeading">{title}</h4>
-    {children}
-  </section>
-);
-
-const Facts = ({ rows }: DetailsFactsProps) => (
-  <dl className="matter-facts">
-    {rows.map(([name, value], order) => (
-      // With its place: two commands of one second carry the same label.
-      <div className="matter-fact" key={`${name}-${order}`}>
-        <dt>{name}</dt>
-        <dd>{value}</dd>
-      </div>
-    ))}
-  </dl>
-);
 
 /**
  * What the bridge knows of one fabric, under its row: first the short facts of the fabric
@@ -161,7 +143,7 @@ export const FabricDetails = ({
   };
 
   return (
-    <div className="matter-details">
+    <Details title={fabricDisplayLabel(fabric, t)}>
       <Section title={t('matter.labels.section-pairing')}>
         <Facts
           rows={[
@@ -200,7 +182,7 @@ export const FabricDetails = ({
           {!NO_STATUS_ADVICE.includes(link.code) && (
             <span className="matter-detailsAdvice">{t(`matter.labels.link-advice-${link.code}`)}</span>
           )}
-          <div className="matter-detailsCheck">
+          <div className="matter-detailsCheck" data-nocopy>
             <Button
               variant="secondary"
               size="small"
@@ -247,6 +229,6 @@ export const FabricDetails = ({
           ))}
         </Section>
       )}
-    </div>
+    </Details>
   );
 };

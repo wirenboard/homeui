@@ -15,7 +15,9 @@ const LAMP = {
   exposed: true,
   reason_code: null,
   reason: null,
-  state: 'on',
+  channels: [{
+    role: 'on_off', control: 'wb-mr6c_21/K1', status: 'ok', text: 'on',
+  }],
 };
 
 const PROBE = {
@@ -28,7 +30,9 @@ const PROBE = {
   exposed: true,
   reason_code: null,
   reason: null,
-  state: '21.5 C',
+  channels: [{
+    role: 'temperature', control: 'boiler/T1', status: 'ok', text: '21.5 °C',
+  }],
 };
 
 const ONLINE_FABRIC = {
@@ -53,27 +57,25 @@ describe('the Matter page on a phone', () => {
     document.body.append(floatingRoot);
   });
 
-  it('lists devices as stacked lines, because four columns need 384 px of 317', () => {
+  it('lists devices as stacked blocks, the same three a wide screen has in columns', () => {
     render(<DevicesCard devices={devicesOf([LAMP, PROBE])} onOpen={vi.fn()} />);
 
     expect(document.querySelector('table')).toBeNull();
     expect(screen.getByText('Kitchen light')).toBeInTheDocument();
-    expect(screen.getByText('Boiler')).toBeInTheDocument();
-  });
-
-  it('puts the room beside the type, where the wide screen gives it a column', () => {
-    render(<DevicesCard devices={devicesOf([LAMP, PROBE])} onOpen={vi.fn()} />);
-
     expect(screen.getByText('configurator.types.switch.name · Kitchen')).toBeInTheDocument();
     expect(screen.getByText('configurator.types.temperature_sensor.name')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.state-on')).toBeInTheDocument();
+    expect(screen.getByText('21.5 °C')).toBeInTheDocument();
   });
 
-  it('opens the card of the device the operator tapped', () => {
+  it('opens the details of the device the operator tapped, and its card in the configurator from there', () => {
     const onOpen = vi.fn();
     render(<DevicesCard devices={devicesOf([LAMP, PROBE])} onOpen={onOpen} />);
 
-    fireEvent.click(screen.getAllByLabelText('matter.labels.open-device')[1]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'matter.buttons.device-details' })[1]);
+    expect(screen.getByText('matter.labels.section-channels')).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole('button', { name: 'matter.buttons.open-configurator' }));
     expect(onOpen).toHaveBeenCalledWith(PROBE);
   });
 

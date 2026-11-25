@@ -1,16 +1,16 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
-import { type PropsWithChildren, useState } from 'react';
+import { type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
-import ChevronUpIcon from '@/assets/icons/chevron-up.svg';
 import { MAX_MOBILE_WIDTH } from '@/common/breakpoints';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow } from '@/components/table';
 import type { MatterFabric } from '@/stores/matter';
+import { useOpened } from '../hooks';
 import type { FabricsCardProps } from '../types';
 import { fabricDisplayLabel, fabricLabelNote } from '../utils';
+import { DetailsToggle } from './details';
 import { FabricDetails } from './fabric-details';
 import { FabricMenu } from './fabric-menu';
 
@@ -24,21 +24,18 @@ import { FabricMenu } from './fabric-menu';
  * On a phone that comparison is not on offer anyway: at 375 px the four columns ask for 394,
  * so the link state is clipped and the actions column falls off the right edge entirely.
  *
+ * A row opens into the details of its fabric.
+ *
  * What is put inside the card goes under the list: the page puts the pairing window there,
  * so that the way to add a fabric is the last line of the list of fabrics.
  */
 export const FabricsCard = ({
   fabrics, fabricsSince, onAction, now, checkingIndex = null, hasCheckFailed = false,
-  onCheck, hasDetails = false, children,
+  onCheck, children,
 }: PropsWithChildren<FabricsCardProps>) => {
   const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
-  // By index and not by position: a poll reorders nothing, but a fabric that leaves
-  // must not hand its open details to the one below it.
-  const [opened, setOpened] = useState<number[]>([]);
-  const toggle = (index: number) => setOpened((before) => (
-    before.includes(index) ? before.filter((one) => one !== index) : [...before, index]
-  ));
+  const [isOpened, toggle] = useOpened();
   // Matching the rest of the interface rather than inventing a format for this page.
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy, HH:mm' : 'dd/MM/yyyy, HH:mm';
   // The bound on an unknown pairing has no business carrying minutes: the moment it
@@ -73,16 +70,12 @@ export const FabricsCard = ({
     ? 'matter-fabricLink matter-fabricLinkOnline'
     : 'matter-fabricLink');
 
-  const detailsButton = (fabric: MatterFabric) => hasDetails && (
-    <button
-      type="button"
-      className="matter-detailsToggle"
-      aria-expanded={opened.includes(fabric.index)}
-      aria-label={t('matter.buttons.fabric-details', { label: fabricDisplayLabel(fabric, t) })}
-      onClick={() => toggle(fabric.index)}
-    >
-      {opened.includes(fabric.index) ? <ChevronUpIcon aria-hidden="true" /> : <ChevronDownIcon aria-hidden="true" />}
-    </button>
+  const detailsButton = (fabric: MatterFabric) => (
+    <DetailsToggle
+      isOpened={isOpened(fabric.index)}
+      label={t('matter.buttons.fabric-details', { label: fabricDisplayLabel(fabric, t) })}
+      onToggle={() => toggle(fabric.index)}
+    />
   );
 
   const details = (fabric: MatterFabric) => (
@@ -117,7 +110,7 @@ export const FabricsCard = ({
               onChoose={(action) => onAction(fabric, action)}
             />
           </div>
-          {hasDetails && opened.includes(fabric.index) && details(fabric)}
+          {isOpened(fabric.index) && details(fabric)}
         </li>
       ))}
     </ul>
@@ -167,7 +160,7 @@ export const FabricsCard = ({
                 </span>
               </TableCell>
             </TableRow>,
-            hasDetails && opened.includes(fabric.index) && (
+            isOpened(fabric.index) && (
               <TableRow key={`${fabric.index}-details`} className="matter-detailsRow">
                 <TableCell colSpan={4}>{details(fabric)}</TableCell>
               </TableRow>

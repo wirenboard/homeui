@@ -18,8 +18,11 @@ const FREE_TEXT: [string, string, string][] = [
   ['labels', 'fabric-label-instead', 'label'],
   ['labels', 'unpair-where', 'label'],
   ['labels', 'open-device', 'name'],
-  ['labels', 'ignored-roles', 'roles'],
+  ['labels', 'apps-no', 'names'],
+  ['labels', 'apps-unknown', 'names'],
+  ['labels', 'group-as-room', 'group'],
   ['buttons', 'fabric-actions', 'label'],
+  ['buttons', 'device-details', 'name'],
 ];
 
 describe('free text this page interpolates into translations', () => {

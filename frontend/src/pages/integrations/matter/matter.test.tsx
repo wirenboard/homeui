@@ -51,7 +51,12 @@ const WB_DEVICE = {
   exposed: true,
   reason_code: null,
   reason: null,
-  state: 'on',
+  reason_status: null,
+  channels: [{
+    role: 'on_off', control: 'wb-mr6c_21/K1', status: 'ok', text: 'on',
+  }],
+  matter: { type: 'Switch', power: 'wired', endpoint: 3 },
+  followed_by: { answer: 'yes', of: 0, answers: [] },
 };
 
 /** A device composed by hand: its services read controls of other devices. */
@@ -65,7 +70,10 @@ const OWN_DEVICE = {
   exposed: false,
   reason_code: 'type_unsupported',
   reason: 'type temperature_sensor cannot be exposed yet',
-  state: null,
+  reason_status: 'off',
+  channels: [],
+  matter: null,
+  followed_by: null,
 };
 
 const NOT_PAIRED = {
@@ -79,7 +87,12 @@ const NOT_PAIRED = {
     qr_version: 'abcdef12',
   },
   devices: {
-    configured: 2, exposed: 1, skipped: 0, config_error: null, list: [WB_DEVICE, OWN_DEVICE],
+    configured: 2,
+    exposed: 1,
+    skipped: 0,
+    config_error: null,
+    outcomes: { ok: 1, error: 0, off: 1 },
+    list: [WB_DEVICE, OWN_DEVICE],
   },
 };
 
@@ -165,10 +178,11 @@ describe('MatterPage', () => {
     expect(screen.getByText('matter.buttons.open-window')).toBeInTheDocument();
   });
 
-  it('says how many devices the config gives to Matter', async () => {
+  it('says how many devices came to what, as the bridge counted them', async () => {
     render(<MatterPage />);
 
-    expect(await screen.findByText(/matter\.labels\.devices-count/)).toBeInTheDocument();
+    expect(await screen.findByText('matter.labels.count-ok')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.count-off')).toBeInTheDocument();
     expect(screen.queryByText(/matter\.labels\.devices-skipped/)).not.toBeInTheDocument();
   });
 

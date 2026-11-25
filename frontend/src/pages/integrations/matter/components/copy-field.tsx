@@ -1,13 +1,9 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CheckIcon from '@/assets/icons/check.svg';
 import CopyIcon from '@/assets/icons/copy.svg';
 import { Button } from '@/components/button';
-import { copyToClipboard } from '@/utils/clipboard';
+import { useCopy } from '../hooks';
 import type { CopyFieldProps } from '../types';
-
-// How long the button says the copy was made before it offers to copy again.
-const COPIED_MS = 2000;
 
 /**
  * A value to copy. Both the value and the button beside it copy: a person reaches for
@@ -15,20 +11,7 @@ const COPIED_MS = 2000;
  */
 export const CopyField = ({ label, text, value }: CopyFieldProps) => {
   const { t } = useTranslation();
-  const [isCopied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!isCopied) {
-      return undefined;
-    }
-    const timer = setTimeout(() => setCopied(false), COPIED_MS);
-    return () => clearTimeout(timer);
-  }, [isCopied]);
-
-  const copy = () => {
-    copyToClipboard(value);
-    setCopied(true);
-  };
+  const [isCopied, copy] = useCopy(() => value);
 
   return (
     <div className="matter-field">

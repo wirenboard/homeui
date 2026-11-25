@@ -1,8 +1,15 @@
 import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
 import type {
-  MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel,
+  MatterAnswer, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome,
 } from '@/stores/matter';
+import type { MarkProps } from './types';
+
+/** The three outcomes in the order the page says them: from what is well to what is not there. */
+export const OUTCOMES: MatterOutcome[] = ['ok', 'error', 'off'];
+
+/** The sign of what an app answered: an app that cannot be asked has a sign of its own. */
+export const MARK_OF_ANSWER: Record<MatterAnswer, MarkProps['status']> = { yes: 'ok', no: 'error', unknown: 'unknown' };
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service
@@ -63,6 +70,59 @@ export const fabricLabelNote = (fabric: MatterFabric, t: TFunction) => {
     return t('matter.labels.fabric-label-instead', { label: labelText(replaced ?? NO_LABEL, fabric, t) });
   }
   return source === 'none' ? t('matter.labels.fabric-no-label') : null;
+};
+
+/** What an app is called, by the index of its fabric; a bare number for one the page was not told of. */
+export const appLabel = (fabrics: MatterFabric[], index: number, t: TFunction) => {
+  const fabric = fabrics.find((one) => one.index === index);
+  return fabric ? fabricDisplayLabel(fabric, t) : `#${index}`;
+};
+
+/**
+ * A reason of the bridge in the words of the page. A code this page has no words for is
+ * a newer bridge: then what the bridge itself said is better than nothing.
+ */
+export const reasonText = (code: string, t: TFunction, fallback = code) => (
+  t(`matter.labels.reason-${code}`, { defaultValue: fallback })
+);
+
+/** Why a device is not given to Matter; nothing while the bridge has not said. */
+export const deviceReason = ({ reason_code: code, reason }: MatterDevice, t: TFunction) => (
+  code ? reasonText(code, t, reason ?? code) : reason ?? ''
+);
+
+// What is a line of its own in the details: a heading, a fact, a remark.
+const DETAILS_LINES = 'h4, h5, .matter-fact, .matter-detailsNote, .matter-detailsAdvice';
+
+/**
+ * The text of an element with its pieces apart, as they are apart on the screen. A remark
+ * inside stands under its value there: in a line of text it goes into brackets.
+ */
+const wordsOf = (node: Node, isInside = false): string => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent.trim();
+  }
+  const words = [...node.childNodes].map((child) => wordsOf(child, true)).filter(Boolean).join(' ');
+  return isInside && words && (node as Element).matches('.matter-detailsNote') ? `(${words})` : words;
+};
+
+/**
+ * The details of a row as text, to paste into a message: the name of the row, then a
+ * heading on a line of its own and a fact as "name: value". Read from what is drawn, so
+ * the copy says what the page says and nothing else. What is marked data-nocopy is a
+ * control of the page, and is left out.
+ */
+export const detailsText = (title: string, details: HTMLElement) => {
+  const lines = [...details.querySelectorAll<HTMLElement>(DETAILS_LINES)]
+    .filter((line) => !line.parentElement.closest(DETAILS_LINES) && !line.closest('[data-nocopy]'))
+    .map((line) => {
+      if (line.matches('.matter-fact')) {
+        return `${wordsOf(line.querySelector('dt'))}: ${wordsOf(line.querySelector('dd'))}`;
+      }
+      // A section starts after an empty line.
+      return line.matches('h4') ? `\n${wordsOf(line)}` : wordsOf(line);
+    });
+  return [title, ...lines].join('\n');
 };
 
 /**

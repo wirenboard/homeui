@@ -1,7 +1,26 @@
 import type { ReactNode } from 'react';
 import type {
-  MatterDevice, MatterDevices, MatterFabric, MatterPairing, MatterSettings,
+  MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterOutcome, MatterPairing, MatterSettings,
 } from '@/stores/matter';
+
+export interface MarkProps {
+  // The three of the bridge, and an app that cannot be asked.
+  status: MatterOutcome | 'unknown';
+}
+
+export interface DetailsProps {
+  // What the row is called: the first line of the copy, where nothing else says whose details these are.
+  title: string;
+  children: ReactNode;
+  // What stands at the foot: a way out of the details.
+  footer?: ReactNode;
+}
+
+export interface DetailsToggleProps {
+  isOpened: boolean;
+  label: string;
+  onToggle: () => void;
+}
 
 export interface DetailsSectionProps {
   title: string;
@@ -9,8 +28,8 @@ export interface DetailsSectionProps {
 }
 
 export interface DetailsFactsProps {
-  // A label and what stands beside it.
-  rows: ReadonlyArray<readonly [string, ReactNode]>;
+  // A label and what stands beside it. The label of a channel or of an app carries its sign.
+  rows: ReadonlyArray<readonly [ReactNode, ReactNode]>;
 }
 
 export interface FabricDetailsProps {
@@ -46,8 +65,6 @@ export interface FabricsCardProps {
   checkingIndex?: number | null;
   hasCheckFailed?: boolean;
   onCheck?: (_fabric: MatterFabric) => void;
-  // Whether a row can be opened into its details: the setting of the page.
-  hasDetails?: boolean;
 }
 
 export interface PairingWindowProps {
@@ -72,9 +89,34 @@ export interface PairingWindowProps {
 
 export interface DevicesCardProps {
   devices: MatterDevices;
+  // Opens the card of a device in the configurator.
   onOpen: (_device: MatterDevice) => void;
-  // For the names of the fabrics that did not take a device.
+  // For the names of the apps that follow a device, or do not.
   fabrics?: MatterFabric[];
+}
+
+export interface DeviceCountsProps {
+  outcomes: Record<MatterOutcome, number>;
+}
+
+export interface DeviceProps {
+  device: MatterDevice;
+}
+
+export interface DeviceNameProps extends DeviceProps {
+  onOpen: () => void;
+}
+
+export interface ChannelProps {
+  channel: MatterChannel;
+}
+
+export interface DeviceAppsProps extends DeviceProps {
+  fabrics: MatterFabric[];
+}
+
+export interface DeviceDetailsProps extends DeviceAppsProps {
+  onOpen: () => void;
 }
 
 export interface FabricLabelDialogProps {

@@ -107,10 +107,48 @@ export interface MatterFabricStatus {
   since?: number;
 }
 
-/** One reading a device carries beside its state; a colour is also drawn. */
-export interface MatterReading {
-  text: string;
+/**
+ * Passed, something to fix, not passed and nothing to fix. The bridge says the same three
+ * of a channel, of the reason a device is not given, and in its counts.
+ */
+export type MatterOutcome = 'ok' | 'error' | 'off';
+
+/** One role of a device of the config, and what became of it in Matter. */
+export interface MatterChannel {
+  // A role of the configurator, translated through its keys.
+  role: string;
+  // The control it is read from, as a person names it: "wb-mdm3_11/K1".
+  control: string | null;
+  status: MatterOutcome;
+  // The reading as the bridge formatted it: "on", "50 %". Absent until the control says one.
+  text?: string;
+  // The same reading as a colour to draw.
   colour?: string;
+  // Why the status is not ok, as a code this page puts into words.
+  code?: string;
+}
+
+export type MatterAnswer = 'yes' | 'no' | 'unknown';
+
+/**
+ * Which apps follow a device. The bridge sees only that: an app that follows a device
+ * shows it, and one that follows others and not this one did not take it.
+ */
+export interface MatterFollowedBy {
+  // The worst of the answers: one app that did not take a device is the news about it.
+  answer: MatterAnswer;
+  of: number;
+  // Every app by the index of its fabric, in the order of the fabrics. Unknown is an app
+  // with no subscription now: it cannot be asked.
+  answers: { index: number; answer: MatterAnswer }[];
+}
+
+/** What an app is given for a device. */
+export interface MatterEndpoint {
+  // The name of the Matter device, in the words of Matter: "Dimmable light".
+  type: string;
+  power: 'wired' | 'battery' | null;
+  endpoint: number | null;
 }
 
 export type MatterLinkCode = 'online' | 'partly' | 'stale' | 'left' | 'removed' | 'forgot' | 'offline'
@@ -214,24 +252,19 @@ export interface MatterDevice {
   module: string | null;
   area: string | null;
   roles: string[];
-  // Whether the device became a Matter endpoint. The first slice of the bridge takes
-  // on/off devices only, and these say why a device stayed out: the code is what this
-  // page puts into words, the sentence is the detail of the service, in English like its
-  // journal, kept for support.
+  // Whether the device became a Matter endpoint, and why not: the code is what this page
+  // puts into words, the sentence is the detail of the service, in English like its
+  // journal, kept for support. The status says whether there is something to fix.
   exposed: boolean;
   reason_code: string | null;
   reason: string | null;
-  // The value of the bound control, as the bridge last saw it.
-  state: 'on' | 'off' | null;
-  // Everything the endpoint carries beside that reading: the brightness of a lamp, its
-  // colour. Undefined when the service is older than this page.
-  details?: MatterReading[];
-  // Roles of the config this endpoint does not carry: colour, or a brightness channel
-  // the driver says cannot be written. The page names them; why, in a sentence, is in
-  // the journal of the service, like every other detail kept for support.
-  ignored_roles?: string[];
-  // The fabrics, by index, that follow other devices and not this one.
-  not_followed_by?: number[];
+  reason_status?: MatterOutcome | null;
+  // Every role of the config; the first is the one the device is read by. Undefined, like
+  // the two below, from a service older than this page.
+  channels?: MatterChannel[];
+  // Null, both, for a device that is not exposed.
+  matter?: MatterEndpoint | null;
+  followed_by?: MatterFollowedBy | null;
 }
 
 export interface MatterDevices {
@@ -240,6 +273,8 @@ export interface MatterDevices {
   exposed: number;
   skipped: number;
   config_error: string | null;
+  // How many devices of the list came to what.
+  outcomes?: Record<MatterOutcome, number>;
   list: MatterDevice[];
 }
 
@@ -253,9 +288,6 @@ export interface MatterSettings {
   // device card, and neither shows the name. See docs/ecosystems.md of
   // wb-mqtt-matter-bridge, finding Я31.
   name_in_model: boolean;
-  // The page shows the details of a fabric. A switch of the page alone: the bridge gathers
-  // and tells them whether it is on or not, so turning it on shows them at once.
-  fabric_details?: boolean;
 }
 
 /** Why the bridge is not doing its job: a code for the page, a sentence for support. */
