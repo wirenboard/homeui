@@ -6,9 +6,9 @@ import CheckIcon from '@/assets/icons/check.svg';
 import { Card } from '@/components/card';
 import { Table, TableCell, TableRow, type TableCellSortDirection } from '@/components/table';
 import { Tag } from '@/components/tag';
-import { configuratorStore, type Adapter, type AdapterId, type Device } from '@/stores/configurator';
+import { configuratorStore, type Adapter, type Device } from '@/stores/configurator';
 import type { OverviewColumn, OverviewProps } from '../types';
-import { adapterLabel, hasLostBinding, isAdapterShown, UNESCAPED } from '../utils';
+import { adapterLabel, hasLostBinding, isAdapterOn, isAdapterShown, UNESCAPED } from '../utils';
 
 export const Overview = observer(({ onSelect }: OverviewProps) => {
   const { t, i18n } = useTranslation();
@@ -17,25 +17,22 @@ export const Overview = observer(({ onSelect }: OverviewProps) => {
   const [column, setColumn] = useState<OverviewColumn>('group');
   const [direction, setDirection] = useState<TableCellSortDirection>('asc');
 
-  // Состояние адаптера у устройства: 0 — передаётся, 1 — служба остановлена, 2 — нет пакета, 3 — выключено.
+  // Состояние адаптера у устройства: 0 — передаётся, 1 — служба остановлена, 2 — выключено.
   const rank = (device: Device, adapter: Adapter) => {
-    if (!device[adapter.id as AdapterId]) {
-      return 3;
-    }
-    if (!adapter.installed) {
+    if (!isAdapterOn(device, adapter)) {
       return 2;
     }
-    return adapter.active ? 0 : 1;
+    return adapter.active === false ? 1 : 0;
   };
 
   // Зелёная галочка — передаётся; серая — включено, но не передаётся; пусто — выключено.
-  const STATE_KEYS = ['adapter-on', 'adapter-service-stopped', 'adapter-no-package', 'adapter-off'];
+  const STATE_KEYS = ['adapter-on', 'adapter-service-stopped', 'adapter-off'];
   const stateOf = (device: Device, adapter: Adapter): ReactNode => {
     const value = rank(device, adapter);
     const text = t(`configurator.labels.${STATE_KEYS[value]}`);
     return (
       <span className="configurator-adapterState" title={text}>
-        {value < 3 && (
+        {value < 2 && (
           <CheckIcon
             className={classNames('configurator-adapterCheck', { 'configurator-adapterCheckOn': !value })}
             aria-hidden="true"

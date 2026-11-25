@@ -142,7 +142,8 @@ export interface Device {
   id: string;
   name: string;
   group: string;
-  matter: boolean;
+  // adapter_settings из файла со всеми ключами, и адаптеров, которых нет в реестре; нет ключа — default адаптера
+  adapterSettings: Record<string, boolean>;
   rows: DeviceRow[];
 }
 
@@ -230,9 +231,7 @@ export type Selection = { id: string } | null;
 
 export type BackendState = 'checking' | 'available' | 'unavailable';
 
-export type AdapterId = 'matter';
-
-// Запись реестра адаптеров из /converter-ext/status.
+// Файл реестра адаптеров из /converter-ext/adapters и работает ли служба адаптера.
 export interface Adapter {
   id: string;
   title?: { ru?: string; en?: string };
@@ -241,8 +240,11 @@ export interface Adapter {
   url?: string;
   // языки интерфейса, на которых система доступна; без поля — на всех
   languages?: string[];
-  installed: boolean;
-  active: boolean;
+  // передавать ли устройство без ключа адаптера в adapter_settings
+  default?: boolean;
+  // только в /status старого конвертера, где реестр лежал вместе с признаком установки
+  installed?: boolean;
+  active?: boolean;
 }
 
 export interface BackendStatus {

@@ -1,39 +1,37 @@
-import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Alert } from '@/components/alert';
 import { Switch } from '@/components/switch';
-import { configuratorStore, type AdapterId } from '@/stores/configurator';
+import { configuratorStore } from '@/stores/configurator';
 import type { AdapterSwitchesProps } from '../types';
-import { ADAPTER_IDS, adapterLabel, isAdapterShown } from '../utils';
+import { adapterLabel, isAdapterOn, isAdapterShown } from '../utils';
 
 export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
   const { t, i18n } = useTranslation();
   const labelId = useId();
 
-  const known = configuratorStore.adapters.filter(({ id }) => ADAPTER_IDS.includes(id));
-  const shown = known
+  const shown = configuratorStore.adapters
     .filter((adapter) => isAdapterShown(adapter, i18n.language))
     .map((adapter) => ({
       ...adapter,
-      id: adapter.id as AdapterId,
       label: adapterLabel(adapter, i18n.language),
+      isOn: isAdapterOn(target, adapter),
     }));
+
+  if (!shown.length) {
+    return null;
+  }
 
   return (
     <section className="configurator-section">
       <h3 className="configurator-sectionTitle">{t('configurator.labels.show-in-apps')}</h3>
       <div className="configurator-switches">
-        {shown.map(({ id, label, installed }) => (
-          <span
-            key={id}
-            className={classNames('configurator-switch', { 'configurator-switchInactive': !installed })}
-          >
+        {shown.map(({ id, label, isOn }) => (
+          <span key={id} className="configurator-switch">
             <Switch
-              value={target[id]}
-              isDisabled={!installed && !target[id]}
+              value={isOn}
               ariaLabelledby={`${labelId}-${id}`}
               onChange={(value) => configuratorStore.setAdapters(target, { [id]: value })}
             />
@@ -41,12 +39,7 @@ export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
           </span>
         ))}
       </div>
-      {shown.filter(({ installed }) => !installed).map(({ id, label, package: packageName }) => (
-        <p key={id} className="configurator-adapterNote">
-          {t('configurator.labels.adapter-not-installed', { title: label, package: packageName || id })}
-        </p>
-      ))}
-      {shown.filter(({ installed, active }) => installed && !active).map(({ id, label, url }) => (
+      {shown.filter(({ active }) => active === false).map(({ id, label, url }) => (
         <Alert key={id} variant="warn" size="small" className="configurator-alertInline">
           {t('configurator.labels.adapter-stopped', { title: label })}
           {url && (
@@ -57,7 +50,7 @@ export const AdapterSwitches = observer(({ target }: AdapterSwitchesProps) => {
           )}
         </Alert>
       ))}
-      {known.every(({ id }) => !target[id as AdapterId]) && (
+      {shown.every(({ isOn }) => !isOn) && (
         <Alert variant="warn" size="small" className="configurator-alertInline">
           {t('configurator.labels.no-apps')}
         </Alert>

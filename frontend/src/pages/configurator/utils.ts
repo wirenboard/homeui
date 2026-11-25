@@ -18,7 +18,7 @@ import TypeSwitchIcon from '@/assets/icons/type-switch.svg';
 import TypeTemperatureIcon from '@/assets/icons/type-temperature.svg';
 import i18n from '@/i18n/config';
 import {
-  CHANNEL_CLASSES, classify, primaryRole, ROLES, splitKey, type Adapter, type AdapterId, type ChannelClass,
+  CHANNEL_CLASSES, classify, primaryRole, ROLES, splitKey, type Adapter, type ChannelClass,
   type Classification, type ControlMeta, type Device, type LiveControls, type RecipeRow,
 } from '@/stores/configurator';
 import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
@@ -133,13 +133,14 @@ export const defaultName = (typeId: string, cell: Cell | undefined, cls: Channel
     : `${typeName(typeId)} ${cell?.name ?? ''}`.trim();
 };
 
-export const ADAPTER_IDS: string[] = ['matter'] satisfies AdapterId[];
-
 export const adapterLabel = (adapter: Adapter, language: string) =>
   adapter.title?.[language as 'ru' | 'en'] || adapter.title?.en || adapter.id;
 
 export const isAdapterShown = (adapter: Adapter, language: string) =>
-  ADAPTER_IDS.includes(adapter.id) && (!adapter.languages || adapter.languages.includes(language));
+  !adapter.languages || adapter.languages.includes(language);
+
+export const isAdapterOn = (device: Device, adapter: Adapter) =>
+  device.adapterSettings[adapter.id] ?? adapter.default ?? false;
 
 // Имя канала по рецепту: «Канал N» у повторяющихся, иначе название основной роли.
 export const recipeRowName = ({ row, index }: RecipeRow) => (index

@@ -135,7 +135,7 @@ describe('DevicesDialog', () => {
   it('explains under a checked row why its name does not fit: taken, repeated or empty', () => {
     show({ 'wb-mrps6_12': ['K1', 'K2'] });
     act(() => runInAction(() => {
-      configuratorStore.devices = [{ id: 'd0', name: 'Люстра', group: '', matter: true, rows: [] }];
+      configuratorStore.devices = [{ id: 'd0', name: 'Люстра', group: '', adapterSettings: {}, rows: [] }];
     }));
     const names = screen.getAllByRole('textbox', { name: 'configurator.labels.wb-name' });
     const errors = () => Array.from(document.querySelectorAll('.configurator-wbNameError'))

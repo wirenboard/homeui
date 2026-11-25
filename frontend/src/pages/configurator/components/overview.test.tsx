@@ -4,14 +4,14 @@ import { configuratorStore, type Adapter } from '@/stores/configurator';
 import { fireEvent, render, screen } from '@/test/render';
 import { Overview } from './overview';
 
-const matter: Adapter = { id: 'matter', title: { en: 'Matter' }, installed: true, active: true };
+const matter: Adapter = { id: 'matter', title: { en: 'Matter' }, active: true };
 
 const show = (adapter: Adapter, onSelect = vi.fn()) => {
   runInAction(() => {
     configuratorStore.adapters = [adapter];
     configuratorStore.devices = [
-      { id: 'a', name: 'Розетка', group: '', matter: true, rows: [] },
-      { id: 'b', name: 'Лампа', group: 'Коридор', matter: false, rows: [] },
+      { id: 'a', name: 'Розетка', group: '', adapterSettings: { matter: true }, rows: [] },
+      { id: 'b', name: 'Лампа', group: 'Коридор', adapterSettings: { matter: false }, rows: [] },
     ];
   });
   render(<Overview onSelect={onSelect} />);
@@ -31,11 +31,6 @@ describe('Overview', () => {
     ]);
   });
 
-  it('marks an enabled device when the adapter package is missing', () => {
-    show({ ...matter, installed: false, active: false });
-    expect(rows()[1]).toContain('configurator.labels.adapter-no-package');
-  });
-
   it('marks an enabled device when the adapter service is stopped', () => {
     show({ ...matter, active: false });
     expect(rows()[1]).toContain('configurator.labels.adapter-service-stopped');
@@ -53,9 +48,9 @@ describe('Overview', () => {
     runInAction(() => {
       configuratorStore.adapters = [matter];
       configuratorStore.devices = [
-        { id: 'a', name: 'Бра', group: 'Спальня', matter: true, rows: [] },
-        { id: 'b', name: 'Акустика', group: '', matter: false, rows: [] },
-        { id: 'c', name: 'Вентилятор', group: 'Кухня', matter: true, rows: [] },
+        { id: 'a', name: 'Бра', group: 'Спальня', adapterSettings: { matter: true }, rows: [] },
+        { id: 'b', name: 'Акустика', group: '', adapterSettings: { matter: false }, rows: [] },
+        { id: 'c', name: 'Вентилятор', group: 'Кухня', adapterSettings: { matter: true }, rows: [] },
       ];
     });
     render(<Overview onSelect={vi.fn()} />);

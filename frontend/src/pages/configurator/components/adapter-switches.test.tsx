@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { runInAction } from 'mobx';
 import { configuratorStore, type Adapter, type Device } from '@/stores/configurator';
-import { render, screen } from '@/test/render';
+import { fireEvent, render, screen } from '@/test/render';
 import { AdapterSwitches } from './adapter-switches';
 
 const matter: Adapter = {
@@ -9,19 +9,21 @@ const matter: Adapter = {
   title: { ru: 'Matter', en: 'Matter' },
   package: 'wb-mqtt-matter-bridge',
   url: 'integrations/matter',
-  installed: true,
   active: true,
 };
 
 const device = (fields: Partial<Device> = {}): Device =>
-  ({ id: 'd', name: 'd', group: '', matter: true, rows: [], ...fields });
+  ({ id: 'd', name: 'd', group: '', adapterSettings: { matter: true }, rows: [], ...fields });
 
 const show = (adapters: Adapter[], target = device()) => {
   runInAction(() => {
     configuratorStore.adapters = adapters;
   });
   render(<AdapterSwitches target={target} />);
+  return target;
 };
+
+const matterBox = () => screen.getByRole('checkbox', { name: 'Matter' }) as HTMLInputElement;
 
 describe('AdapterSwitches', () => {
   it('hides an adapter that is not available in the interface language (tests run in English)', () => {
@@ -30,36 +32,44 @@ describe('AdapterSwitches', () => {
     expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
-  it('skips registry entries the device model has no switch for', () => {
+  it('shows a switch for every adapter of the registry and nothing when the registry is empty', () => {
     show([matter, { ...matter, id: 'homekit', title: { en: 'HomeKit' } }]);
-
-    expect(screen.getAllByRole('checkbox')).toHaveLength(1);
+    expect(screen.getAllByRole('checkbox')).toHaveLength(2);
   });
 
-  it('disables the switch of a not installed adapter that is off and names the package', () => {
-    show([{ ...matter, installed: false, active: false }], device({ matter: false }));
+  it('shows nothing, not even the no apps warning, when no adapter is installed', () => {
+    show([]);
 
-    expect((screen.getByRole('checkbox', { name: 'Matter' }) as HTMLInputElement).disabled).toBe(true);
-    expect(screen.getByText('configurator.labels.adapter-not-installed')).toBeTruthy();
+    expect(screen.queryByText('configurator.labels.show-in-apps')).toBeNull();
+    expect(screen.queryByText('configurator.labels.no-apps')).toBeNull();
   });
 
-  it('lets the user switch off a not installed adapter that is still on in the config', () => {
-    show([{ ...matter, installed: false, active: false }]);
+  it('takes the default of the adapter for a device without its key and writes the key once switched', () => {
+    const target = show([{ ...matter, default: true }], device({ adapterSettings: { alice: true } }));
+    expect(matterBox().checked).toBe(true);
 
-    expect((screen.getByRole('checkbox', { name: 'Matter' }) as HTMLInputElement).disabled).toBe(false);
+    fireEvent.click(matterBox());
+
+    expect(target.adapterSettings).toEqual({ alice: true, matter: false });
+  });
+
+  it('treats a device without the key as off when the adapter declares no default', () => {
+    show([matter], device({ adapterSettings: {} }));
+
+    expect(matterBox().checked).toBe(false);
   });
 
   it('keeps the switch enabled and warns with a link when the adapter service is stopped', () => {
     show([{ ...matter, active: false }]);
 
-    expect((screen.getByRole('checkbox', { name: 'Matter' }) as HTMLInputElement).disabled).toBe(false);
+    expect(matterBox().disabled).toBe(false);
     expect(screen.getByText('configurator.labels.adapter-stopped', { exact: false })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'configurator.labels.adapter-page' }).getAttribute('href'))
       .toBe('/integrations/matter');
   });
 
   it('warns that the device goes nowhere when the only adapter of the registry is off', () => {
-    show([matter], device({ matter: false }));
+    show([matter], device({ adapterSettings: { matter: false } }));
 
     expect(screen.getByText('configurator.labels.no-apps')).toBeTruthy();
   });

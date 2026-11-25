@@ -82,7 +82,7 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
       orig[device.did][role] = { binding: service.binding, range: service.range };
     });
     const unit = services.find((item) => ROLES[item.role as RoleId]?.unit)?.service.unit;
-    const matter = !!device.adapter_settings?.matter;
+    const settings = { ...device.adapter_settings };
     const bind: DeviceRow['bind'] = {};
     services.forEach((item) => {
       bind[item.role as RoleId] = `${item.topic.dev}/${item.topic.ctl}`;
@@ -96,9 +96,9 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     const id = `module:${name}`;
     let target = devices.find((item) => item.id === id);
     if (!target) {
-      target = { id, name, group: '', matter, rows: [] };
+      target = { id, name, group: '', adapterSettings: settings, rows: [] };
       devices.push(target);
-    } else if (target.matter !== matter) {
+    } else if (stable(target.adapterSettings) !== stable(settings)) {
       mixed[id] = true;
     }
     target.group ||= String(device.group || '').trim();
@@ -159,7 +159,7 @@ export const toConfig = (
   const drafts: Draft[] = [];
 
   const makeDevice = (
-    did: number, name: string, type: string, module: string, group: string, matter: boolean,
+    did: number, name: string, type: string, module: string, group: string, settings: Record<string, boolean>,
     services: [RoleId, string, string][], rawUnit?: string,
   ): ConfigDevice => {
     const unit = rawUnit?.trim();
@@ -169,7 +169,7 @@ export const toConfig = (
       type,
       module,
       ...(group?.trim() ? { group: group.trim() } : {}),
-      adapter_settings: { matter },
+      ...(Object.keys(settings).length ? { adapter_settings: { ...settings } } : {}),
       services: services.map(([role, deviceId, controlId], index) => {
         const service = buildService(index + 1, role, deviceId, controlId, live, orig[did]?.[role]);
         return unit && ROLES[role].unit ? { ...service, unit } : service;
@@ -186,7 +186,7 @@ export const toConfig = (
         return;
       }
       devices.push(makeDevice(
-        row.did, row.name, row.type, module, device.group, device.matter,
+        row.did, row.name, row.type, module, device.group, device.adapterSettings,
         list.map(({ role, key }) => [role, ...splitKey(key)]),
         row.unit,
       ));

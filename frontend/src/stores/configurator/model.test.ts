@@ -7,7 +7,7 @@ const liveOf = (controls: Record<string, ControlMeta>): LiveControls => ({
 });
 
 const device = (fields: Partial<Device>): Device =>
-  ({ id: 'd', name: 'd', group: '', matter: true, rows: [], ...fields });
+  ({ id: 'd', name: 'd', group: '', adapterSettings: { matter: true }, rows: [], ...fields });
 
 const relayConfig: Config = {
   version: '1.0',
@@ -100,7 +100,9 @@ describe('fromConfig / toConfig', () => {
   it('round-trips a device without changes', () => {
     const parsed = fromConfig(relayConfig);
     expect(parsed.devices).toHaveLength(1);
-    expect(parsed.devices[0]).toMatchObject({ id: 'module:wb-gpio', name: 'wb-gpio', group: 'Прихожая', matter: true });
+    expect(parsed.devices[0]).toMatchObject({
+      id: 'module:wb-gpio', name: 'wb-gpio', group: 'Прихожая', adapterSettings: { matter: true },
+    });
     expect(parsed.devices[0].rows[0]).toMatchObject({
       did: 10, name: 'Реле', bind: { on_off: 'wb-gpio/A1_OUT' },
     });
@@ -133,6 +135,23 @@ describe('fromConfig / toConfig', () => {
     const parsed = fromConfig({ version: '1.0', devices: [badRole, badTopic] as Config['devices'] });
     expect(parsed.devices).toEqual([]);
     expect(parsed.raw).toEqual([badRole, badTopic]);
+  });
+
+  it('keeps the keys of adapters it does not know and writes no adapter settings for a device without keys', () => {
+    const live = liveOf({ 'wb-gpio/A1_OUT': { type: 'switch' } });
+    const withAlice = fromConfig({
+      ...relayConfig,
+      devices: [{ ...relayConfig.devices[0], adapter_settings: { matter: false, alice: true } }],
+    });
+    expect(toConfig(withAlice, live, withAlice.orig).config.devices[0].adapter_settings)
+      .toEqual({ matter: false, alice: true });
+
+    const bare = toConfig({
+      raw: [], devices: [device({
+        adapterSettings: {}, rows: [{ did: 10, name: 'Реле', type: 'switch', bind: { on_off: 'wb-gpio/A1_OUT' } }],
+      })],
+    }, live, {});
+    expect(bare.config.devices[0]).not.toHaveProperty('adapter_settings');
   });
 
   it('groups entries by module into one device with their dids, even with channels from several devices', () => {

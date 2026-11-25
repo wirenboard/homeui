@@ -430,10 +430,6 @@
     gap: 8px;
 }
 
-.configurator-switchInactive {
-    opacity: 0.55;
-}
-
 .configurator-adapterNote {
     margin: 8px 0 0;
     opacity: 0.7;

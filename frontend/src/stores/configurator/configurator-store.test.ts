@@ -53,10 +53,13 @@ const respond = (body: unknown, ok = true) => ({
 });
 
 // Ответы бэкенда по URL; POST на конфиг пишется в posts.
-const stubBackend = (routes: { status?: unknown[]; config?: unknown; post?: unknown }) => {
+const stubBackend = (routes: { status?: unknown[]; config?: unknown; post?: unknown; adapters?: unknown }) => {
   const statuses = [...(routes.status ?? [])];
   const posts: string[] = [];
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: { method?: string; body?: unknown }) => {
+    if (url.endsWith('/adapters')) {
+      return routes.adapters ?? respond(null, false);
+    }
     if (url.endsWith('/status')) {
       const next = statuses.length > 1 ? statuses.shift() : statuses[0];
       return next instanceof Error ? Promise.reject(next) : next;
@@ -146,7 +149,7 @@ describe('ConfiguratorStore.load', () => {
     await store.load();
 
     expect(store.backendState).toBe('available');
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(fetch).mock.calls.map(([url]) => url)).not.toContain('/converter-ext/config');
   });
 
   it('throws ConfigParseError with the file path when the saved config does not parse', async () => {
@@ -360,20 +363,33 @@ describe('ConfiguratorStore editing', () => {
     store.setName(device, 'Кухня');
     store.setAdapters(device, { matter: false });
 
-    expect(device).toMatchObject({ name: 'Кухня', matter: false });
+    expect(device).toMatchObject({ name: 'Кухня', adapterSettings: { matter: false } });
   });
 });
 
 describe('ConfiguratorStore adapters registry', () => {
-  it('takes the adapters from the backend status and keeps the defaults when the status has none', async () => {
+  it('takes the registry files from /adapters and whether each service runs from the status', async () => {
     const store = new ConfiguratorStore();
+    const matter = { id: 'matter', package: 'wb-mqtt-matter-bridge', default: true, extra: 'kept' };
+    stubBackend({
+      adapters: respond([matter]),
+      status: [respond({ has_config: false, adapters: [{ id: 'matter', active: false }] })],
+    });
+
+    await store.load();
+
+    expect(store.adapters).toEqual([{ ...matter, active: false }]);
+  });
+
+  it('falls back to the registry in the status of an old converter, without the adapters not installed', async () => {
+    const store = new ConfiguratorStore();
+    const matter = { id: 'matter', installed: true, active: true };
+    stubBackend({ status: [respond({ has_config: false, adapters: [matter, { id: 'alice', installed: false }] })] });
+    await store.load();
+    expect(store.adapters).toEqual([matter]);
+
     stubBackend({ status: [respond({ has_config: false })] });
     await store.load();
-    expect(store.adapters.map(({ id, installed }) => [id, installed])).toEqual([['matter', true]]);
-
-    const adapters = [{ id: 'matter', package: 'wb-mqtt-matter-bridge', installed: false, active: false }];
-    stubBackend({ status: [respond({ has_config: false, adapters })] });
-    await store.load();
-    expect(store.adapters).toEqual(adapters);
+    expect(store.adapters).toEqual([]);
   });
 });

@@ -9,7 +9,7 @@ vi.mock('@/assets/icons/plus.svg', () => ({ default: () => null }));
 const show = (groups: string[]) => {
   runInAction(() => {
     configuratorStore.devices = groups.map((group, index) => ({
-      id: `d${index}`, name: `Устройство ${index}`, group, matter: true, rows: [],
+      id: `d${index}`, name: `Устройство ${index}`, group, adapterSettings: { matter: true }, rows: [],
     }));
   });
   render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onClear={vi.fn()} onSelect={vi.fn()} />);
@@ -49,7 +49,7 @@ describe('DeviceList', () => {
     const onAddEmpty = vi.fn();
     const onClear = vi.fn();
     runInAction(() => {
-      configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: '', matter: true, rows: [] }];
+      configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: '', adapterSettings: { matter: true }, rows: [] }];
     });
     // Popup рисует меню в портал .floating из разметки приложения.
     document.body.insertAdjacentHTML('beforeend', '<div class="floating"></div>');
@@ -71,7 +71,7 @@ describe('DeviceList', () => {
   it('selects a device by a click in the tree and ignores a click on a group', () => {
     const onSelect = vi.fn();
     runInAction(() => {
-      configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: 'Кухня', matter: true, rows: [] }];
+      configuratorStore.devices = [{ id: 'd0', name: 'Лампа', group: 'Кухня', adapterSettings: {}, rows: [] }];
     });
     render(<DeviceList onAdd={vi.fn()} onAddEmpty={vi.fn()} onClear={vi.fn()} onSelect={onSelect} />);
 

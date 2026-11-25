@@ -22,12 +22,9 @@ import type {
 
 const STATUS_URL = '/converter-ext/status';
 const CONFIG_URL = '/converter-ext/config';
+const ADAPTERS_URL = '/converter-ext/adapters';
 // did 0–9 зарезервированы (корневой узел Matter, bridge aid в HomeKit).
 const FIRST_DID = 10;
-// Пока сервис не прислал реестр адаптеров, Matter считается доступным.
-const DEFAULT_ADAPTERS: Adapter[] = [
-  { id: 'matter', title: { ru: 'Matter', en: 'Matter' }, installed: true, active: true },
-];
 
 export class ConfigParseError extends Error {
   constructor(public path: string) {
@@ -45,7 +42,7 @@ export default class ConfiguratorStore {
   selection: Selection = null;
   isOverview = true;
   backendState: BackendState = 'checking';
-  adapters: Adapter[] = DEFAULT_ADAPTERS;
+  adapters: Adapter[] = [];
   serialDevices: Record<string, SerialDevice> = {};
   isLoading = false;
   isSaving = false;
@@ -105,11 +102,10 @@ export default class ConfiguratorStore {
     this.isLoading = true;
     try {
       const status = await this._fetchStatus();
+      const adapters = await this._fetchAdapters(status);
       runInAction(() => {
         this.backendState = status ? 'available' : 'unavailable';
-        if (Array.isArray(status?.adapters)) {
-          this.adapters = status.adapters;
-        }
+        this.adapters = adapters;
       });
       if (!status?.has_config) {
         this._apply(fromConfig(null), null);
@@ -227,7 +223,7 @@ export default class ConfiguratorStore {
       id: `new:${this._newCount}`,
       name: freeName,
       group: '',
-      matter: true,
+      adapterSettings: {},
       rows: rows.map((row, index) => ({ ...row, did: firstDid + index })),
     };
     this.devices.push(device);
@@ -267,8 +263,8 @@ export default class ConfiguratorStore {
     device.group = group;
   }
 
-  setAdapters(target: Device, adapters: { matter?: boolean }) {
-    Object.assign(target, adapters);
+  setAdapters(target: Device, settings: Record<string, boolean>) {
+    Object.assign(target.adapterSettings, settings);
   }
 
   updateRow(row: DeviceRow, patch: Partial<Pick<DeviceRow, 'name' | 'unit'>>) {
@@ -297,6 +293,21 @@ export default class ConfiguratorStore {
     } else {
       delete row.bind[role];
     }
+  }
+
+  // Реестр адаптеров с признаком работы службы; у старого конвертера его нет, реестр берётся из /status.
+  private async _fetchAdapters(status: BackendStatus | null): Promise<Adapter[]> {
+    try {
+      const response = await fetch(ADAPTERS_URL, { cache: 'no-store' });
+      const adapters = response.ok ? await response.json() : null;
+      if (Array.isArray(adapters)) {
+        const active = new Map((status?.adapters ?? []).map((adapter) => [adapter.id, adapter.active]));
+        return adapters.map((adapter: Adapter) => ({ ...adapter, active: active.get(adapter.id) }));
+      }
+    } catch {
+      // Ответ не JSON: дальше реестр из /status.
+    }
+    return (status?.adapters ?? []).filter((adapter) => adapter.installed !== false);
   }
 
   private async _fetchStatus(): Promise<BackendStatus | null> {
