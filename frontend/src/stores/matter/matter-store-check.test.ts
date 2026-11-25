@@ -39,7 +39,7 @@ describe('MatterStore, the check of the link to a fabric', () => {
     expect(checkFabricLink).toHaveBeenCalledWith(2);
     expect(store.status?.fabrics[0].link?.code).toBe('left');
     expect(store.checkingIndex).toBeNull();
-    expect(store.hasCheckFailed).toBe(false);
+    expect(store.failedCheckIndex).toBeNull();
   });
 
   it('names the fabric being checked from the click until the state has been read again', async () => {
@@ -56,14 +56,15 @@ describe('MatterStore, the check of the link to a fabric', () => {
     expect(store.checkingIndex).toBeNull();
   });
 
-  it('says so when the bridge refused or did not answer, and forgets it at the next check', async () => {
+  it('names the fabric whose check did not go through, and forgets it at the next check', async () => {
     vi.mocked(checkFabricLink).mockRejectedValue(new Error('409'));
 
     expect(await store.checkLink(2)).toBe(false);
-    expect(store.hasCheckFailed).toBe(true);
+    // By the fabric and not as a plain yes: the details of every other fabric said it too.
+    expect(store.failedCheckIndex).toBe(2);
 
     vi.mocked(checkFabricLink).mockResolvedValue(undefined);
-    await store.checkLink(2);
-    expect(store.hasCheckFailed).toBe(false);
+    await store.checkLink(5);
+    expect(store.failedCheckIndex).toBeNull();
   });
 });

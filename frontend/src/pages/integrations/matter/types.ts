@@ -90,7 +90,8 @@ export interface FabricsCardProps {
   now?: number;
   // The fabric whose link is being checked, by index.
   checkingIndex?: number | null;
-  hasCheckFailed?: boolean;
+  // The fabric whose last check did not go through, by index.
+  failedCheckIndex?: number | null;
   onCheck?: (_fabric: MatterFabric) => void;
 }
 

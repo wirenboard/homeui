@@ -65,7 +65,8 @@ export const checkFabricLink = async (index: number) => {
 
 /**
  * Sets the label this controller keeps for one fabric. An empty value clears it, and the
- * page falls back to adminFabricLabel or to the fabric number.
+ * bridge falls back to adminFabricLabel, then to the name of the vendor; the page says
+ * the fabric number where there is neither (MatterFabric.label).
  *
  * It never reaches the app: the only standard place for a label is the fabric's own
  * Label, and the command that writes it may only be sent by the administrator of that

@@ -4,7 +4,7 @@ import { authStore } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { matterStore } from '@/stores/matter';
 import { getMatterStatus, unpairFabric } from '@/stores/matter/api';
-import { render, screen, fireEvent, waitFor } from '@/test/render';
+import { act, cleanup, render, screen, fireEvent, waitFor } from '@/test/render';
 import { copyToClipboard } from '@/utils/clipboard';
 import MatterPage from './matter';
 
@@ -133,6 +133,9 @@ describe('MatterPage', () => {
   });
 
   afterEach(() => {
+    // The page goes first, as it does in the browser: stopping the store drops the
+    // pairing code, and a page still mounted would be drawn again outside act.
+    cleanup();
     matterStore.stopWatching();
   });
 
@@ -205,11 +208,11 @@ describe('MatterPage', () => {
     vi.mocked(getMatterStatus).mockRejectedValue(new Error('502'));
     render(<MatterPage />);
 
-    // Calmly at first: the bridge restarts by itself, and that is not a failure.
+    // Calmly at first: a service that was restarted or updated is back within a minute.
     expect(await screen.findByTestId('page-error')).toHaveTextContent('matter.labels.starting');
-    runInAction(() => {
+    act(() => runInAction(() => {
       matterStore.silentFor = 10 * 60 * 1000;
-    });
+    }));
     expect(await screen.findByText('matter.labels.unreachable')).toBeInTheDocument();
     expect(screen.queryByAltText('matter.labels.qr-alt')).not.toBeInTheDocument();
   });
@@ -233,7 +236,8 @@ describe('MatterPage', () => {
 
   it('names the app side first and only then offers to unpair here', async () => {
     // The order is the point: unpairing in the app leaves no litter there, unpairing
-    // here does. See docs/ecosystems.md of the bridge, Я10 and Я11.
+    // here may - not every app acts on the word that the bridge leaves. See
+    // docs/ecosystems.md of the bridge, Я41, and docs/aqara.md, АК12.
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 

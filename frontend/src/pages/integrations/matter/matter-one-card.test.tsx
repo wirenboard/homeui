@@ -5,7 +5,7 @@ import ru from '@/i18n/locales/ru.json';
 import { authStore } from '@/stores/auth';
 import { matterStore } from '@/stores/matter';
 import { getMatterStatus } from '@/stores/matter/api';
-import { render, screen } from '@/test/render';
+import { cleanup, render, screen } from '@/test/render';
 import MatterPage from './matter';
 
 const { uiMock } = vi.hoisted(() => ({
@@ -80,6 +80,9 @@ describe('MatterPage, fabrics and the way to add one in one card', () => {
   });
 
   afterEach(() => {
+    // The page goes first, as it does in the browser: stopping the store drops the
+    // pairing code, and a page still mounted would be drawn again outside act.
+    cleanup();
     matterStore.stopWatching();
   });
 

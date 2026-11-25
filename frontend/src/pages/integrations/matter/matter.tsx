@@ -62,7 +62,10 @@ const MatterPage = observer(() => {
   // The fabric being labelled. Kept apart from the store so that a poll arriving
   // mid-edit cannot overwrite what is being typed.
   const [labelFor, setLabelFor] = useState<MatterFabric | null>(null);
-  const now = useNow(Boolean(status?.pairing));
+  // The code is drawn only while the bridge says the block is open: of a bridge that does
+  // not answer the page knows the last state, and a credential is not shown on that.
+  const pairing = isUnreachable ? null : status?.pairing ?? null;
+  const now = useNow(Boolean(pairing));
 
   useEffect(() => {
     if (!isInstalled || !isAdmin) {
@@ -140,15 +143,15 @@ const MatterPage = observer(() => {
             fabricsSince={status.fabrics_since}
             now={Date.now() + matterStore.clockOffset}
             checkingIndex={matterStore.checkingIndex}
-            hasCheckFailed={matterStore.hasCheckFailed}
+            failedCheckIndex={matterStore.failedCheckIndex}
             onAction={chooseFabricAction}
             onCheck={(fabric) => matterStore.checkLink(fabric.index)}
           >
             <PairingWindow
-              pairing={status.pairing}
+              pairing={pairing}
               isEmpty={status.fabrics.length === 0}
               devicesCount={status.devices.exposed}
-              left={status.pairing ? timeLeft(status.pairing.closes_at, now + matterStore.clockOffset) : ''}
+              left={pairing ? timeLeft(pairing.closes_at, now + matterStore.clockOffset) : ''}
               isChanging={matterStore.isChangingWindow}
               hasFailed={matterStore.hasWindowFailed && !isUnreachable}
               hasExpired={matterStore.hasWindowExpired}
@@ -178,7 +181,10 @@ const MatterPage = observer(() => {
             acceptLabel={t('matter.buttons.new-code-confirm')}
             cancelLabel={t('matter.buttons.new-code-cancel')}
             isLoading={matterStore.isChangingWindow}
-            closeCallback={() => setChangingCode(false)}
+            closeCallback={() => {
+              setChangingCode(false);
+              matterStore.forgetDialogFailures();
+            }}
             confirmCallback={async () => {
               if (await matterStore.changeCode()) {
                 setChangingCode(false);
@@ -187,14 +193,15 @@ const MatterPage = observer(() => {
           >
             <p className="matter-dialogText">{t('matter.labels.new-code-why')}</p>
             <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.new-code-cost')}</p>
-            {matterStore.hasWindowFailed && (
+            {matterStore.hasCodeFailed && (
               <p className="matter-dialogText matter-dialogError">{t('matter.labels.new-code-failed')}</p>
             )}
           </Confirm>
 
-          {/* Unpairing in the app comes first because unpairing from here leaves the
-              bridge and its devices in that app until somebody deletes them by hand.
-              See docs/ecosystems.md of wb-mqtt-matter-bridge, Я10 and Я11. */}
+          {/* Unpairing in the app comes first: the app then clears its own half. Unpaired
+              from here, the bridge tells the app that it leaves, and not every app acts on
+              that - an Aqara hub removes the bridge, a Yandex station keeps it as offline.
+              See docs/ecosystems.md of wb-mqtt-matter-bridge, Я41, and docs/aqara.md, АК12. */}
           <Confirm
             isOpened={unpairFrom !== null}
             heading={t('matter.labels.unpair-heading')}
@@ -202,7 +209,10 @@ const MatterPage = observer(() => {
             acceptLabel={t('matter.buttons.unpair-here')}
             cancelLabel={t('matter.buttons.unpair-close')}
             isLoading={matterStore.unpairingIndex !== null}
-            closeCallback={() => setUnpairFrom(null)}
+            closeCallback={() => {
+              setUnpairFrom(null);
+              matterStore.forgetDialogFailures();
+            }}
             confirmCallback={async () => {
               if (unpairFrom && await matterStore.unpair(unpairFrom.index)) {
                 setUnpairFrom(null);
@@ -220,7 +230,13 @@ const MatterPage = observer(() => {
             )}
           </Confirm>
 
-          <FabricLabelDialog fabric={labelFor} onClose={() => setLabelFor(null)} />
+          <FabricLabelDialog
+            fabric={labelFor}
+            onClose={() => {
+              setLabelFor(null);
+              matterStore.forgetDialogFailures();
+            }}
+          />
         </>
       )}
     </PageLayout>

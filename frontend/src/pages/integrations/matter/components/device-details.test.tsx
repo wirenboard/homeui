@@ -91,7 +91,8 @@ describe('DeviceDetails', () => {
     show({ group: null, matter: { type: 'Light', power: null, endpoint: null } });
 
     expect(factIn('given', 'matter.labels.fact-matter-group')).toBe('matter.labels.none');
-    expect(factIn('given', 'matter.labels.fact-power')).toBe('matter.labels.unknown');
+    // Not "unknown": the bridge says nothing of the power of a device it knows nothing about.
+    expect(factIn('given', 'matter.labels.fact-power')).toBe('matter.labels.power-none');
     expect(factIn('given', 'matter.labels.fact-endpoint')).toBe('matter.labels.unknown');
   });
 

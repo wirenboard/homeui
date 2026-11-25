@@ -17,7 +17,8 @@ const STATUS: MatterStatus = {
   paired: false,
   fabrics: [],
   pairing: {
-    closes_at: 1762500000000,
+    // Still open: a code whose time is over is not kept through a failed request.
+    closes_at: Date.now() + 15 * 60 * 1000,
     manual_code: '23331712339',
     payload: 'MT:Y.K9042C00KA0648G00',
     qr_version: 'abcdef12',
@@ -235,6 +236,32 @@ describe('MatterStore', () => {
     vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
 
     expect(await store.changeCode()).toBe(false);
-    expect(store.hasWindowFailed).toBe(true);
+    expect(store.hasCodeFailed).toBe(true);
+  });
+
+  it('keeps a code that was not changed apart from a window that was not opened', async () => {
+    // Two places say them: the dialog of the code and the line under the button that adds
+    // a fabric. One flag for both put each failure into the other's place.
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
+    await store.changeCode();
+    expect([store.hasCodeFailed, store.hasWindowFailed]).toEqual([true, false]);
+
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: true, closes_at: null });
+    vi.mocked(openMatterWindow).mockRejectedValue(new Error('409'));
+    await store.changeCode();
+    await store.openWindow();
+    expect([store.hasCodeFailed, store.hasWindowFailed]).toEqual([false, true]);
+  });
+
+  it('forgets what a dialog said of its last attempt once the dialog is closed', async () => {
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
+    vi.mocked(openMatterWindow).mockRejectedValue(new Error('409'));
+    await store.changeCode();
+    await store.openWindow();
+
+    store.forgetDialogFailures();
+
+    // The line under the button is not a dialog: it stays until the next attempt.
+    expect([store.hasCodeFailed, store.hasWindowFailed]).toEqual([false, true]);
   });
 });

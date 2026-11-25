@@ -62,6 +62,17 @@ describe('FabricsCard, the details under a row', () => {
     expect(onCheck).toHaveBeenCalledWith(paired);
   });
 
+  it('says a check did not go through in the details of the fabric it was for, and of no other', () => {
+    const neighbour = fabric({ index: 3, vendor_id: 0x1384, vendor_name: 'Apple Keychain' });
+    render(<FabricsCard fabrics={[fabric(), neighbour]} now={NOW} failedCheckIndex={3} onAction={vi.fn()} />);
+
+    fireEvent.click(screen.getAllByRole('button', TOGGLE)[0]);
+    expect(screen.queryByText('matter.labels.check-failed')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button', TOGGLE)[1]);
+    expect(screen.getAllByText('matter.labels.check-failed')).toHaveLength(1);
+  });
+
   it('copies the details of a fabric as text, without the button of the check and its hint', () => {
     render(<FabricsCard fabrics={[fabric()]} now={NOW} onAction={vi.fn()} />);
 

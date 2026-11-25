@@ -26,7 +26,7 @@ import { FabricLines, FabricName } from './fabric-parts';
  * so that the way to add a fabric is the last line of the list of fabrics.
  */
 export const FabricsCard = ({
-  fabrics, fabricsSince, onAction, now = Date.now(), checkingIndex = null, hasCheckFailed = false,
+  fabrics, fabricsSince, onAction, now = Date.now(), checkingIndex = null, failedCheckIndex = null,
   onCheck, children,
 }: PropsWithChildren<FabricsCardProps>) => {
   const { t } = useTranslation();
@@ -66,7 +66,7 @@ export const FabricsCard = ({
       fabric={fabric}
       now={now}
       isChecking={checkingIndex === fabric.index}
-      hasCheckFailed={hasCheckFailed && checkingIndex === null}
+      hasCheckFailed={failedCheckIndex === fabric.index}
       onCheck={() => onCheck?.(fabric)}
     />
   );

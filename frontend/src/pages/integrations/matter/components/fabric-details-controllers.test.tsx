@@ -302,6 +302,18 @@ describe('FabricDetails, the commands of a fabric', () => {
     expect(commandsSection().getByText('matter.labels.commands-total')).toBeInTheDocument();
   });
 
+  it('says a command came from a controller that gave no name, where the bridge knows neither name nor address', () => {
+    show({
+      commands: {
+        count: 1, last_at: NOW - 60000, last_did: 11, recent: [command({ from: { name: null, address: null } })],
+      },
+    });
+
+    // In its own words, not inside "sent by the controller ...": that read as a name.
+    expect(commandsSection().getByText('matter.labels.device-nameless')).toBeInTheDocument();
+    expect(commandsSection().queryByText('matter.labels.command-from')).not.toBeInTheDocument();
+  });
+
   it('says how many there were in all when it shows fewer', () => {
     show({
       commands: {

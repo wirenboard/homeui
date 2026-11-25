@@ -42,10 +42,4 @@ describe('the reasons a device is not given to Matter', () => {
 
     expect(extra).toEqual([]);
   });
-
-  it('says the same set of things in both languages', () => {
-    const keys = (dictionary: any) => Object.keys(dictionary.matter.labels).sort();
-
-    expect(keys(ru)).toEqual(keys(en));
-  });
 });

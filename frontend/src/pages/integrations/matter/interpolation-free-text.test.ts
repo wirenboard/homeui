@@ -24,6 +24,16 @@ const FREE_TEXT: [string, string, string][] = [
   ['buttons', 'device-details', 'name'],
 ];
 
+// What the page interpolates escaped: counts, the number of a fabric, a revision, and
+// what is left of the countdown as m:ss.
+const NUMBERS = ['count', 'of', 'index', 'revision', 'shown', 'left'];
+
+// Every text the page can put over itself: see `errors` in matter.tsx.
+const PAGE_PROBLEMS = [
+  'unavailable', 'starting', 'unreachable', 'network-no_ipv6', 'network-config_unread', 'network-error',
+  'broker-lost', 'config-error',
+];
+
 describe('free text this page interpolates into translations', () => {
   it.each([['en', en], ['ru', ru]] as const)('is not escaped in %s', (_lang, bundle) => {
     for (const [part, key, value] of FREE_TEXT) {
@@ -34,8 +44,23 @@ describe('free text this page interpolates into translations', () => {
     }
   });
 
-  it.each([['en', en], ['ru', ru]] as const)('has words for each problem the page names in %s', (_lang, bundle) => {
-    expect(section(bundle, 'labels')['network-no_ipv6']).toBeTruthy();
-    expect(section(bundle, 'labels')['broker-lost']).toBeTruthy();
+  /**
+   * The list above is the texts somebody thought of. The rule the other way round does not
+   * depend on that: whatever is interpolated is free text and goes unescaped, but for the
+   * numbers the page counts itself and the countdown.
+   */
+  it.each([['en', en], ['ru', ru]] as const)('escapes nothing but its own numbers in %s', (_lang, bundle) => {
+    const escaped = ['labels', 'buttons'].flatMap((part) => Object.entries(section(bundle, part))
+      .flatMap(([key, text]) => [...text.matchAll(/\{\{\s*(\w+)\s*\}\}/g)]
+        .filter(([, value]) => !NUMBERS.includes(value))
+        .map(([, value]) => `${part}.${key}: ${value}`)));
+
+    expect(escaped).toEqual([]);
+  });
+
+  it.each([['en', en], ['ru', ru]] as const)('has words for each problem over the page in %s', (_lang, bundle) => {
+    for (const key of PAGE_PROBLEMS) {
+      expect(section(bundle, 'labels')[key], key).toBeTruthy();
+    }
   });
 });

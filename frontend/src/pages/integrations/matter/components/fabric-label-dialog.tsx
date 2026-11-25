@@ -30,9 +30,9 @@ export const FabricLabelDialog = observer(({ fabric, onClose }: FabricLabelDialo
   // when the menu was used, so its reference does not change while the dialog is open.
   useEffect(() => {
     if (fabric) {
-      // From the label on screen and not from the local one alone: labelling a fabric
-      // that came with a label of its own starts from that label, which is what is
-      // being looked at.
+      // Not from the local label alone: labelling a fabric that came with a label of its
+      // own starts from that label. A fabric called by its vendor or by its number starts
+      // empty - that name is not a label to edit.
       setDraft(fabric.localFabricLabel ?? fabric.adminFabricLabel ?? '');
     }
   }, [fabric]);

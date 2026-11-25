@@ -5,7 +5,7 @@ import { matterStore } from '@/stores/matter';
 import {
   changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow,
 } from '@/stores/matter/api';
-import { render, screen, fireEvent, waitFor } from '@/test/render';
+import { cleanup, render, screen, fireEvent, waitFor } from '@/test/render';
 import MatterPage from './matter';
 
 const { uiMock } = vi.hoisted(() => ({
@@ -67,6 +67,9 @@ describe('MatterPage, the pairing window', () => {
   });
 
   afterEach(() => {
+    // The page goes first, as it does in the browser: stopping the store drops the
+    // pairing code, and a page still mounted would be drawn again outside act.
+    cleanup();
     matterStore.stopWatching();
   });
 

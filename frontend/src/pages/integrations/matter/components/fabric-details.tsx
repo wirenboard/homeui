@@ -72,9 +72,9 @@ export const FabricDetails = ({
           {t('matter.labels.command', { device: deviceName(command.name, command.did), asked: asked(command) })}
         </span>
         <span className="matter-detailsNote">
-          {t('matter.labels.command-from', {
-            controller: command.from.name ?? command.from.address ?? t('matter.labels.device-nameless'),
-          })}
+          {command.from.name ?? command.from.address
+            ? t('matter.labels.command-from', { controller: command.from.name ?? command.from.address })
+            : t('matter.labels.device-nameless')}
         </span>
       </span>,
     ]);

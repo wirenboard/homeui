@@ -107,8 +107,23 @@ describe('MatterStore, how a pairing window ended', () => {
     await poll(status({ now: NOW + 15 * MINUTE + 3000 }));
     expect(store.hasWindowExpired).toBe(true);
 
+    store.stopWatching();
     vi.mocked(getMatterStatus).mockResolvedValue(status({ now: NOW + 60 * MINUTE }));
     store.startWatching();
+    // After the first answer, and not before it: the answer is what could bring it back.
+    await vi.waitFor(() => expect(store.status?.now).toBe(NOW + 60 * MINUTE));
+    store.stopWatching();
+    expect(store.hasWindowExpired).toBe(false);
+  });
+
+  it('says nothing ran out to whoever comes back after leaving the page with the block open', async () => {
+    await poll(status({ pairing: open(NOW + 15 * MINUTE) }));
+    store.stopWatching();
+
+    // An hour later the block is long gone. Nobody was here when it ran out.
+    vi.mocked(getMatterStatus).mockResolvedValue(status({ now: NOW + 60 * MINUTE }));
+    store.startWatching();
+    await vi.waitFor(() => expect(store.status?.now).toBe(NOW + 60 * MINUTE));
     store.stopWatching();
     expect(store.hasWindowExpired).toBe(false);
   });

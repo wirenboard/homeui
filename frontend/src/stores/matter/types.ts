@@ -207,13 +207,14 @@ export interface MatterFabric {
   // already paired before the bridge started keeping dates - then MatterStatus.fabrics_since
   // is what the page can honestly say instead of a blank.
   paired_at?: number;
-  // Whether there is an open channel to this app right now. It says a channel exists, not
-  // that the app is working or that anybody is looking at it; an app with no channel is
-  // not broken either, since ecosystems let them lapse and rebuild them on demand.
+  // Whether the app is on the line, as the bridge counts it: it holds a subscription, or
+  // something was heard from it within the last two minutes. An open session alone does
+  // not count (М49), and an app that is not on the line is not broken either: ecosystems
+  // let subscriptions lapse and make them anew.
   online?: boolean;
-  // When the last channel to this app went away. Written only at that moment, so it is
-  // missing both for an app that has never dropped and for every app right after the
-  // service restarts - see FabricHistory#seen in the bridge.
+  // When the app was last heard before it went quiet. Written by the bridge only at that
+  // break and kept in its file over restarts - see FabricHistory#wentQuiet there - so it
+  // is missing for an app that has never dropped.
   last_seen?: number;
   // Everything below is undefined from a bridge older than this page.
   label?: MatterLabel;
@@ -239,7 +240,8 @@ export interface MatterPairing {
   closes_at: number;
   // The code to type in by hand, without the grouping dashes the apps print.
   manual_code: string;
-  // What the QR code encodes. Shown as text for an app that asks for it.
+  // What the QR code encodes. The page does not show it: the picture is drawn by the
+  // bridge, and a tool that wants the text reads it from here or from the journal.
   payload: string;
   // Tag of the payload for the picture URL: the payload itself is a credential and must
   // not end up in a query string.

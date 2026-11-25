@@ -6,8 +6,9 @@ import {
 import type { MatterSettings, MatterStatus, MatterWindow } from './types';
 
 /**
- * How long a bridge that does not answer is taken to be starting. It restarts by itself
- * when the last app leaves, and comes back in three quarters of a minute on a controller.
+ * How long a bridge that does not answer is taken to be starting: after a restart of the
+ * service or an update of its package it comes back in three quarters of a minute on a
+ * controller. The last app leaving is not such a case - the bridge goes on answering then.
  */
 export const STARTING_MS = 120_000;
 
@@ -34,7 +35,8 @@ export default class MatterStore {
   #silentSince: number | null = null;
   // The fabric being dropped right now, so the dialog can say so and cannot be used twice.
   unpairingIndex: number | null = null;
-  // The last attempt did not go through. Cleared when the next one starts.
+  // The last attempt did not go through. Cleared when the next one starts, and when the
+  // dialog that said so is closed: see forgetDialogFailures.
   hasUnpairFailed = false;
   // The fabric being labelled right now, so its dialog can say so and cannot be used twice.
   labellingIndex: number | null = null;
@@ -44,13 +46,18 @@ export default class MatterStore {
   hasLabelFailed = false;
   // The fabric whose link the bridge is checking right now.
   checkingIndex: number | null = null;
-  hasCheckFailed = false;
+  // The fabric whose last check did not go through: its details say so, and no other's.
+  failedCheckIndex: number | null = null;
   // The window is being opened or closed right now, so the button cannot be pressed
   // twice and says it is busy.
   isChangingWindow = false;
-  // The bridge refused or did not answer. 409 lands here too: it means somebody is
-  // pairing at this very moment, and the page says so rather than pretending.
+  // The bridge refused to open or close the window, or did not answer. 409 lands here
+  // too: an app is pairing at this very moment, or the bridge is making its Matter side
+  // anew after the last app left - and the page says so rather than pretending.
   hasWindowFailed = false;
+  // The code was not changed. Apart from hasWindowFailed: that one is said under the
+  // button that adds a fabric, this one in the dialog of the code.
+  hasCodeFailed = false;
   // The last window ran out of time and nobody was added. Kept until the next window
   // opens, because without it the code simply vanishes from the page and the person
   // who went to fetch a phone cannot tell a timeout from a fault.
@@ -69,12 +76,18 @@ export default class MatterStore {
   // back on the page for five seconds - a switch that was thrown springing back.
   #asked = 0;
   #shown = 0;
+  // When the pairing block last seen closes, on the clock of the controller. Kept apart
+  // from the status: the code is dropped from it at that time, and the next answer still
+  // has to tell a block that ran out from one that was closed.
+  #openUntil: number | null = null;
 
-  // A tab that comes back shows the state of now, not the state of when it was hidden.
+  // A tab that comes back shows the state of now, not the state of when it was hidden -
+  // and not for a moment a code whose time ran out meanwhile.
   // A field and not a method, because addEventListener and removeEventListener have to
   // be given one and the same function.
   readonly #onVisibilityChange = () => {
     if (document.visibilityState === 'visible') {
+      runInAction(() => this.#forgetCodeIfOver());
       void this.fetch();
     }
   };
@@ -97,6 +110,7 @@ export default class MatterStore {
           this.clockOffset = status.now - Date.now();
         }
         this.#noteWindowEnd(status);
+        this.#openUntil = status?.pairing?.closes_at ?? null;
         this.status = status;
         this.isUnreachable = false;
         this.silentFor = 0;
@@ -110,7 +124,9 @@ export default class MatterStore {
       this.#shown = asked;
       runInAction(() => {
         // The last known state is kept on purpose: a page that empties itself on one
-        // failed request is worse than a page with a warning over the data.
+        // failed request is worse than a page with a warning over the data. All but the
+        // pairing code, once its time is over: nothing says the block is still open.
+        this.#forgetCodeIfOver();
         this.isUnreachable = true;
         this.#silentSince ??= Date.now();
         this.silentFor = Date.now() - this.#silentSince;
@@ -121,7 +137,7 @@ export default class MatterStore {
 
   /**
    * The bridge does not answer, and has not for so short a time that it is most likely
-   * starting: after a restart of its own - the last app left - or of the package.
+   * starting: the service was restarted, or its package updated.
    */
   get isStarting() {
     return this.isUnreachable && this.silentFor < STARTING_MS;
@@ -152,7 +168,7 @@ export default class MatterStore {
   /** Has the bridge check the link to one fabric; what came of it is read from /status. */
   async checkLink(index: number) {
     this.checkingIndex = index;
-    this.hasCheckFailed = false;
+    this.failedCheckIndex = null;
     let ok = true;
     try {
       await checkFabricLink(index);
@@ -162,7 +178,7 @@ export default class MatterStore {
     await this.fetch();
     runInAction(() => {
       this.checkingIndex = null;
-      this.hasCheckFailed = !ok;
+      this.failedCheckIndex = ok ? null : index;
     });
     return ok;
   }
@@ -225,13 +241,22 @@ export default class MatterStore {
   /**
    * Replaces the pairing code of this controller.
    *
-   * Shares isChangingWindow and hasWindowFailed with the two above on purpose: from the
-   * page's side these are the same thing - one request to the bridge about the code,
-   * one busy state, one place a failure is shown - and a third pair of flags would only
-   * be three states to keep in step.
+   * Shares isChangingWindow with the two above on purpose: from the page's side it is one
+   * request to the bridge about the code and one busy state. The failure is its own: it
+   * is said in the dialog of the code, not under the button that adds a fabric.
    */
   async changeCode() {
-    return this.#changeWindow(changeMatterCode);
+    return this.#changeWindow(changeMatterCode, 'hasCodeFailed');
+  }
+
+  /**
+   * A dialog was closed: what it said of its last attempt is not for the next fabric the
+   * operator opens it on, nor for the next time it is opened.
+   */
+  forgetDialogFailures() {
+    this.hasUnpairFailed = false;
+    this.hasLabelFailed = false;
+    this.hasCodeFailed = false;
   }
 
   /** Reads the state now and keeps it up to date while the tab is visible. */
@@ -257,6 +282,13 @@ export default class MatterStore {
       this.#timer = null;
     }
     document.removeEventListener('visibilitychange', this.#onVisibilityChange);
+    // Nobody is looking at the page now, and the pairing code is a credential: it is not
+    // kept for whoever opens the page next. An answer still on its way would put it back,
+    // so it is dropped as well.
+    this.#asked += 1;
+    this.#shown = this.#asked;
+    this.#openUntil = null;
+    this.#forgetCode();
   }
 
   /**
@@ -273,15 +305,31 @@ export default class MatterStore {
       this.hasWindowExpired = false;
       return;
     }
-    const was = this.status.pairing;
-    if (was) {
-      this.hasWindowExpired = Date.now() + this.clockOffset >= was.closes_at - WINDOW_END_SLACK_MS;
+    if (this.#openUntil !== null) {
+      this.hasWindowExpired = Date.now() + this.clockOffset >= this.#openUntil - WINDOW_END_SLACK_MS;
     }
   }
 
-  async #changeWindow(call: () => Promise<MatterWindow>) {
+  /** Drops the pairing code from the state that is kept; the rest of it stays. */
+  #forgetCode() {
+    if (this.status?.pairing) {
+      this.status = { ...this.status, pairing: null };
+    }
+  }
+
+  /** The same once the block has run out of time, by the clock of the controller. */
+  #forgetCodeIfOver() {
+    if (this.#openUntil !== null && Date.now() + this.clockOffset >= this.#openUntil) {
+      this.#forgetCode();
+    }
+  }
+
+  async #changeWindow(
+    call: () => Promise<MatterWindow>,
+    failure: 'hasWindowFailed' | 'hasCodeFailed' = 'hasWindowFailed',
+  ) {
     this.isChangingWindow = true;
-    this.hasWindowFailed = false;
+    this[failure] = false;
     let ok = true;
     try {
       const answer = await call();
@@ -292,7 +340,7 @@ export default class MatterStore {
     await this.fetch();
     runInAction(() => {
       this.isChangingWindow = false;
-      this.hasWindowFailed = !ok;
+      this[failure] = !ok;
     });
     return ok;
   }
