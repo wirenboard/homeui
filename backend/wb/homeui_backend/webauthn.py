@@ -174,9 +174,7 @@ class WebAuthnService:
             "options": dict(options),
         }
 
-    def complete_authentication(
-        self, challenge_id: str, response: dict[str, Any]
-    ) -> str:
+    def complete_authentication(self, challenge_id: str, response: dict[str, Any]) -> str:
         challenge = self.challenges.consume(challenge_id, WebAuthnChallengeType.AUTHENTICATION)
         if challenge is None:
             raise ValueError("Invalid or expired authentication challenge")

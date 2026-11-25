@@ -454,9 +454,7 @@ def webauthn_authentication_complete_handler(
     if error is not None:
         return response_401()
     try:
-        user_id = service.complete_authentication(
-            form.get("challenge_id", ""), form.get("response", {})
-        )
+        user_id = service.complete_authentication(form.get("challenge_id", ""), form.get("response", {}))
         user = context.users_storage.get_user_by_id(user_id)
         if user is None:
             return response_401()
