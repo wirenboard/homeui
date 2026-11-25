@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CheckIcon from '@/assets/icons/check.svg';
-import { Card } from '@/components/card';
 import { Table, TableCell, TableRow, type TableCellSortDirection } from '@/components/table';
 import { Tag } from '@/components/tag';
 import { configuratorStore, type Adapter, type Device } from '@/stores/configurator';
@@ -80,7 +79,8 @@ export const Overview = observer(({ onSelect }: OverviewProps) => {
   );
 
   return (
-    <Card heading={t('configurator.labels.overview')}>
+    <section>
+      <h4 className="configurator-overviewTitle">{t('configurator.labels.overview')}</h4>
       <Table isFullWidth>
         <TableRow isHeading>
           {heading('name', t('configurator.labels.device'))}
@@ -111,6 +111,6 @@ export const Overview = observer(({ onSelect }: OverviewProps) => {
           </TableRow>
         ))}
       </Table>
-    </Card>
+    </section>
   );
 });

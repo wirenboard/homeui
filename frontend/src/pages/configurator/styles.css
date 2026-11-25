@@ -459,6 +459,14 @@
     color: var(--primary-color);
 }
 
+.configurator-overviewTitle {
+    margin: 0;
+    padding: var(--card-header-padding) 0;
+    line-height: 1.2em;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+}
+
 .configurator-overviewRow {
     cursor: pointer;
 }
