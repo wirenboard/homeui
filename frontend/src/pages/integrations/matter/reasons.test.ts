@@ -25,6 +25,7 @@ const REASON_CODES = [
   'role_unused',
   'role_needs_others',
   'silent',
+  'control_gone',
 ];
 
 describe('the reasons a device is not given to Matter', () => {

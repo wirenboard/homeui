@@ -1659,6 +1659,7 @@
          "reason-adapter_off": "switched off for Matter in the configurator",
          "reason-build_failed": "could not be built; the journal of the service says why",
          "reason-silent": "no data from the device",
+         "reason-control_gone": "the channel is gone from the controller",
          "reason-role_unused": "the bridge does not pass this channel for a device of this type",
          "reason-role_needs_others": "passed only together with other channels, which are missing or in error",
          "apps-all": "all {{count}}",
