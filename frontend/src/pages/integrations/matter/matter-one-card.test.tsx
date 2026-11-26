@@ -196,13 +196,15 @@ describe('MatterPage, fabrics and the way to add one in one card', () => {
     expect(screen.getByText('matter.labels.window-offline')).toBeInTheDocument();
   });
 
-  it('has three cards and none of its own for pairing', async () => {
+  it('has four cards, the bridge itself last, and none of its own for pairing', async () => {
     vi.mocked(getMatterStatus).mockResolvedValue(PAIRED as any);
     render(<MatterPage />);
 
     await screen.findByText('Yandex');
     const headings = [...document.querySelectorAll('.card-title')].map((heading) => heading.textContent);
-    expect(headings).toEqual(['matter.labels.fabrics', 'matter.labels.devices', 'matter.labels.settings']);
+    expect(headings).toEqual([
+      'matter.labels.fabrics', 'matter.labels.devices', 'matter.labels.settings', 'matter.labels.about',
+    ]);
   });
 
   it('has the words in both languages: the button names the goal and nothing speaks of a window', () => {

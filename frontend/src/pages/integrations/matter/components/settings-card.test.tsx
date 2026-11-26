@@ -3,11 +3,12 @@ import type { MatterSettings } from '@/stores/matter';
 import { fireEvent, render, screen } from '@/test/render';
 import { SettingsCard } from './settings-card';
 
-const ALL_OFF: MatterSettings = { name_in_model: false };
+const ALL_OFF: MatterSettings = { name_in_model: false, detailed_journal: false };
 
 // Each switch of the card: the setting it holds, its name and its explanation.
 const SWITCHES = [
   ['name_in_model', 'matter.labels.name-in-model', 'matter.labels.name-in-model-hint'],
+  ['detailed_journal', 'matter.labels.detailed-journal', 'matter.labels.detailed-journal-hint'],
 ] as const;
 
 const theSwitch = (name: string) => screen.getByRole('checkbox', { name }) as HTMLInputElement;
@@ -77,6 +78,12 @@ describe('SettingsCard', () => {
     render(card(ALL_OFF));
 
     expect(screen.queryByText('matter.labels.parts-apart')).not.toBeInTheDocument();
+  });
+
+  it('has no switch of the journal for a bridge that does not send one', () => {
+    render(card({ name_in_model: true }));
+
+    expect(screen.queryByText('matter.labels.detailed-journal')).not.toBeInTheDocument();
   });
 
   it('says so when the change did not go through, and only then', () => {

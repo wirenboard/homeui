@@ -21,6 +21,8 @@ export const SettingsCard = ({
   const hintId = useId();
   const partsLabelId = useId();
   const partsHintId = useId();
+  const journalLabelId = useId();
+  const journalHintId = useId();
   const isPartsFixed = fixed.includes('parts_apart');
 
   return (
@@ -58,6 +60,23 @@ export const SettingsCard = ({
             ariaLabelledby={partsLabelId}
             ariaDescribedby={partsHintId}
             onChange={(value) => onChange({ parts_apart: value })}
+          />
+        </div>
+      )}
+      {/* For whoever looks into a fault: the journal is read over SSH, and the switch is
+          here so that nobody needs a file of the service to turn it. */}
+      {settings?.detailed_journal !== undefined && (
+        <div className="matter-setting">
+          <div className="matter-settingText">
+            <span id={journalLabelId} className="matter-settingLabel">{t('matter.labels.detailed-journal')}</span>
+            <p id={journalHintId} className="matter-settingHint">{t('matter.labels.detailed-journal-hint')}</p>
+          </div>
+          <Switch
+            value={settings.detailed_journal}
+            isDisabled={isSaving}
+            ariaLabelledby={journalLabelId}
+            ariaDescribedby={journalHintId}
+            onChange={(value) => onChange({ detailed_journal: value })}
           />
         </div>
       )}

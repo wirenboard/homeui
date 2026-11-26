@@ -20,7 +20,7 @@ import { CopyField } from './copy-field';
  * a box inside a box, and it set a second and a third left edge beside the list's.
  */
 export const PairingWindow = ({
-  pairing, isEmpty, devicesCount, left, isChanging, hasFailed, hasExpired, isOffline, onOpen, onClose,
+  pairing, isEmpty, devicesCount, left, isChanging, isOpening, hasFailed, hasExpired, isOffline, onOpen, onClose,
 }: PairingWindowProps) => {
   const { t } = useTranslation();
 
@@ -88,6 +88,11 @@ export const PairingWindow = ({
   }
   if (isOffline) {
     note = t('matter.labels.window-offline');
+  }
+  // Asked for and not there yet: right after the last fabric is removed the bridge needs
+  // a few seconds, and the button alone only spins.
+  if (isOpening) {
+    note = t('matter.labels.window-opening');
   }
 
   return (

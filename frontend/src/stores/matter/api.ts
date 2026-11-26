@@ -56,6 +56,15 @@ export const unpairFabric = async (index: number) => {
 };
 
 /**
+ * The factory reset of the bridge: every fabric leaves and the identifiers the apps knew
+ * the bridge and its devices by are drawn anew. The answer says that it began; what came
+ * of it is in /status a few seconds later.
+ */
+export const resetMatterBridge = async () => {
+  await request.post('/matter/reset');
+};
+
+/**
  * Has the bridge ask one fabric whether it is still there. It answers once the app has
  * answered or not, which can take a quarter of a minute.
  */

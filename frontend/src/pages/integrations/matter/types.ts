@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type {
-  MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterFabricDevice, MatterOutcome, MatterPairing,
-  MatterSettings,
+  MatterBridgeAbout, MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterFabricDevice, MatterOutcome,
+  MatterPairing, MatterSettings,
 } from '@/stores/matter';
 
 export interface StatusLineProps {
@@ -106,6 +106,8 @@ export interface PairingWindowProps {
   // What is left of an open window, as the text to show.
   left: string;
   isChanging: boolean;
+  // The request that is on its way asks for a window: said in words beside the button.
+  isOpening?: boolean;
   hasFailed: boolean;
   // The last window ran out of time with nobody added: said, or the code just vanishes.
   hasExpired: boolean;
@@ -158,6 +160,16 @@ export interface CopyFieldProps {
   text: string;
   // Put in the clipboard: the apps expect the manual code without the grouping dashes.
   value: string;
+}
+
+export interface AboutCardProps {
+  // As the bridge says it of itself. Undefined from a bridge older than this page, null
+  // while it has no node to read: the lines then say "unknown".
+  about?: MatterBridgeAbout | null;
+  version: string;
+  // A request to the bridge is on its way: the reset is not offered beside it.
+  isBusy: boolean;
+  onReset: () => void;
 }
 
 export interface SettingsCardProps {

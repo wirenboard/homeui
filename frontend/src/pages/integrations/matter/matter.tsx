@@ -8,6 +8,7 @@ import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
 import { type MatterDevice, type MatterFabric, matterStore } from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
+import { AboutCard } from './components/about-card';
 import { DevicesCard } from './components/devices-card';
 import { FabricLabelDialog } from './components/fabric-label-dialog';
 import { FabricsCard } from './components/fabrics-card';
@@ -59,6 +60,8 @@ const MatterPage = observer(() => {
   // cost the operator cannot see from here: an app that remembered the old code will
   // offer the wrong one afterwards.
   const [isChangingCode, setChangingCode] = useState(false);
+  // The dialog of the reset: what it costs is said before it is done, not after.
+  const [isAskingReset, setAskingReset] = useState(false);
   // The fabric being labelled. Kept apart from the store so that a poll arriving
   // mid-edit cannot overwrite what is being typed.
   const [labelFor, setLabelFor] = useState<MatterFabric | null>(null);
@@ -153,6 +156,7 @@ const MatterPage = observer(() => {
               devicesCount={status.devices.exposed}
               left={pairing ? timeLeft(pairing.closes_at, now + matterStore.clockOffset) : ''}
               isChanging={matterStore.isChangingWindow}
+              isOpening={matterStore.isOpeningWindow}
               hasFailed={matterStore.hasWindowFailed && !isUnreachable}
               hasExpired={matterStore.hasWindowExpired}
               isOffline={Boolean(status.network_error) || isUnreachable}
@@ -173,6 +177,44 @@ const MatterPage = observer(() => {
             onChange={matterStore.setSettings}
             onNewCode={() => setChangingCode(true)}
           />
+
+          <AboutCard
+            about={status.bridge}
+            version={status.version}
+            isBusy={matterStore.isResetting || matterStore.isChangingWindow || isUnreachable}
+            onReset={() => setAskingReset(true)}
+          />
+
+          <Confirm
+            isOpened={isAskingReset}
+            heading={t('matter.labels.reset-heading')}
+            variant="danger"
+            acceptLabel={t('matter.buttons.reset-confirm')}
+            cancelLabel={t('matter.buttons.reset-cancel')}
+            isLoading={matterStore.isResetting}
+            closeCallback={() => {
+              setAskingReset(false);
+              matterStore.forgetDialogFailures();
+            }}
+            confirmCallback={async () => {
+              if (await matterStore.resetBridge()) {
+                setAskingReset(false);
+              }
+            }}
+          >
+            <p className="matter-dialogText">
+              {status.fabrics.length > 0
+                ? t('matter.labels.reset-fabrics', { count: status.fabrics.length })
+                : t('matter.labels.reset-no-fabrics')}
+            </p>
+            {/* With no fabric there is no app to lose the bridge. */}
+            {status.fabrics.length > 0 && <p className="matter-dialogText">{t('matter.labels.reset-apps')}</p>}
+            <p className="matter-dialogText">{t('matter.labels.reset-ids')}</p>
+            <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.reset-keeps')}</p>
+            {matterStore.hasResetFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.reset-failed')}</p>
+            )}
+          </Confirm>
 
           <Confirm
             isOpened={isChangingCode}

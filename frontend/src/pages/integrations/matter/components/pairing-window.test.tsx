@@ -44,6 +44,23 @@ describe('PairingWindow', () => {
     expect(colouredBlock()).toBeNull();
   });
 
+  it('says in words that the bridge is getting ready while a window is on its way', () => {
+    // Right after the last fabric is removed that takes four seconds, and a button that
+    // only spins read as a page that hung.
+    render(windowOf({ isEmpty: true, isChanging: true, isOpening: true }));
+
+    expect(screen.getByText('matter.labels.window-opening')).toBeInTheDocument();
+    expect(screen.queryByText('matter.labels.window-closed')).not.toBeInTheDocument();
+    expect(addButton()).toBeDisabled();
+  });
+
+  it('keeps its own words while another request is on its way: the code being changed is not a window', () => {
+    render(windowOf({ isChanging: true }));
+
+    expect(screen.queryByText('matter.labels.window-opening')).not.toBeInTheDocument();
+    expect(screen.getByText('matter.labels.window-closed-paired')).toBeInTheDocument();
+  });
+
   it('invites an empty bridge to its first app, and says how many devices it will get', () => {
     render(windowOf({ isEmpty: true }));
 

@@ -726,3 +726,52 @@
         margin-bottom: 8px;
     }
 }
+
+.matter-about {
+    margin: 0;
+}
+
+.matter-aboutLine {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: var(--content-gap);
+    padding: 8px 0;
+    border-top: 1px solid var(--border-color);
+    font-size: var(--font-size-medium);
+}
+
+.matter-aboutLine:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.matter-aboutLine dt {
+    color: var(--gray-color);
+}
+
+.matter-aboutLine dd {
+    margin: 0;
+    overflow-wrap: break-word;
+}
+
+.matter-aboutAction {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--content-gap);
+}
+
+.matter-aboutAction .button {
+    flex: none;
+}
+
+@media (--max-mobile-width) {
+    .matter-aboutLine {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    }
+
+    .matter-aboutNode {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px;
+    }
+}

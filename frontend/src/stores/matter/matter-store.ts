@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import {
   changeMatterCode, checkFabricLink, closeMatterWindow, getMatterStatus, openMatterWindow,
-  setLocalFabricLabel, setMatterSettings, unpairFabric,
+  resetMatterBridge, setLocalFabricLabel, setMatterSettings, unpairFabric,
 } from './api';
 import type { MatterSettings, MatterStatus, MatterWindow } from './types';
 
@@ -58,6 +58,12 @@ export default class MatterStore {
   // The code was not changed. Apart from hasWindowFailed: that one is said under the
   // button that adds a fabric, this one in the dialog of the code.
   hasCodeFailed = false;
+  // A window was asked for and the bridge has not answered: after the last fabric is
+  // removed that takes a few seconds, and a spinner alone read as a page that hung.
+  isOpeningWindow = false;
+  // The reset of the bridge is on its way, and whether it went through: said in its dialog.
+  isResetting = false;
+  hasResetFailed = false;
   // The last window ran out of time and nobody was added. Kept until the next window
   // opens, because without it the code simply vanishes from the page and the person
   // who went to fetch a phone cannot tell a timeout from a fault.
@@ -165,6 +171,27 @@ export default class MatterStore {
     return ok;
   }
 
+  /**
+   * Has the bridge reset. As with unpair, what /status says afterwards is the truth and
+   * not what this call returned: the fabrics are gone when the list is empty.
+   */
+  async resetBridge() {
+    this.isResetting = true;
+    this.hasResetFailed = false;
+    let ok = true;
+    try {
+      await resetMatterBridge();
+    } catch {
+      ok = false;
+    }
+    await this.fetch();
+    runInAction(() => {
+      this.isResetting = false;
+      this.hasResetFailed = !ok;
+    });
+    return ok;
+  }
+
   /** Has the bridge check the link to one fabric; what came of it is read from /status. */
   async checkLink(index: number) {
     this.checkingIndex = index;
@@ -230,7 +257,12 @@ export default class MatterStore {
    * the window belongs to the bridge, and /status is what the page may believe.
    */
   async openWindow() {
-    return this.#changeWindow(openMatterWindow);
+    this.isOpeningWindow = true;
+    const ok = await this.#changeWindow(openMatterWindow);
+    runInAction(() => {
+      this.isOpeningWindow = false;
+    });
+    return ok;
   }
 
   /** Closes it before its time. */
@@ -257,6 +289,7 @@ export default class MatterStore {
     this.hasUnpairFailed = false;
     this.hasLabelFailed = false;
     this.hasCodeFailed = false;
+    this.hasResetFailed = false;
   }
 
   /** Reads the state now and keeps it up to date while the tab is visible. */

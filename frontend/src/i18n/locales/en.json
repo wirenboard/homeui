@@ -1515,6 +1515,21 @@
          "pairing-code": "Pairing code",
          "pairing-code-hint": "The bridge has one, and it stays the same from one time to the next. Change it when it has got out.",
          "pairing-code-busy": "The code cannot be changed while the bridge is waiting to be added.",
+         "window-opening": "The bridge is getting ready to be added, it takes a few seconds.",
+         "about": "About the bridge",
+         "about-name": "Name on the network",
+         "about-version": "Bridge software version",
+         "about-matter": "Matter standard version",
+         "about-unknown": "unknown",
+         "node-created": "Matter node of the bridge created",
+         "reset-hint": "A reset creates the node anew: removes every paired fabric and gives the bridge and its devices new identifiers.",
+         "reset-heading": "Reset the bridge?",
+         "reset-fabrics": "Fabrics paired: {{count}}. All of them will be removed.",
+         "reset-no-fabrics": "The bridge has no fabrics now.",
+         "reset-apps": "The apps lose the bridge: in each of them it stays \"offline\" until you add the bridge again or remove it there.",
+         "reset-ids": "The devices get new identifiers. An app may take them for new ones - check the names, the rooms and the scenarios after adding the bridge.",
+         "reset-keeps": "The pairing code will be a new one. The controller and its devices are not touched.",
+         "reset-failed": "The reset did not go through. The journal of the service says why.",
          "new-code-heading": "Change the pairing code",
          "new-code-why": "The code of this controller is its own - no two controllers share one - and it stays the same from one time to the next. Change it when it has got out: a screenshot in a ticket, a diagnostic bundle, somebody reading this page over a shoulder.",
          "new-code-cost": "An app that is already paired keeps working. But an app that remembered the old code - which is what its own \"Share\" screen shows - will offer the wrong one until it is paired again.",
@@ -1683,10 +1698,12 @@
          "devices-link": "Device configurator",
          "settings": "Settings",
          "name-in-model": "Device name in place of the model",
-         "name-in-model-hint": "Some apps name a device by its model or show it in the device card. When on, the bridge gives the name from the configurator where the model goes - about 32 Latin or 16 Cyrillic letters. Turn it off to have the type name there: Outlet, Switch.",
+         "name-in-model-hint": "Some apps name a device by its model or show it in the device card. When on, the bridge gives the name from the configurator where the model goes - about 32 Latin or 16 Cyrillic letters. Turn it off to have the type name there: Outlet, Switch. The bridge itself gives its name on the network as its model, so that two controllers in one home can be told apart.",
          "parts-apart": "Every part of a device is a device of its own in Matter",
          "parts-apart-hint": "For compatibility: every app takes devices one by one.",
          "setting-fixed": "Cannot be changed yet.",
+         "detailed-journal": "Detailed journal",
+         "detailed-journal-hint": "The service writes every exchange with the apps into its journal - what it takes to look into a fault. The journal then grows by tens of megabytes a day; it carries the pairing code. Applied at once, without a restart.",
          "settings-failed": "The setting could not be saved. Try again."
       },
       "buttons": {
@@ -1707,7 +1724,10 @@
          "unpair-close": "Close",
          "new-code": "Change the code",
          "new-code-confirm": "Change the code",
-         "new-code-cancel": "Leave it"
+         "new-code-cancel": "Leave it",
+         "reset": "Reset the bridge",
+         "reset-confirm": "Reset the bridge",
+         "reset-cancel": "Cancel"
       }
    }
 }

@@ -323,6 +323,9 @@ export interface MatterSettings {
   // Every part of a device is given to Matter as a device of its own. The one way the
   // bridge has so far: shown as a setting, and named in settings_fixed of the status.
   parts_apart?: boolean;
+  // The journal of the service keeps every exchange with an app. Applied at once;
+  // undefined from a bridge that takes the level of its journal from a file.
+  detailed_journal?: boolean;
 }
 
 /** Why the bridge is not doing its job: a code for the page, a sentence for support. */
@@ -332,8 +335,20 @@ export interface MatterProblem {
   detail?: string;
 }
 
+// What the bridge says of itself, for the card "About the bridge". Read off the Matter
+// node by the bridge, so it is what an app is told.
+export interface MatterBridgeAbout {
+  name: string;
+  matter_version: string | null;
+  // When the identifiers the apps know the bridge and its devices by were drawn, on the
+  // clock of the controller. Null when the bridge never wrote that down.
+  identity_since: number | null;
+}
+
 export interface MatterStatus {
   version: string;
+  // Undefined from a service older than this page, null while there is no node to read.
+  bridge?: MatterBridgeAbout | null;
   // The clock of the controller at the moment it answered, in milliseconds since the
   // epoch. closes_at is on that clock and the countdown runs in the browser, whose clock
   // is another one: a controller with no time server can be hours away. Undefined from a
