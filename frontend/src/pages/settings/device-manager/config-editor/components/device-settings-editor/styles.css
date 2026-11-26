@@ -92,10 +92,15 @@
 }
 
 /* Dropdown is wrapped in a display: contents div, so it gets its own class */
-.deviceSettingsEditor-allowedValuesDropdown,
+.deviceSettingsEditor-allowedValuesDropdown {
+    flex: 3 1 0;
+    min-width: 150px;
+}
+
 .deviceSettingsEditor-allowedValues > .input {
     flex: 1 1 0;
-    min-width: 120px;
+    min-width: 100px;
+    box-sizing: border-box;
 }
 
 .deviceSettingsEditor-shouldStoreInConfig .dropdown__control,
