@@ -11,8 +11,13 @@
     height: 16px;
 }
 
-.collapseButton:focus {
+.collapseButton:not(.collapseButton-disabled):focus {
+    border-radius: 4px;
     outline: var(--form-element-outline);
     outline-offset: var(--form-element-outline-offset);
     transition: var(--form-element-focus-transition);
+}
+
+.collapseButton-disabled {
+    color: var(--light-gray-color);
 }

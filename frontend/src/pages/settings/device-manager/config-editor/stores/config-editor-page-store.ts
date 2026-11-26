@@ -1,4 +1,4 @@
-/* eslint max-lines: ["warn", 495] */
+/* eslint-disable max-lines */
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
@@ -450,6 +450,35 @@ export class ConfigEditorPageStore {
       requestAnimationFrame(() => {
         this.tabs.addDeviceTab(this.tabs.portTabs.find((port) => port.path === res.port), deviceTab.getCopy(), i === 0);
       });
+    }
+  }
+
+  // Covers both entry points: a single selected device (from the device tab, selectMovedDevice=true
+  // so the view follows it to its new port) and a whole port's devices (from the port tab's "Move
+  // devices" button, selectMovedDevice=false so the port tab stays open) share the same modal.
+  async moveDevices(
+    devices: DeviceTabStore[],
+    showMoveDeviceModal: (_devices: DeviceTabStore[]) => Promise<Map<DeviceTabStore, string> | null>,
+    selectMovedDevice: boolean,
+  ) {
+    if (!devices.length) {
+      return;
+    }
+    const assignments = await showMoveDeviceModal(devices);
+    if (!assignments?.size) {
+      return;
+    }
+    // Moving a device splices `tabs.items`, which can shift every tab after the insertion point
+    // without updating `selectedTabIndex` — re-select by reference so the open tab never jumps.
+    const previouslySelectedTab = this.tabs.selectedTab;
+    assignments.forEach((port, deviceTab) => {
+      const targetPortTab = this.tabs.portTabs.find((p) => p.path === port);
+      if (targetPortTab) {
+        this.tabs.moveDeviceToPort(deviceTab, targetPortTab, selectMovedDevice);
+      }
+    });
+    if (!selectMovedDevice) {
+      this.tabs.selectTab(previouslySelectedTab);
     }
   }
 

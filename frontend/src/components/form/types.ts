@@ -59,6 +59,7 @@ export interface BooleanFieldProps {
   isDisabled?: boolean;
   formStyle?: CSSProperties;
   indeterminate?: boolean;
+  hideLabel?: boolean;
   onChange: (value: boolean) => void;
 }
 

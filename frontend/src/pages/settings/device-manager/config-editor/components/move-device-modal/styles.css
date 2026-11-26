@@ -1,0 +1,16 @@
+.moveDeviceModal-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.moveDevicesModal-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.moveDevicesModal-container .wb-tableWrapper {
+    max-height: 320px;
+    overflow-y: auto;
+}

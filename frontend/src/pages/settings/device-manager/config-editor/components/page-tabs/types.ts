@@ -15,6 +15,8 @@ export interface PageTabsProps {
   onDeleteTab: () => Promise<void>;
   onDeletePortDevices: (_portTab: PortTab) => Promise<void>;
   onCopyTab: () => Promise<void>;
+  onMoveTab: () => Promise<void>;
+  onMovePortDevices: (_portTab: PortTab) => Promise<void>;
   onDeviceTypeChange: (_tab: DeviceTabStore, _type: string) => Promise<void>;
   onSearchDisconnectedDevice: () => void;
   onUpdateFirmware: () => void;

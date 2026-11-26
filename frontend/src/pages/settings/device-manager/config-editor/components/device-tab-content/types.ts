@@ -7,6 +7,7 @@ export interface DeviceTabContentProps {
   isUserDefinedType?: boolean;
   onDeleteTab: () => void;
   onCopyTab: () => Promise<void>;
+  onMoveTab: () => Promise<void>;
   onDeviceTypeChange: (tab: DeviceTabStore, newType: string) => void;
   onSetUniqueMqttTopic: (topic: string) => void;
   onSearchDisconnectedDevice: () => void;

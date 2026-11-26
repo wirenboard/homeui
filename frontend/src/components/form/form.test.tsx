@@ -166,4 +166,12 @@ describe('BooleanField', () => {
     render(<BooleanField title="X" value={false} error="Invalid" onChange={vi.fn()} />);
     expect(screen.getByText('Invalid')).toBeDefined();
   });
+
+  test('visually hides the label but keeps it as the accessible name when hideLabel is set', () => {
+    const { container } = render(
+      <BooleanField title="Select all" value={false} view="checkbox" hideLabel onChange={vi.fn()} />,
+    );
+    expect(screen.getByRole('checkbox', { name: 'Select all' })).toBeDefined();
+    expect(container.querySelector('span.sr-only')?.textContent).toBe('Select all');
+  });
 });

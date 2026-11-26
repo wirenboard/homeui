@@ -14,9 +14,13 @@
     background: var(--background-accent-color) !important;
 }
 
-
 .portTab-title {
     flex-grow: 1;
+}
+
+.portTab-collapse {
+    margin-right: 3px;
+    margin-left: -5px;
 }
 
 .portTab-errorAlert {

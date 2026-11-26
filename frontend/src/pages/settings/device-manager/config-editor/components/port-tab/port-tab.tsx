@@ -16,16 +16,19 @@ export const PortTab = observer(({ tab }: PortTabProps) => {
         'portTab-error': tab.hasInvalidConfig,
       })}
     >
-      {tab.hasChildren && (
-        <CollapseButton state={tab.collapseButtonState} stopPropagation />
-      )}
+      <CollapseButton
+        className="portTab-collapse"
+        state={tab.collapseButtonState}
+        isDisabled={!tab.hasChildren}
+        stopPropagation
+      />
       <span className="portTab-title">{tab.name}</span>
       {tab.hasInvalidConfig && <WarnIcon className="portTab-icon" />}
     </div>
   );
 });
 
-export const PortTabContent = ({ tab, onDeleteTab, onDeletePortDevices }) => {
+export const PortTabContent = ({ tab, onDeleteTab, onDeletePortDevices, onMovePortDevices }) => {
   const { t } = useTranslation();
   return (
     <div>
@@ -37,6 +40,14 @@ export const PortTabContent = ({ tab, onDeleteTab, onDeletePortDevices }) => {
       <header className="portTab-header">
         <span className="portTab-headerTitle">{tab.title}</span>
         <div className="portTab-buttonPanel">
+          <Button
+            key="move-devices"
+            label={t('device-manager.buttons.move-devices')}
+            variant="secondary"
+            disabled={!tab.hasChildren}
+            aria-haspopup="dialog"
+            onClick={() => onMovePortDevices(tab)}
+          />
           <Button
             key="delete-devices"
             label={t('device-manager.buttons.delete-devices')}

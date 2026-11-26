@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import MoveIcon from '@/assets/icons/arrow-right.svg';
 import CopyIcon from '@/assets/icons/copy.svg';
 import RefreshIcon from '@/assets/icons/refresh.svg';
 import SettingsIcon from '@/assets/icons/settings.svg';
@@ -82,6 +83,7 @@ export const DeviceTabContent = observer(
     isUserDefinedType,
     onDeleteTab,
     onCopyTab,
+    onMoveTab,
     onDeviceTypeChange,
     onSetUniqueMqttTopic,
     onSearchDisconnectedDevice,
@@ -230,6 +232,14 @@ export const DeviceTabContent = observer(
                 />
               </Tooltip>
             )}
+            <Tooltip text={t('device-manager.buttons.move')}>
+              <Button
+                aria-label={t('device-manager.buttons.move')}
+                icon={<MoveIcon />}
+                aria-haspopup="dialog"
+                onClick={onMoveTab}
+              />
+            </Tooltip>
             <Tooltip text={t('device-manager.buttons.reread-config')}>
               <Button
                 aria-label={t('device-manager.buttons.reread-config')}

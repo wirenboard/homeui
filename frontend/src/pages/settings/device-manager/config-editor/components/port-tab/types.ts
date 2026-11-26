@@ -8,4 +8,5 @@ export interface PortTabContentProps {
   tab: PortTabStore;
   deleteTab: (_tab: PortTabStore) => Promise<void>;
   onDeletePortDevices: (_tab: PortTabStore) => Promise<void>;
+  onMovePortDevices: (_tab: PortTabStore) => Promise<void>;
 }

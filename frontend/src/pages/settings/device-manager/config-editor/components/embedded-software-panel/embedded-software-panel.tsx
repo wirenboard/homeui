@@ -237,7 +237,7 @@ const HasUpdateAlert = observer(
     }
 
     return (
-      <Alert variant="warn" className="hasUpdateAlert">
+      <Alert variant="info" className="hasUpdateAlert">
         <div>
           <AvailableUpdatesText embeddedSoftware={embeddedSoftware} />
           <ManualUpdateText embeddedSoftware={embeddedSoftware} />
@@ -246,7 +246,6 @@ const HasUpdateAlert = observer(
         {embeddedSoftware.canUpdate && (
           <Button
             label={t('device-manager.buttons.update')}
-            variant="warn"
             onClick={onClickFunction}
           />
         )}
