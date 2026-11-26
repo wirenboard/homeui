@@ -70,7 +70,6 @@ export const BadValueFromRegisterWarning = ({ id, store, translator }: BadValueF
   );
 };
 
-// A dropdown of the allowed values titles and an input for the number, editable for a selected range only
 const AllowedValuesEditor = observer((
   { store, translator, isDisabled }:
   { store: ExactNumberStore; translator: Translator; isDisabled: boolean },
