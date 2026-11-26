@@ -467,6 +467,10 @@
     font-weight: 600;
 }
 
+.configurator-channelInherited {
+    color: var(--gray-color);
+}
+
 .configurator-overviewRow {
     cursor: pointer;
 }

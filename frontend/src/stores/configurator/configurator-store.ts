@@ -210,7 +210,7 @@ export default class ConfiguratorStore {
     return Math.max(...dids) + 1;
   }
 
-  // Занятое название получает суффикс « 2», « 3», ...
+  // Занятое название получает суффикс « 2», « 3», ...; единственный канал зовётся как устройство.
   addDevice(name: string, rows: NewDeviceRow[]): Device {
     const firstDid = this.nextDid();
     const taken = new Set(this.devices.map(moduleName));
@@ -224,7 +224,7 @@ export default class ConfiguratorStore {
       name: freeName,
       group: '',
       adapterSettings: {},
-      rows: rows.map((row, index) => ({ ...row, did: firstDid + index })),
+      rows: rows.map((row, index) => ({ ...row, did: firstDid + index, ...(rows.length === 1 ? { name: '' } : {}) })),
     };
     this.devices.push(device);
     this.selection = { id: device.id };

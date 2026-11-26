@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import { Input } from '@/components/input';
 import {
-  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, primaryRole, rowServices, splitKey,
+  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, inheritedName, primaryRole, rowName, rowServices, splitKey,
   type ChannelClass,
   type DeviceRow,
   type RoleId,
@@ -162,7 +163,7 @@ export const DevicePanel = observer(({
             const roles = findType(row.type).roles
               .filter(([role, isRequired]) => isRequired || row.bind[role] || hasFit(role));
             const isCollapsed = collapsed.includes(row.did);
-            const title = row.name || typeName(row.type);
+            const title = rowName(item, row) || typeName(row.type);
             const primary = primaryChannel(row);
             const classTypes = primary ? CHANNEL_CLASSES[primary.cls].types : [];
             const types = !classTypes.length || classTypes.includes(row.type) ? classTypes : [row.type, ...classTypes];
@@ -187,6 +188,7 @@ export const DevicePanel = observer(({
                       <Input
                         className="configurator-channelName"
                         value={row.name}
+                        placeholder={inheritedName(item, row)}
                         ariaLabel={t('configurator.labels.name-in-apps')}
                         autoFocus
                         onChange={(name) => configuratorStore.updateRow(row, { name: String(name) })}
@@ -195,7 +197,13 @@ export const DevicePanel = observer(({
                       />
                     ) : (
                       <>
-                        <span className="configurator-channelText">{title}</span>
+                        <span
+                          className={classNames('configurator-channelText', {
+                            'configurator-channelInherited': !row.name.trim(),
+                          })}
+                        >
+                          {title}
+                        </span>
                         <Button
                           size="small"
                           variant="secondary"
@@ -211,7 +219,7 @@ export const DevicePanel = observer(({
                     size="small"
                     variant="secondary"
                     icon={<TrashIcon />}
-                    aria-label={t('configurator.buttons.remove-channel', { ...UNESCAPED, name: row.name })}
+                    aria-label={t('configurator.buttons.remove-channel', { ...UNESCAPED, name: title })}
                     onClick={() => configuratorStore.removeRow(item, row.did)}
                   />
                 </div>
@@ -229,7 +237,7 @@ export const DevicePanel = observer(({
                       <TypeChoice
                         types={types}
                         value={row.type}
-                        ariaLabel={`${t('configurator.labels.type')}: ${row.name}`}
+                        ariaLabel={`${t('configurator.labels.type')}: ${title}`}
                         onChange={(typeId) => changeType(row, primary.cell, primary.cls, typeId)}
                       />
                     )}

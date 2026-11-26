@@ -50,7 +50,7 @@ const made = () => configuratorStore.devices.map((device) => [
 ]);
 
 describe('DevicesDialog', () => {
-  it('checks nothing in advance and checks a row once its name or group is set, naming its only channel alike', () => {
+  it('checks nothing in advance, then a row once named or grouped; its only channel takes the device name', () => {
     const { onAdded } = show({ 'wb-mrps6_12': ['K1', 'K2'] });
     expect(rowBoxes().map((box) => box.checked)).toEqual([false, false]);
     expect(createButton().disabled).toBe(true);
@@ -65,7 +65,7 @@ describe('DevicesDialog', () => {
     fireEvent.click(createButton());
 
     expect(made()).toEqual([['Люстра', 'Гостиная', [{ on_off: 'wb-mrps6_12/K1' }]]]);
-    expect(configuratorStore.devices[0].rows[0].name).toBe('Люстра');
+    expect(configuratorStore.devices[0].rows[0].name).toBe('');
     expect(onAdded).toHaveBeenCalledTimes(1);
   });
 

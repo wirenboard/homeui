@@ -9,7 +9,7 @@ import { Input } from '@/components/input';
 import { Popup } from '@/components/popup';
 import { Tag } from '@/components/tag';
 import { Tree, type TreeItem } from '@/components/tree';
-import { configuratorStore, stable, type Device } from '@/stores/configurator';
+import { configuratorStore, rowName, stable, type Device } from '@/stores/configurator';
 import type { DeviceListProps } from '../types';
 import { hasLostBinding } from '../utils';
 
@@ -26,7 +26,7 @@ export const DeviceList = observer(({
   const shown = devices.filter((device) => !needle || [
     device.name,
     device.group,
-    ...device.rows.flatMap((row) => [row.name, ...Object.values(row.bind)]),
+    ...device.rows.flatMap((row) => [rowName(device, row), ...Object.values(row.bind)]),
   ].join(' ').toLowerCase().includes(needle));
 
   const groups = Array.from(new Set(shown.map((device) => device.group.trim())))

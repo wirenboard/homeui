@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import { findType, requiredRoles, ROLES } from './catalog';
 import type {
   BuiltConfig,
@@ -52,6 +53,20 @@ export const rowServices = (row: DeviceRow) => {
 export const moduleName = (device: Pick<Device, 'name' | 'rows'>) =>
   device.name.trim() || (device.rows.length ? `own-${device.rows[0].did}` : '');
 
+// Имя канала без своего: у первого — имя устройства, у остальных — с типом и номером.
+export const inheritedName = (device: Pick<Device, 'name' | 'rows'>, row: DeviceRow) => {
+  const index = device.rows.findIndex((item) => item.did === row.did);
+  if (index <= 0) {
+    return device.name.trim();
+  }
+  const same = device.rows.slice(0, index + 1).filter((item) => item.type === row.type).length;
+  return [device.name.trim(), i18n.t(`configurator.types.${row.type}.short`), same > 1 ? same : '']
+    .filter(Boolean).join(' ');
+};
+
+export const rowName = (device: Pick<Device, 'name' | 'rows'>, row: DeviceRow) =>
+  row.name.trim() || inheritedName(device, row);
+
 const isRole = (role: unknown): role is RoleId => typeof role === 'string' && role in ROLES;
 
 // Конфиг -> модель: записи собираются в устройства по module, нераспознанные — в raw.
@@ -104,6 +119,11 @@ export const fromConfig = (config: Partial<Config> | null): ParsedConfig => {
     target.group ||= String(device.group || '').trim();
     target.rows.push(row);
   });
+  devices.forEach((device) => device.rows.forEach((row) => {
+    if (row.name.trim() === inheritedName(device, row)) {
+      row.name = '';
+    }
+  }));
 
   return { devices, raw, orig, mixed };
 };
@@ -182,11 +202,11 @@ export const toConfig = (
     device.rows.forEach((row) => {
       const { list, missing } = rowServices(row);
       if (missing.length) {
-        drafts.push({ name: row.name, role: missing[0] });
+        drafts.push({ name: rowName(device, row), role: missing[0] });
         return;
       }
       devices.push(makeDevice(
-        row.did, row.name, row.type, module, device.group, device.adapterSettings,
+        row.did, rowName(device, row), row.type, module, device.group, device.adapterSettings,
         list.map(({ role, key }) => [role, ...splitKey(key)]),
         row.unit,
       ));

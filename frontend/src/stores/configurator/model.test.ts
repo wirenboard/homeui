@@ -1,6 +1,8 @@
 import { classify, hasUnit, primaryRole, requiredRoles } from './catalog';
-import { fromConfig, stable, toConfig } from './model';
-import type { Config, ControlMeta, Device, LiveControls } from './types';
+import { fromConfig, inheritedName, rowName, stable, toConfig } from './model';
+import type { Config, ControlMeta, Device, DeviceRow, LiveControls } from './types';
+
+vi.mock('i18next', () => ({ default: { t: (key: string) => key } }));
 
 const liveOf = (controls: Record<string, ControlMeta>): LiveControls => ({
   meta: (deviceId, controlId) => controls[`${deviceId}/${controlId}`] ?? null,
@@ -93,6 +95,32 @@ describe('catalog roles', () => {
   it('requires brightness once a light has a color', () => {
     expect(requiredRoles('light', {})).toEqual(['on_off']);
     expect(requiredRoles('light', { color: 'x' })).toEqual(['on_off', 'brightness']);
+  });
+});
+
+describe('inheritedName / rowName', () => {
+  const row = (did: number, type: string, name = ''): DeviceRow => ({ did, type, name, bind: {} });
+
+  it('names the first channel after the device and the rest by type, numbering a repeated type', () => {
+    const outlets = device({ name: 'Розетки', rows: [row(1, 'outlet'), row(2, 'outlet'), row(3, 'light')] });
+    const [first, second, third] = outlets.rows;
+    expect(inheritedName(outlets, first)).toBe('Розетки');
+    expect(inheritedName(outlets, second)).toBe('Розетки configurator.types.outlet.short 2');
+    expect(inheritedName(outlets, third)).toBe('Розетки configurator.types.light.short');
+  });
+
+  it('prefers the own name of a channel and falls back to the inherited one for a blank name', () => {
+    const lamp = device({ name: 'Лампа', rows: [row(1, 'light', 'Над столом'), row(2, 'light', '  ')] });
+    expect(rowName(lamp, lamp.rows[0])).toBe('Над столом');
+    expect(rowName(lamp, lamp.rows[1])).toBe('Лампа configurator.types.light.short 2');
+  });
+
+  it('reads a channel named like its device as inherited and writes the device name back', () => {
+    const named = (did: number, name: string) => ({ ...relayConfig.devices[0], did, name, module: 'Свет' });
+    const parsed = fromConfig({ version: '1.0', devices: [named(10, 'Свет'), named(11, 'Бра')] });
+    expect(parsed.devices[0].rows.map((item) => item.name)).toEqual(['', 'Бра']);
+    const live = liveOf({ 'wb-gpio/A1_OUT': { type: 'switch' } });
+    expect(toConfig(parsed, live, parsed.orig).config.devices.map((item) => item.name)).toEqual(['Свет', 'Бра']);
   });
 });
 

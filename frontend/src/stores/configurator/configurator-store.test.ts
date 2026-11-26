@@ -281,7 +281,7 @@ describe('ConfiguratorStore editing', () => {
     const third = store.addDevice('WB-MR6C 1', [relay('wb-mr6c_1/K3')]);
 
     expect(store.devices.map((device) => device.name)).toEqual(['WB-MR6C 1', 'WB-MR6C 1 2', 'WB-MR6C 1 3']);
-    expect(first.rows).toEqual([{ did: 10, ...relay('wb-mr6c_1/K1') }]);
+    expect(first.rows).toEqual([{ did: 10, ...relay('wb-mr6c_1/K1'), name: '' }]);
     expect(store.selected).toBe(third);
     expect(store.nameConflicts.size).toBe(0);
   });
