@@ -209,18 +209,6 @@ describe('DevicesStore', () => {
     });
   });
 
-  describe('topicsWithoutSystem', () => {
-    test('filters out system__ cell options', () => {
-      seedDevice(store, 'system__wb', ['uptime']);
-      seedDevice(store, 'lamp', ['on']);
-
-      const groups = store.topicsWithoutSystem;
-      const allValues = groups.flatMap((g: any) => g.options.map((o: any) => o.value));
-      expect(allValues).not.toContain('system__wb/uptime');
-      expect(allValues).toContain('lamp/on');
-    });
-  });
-
   describe('MQTT meta handlers', () => {
     test('device meta sets title translations', () => {
       simulateMessage(store, '/devices/lamp/meta', JSON.stringify({ title: { en: 'Lamp' } }));

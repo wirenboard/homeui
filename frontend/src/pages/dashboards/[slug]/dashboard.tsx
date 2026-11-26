@@ -282,7 +282,7 @@ const DashboardPage = observer(() => {
             dashboard={dashboard}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
-            topics={devicesStore.topicsWithoutSystem}
+            topics={devicesStore.filteredTopics}
             onClose={() => setIsAddWidgetModalOpened(false)}
           />
         )}
@@ -315,7 +315,7 @@ const DashboardPage = observer(() => {
         <WidgetEdit
           widget={widgets.get(editingWidgetId)}
           cells={cells}
-          topics={devicesStore.topicsWithoutSystem}
+          topics={devicesStore.filteredTopics}
           isOpened={!!editingWidgetId}
           onClose={() => setEditingWidgetId(null)}
           onSave={(data) => {

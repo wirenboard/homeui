@@ -130,8 +130,8 @@ const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => 
 };
 
 export const getEnums = (devicesStore: DevicesStore) => {
-  const devices = Array.from(devicesStore.devices.keys());
-  const topics = devicesStore.topicsWithoutSystem.flatMap((g) => g.options.map((o) => o.value));
+  const devices = Array.from(devicesStore.filteredDevices.keys());
+  const topics = devicesStore.filteredTopics.flatMap((g) => g.options.map((o) => o.value));
 
   return [
     typeCompletionSource,

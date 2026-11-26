@@ -104,7 +104,7 @@ const ConfigPage = observer(() => {
         <JsonEditor
           schema={configsStore.config?.schema}
           data={configsStore.config?.content}
-          cells={devicesStore.topicsWithoutSystem}
+          cells={devicesStore.filteredTopics}
           onChange={onChange}
         />
       )}

@@ -167,19 +167,6 @@ export default class DevicesStore {
     return result;
   }
 
-  // For end-user pickers (scenarios, widgets).
-  get topicsWithoutSystem(): Option<string>[] {
-    return this.topics
-      .map((group) => {
-        const options = 'options' in group ? group.options ?? [] : [];
-        return {
-          label: group.label,
-          options: options.filter((opt) => !(opt.value as string).startsWith('system__')),
-        };
-      })
-      .filter((group) => group.options.length > 0);
-  }
-
   toggleDevices() {
     if (this.hasOpenedDivices) {
       this.devices.forEach((device) => {
