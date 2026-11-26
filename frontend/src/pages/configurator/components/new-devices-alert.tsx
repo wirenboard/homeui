@@ -1,0 +1,62 @@
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
+import { CHANNEL_CLASSES, configuratorStore, ROLES, splitKey } from '@/stores/configurator';
+import type { NewDevicesAlertProps } from '../types';
+import { classifyCell, deviceControls, isVirtualDevice, listDevices } from '../utils';
+
+const DISMISSED_KEY = 'configurator-dismissed-devices';
+
+const readDismissed = (): string[] => {
+  try {
+    return JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]') as string[];
+  } catch {
+    return [];
+  }
+};
+
+export const NewDevicesAlert = observer(({ onConfigure }: NewDevicesAlertProps) => {
+  const { t } = useTranslation();
+  const [dismissed, setDismissed] = useState(readDismissed);
+
+  const configured = new Set(Array.from(configuratorStore.usedKeys).map((key) => splitKey(key)[0]));
+  const devices = listDevices(false).filter((id) => !isVirtualDevice(id)
+    && !configured.has(id)
+    && !dismissed.includes(id)
+    && deviceControls(id).some((cell) => {
+      const { types, fits } = CHANNEL_CLASSES[classifyCell(cell).cls];
+      // Устройство только с числовыми датчиками и настройками новым не считаем.
+      return types.length && !fits.some((role) => ROLES[role].unit);
+    }));
+
+  if (configuratorStore.isLoading || !devices.length) {
+    return null;
+  }
+
+  const dismiss = () => {
+    const next = [...dismissed, ...devices];
+    setDismissed(next);
+    try {
+      localStorage.setItem(DISMISSED_KEY, JSON.stringify(next));
+    } catch {
+      // Без хранилища блок просто скроется до перезагрузки страницы.
+    }
+  };
+
+  return (
+    <Alert variant="info" size="small" className="configurator-alert" onClose={dismiss}>
+      <div className="configurator-newDevices">
+        <span>{t('configurator.labels.new-devices-count', { count: devices.length })}</span>
+        <Button
+          size="small"
+          variant="secondary"
+          label={t('configurator.buttons.configure')}
+          aria-haspopup="dialog"
+          onClick={onConfigure}
+        />
+      </div>
+    </Alert>
+  );
+});

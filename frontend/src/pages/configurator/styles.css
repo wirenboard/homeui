@@ -1,0 +1,740 @@
+.configurator-headerActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
+    @media (--max-mobile-width) {
+        gap: 6px;
+    }
+}
+
+.configurator-subtitle {
+    margin: 0 0 var(--content-gap);
+}
+
+.configurator-alert {
+    margin-bottom: var(--content-gap);
+}
+
+.configurator-alertInline {
+    margin-top: 8px;
+}
+
+.configurator-layout {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: var(--content-gap);
+    align-items: start;
+
+    @media (--max-tablet-width) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.configurator-editor {
+    min-width: 0;
+}
+
+.configurator-empty {
+    margin: var(--content-gap) 0 0;
+}
+
+.configurator-section {
+    margin-top: var(--content-gap);
+}
+
+.configurator-sectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.configurator-sectionTitle {
+    margin: 0 0 8px;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+}
+
+.configurator-splitButton {
+    display: flex;
+    flex-shrink: 0;
+
+    > .button {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .popup-trigger .button {
+        padding: 4px 6px;
+        border-left-width: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+
+        @media (--max-mobile-width) {
+            min-width: 44px;
+        }
+    }
+}
+
+.configurator-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 220px;
+    margin: -4px -6px;
+}
+
+.configurator-menuItem {
+    all: unset;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--light-gray-color);
+    }
+
+    &:focus-visible {
+        box-shadow: var(--input-active-shadow);
+    }
+}
+
+.configurator-menuItemDanger {
+    color: var(--danger-color);
+}
+
+.configurator-listActions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.configurator-listSection {
+    margin-top: var(--content-gap);
+}
+
+.configurator-listItems {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-listItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px;
+    text-align: left;
+    color: var(--text-color);
+    background: transparent;
+    border: 0;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+
+    &:hover {
+        background: var(--background-accent-color);
+    }
+
+    &:focus-visible {
+        outline: var(--form-element-outline);
+        outline-offset: var(--form-element-outline-offset);
+    }
+}
+
+.configurator-listItemSelected {
+    background: var(--background-accent-color);
+    box-shadow: inset 4px 0 0 var(--primary-color);
+}
+
+.configurator-listText {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.configurator-addAll {
+    padding: 8px 0;
+    border-top: 1px solid var(--light-gray-color);
+}
+
+.configurator-picked {
+    padding: 8px var(--content-gap);
+    border-top: 1px solid var(--light-gray-color);
+
+    @media (--max-mobile-width) {
+        padding: 8px 0;
+    }
+}
+
+.configurator-pickedSummary {
+    margin: 0;
+}
+
+.configurator-pickedItems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-height: 96px;
+    margin: 8px 0 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.configurator-pickedItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px 2px 8px;
+    background: var(--background-accent-color);
+    border: 1px solid var(--light-gray-color);
+    border-radius: var(--input-border-radius);
+}
+
+.configurator-pickedItem .configurator-typeIcon {
+    width: 16px;
+    height: 16px;
+}
+
+.configurator-pickedRemove {
+    display: inline-flex;
+    padding: 2px;
+    color: var(--text-color);
+    background: transparent;
+    border: 0;
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+}
+
+.configurator-pickedRemove svg {
+    width: 12px;
+    height: 12px;
+}
+
+.configurator-wbSections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--content-gap);
+}
+
+.configurator-wbFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.configurator-modelChip {
+    gap: 6px;
+}
+
+.configurator-modelCount {
+    min-width: 20px;
+    padding: 0 6px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+    color: var(--text-color);
+    background: var(--border-color);
+    border-radius: 10px;
+
+    .button-primary & {
+        color: var(--primary-color);
+        background: var(--button-text-color);
+    }
+}
+
+.configurator-wbKind {
+    min-width: 200px;
+
+    @media (--max-mobile-width) {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+}
+
+.configurator-wbCompose {
+    align-self: flex-start;
+}
+
+.configurator-wbHint {
+    @media (--max-mobile-width) {
+        display: none;
+    }
+}
+
+.configurator-devicesDialog {
+    @media (--max-mobile-width) {
+        display: flex;
+        flex-direction: column;
+        height: calc(100dvh - 32px);
+
+        .dialog-content {
+            flex: 1;
+            max-height: none;
+        }
+    }
+}
+
+.configurator-wbOptions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.configurator-wbSearch {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.configurator-wbListHead {
+    display: flex;
+    align-items: center;
+    gap: 8px 12px;
+    min-height: 32px;
+    padding: 0 13px;
+}
+
+.configurator-wbGroup {
+    margin-top: 8px;
+}
+
+.configurator-wbControls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+
+    p {
+        margin: 0;
+    }
+}
+
+.configurator-wbBinds {
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-wbRoles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--background-accent-color);
+    border-radius: var(--container-border-radius);
+}
+
+.configurator-wbDeviceTitle {
+    margin: 0;
+}
+
+.configurator-cardBody > .configurator-channel:first-child {
+    padding-top: 0;
+    border-top: none;
+}
+
+.configurator-cardBody > .configurator-channel:last-child {
+    padding-bottom: 0;
+}
+
+.configurator-wbCurtains {
+    padding: 0 12px 12px;
+}
+
+.configurator-devicesDialog .configurator-cardBody > .configurator-channel {
+    margin-left: 21px;
+
+    > :not(.configurator-channelHead) {
+        padding-left: 21px;
+    }
+}
+
+.configurator-wbSummary {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    color: var(--gray-color);
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+}
+
+.configurator-wbFold {
+    margin-left: auto;
+}
+
+.configurator-wbNameError {
+    margin: 4px 0 0;
+    color: var(--danger-color);
+    font-size: var(--font-size-small);
+}
+
+.configurator-wbName {
+    flex: 1;
+    min-width: 0;
+}
+
+.configurator-wbModelIcons {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.configurator-tree {
+    margin-top: var(--content-gap);
+}
+
+.configurator-treeDevice {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.configurator-treeGroup {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.configurator-listTitle {
+    font-weight: 600;
+}
+
+.configurator-switches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+.configurator-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.configurator-adapterNote {
+    margin: 8px 0 0;
+    opacity: 0.7;
+}
+
+.configurator-sortLabel {
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.configurator-adapterState {
+    display: inline-flex;
+    min-height: 20px;
+}
+
+.configurator-adapterCheck {
+    width: 20px;
+    height: 20px;
+    color: var(--gray-color);
+}
+
+.configurator-adapterCheckOn {
+    color: var(--primary-color);
+}
+
+.configurator-overviewTitle {
+    margin: 0;
+    padding: var(--card-header-padding) 0;
+    line-height: 1.2em;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+}
+
+.configurator-channelHint {
+    color: var(--gray-color);
+}
+
+.configurator-channelHint,
+.configurator-channelName::placeholder {
+    font-style: italic;
+}
+
+.configurator-incomplete {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+.configurator-overviewRow {
+    cursor: pointer;
+}
+
+.configurator-overviewName {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.configurator-channels {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.configurator-channel {
+    padding: 12px 0;
+    border-top: 1px solid var(--light-gray-color);
+}
+
+.configurator-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.configurator-card {
+    border: 1px solid var(--light-gray-color);
+    border-radius: var(--container-border-radius);
+    overflow: hidden;
+}
+
+.configurator-cardHead {
+    flex-wrap: nowrap;
+    padding: 8px 12px;
+    background: var(--background-accent-color);
+    border-bottom: 1px solid var(--light-gray-color);
+}
+
+.configurator-cardNumber {
+    min-width: 24px;
+    padding: 0 6px;
+    border: 1px solid var(--light-gray-color);
+    border-radius: 12px;
+    text-align: center;
+    background: var(--container-background);
+}
+
+.configurator-cardBody {
+    margin-top: 0;
+    padding: 12px;
+}
+
+.configurator-channelHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.configurator-channelTitle {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-weight: 600;
+}
+
+.configurator-channelText {
+    overflow-wrap: anywhere;
+}
+
+.configurator-channelName {
+    flex: 1;
+    min-width: 0;
+}
+
+.configurator-collapse {
+    display: inline-flex;
+    padding: 4px;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background: var(--container-background);
+    }
+
+    svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+.configurator-typeIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.configurator-tile {
+    justify-content: flex-start;
+}
+
+.configurator-channelBody {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding-left: 24px;
+}
+
+.configurator-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px var(--content-gap);
+
+    @media (--max-mobile-width) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.configurator-choice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.configurator-choiceLabel {
+    min-width: 96px;
+
+    @media (--max-mobile-width) {
+        min-width: 0;
+    }
+}
+
+.configurator-role {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+
+    @media (--max-mobile-width) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.configurator-tiles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--content-gap);
+}
+
+.configurator-tilesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+    gap: 8px;
+}
+
+.configurator-addSearch {
+    padding: var(--content-gap) var(--content-gap) 0;
+
+    @media (--max-mobile-width) {
+        padding: 0 0 var(--content-gap);
+    }
+}
+
+.configurator-addLayout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: var(--content-gap);
+    height: 60vh;
+    padding: var(--content-gap);
+
+    @media (--max-mobile-width) {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 0;
+    }
+}
+
+.configurator-addDevices,
+.configurator-addChannels {
+    min-height: 0;
+    overflow: auto;
+}
+
+.configurator-addBack {
+    margin-bottom: var(--content-gap);
+}
+
+.configurator-addDevices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.configurator-addNew {
+    padding: var(--content-gap);
+
+    @media (--max-mobile-width) {
+        padding: 0 0 var(--content-gap);
+    }
+}
+
+.configurator-addNew > p {
+    margin: 0 0 var(--content-gap);
+}
+
+.configurator-dialogFooter {
+    position: sticky;
+    bottom: -16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: var(--content-gap);
+    background: var(--container-background);
+    border-top: 1px solid var(--light-gray-color);
+
+    @media (--max-mobile-width) {
+        justify-content: flex-end;
+        padding: 12px 0;
+    }
+
+    span {
+        flex: 1;
+
+        @media (--max-mobile-width) {
+            flex-basis: 100%;
+
+            &:empty {
+                display: none;
+            }
+        }
+    }
+}
+
+
+.configurator-fileInput {
+    display: none;
+}
+
+.configurator-newDevices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}

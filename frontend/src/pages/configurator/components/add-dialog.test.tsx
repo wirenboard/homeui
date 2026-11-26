@@ -1,0 +1,160 @@
+// @vitest-environment happy-dom
+import { runInAction } from 'mobx';
+import { configuratorStore, type Device } from '@/stores/configurator';
+import { fireEvent, render, screen } from '@/test/render';
+import { AddDialog } from './add-dialog';
+
+const cells = [
+  { id: 'relay/K1', controlId: 'K1', name: 'K1' },
+  { id: 'relay/K2', controlId: 'K2', name: 'K2' },
+  { id: 'dimmer/Level', controlId: 'Level', name: 'Level' },
+];
+
+vi.mock('../utils', async (importOriginal) => ({
+  ...await importOriginal() as Record<string, unknown>,
+  listDevices: () => ['relay', 'dimmer'],
+  deviceControls: (id: string) => cells.filter((cell) => cell.id.startsWith(`${id}/`)),
+  deviceTitle: (id: string) => (id === 'relay' ? 'Relay' : 'Dimmer'),
+  classifyCell: (cell: { controlId: string }) => ({ cls: cell.controlId === 'Level' ? 'level' : 'bin_rw' }),
+  isSystemDevice: () => false,
+  isVirtualDevice: () => false,
+  formatValue: () => '0',
+}));
+vi.mock('@/components/dialog', () => ({
+  Dialog: ({ children, isOpened }: any) => (isOpened ? <div>{children}</div> : null),
+}));
+
+const channelBoxes = () => screen.getAllByRole('checkbox', { name: /show-channel/ }) as HTMLInputElement[];
+const checkedCount = () => channelBoxes().filter((input) => input.checked).length;
+const allBox = () => screen.getByRole('checkbox', { name: 'configurator.labels.all-channels' }) as HTMLInputElement;
+const pickedList = () => screen.getByRole('list', { name: 'configurator.labels.picked-channels' });
+const addButton = (label: string) => screen.getByRole('button', { name: label }) as HTMLButtonElement;
+
+beforeEach(() => {
+  runInAction(() => {
+    configuratorStore.devices = [];
+  });
+});
+
+describe('AddDialog channel selection', () => {
+  it('checks nothing in advance and checks all the channels of the device by the all box', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    expect(checkedCount()).toBe(0);
+    expect(addButton('configurator.buttons.add-device').disabled).toBe(true);
+
+    fireEvent.click(allBox());
+
+    expect(checkedCount()).toBe(2);
+    expect(addButton('configurator.buttons.add-device').disabled).toBe(false);
+  });
+
+  it('preselects nothing when channels are added to an existing device', () => {
+    const target: Device = { id: 'd', name: 'd', group: '', adapterSettings: { matter: true }, rows: [] };
+    render(<AddDialog target={target} isOpened onClose={vi.fn()} />);
+
+    expect(checkedCount()).toBe(0);
+    expect(addButton('configurator.buttons.add-channels').disabled).toBe(true);
+  });
+
+  it('keeps the checked channels across controller devices and makes one device of them all', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+
+    fireEvent.click(channelBoxes()[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
+    fireEvent.click(channelBoxes()[0]);
+    fireEvent.click(addButton('configurator.buttons.add-device'));
+
+    expect(configuratorStore.devices).toHaveLength(1);
+    expect(configuratorStore.devices[0].name).toBe('configurator.labels.new-device');
+    expect(configuratorStore.devices[0].rows.map((row) => Object.values(row.bind))).toEqual([
+      ['relay/K1'], ['dimmer/Level'],
+    ]);
+  });
+
+  it('names the device after the controller device when all its channels come from that one', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+
+    fireEvent.click(channelBoxes()[1]);
+    fireEvent.click(addButton('configurator.buttons.add-device'));
+
+    expect(configuratorStore.devices[0].name).toBe('Relay');
+  });
+
+  it('gives an ambiguous channel the first type when checked and lets the user change it', () => {
+    const pressed = () => Array.from(document.querySelectorAll('.configurator-choice button'))
+      .map((button) => button.getAttribute('aria-pressed'));
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
+
+    fireEvent.click(channelBoxes()[0]);
+    expect(pressed()).toEqual(['true', 'false']);
+    expect(addButton('configurator.buttons.add-device').disabled).toBe(false);
+
+    fireEvent.click(document.querySelectorAll('.configurator-choice button')[1]);
+    expect(pressed()).toEqual(['false', 'true']);
+  });
+
+  it('checks and clears all the channels of the current device only, keeping the picks of the other devices', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: /Dimmer/ }));
+    fireEvent.click(channelBoxes()[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Relay/ }));
+    expect([allBox().checked, allBox().indeterminate]).toEqual([false, false]);
+    fireEvent.click(channelBoxes()[0]);
+    expect([allBox().checked, allBox().indeterminate]).toEqual([false, true]);
+
+    fireEvent.click(allBox());
+    expect(checkedCount()).toBe(2);
+    expect([allBox().checked, allBox().indeterminate]).toEqual([true, false]);
+    expect(pickedList().children).toHaveLength(3);
+
+    fireEvent.click(allBox());
+    expect(checkedCount()).toBe(0);
+    expect(pickedList().textContent).toBe('Level · Dimmer');
+  });
+
+  it('lists the picked channels with their devices and removes one by its cross', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    expect(screen.queryByRole('list', { name: 'configurator.labels.picked-channels' })).toBeNull();
+
+    fireEvent.click(allBox());
+    fireEvent.click(screen.getAllByRole('button', { name: 'configurator.labels.unpick' })[0]);
+
+    expect(pickedList().textContent).toBe('K2 · Relay');
+    expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
+  });
+
+  it('finds devices by name and channels by name or MQTT topic, opening the first device found', () => {
+    const search = (text: string) => fireEvent.change(
+      screen.getByRole('searchbox', { name: 'configurator.labels.add-search' }),
+      { target: { value: text } },
+    );
+    const devicesShown = () => Array.from(document.querySelectorAll('.configurator-listItem'))
+      .map((button) => button.textContent);
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+
+    search('dimm');
+    expect(devicesShown()).toEqual([expect.stringMatching(/^Dimmer/)]);
+    expect(channelBoxes()).toHaveLength(1);
+
+    search('/devices/relay/controls/K2');
+    expect(devicesShown()).toEqual([expect.stringMatching(/^Relay.*configurator\.labels\.found-count/)]);
+    expect(channelBoxes()).toHaveLength(1);
+    expect([screen.queryByText('K1'), screen.queryByText('K2')].map(Boolean)).toEqual([false, true]);
+
+    search('nothing');
+    expect(screen.getAllByText('configurator.labels.nothing-found').length).toBeGreaterThan(0);
+  });
+
+  it('checks only the channels found by the all box and keeps them after the search is cleared', () => {
+    render(<AddDialog isOpened onAdded={vi.fn()} onClose={vi.fn()} />);
+    const box = screen.getByRole('searchbox', { name: 'configurator.labels.add-search' });
+
+    fireEvent.change(box, { target: { value: 'k2' } });
+    fireEvent.click(allBox());
+    fireEvent.change(box, { target: { value: '' } });
+
+    expect(channelBoxes().map((input) => input.checked)).toEqual([false, true]);
+    expect(pickedList().textContent).toBe('K2 · Relay');
+  });
+});

@@ -1,0 +1,365 @@
+import { observer } from 'mobx-react-lite';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { MAX_MOBILE_WIDTH, MAX_TABLET_WIDTH } from '@/common/breakpoints';
+import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Confirm, useConfirm } from '@/components/confirm';
+import { Tag } from '@/components/tag';
+import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
+import { ConfigFormatError, ConfigParseError, configuratorStore, type Device } from '@/stores/configurator';
+import { usePreventLeavePage } from '@/utils/prevent-page-leave';
+import { AddDialog } from './components/add-dialog';
+import { DeviceList } from './components/device-list';
+import { DevicePanel } from './components/device-panel';
+import { DevicesDialog } from './components/devices-dialog';
+import { NewDevicesAlert } from './components/new-devices-alert';
+import { Overview } from './components/overview';
+import type { ImportFile, IncompleteChannel, PageStatus } from './types';
+import { incompleteChannels, liveControls, roleLabel, UNESCAPED } from './utils';
+import './styles.css';
+
+const ConfiguratorPage = observer(() => {
+  const { t } = useTranslation();
+  const { setIsDirty } = usePreventLeavePage();
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [status, setStatus] = useState<PageStatus | null>(null);
+  const [isAddOpened, setIsAddOpened] = useState(false);
+  const [addDeviceId, setAddDeviceId] = useState<string | null>(null);
+  const [addTarget, setAddTarget] = useState<Device | null>(null);
+  const [isAddEmpty, setIsAddEmpty] = useState(false);
+  const [isDevicesOpened, setIsDevicesOpened] = useState(false);
+  const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
+  const [incomplete, setIncomplete] = useState<IncompleteChannel[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
+  const isSingleColumn = useMediaQuery({ maxWidth: MAX_TABLET_WIDTH });
+  const buttonSize = isMobile ? 'small' : 'default';
+  const [isPanelShown, setIsPanelShown] = useState(false);
+  const [isClearOpened, setIsClearOpened] = useState(false);
+  const [removed, setRemoved] = useState<{ name: string; remove: () => void } | null>(null);
+  const [confirmOverwrite, isOverwriteOpened, handleOverwrite, handleOverwriteClose] = useConfirm<any>();
+  const { isDirty, isSaving, isLoading, backendState, isOverview } = configuratorStore;
+  const selected = isOverview ? undefined : configuratorStore.selected;
+  const hasDevices = !!configuratorStore.devices.length;
+  const hasNameConflicts = !!configuratorStore.nameConflicts.size;
+  // В одну колонку на экране либо список устройств, либо панель выбранного, как в менеджере устройств.
+  const isPanelMode = isSingleColumn && isPanelShown && !!selected;
+
+  useEffect(() => {
+    configuratorStore.load().catch((error) => {
+      setLoadError(error instanceof ConfigParseError
+        ? t('configurator.errors.parse', { ...UNESCAPED, path: error.path })
+        : t('configurator.errors.load', { ...UNESCAPED, error: error.message }));
+    });
+  }, []);
+
+  useEffect(() => {
+    setIsDirty(isDirty);
+  }, [isDirty]);
+
+  useEffect(() => {
+    if (isPanelMode) {
+      layoutRef.current?.scrollIntoView({ block: 'start' });
+    }
+  }, [isPanelMode]);
+
+  useEffect(() => {
+    statusRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [status]);
+
+  const openAdd = (deviceId: string | null, target: Device | null = null, isEmpty = false) => {
+    setAddDeviceId(deviceId);
+    setAddTarget(target);
+    setIsAddEmpty(isEmpty);
+    setIsAddOpened(true);
+  };
+
+  const openDevices = () => {
+    configuratorStore.loadSerialDevices();
+    setIsDevicesOpened(true);
+  };
+
+  const save = async (withIncomplete = false) => {
+    const found = incompleteChannels(configuratorStore.devices);
+    setIncomplete(withIncomplete ? [] : found);
+    if (found.length && !withIncomplete) {
+      return;
+    }
+    setStatus(null);
+    try {
+      const built = await configuratorStore.save(liveControls, async () => !!(await confirmOverwrite()));
+      if (built) {
+        const count = built.config.devices.length;
+        setStatus({
+          variant: 'success',
+          text: built.drafts.length
+            ? t('configurator.labels.saved-drafts', { ...UNESCAPED, count, drafts: built.drafts.length })
+            : t('configurator.labels.saved', { ...UNESCAPED, count }),
+        });
+      }
+    } catch (error) {
+      setStatus({ variant: 'danger', text: t('configurator.errors.save', { ...UNESCAPED, error: error.message }) });
+    }
+  };
+
+  const applyImport = ({ name, text }: ImportFile) => {
+    try {
+      const count = configuratorStore.importConfig(text);
+      setStatus({ variant: 'success', text: t('configurator.labels.imported', { count }) });
+    } catch (error) {
+      const reason = error instanceof ConfigFormatError ? t('configurator.errors.import-format') : error.message;
+      setStatus({ variant: 'danger', text: t('configurator.errors.import', { ...UNESCAPED, name, error: reason }) });
+    }
+  };
+
+  const selectFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+    const importFile = { name: file.name, text: await file.text() };
+    if (hasDevices) {
+      setPendingImport(importFile);
+    } else {
+      applyImport(importFile);
+    }
+  };
+
+  const exportConfig = () => {
+    const yaml = configuratorStore.toYaml(configuratorStore.build(liveControls).config);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([yaml], { type: 'text/yaml' }));
+    link.download = 'devices.yaml';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  const saveButton = (
+    <Button
+      size={buttonSize}
+      label={t('configurator.buttons.save')}
+      disabled={!isDirty || backendState !== 'available' || hasNameConflicts}
+      title={hasNameConflicts ? t('configurator.labels.names-duplicate') : undefined}
+      isLoading={isSaving}
+      onClick={() => save()}
+    />
+  );
+
+  return (
+    <PageLayout
+      title={t('configurator.title')}
+      hasRights={authStore.hasRights(UserRole.Operator)}
+      isLoading={isLoading}
+      errors={loadError ? [{ variant: 'danger', text: loadError, onClose: () => setLoadError(null) }] : []}
+      actions={isPanelMode ? (
+        <div className="configurator-headerActions">
+          <Button
+            size={buttonSize}
+            variant="secondary"
+            label={t('configurator.buttons.to-list')}
+            onClick={() => setIsPanelShown(false)}
+          />
+          {saveButton}
+        </div>
+      ) : (
+        <div className="configurator-headerActions">
+          <Tag variant={isDirty || hasNameConflicts ? 'warn' : 'gray'} role="status">
+            {hasNameConflicts && t('configurator.labels.names-duplicate')}
+            {!hasNameConflicts && (isDirty ? t('configurator.labels.dirty') : t('configurator.labels.clean'))}
+          </Tag>
+          {isDirty && (
+            <Button
+              size={buttonSize}
+              variant="secondary"
+              label={t('configurator.buttons.discard')}
+              onClick={configuratorStore.revert}
+            />
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".yaml,.yml"
+            className="configurator-fileInput"
+            onChange={selectFile}
+          />
+          <Button
+            size={buttonSize}
+            variant="secondary"
+            label={t('configurator.buttons.import')}
+            onClick={() => fileInputRef.current?.click()}
+          />
+          <Button
+            size={buttonSize}
+            variant="secondary"
+            label={t('configurator.buttons.export')}
+            disabled={!hasDevices || hasNameConflicts}
+            title={hasNameConflicts ? t('configurator.labels.names-duplicate') : undefined}
+            onClick={exportConfig}
+          />
+          {saveButton}
+        </div>
+      )}
+      stickyHeader
+    >
+      {!isPanelMode && <p className="configurator-subtitle">{t('configurator.labels.subtitle')}</p>}
+      {!isPanelMode && backendState === 'unavailable' && (
+        <Alert variant="info" size="small" className="configurator-alert">
+          {t('configurator.labels.save-unavailable')}
+        </Alert>
+      )}
+      {status && (
+        <div ref={statusRef}>
+          <Alert variant={status.variant} size="small" className="configurator-alert" onClose={() => setStatus(null)}>
+            {status.text}
+          </Alert>
+        </div>
+      )}
+
+      {!isPanelMode && <NewDevicesAlert onConfigure={openDevices} />}
+
+      <div ref={layoutRef} className="configurator-layout">
+        {!isPanelMode && (
+          <DeviceList
+            onAdd={openDevices}
+            onAddEmpty={() => openAdd(null, null, true)}
+            onClear={() => setIsClearOpened(true)}
+            onSelect={() => setIsPanelShown(true)}
+          />
+        )}
+
+        {(!isSingleColumn || isPanelMode || !hasDevices) && (
+          <div className="configurator-editor">
+            {selected ? (
+              <DevicePanel
+                key={selected.id}
+                item={selected}
+                onOverview={isSingleColumn ? undefined : configuratorStore.showOverview}
+                onRemove={(name) => setRemoved({ name, remove: () => configuratorStore.removeDevice(selected.id) })}
+                onAddRows={() => openAdd(null, selected)}
+              />
+            ) : hasDevices ? (
+              <Overview
+                onSelect={(id) => {
+                  configuratorStore.select({ id });
+                  setIsPanelShown(true);
+                }}
+              />
+            ) : (
+              <Card heading={t('configurator.labels.first-title')}>
+                <p>{t('configurator.labels.first-text')}</p>
+              </Card>
+            )}
+          </div>
+        )}
+      </div>
+
+      <AddDialog
+        isOpened={isAddOpened}
+        initialDeviceId={addDeviceId}
+        target={addTarget}
+        isEmpty={isAddEmpty}
+        onAdded={() => setIsPanelShown(true)}
+        onClose={() => setIsAddOpened(false)}
+      />
+
+      <DevicesDialog
+        isOpened={isDevicesOpened}
+        onAdded={() => setIsPanelShown(true)}
+        onClose={() => setIsDevicesOpened(false)}
+        onCompose={() => {
+          setIsDevicesOpened(false);
+          openAdd(null);
+        }}
+      />
+
+      <Confirm
+        isOpened={!!removed}
+        heading={t('configurator.labels.remove-title')}
+        variant="danger"
+        acceptLabel={t('configurator.buttons.remove')}
+        closeCallback={() => setRemoved(null)}
+        confirmCallback={() => {
+          removed.remove();
+          setRemoved(null);
+          setIsPanelShown(false);
+        }}
+      >
+        <Trans
+          i18nKey="configurator.labels.remove-prompt"
+          values={{ name: removed?.name }}
+          components={[<b key="device-name" />]}
+          shouldUnescape
+        />
+      </Confirm>
+
+      <Confirm
+        isOpened={isClearOpened}
+        heading={t('configurator.labels.clear-title')}
+        variant="danger"
+        acceptLabel={t('configurator.buttons.clear-all')}
+        closeCallback={() => setIsClearOpened(false)}
+        confirmCallback={() => {
+          configuratorStore.clearAll();
+          setIsClearOpened(false);
+        }}
+      >
+        {t('configurator.labels.clear-prompt')}
+      </Confirm>
+
+      <Confirm
+        isOpened={!!incomplete.length}
+        heading={t('configurator.labels.incomplete-title')}
+        acceptLabel={t('configurator.buttons.save-without')}
+        cancelLabel={t('configurator.buttons.open-incomplete', { ...UNESCAPED, name: incomplete[0]?.device.name })}
+        closeCallback={() => {
+          configuratorStore.select({ id: incomplete[0].device.id });
+          setIsPanelShown(true);
+          setIncomplete([]);
+        }}
+        confirmCallback={() => save(true)}
+      >
+        <p>{t('configurator.labels.incomplete-prompt')}</p>
+        <ul className="configurator-incomplete">
+          {incomplete.map(({ device, name, role }) => (
+            <li key={`${device.id}-${name}-${role}`}>
+              {t('configurator.labels.incomplete-item', { ...UNESCAPED, name, role: roleLabel(role) })}
+            </li>
+          ))}
+        </ul>
+      </Confirm>
+
+      <Confirm
+        isOpened={!!pendingImport}
+        heading={t('configurator.labels.import-title')}
+        acceptLabel={t('configurator.buttons.import')}
+        closeCallback={() => setPendingImport(null)}
+        confirmCallback={() => {
+          applyImport(pendingImport);
+          setPendingImport(null);
+        }}
+      >
+        {t('configurator.labels.import-prompt')}
+      </Confirm>
+
+      <Confirm
+        isOpened={isOverwriteOpened}
+        heading={t('configurator.labels.conflict-title')}
+        variant="danger"
+        acceptLabel={t('configurator.buttons.overwrite')}
+        closeCallback={() => handleOverwriteClose(null)}
+        confirmCallback={() => handleOverwrite(true)}
+      >
+        {t('configurator.labels.conflict-prompt')}
+      </Confirm>
+    </PageLayout>
+  );
+});
+
+export default ConfiguratorPage;

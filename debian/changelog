@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.292.0) stable; urgency=medium
+
+  * Add the device configurator page (Integrations -> Device configurator)
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Thu, 26 Nov 2026 13:57:56 +0300
+
 wb-mqtt-homeui (2.291.0) stable; urgency=medium
 
   * Add support for allowed_values in template parameters
