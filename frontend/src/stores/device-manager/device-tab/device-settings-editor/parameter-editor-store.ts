@@ -304,6 +304,7 @@ export function makeJsonSchemaForParameter(parameter: WbDeviceTemplateParameter)
     propertyOrder: parameter.order,
     options: {
       enum_titles: parameter.enum_titles,
+      allowed_values: parameter.allowed_values,
       show_opt_in: !parameter.required,
     },
   };

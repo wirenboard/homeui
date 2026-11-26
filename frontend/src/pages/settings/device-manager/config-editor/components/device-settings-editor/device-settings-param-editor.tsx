@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Dropdown } from '@/components/dropdown';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
 import { type WbDeviceChannelEditor, type WbDeviceParameterEditor } from '@/stores/device-manager';
 import { type Translator, type ExactNumberStore } from '@/stores/json-schema-editor';
@@ -69,6 +70,41 @@ export const BadValueFromRegisterWarning = ({ id, store, translator }: BadValueF
   );
 };
 
+const AllowedValuesEditor = observer((
+  { store, translator, isDisabled }:
+  { store: ExactNumberStore; translator: Translator; isDisabled: boolean },
+) => {
+  const { i18n } = useTranslation();
+  const options = store.allowedValueOptions.map((option) => ({
+    value: option.value,
+    label: translator.find(option.label, i18n.language),
+  }));
+  return (
+    <div className="deviceSettingsEditor-allowedValues">
+      <Dropdown
+        options={options}
+        value={store.allowedValueIndex ?? null}
+        minWidth="30px"
+        isDisabled={isDisabled}
+        className={classNames('deviceSettingsEditor-allowedValuesDropdown', {
+          'wb-jsonEditor-propertyDropdownError': store.hasErrors && !store.isAllowedRangeSelected,
+        })}
+        onChange={(option) => {
+          if (!Array.isArray(option) && typeof option.value === 'number') {
+            store.selectAllowedValue(option.value);
+          }
+        }}
+      />
+      <NumberEditor
+        store={store}
+        translator={translator}
+        isDisabled={isDisabled || !store.isAllowedRangeSelected}
+        hideError={!store.isAllowedRangeSelected}
+      />
+    </div>
+  );
+});
+
 export const ParamEditor = observer((
   { param, translator }:
   { param: WbDeviceParameterEditor; translator: Translator },
@@ -102,12 +138,21 @@ export const ParamEditor = observer((
       })}
     >
       <ParamSimpleLabel title={title} inputId={inputId} />
-      <NumberEditor
-        key={param.id}
-        store={activeVariant.store}
-        translator={translator}
-        isDisabled={!param.isSupportedByFirmware}
-      />
+      {activeVariant.store.allowedValueOptions.length ? (
+        <AllowedValuesEditor
+          key={param.id}
+          store={activeVariant.store}
+          translator={translator}
+          isDisabled={!param.isSupportedByFirmware}
+        />
+      ) : (
+        <NumberEditor
+          key={param.id}
+          store={activeVariant.store}
+          translator={translator}
+          isDisabled={!param.isSupportedByFirmware}
+        />
+      )}
       {param.hasErrors && (
         <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />
       )}
