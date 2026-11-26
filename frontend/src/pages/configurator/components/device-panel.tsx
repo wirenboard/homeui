@@ -198,10 +198,7 @@ export const DevicePanel = observer(({
                     ) : (
                       <>
                         <span
-                          className={classNames('configurator-channelText', {
-                            'configurator-channelInherited': !row.name.trim(),
-                            'configurator-channelHint': hint,
-                          })}
+                          className={classNames('configurator-channelText', { 'configurator-channelHint': hint })}
                         >
                           {hint || title}
                         </span>
