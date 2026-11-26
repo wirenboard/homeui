@@ -60,6 +60,8 @@ export interface InputAttributes {
 // A value or a range of values allowed for a number, with a title for a dropdown
 export type AllowedValue = { value: number; title: string } | { min: number; max: number; title: string };
 
+export type DependencyChoice = string | number | boolean | (string | number | boolean)[];
+
 export interface JsonEditorOptions {
   hidden?: boolean;
   compact?: boolean;
@@ -73,6 +75,9 @@ export interface JsonEditorOptions {
   patternmessage?: string; // Message for pattern validation error
   enum_titles?: string[]; // Titles for enum values
   allowed_values?: AllowedValue[]; // Supported by ExactNumberStore only
+
+  // Sibling key -> required value(s), the property is shown and saved only when all of them match
+  dependencies?: Record<string, DependencyChoice>;
 
   wb?: WbOptions;
 }
