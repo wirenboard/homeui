@@ -70,6 +70,28 @@ export class TabsStore {
     }
   }
 
+  removeDeviceFromPort(deviceTab: DeviceTabStore, portTab: PortTab) {
+    const itemIndex = this.items.indexOf(deviceTab);
+    const childIndex = portTab.children.indexOf(deviceTab);
+    if (itemIndex === -1 || childIndex === -1) {
+      return;
+    }
+    portTab.deleteChildren(childIndex);
+    this.items.splice(itemIndex, 1);
+    this.uniqueMqttIdChecker.removeTab(deviceTab);
+  }
+
+  // Looks up the device's current port itself, rather than relying on the caller's current
+  // selection, so it works for a device picked from a list (e.g. a bulk port-to-port move).
+  moveDeviceToPort(deviceTab: DeviceTabStore, targetPortTab: PortTab, selectTab: boolean = false) {
+    const sourcePortTab = this.findPortTabByDevice(deviceTab);
+    if (!sourcePortTab || sourcePortTab === targetPortTab) {
+      return;
+    }
+    this.removeDeviceFromPort(deviceTab, sourcePortTab);
+    this.addDeviceTab(targetPortTab, deviceTab, selectTab);
+  }
+
   addSettingsTab(tab: SettingsTab) {
     this.items.push(tab);
   }

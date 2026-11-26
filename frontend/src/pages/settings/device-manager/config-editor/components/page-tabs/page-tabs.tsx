@@ -24,6 +24,8 @@ export const PageTabs = observer(
     onDeleteTab,
     onDeletePortDevices,
     onCopyTab,
+    onMoveTab,
+    onMovePortDevices,
     onDeviceTypeChange,
     onSearchDisconnectedDevice,
     onUpdateFirmware,
@@ -96,6 +98,7 @@ export const PageTabs = observer(
                     tab={tab}
                     onDeleteTab={onDeleteTab}
                     onDeletePortDevices={onDeletePortDevices}
+                    onMovePortDevices={onMovePortDevices}
                   />
                 )}
                 {tab.type === TabType.Device && (
@@ -108,6 +111,7 @@ export const PageTabs = observer(
                     onClearTemplateHint={onClearTemplateHint}
                     onDeleteTab={onDeleteTab}
                     onCopyTab={onCopyTab}
+                    onMoveTab={onMoveTab}
                     onDeviceTypeChange={onDeviceTypeChange}
                     onSetUniqueMqttTopic={() => deviceTab.setUniqueMqttTopic()}
                     onSearchDisconnectedDevice={onSearchDisconnectedDevice}

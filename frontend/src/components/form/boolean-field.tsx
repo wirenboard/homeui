@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { useId } from 'react';
 import { Checkbox } from '@/components/checkbox';
 import { Switch } from '@/components/switch';
@@ -12,6 +13,7 @@ export const BooleanField = ({
   isDisabled,
   view = 'switch',
   indeterminate,
+  hideLabel,
   formStyle,
   onChange,
 }: BooleanFieldProps) => {
@@ -47,7 +49,7 @@ export const BooleanField = ({
             onChange={onChange}
           />
         )}
-        <span>{title}</span>
+        <span className={classNames({ 'sr-only': hideLabel })}>{title}</span>
       </label>
     </FormField>
   );

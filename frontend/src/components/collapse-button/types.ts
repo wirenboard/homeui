@@ -4,4 +4,5 @@ export interface CollapseButtonProps {
   className?: string;
   state: CollapseButtonState;
   stopPropagation?: boolean;
+  isDisabled?: boolean;
 }

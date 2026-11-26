@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.291.0) stable; urgency=medium
+
+  * Device manager: add moving a device, or several devices at once, from one port to another
+  * Change update alert level to info
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 26 Nov 2026 11:27:00 +0300
+
 wb-mqtt-homeui (2.290.4) stable; urgency=medium
 
   * Remove nexus registry

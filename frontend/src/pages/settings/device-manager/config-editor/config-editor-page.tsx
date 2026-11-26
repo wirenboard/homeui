@@ -8,11 +8,13 @@ import { Confirm, useConfirm } from '@/components/confirm';
 import { SearchBar } from '@/components/search-bar';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { type DeviceTabStore } from '@/stores/device-manager';
 import { AddDeviceModal } from './components/add-device-modal';
 import { AddPortModal } from './components/add-port-modal';
 import { CopyDeviceModal } from './components/copy-device-modal';
 import { DeleteModal } from './components/delete-modal';
 import { HeaderButtons } from './components/header-buttons';
+import { MoveDeviceModal } from './components/move-device-modal';
 import { PageTabs } from './components/page-tabs';
 import { callWithForceOnTemplateInUse, formatTemplateOperationError } from './template-errors';
 import type { ApplyProblemDevice, ConfigEditorPageProps } from './types';
@@ -24,6 +26,13 @@ const ConfigEditorPage = observer((
   const { t, i18n } = useTranslation();
   const [ searchQuery, setSearchQuery ] = useState('');
   const [ showCopyDeviceModal, isCopyTabOpened, handleCopyTab, handleCopyTabClose ] = useConfirm<any>();
+  const [
+    showMoveDeviceModal,
+    isMoveTabOpened,
+    handleMoveTab,
+    handleMoveTabClose,
+    moveDevicesPayload,
+  ] = useConfirm<any>();
   const [ showAddDeviceModal, isAddDeviceOpened, handleAddDevice, handleAddDeviceClose ] = useConfirm<any>();
   const [ showAddPortModal, isAddPortOpened, handleAddPort, handleAddPortClose ] = useConfirm<any>();
   const [ showDeleteModal, isDeleteModalOpened, handleDelete, handleDeleteClose ] = useConfirm<any>();
@@ -263,6 +272,12 @@ const ConfigEditorPage = observer((
                 pageStore.deletePortDevices(showDeleteModal)
               }
               onCopyTab={() => pageStore.copyTab(showCopyDeviceModal)}
+              onMoveTab={() =>
+                pageStore.moveDevices([pageStore.tabs.selectedTab as DeviceTabStore], showMoveDeviceModal, true)
+              }
+              onMovePortDevices={(portTab) =>
+                pageStore.moveDevices(portTab.children, showMoveDeviceModal, false)
+              }
               onDeviceTypeChange={(tab, type) =>
                 pageStore.changeDeviceType(tab, type)
               }
@@ -307,6 +322,16 @@ const ConfigEditorPage = observer((
           portOptions={pageStore.getPortOptions()}
           onCopy={handleCopyTab}
           onClose={handleCopyTabClose}
+        />
+      )}
+      {isMoveTabOpened && (
+        <MoveDeviceModal
+          isOpened={isMoveTabOpened}
+          currentPort={pageStore.tabs.selectedPortTab}
+          devices={moveDevicesPayload ?? []}
+          portOptions={pageStore.getPortOptions()}
+          onMove={handleMoveTab}
+          onClose={handleMoveTabClose}
         />
       )}
       {isAddDeviceOpened && (

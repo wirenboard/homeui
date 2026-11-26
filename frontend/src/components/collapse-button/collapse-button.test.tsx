@@ -44,4 +44,19 @@ describe('CollapseButton', () => {
     const { container } = render(<CollapseButton state={state} className="custom" />);
     expect(container.querySelector('.custom')).toBeTruthy();
   });
+
+  test('marks itself aria-disabled and applies the disabled class when isDisabled is set', () => {
+    const state = new CollapseButtonState(false);
+    const { container } = render(<CollapseButton state={state} isDisabled />);
+    const btn = screen.getByRole('button');
+    expect(btn.getAttribute('aria-disabled')).toBe('true');
+    expect(container.querySelector('.collapseButton-disabled')).toBeTruthy();
+  });
+
+  test('ignores clicks and does not toggle state when isDisabled is set', () => {
+    const state = new CollapseButtonState(false);
+    render(<CollapseButton state={state} isDisabled />);
+    fireEvent.click(screen.getByRole('button'));
+    expect(state.collapsed).toBe(false);
+  });
 });
