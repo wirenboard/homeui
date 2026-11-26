@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import SettingsIcon from '@/assets/icons/settings.svg';
+import { MIN_TABLET_WIDTH } from '@/common/breakpoints';
 import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
@@ -45,16 +46,16 @@ const MbGatePage = observer(() => {
   const [activeTab, setActiveTab] = useState<string>(MAIN_PORT_TAB);
   const [targetRegisters, setTargetRegisters] = useState(null);
   const [portToDelete, setPortToDelete] = useState<number | null>(null);
-  const isMobile = useMediaQuery({ maxWidth: 991 });
+  const showTabsWithContent = useMediaQuery({ minWidth: MIN_TABLET_WIDTH });
   const [isTabListShown, setIsTabListShown] = useState(true);
 
   useEffect(() => {
     setIsTabListShown(true);
-  }, [isMobile]);
+  }, [showTabsWithContent]);
 
   // On mobile the tab list and the selected tab content are shown one at a time
-  const showTabList = !isMobile || isTabListShown;
-  const showContent = !isMobile || !isTabListShown;
+  const showTabList = showTabsWithContent || isTabListShown;
+  const showContent = showTabsWithContent || !isTabListShown;
 
   const selectTab = (tab: string) => {
     setActiveTab(tab);
@@ -164,13 +165,7 @@ const MbGatePage = observer(() => {
     ]
     : [];
 
-  const actions = showContent && isMobile ? (
-    <Button
-      label={t('mbgate.buttons.to-port-list')}
-      variant="secondary"
-      onClick={() => setIsTabListShown(true)}
-    />
-  ) : (
+  const actions = showContent && showTabsWithContent ? (
     <>
       {store.supportsAdditionalPorts && (
         <Button
@@ -186,6 +181,12 @@ const MbGatePage = observer(() => {
         onClick={() => save()}
       />
     </>
+  ) : (
+    <Button
+      label={t('mbgate.buttons.to-port-list')}
+      variant="secondary"
+      onClick={() => setIsTabListShown(true)}
+    />
   );
 
   return (
@@ -199,7 +200,7 @@ const MbGatePage = observer(() => {
         actions={actions}
       >
         {params && (
-          <div className={classNames('mbgate', { 'mbgate-mobile': isMobile })}>
+          <div className={classNames('mbgate', { 'mbgate-mobile': !showTabsWithContent })}>
             {showTabList && (
               <div className="mbgate-tabList">
                 <Tabs activeTab={activeTab} items={tabs} isEllipsis={false} onTabChange={selectTab} />

@@ -1,11 +1,13 @@
+import http.client
 import json
 import logging
 import threading
+import urllib.parse
+import urllib.request
 from contextlib import contextmanager
 from queue import Empty, Queue
 from typing import Set
 
-import requests
 from wb_common.mqtt_client import MQTTClient
 
 MQTT_CHECK_TOPIC = "/rpc/v1/exp-check"
@@ -48,15 +50,15 @@ def run_security_check(sn: str, url: str) -> None:
     probe_data = {"serial": sn, "url": url}
     logging.debug("Requesting probe server: %s with data %s", PROBE_URL, probe_data)
 
+    request = urllib.request.Request(
+        PROBE_URL,
+        data=urllib.parse.urlencode(probe_data).encode(),
+        headers={"User-Agent": "wb-homeui-backend"},
+    )
     try:
-        response = requests.post(
-            PROBE_URL,
-            data=probe_data,
-            timeout=PROBE_REQUEST_TIMEOUT,
-        )
-        response.raise_for_status()
-        data = response.json()
-    except (requests.RequestException, ValueError):
+        with urllib.request.urlopen(request, timeout=PROBE_REQUEST_TIMEOUT) as response:
+            data = json.load(response)
+    except (OSError, http.client.HTTPException, ValueError):
         logging.error("Failed to get response from probe server", exc_info=True)
         return
 

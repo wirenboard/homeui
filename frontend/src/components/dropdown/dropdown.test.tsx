@@ -75,6 +75,18 @@ describe('Dropdown', () => {
     );
   });
 
+  test('menu stays matched to the control width when menuMaxWidth is not given', () => {
+    render(<Dropdown options={options} value="a" onChange={vi.fn()} />);
+    fireEvent.mouseDown(document.querySelector('.dropdown__control')!);
+    expect(document.querySelector('.dropdown__menu')?.classList).not.toContain('dropdown-menuWiderThanControl');
+  });
+
+  test('lets the menu grow wider than the control when menuMaxWidth is given', () => {
+    render(<Dropdown options={options} value="a" menuMaxWidth={320} onChange={vi.fn()} />);
+    fireEvent.mouseDown(document.querySelector('.dropdown__control')!);
+    expect(document.querySelector('.dropdown__menu')?.classList).toContain('dropdown-menuWiderThanControl');
+  });
+
   test('renders disabled state', () => {
     const { container } = render(
       <Dropdown options={options} value="a" isDisabled onChange={vi.fn()} />,

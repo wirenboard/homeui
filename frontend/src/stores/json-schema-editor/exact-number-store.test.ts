@@ -243,3 +243,102 @@ describe('ExactNumberStore with the w1-id format', () => {
     expect(store.hasErrors).toBe(false);
   });
 });
+
+describe('ExactNumberStore with allowed values', () => {
+  const allowedSchema: JsonSchema = {
+    type: 'number',
+    default: 10,
+    minimum: 0,
+    maximum: 600,
+    options: {
+      allowed_values: [
+        { value: 0, title: 'No timeout' },
+        { min: 1, max: 600, title: 'Set time' },
+      ],
+    },
+  };
+
+  test('makes dropdown options from the titles', () => {
+    const store = new ExactNumberStore(allowedSchema, 0, true);
+
+    expect(store.allowedValueOptions).toEqual([
+      { label: 'No timeout', value: 0 },
+      { label: 'Set time', value: 1 },
+    ]);
+  });
+
+  test.each([
+    [0, 0, false],
+    [1, 1, true],
+    [12.5, 1, true],
+    [600, 1, true],
+  ])('selects the item matching %s', (value, index, isRange) => {
+    const store = new ExactNumberStore(allowedSchema, value, true);
+
+    expect(store.allowedValueIndex).toBe(index);
+    expect(store.isAllowedRangeSelected).toBe(isRange);
+    expect(store.hasErrors).toBe(false);
+  });
+
+  test.each([0.5, 601])('selects the range for %s matching nothing and gives the range error', (value) => {
+    const store = new ExactNumberStore(allowedSchema, value, true);
+
+    expect(store.allowedValueIndex).toBe(1);
+    expect(store.error).toEqual({
+      key: 'json-editor.errors.minmax',
+      data: { context: 'minmax', min: 1, max: 600 },
+    });
+  });
+
+  test('selecting a value item sets the value', () => {
+    const store = new ExactNumberStore(allowedSchema, 20, true);
+
+    store.selectAllowedValue(0);
+
+    expect(store.value).toBe(0);
+    expect(store.allowedValueIndex).toBe(0);
+    expect(store.isAllowedRangeSelected).toBe(false);
+    expect(store.isDirty).toBe(true);
+  });
+
+  test('selecting a range sets the default if it is in the range', () => {
+    const store = new ExactNumberStore(allowedSchema, 0, true);
+
+    store.selectAllowedValue(1);
+
+    expect(store.value).toBe(10);
+    expect(store.isAllowedRangeSelected).toBe(true);
+  });
+
+  test('selecting a range sets its minimum if the default is out of the range', () => {
+    const store = new ExactNumberStore({ ...allowedSchema, default: 0 }, 0, true);
+
+    store.selectAllowedValue(1);
+
+    expect(store.value).toBe(1);
+  });
+
+  test('typing a value of another item keeps the range selected and gives the range error', () => {
+    const store = new ExactNumberStore(allowedSchema, 20, true);
+
+    store.setEditString('0');
+
+    expect(store.value).toBe(0);
+    expect(store.allowedValueIndex).toBe(1);
+    expect(store.error).toEqual({
+      key: 'json-editor.errors.minmax',
+      data: { context: 'minmax', min: 1, max: 600 },
+    });
+  });
+
+  test('without ranges a value matching nothing gives the enum error', () => {
+    const store = new ExactNumberStore(
+      { type: 'number', options: { allowed_values: [{ value: 0, title: 'Off' }, { value: 5, title: 'Fast' }] } },
+      3,
+      true,
+    );
+
+    expect(store.allowedValueIndex).toBeUndefined();
+    expect(store.error).toEqual({ key: 'json-editor.errors.not-in-enum' });
+  });
+});

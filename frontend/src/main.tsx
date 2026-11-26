@@ -15,7 +15,6 @@ import { polyfillsReady } from './polyfills';
 import { routes } from './router/routes';
 import './i18n/config';
 import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
-import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
 
 // Stale assets after a rebuild — reload to pick up the new HTML with fresh hashes

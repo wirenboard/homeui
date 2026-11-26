@@ -11,6 +11,7 @@ export { StoreBuilder } from './store-builder';
 export { StringStore } from './string-store';
 export { Translator } from './translator';
 export type {
+  AllowedValue,
   ValidationError,
   PropertyStore,
   JsonObject,

@@ -4,7 +4,7 @@ import { ExactNumber, exactNumberEquals, isNumberOrExact } from '@/utils/exact-n
 import { reverseTransformNumber, transformNumber, W1_ID_FORMAT } from '@/utils/one-wire-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
-import type { ExactNumberStoreValue, JsonSchema, ValidationError } from './types';
+import type { AllowedValue, ExactNumberStoreValue, JsonSchema, ValidationError } from './types';
 
 const W1_ID_PATTERN = /^(28-[0-9A-Fa-f]{12}|0)$/;
 
@@ -16,6 +16,9 @@ export class ExactNumberStore {
   public isDirty: boolean = false;
   public error: ValidationError | undefined;
   public enumOptions: Option<number>[] = [];
+  public allowedValueOptions: Option<number>[] = [];
+  // Index of the allowed value selected in the dropdown, a range keeps selected while the value is typed
+  public allowedValueIndex: number | undefined = undefined;
   public editString: string;
 
   readonly required: boolean;
@@ -36,6 +39,10 @@ export class ExactNumberStore {
       label: schema.options?.enum_titles?.[index] ?? String(value),
       value: value as number,
     })) ?? [];
+    this.allowedValueOptions = schema.options?.allowed_values?.map((item, index) => ({
+      label: item.title,
+      value: index,
+    })) ?? [];
     this.reset();
 
     makeObservable(this, {
@@ -43,8 +50,11 @@ export class ExactNumberStore {
       error: observable.ref,
       editString: observable,
       isDirty: observable,
+      allowedValueIndex: observable,
       hasErrors: computed,
+      isAllowedRangeSelected: computed,
       setValue: action,
+      selectAllowedValue: action,
       setUndefined: action,
       setEditString: action,
       setDefault: action,
@@ -56,6 +66,28 @@ export class ExactNumberStore {
 
   get hasErrors(): boolean {
     return !!this.error;
+  }
+
+  get isAllowedRangeSelected(): boolean {
+    const item = this._getSelectedAllowedValue();
+    return item !== undefined && !('value' in item);
+  }
+
+  // A range gets the default value if it is in the range, otherwise the minimum of the range
+  selectAllowedValue(index: number) {
+    const item = this.schema.options?.allowed_values?.[index];
+    if (item === undefined) {
+      return;
+    }
+    if ('value' in item) {
+      this.setValue(item.value);
+    } else {
+      const defaultValue = getDefaultNumberValue(this.schema);
+      const inRange = defaultValue !== undefined && defaultValue >= item.min && defaultValue <= item.max;
+      this.setValue(inRange ? defaultValue : item.min);
+    }
+    this.allowedValueIndex = index;
+    this._checkConstraints();
   }
 
   setValue(value: unknown) {
@@ -127,6 +159,7 @@ export class ExactNumberStore {
     } else {
       this.editString = this.schema.format === W1_ID_FORMAT ? transformNumber(this.value) : String(this.value);
     }
+    this._selectAllowedValue();
     this._checkConstraints();
     this.setDoNotShowInvalidValue(this._doNotShowInvalidValue);
   }
@@ -142,6 +175,8 @@ export class ExactNumberStore {
       this.error = forbidUndefined ? { key: 'json-editor.errors.required' } : undefined;
     } else if (this.schema.enum && !this.schema.enum.some((item) => exactNumberEquals(this.value, item))) {
       this.error = { key: 'json-editor.errors.not-in-enum' };
+    } else if (this.schema.options?.allowed_values) {
+      this.error = this._checkAllowedValue();
     } else if (
       (this.schema.minimum !== undefined && Number(this.value) < this.schema.minimum) ||
       (this.schema.maximum !== undefined && Number(this.value) > this.schema.maximum)
@@ -155,5 +190,45 @@ export class ExactNumberStore {
     } else {
       this.error = undefined;
     }
+  }
+
+  private _getSelectedAllowedValue(): AllowedValue | undefined {
+    return this.allowedValueIndex === undefined
+      ? undefined
+      : this.schema.options?.allowed_values?.[this.allowedValueIndex];
+  }
+
+  // Selects the item matching the value, or the first range to show and fix a value matching nothing
+  private _selectAllowedValue() {
+    const allowedValues = this.schema.options?.allowed_values;
+    if (!allowedValues) {
+      return;
+    }
+    const value = Number(this.value);
+    let index = allowedValues.findIndex((item) => ('value' in item)
+      ? item.value === value
+      : value >= item.min && value <= item.max);
+    if (index === -1) {
+      index = allowedValues.findIndex((item) => !('value' in item));
+    }
+    this.allowedValueIndex = index === -1 ? undefined : index;
+  }
+
+  private _checkAllowedValue(): ValidationError | undefined {
+    const item = this._getSelectedAllowedValue();
+    if (item === undefined) {
+      return { key: 'json-editor.errors.not-in-enum' };
+    }
+    if ('value' in item) {
+      return exactNumberEquals(this.value, item.value) ? undefined : { key: 'json-editor.errors.not-in-enum' };
+    }
+    const value = Number(this.value);
+    if (value < item.min || value > item.max) {
+      return {
+        key: 'json-editor.errors.minmax',
+        data: { context: 'minmax', min: item.min, max: item.max },
+      };
+    }
+    return undefined;
   }
 }

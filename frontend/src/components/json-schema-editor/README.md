@@ -103,12 +103,20 @@ The schema subset the editor currently renders. Verified against `store-builder.
 - `options.wb.omit_default` — drop the property from the saved value when it equals the schema
   default.
 - `options.wb.new_row` — force the field onto a new row in the grid layout.
+- `options.dependencies` includes the property only when other properties of the same object
+  have the given values. Otherwise the property is not rendered and is not in the resulting JSON.
+  - The option is an object: keys are property names, values are what they must be equal to
+    (a string, a number or a boolean, or an array of them meaning any of these).
+  - All keys must match. A missing or not included property never matches.
+  - A not included property's errors don't block saving. Its value is kept and comes back
+    when the conditions match again.
+  - Not supported in array items with `format: "table"`: the columns would shift.
 
 ### Arrays
 
 - Plain arrays, plus `minItems` / `maxItems`.
 - Boolean-item arrays render as a checkbox list.
-- Object-item arrays with `format: "table"` render as a table.
+- Object-item arrays with `format: "table"` render as a table; on mobile widths items with more than one property render as cards (one per item, every field labelled, including `compact` ones).
 
 ### Reuse and composition
 
@@ -134,8 +142,8 @@ The schema subset the editor currently renders. Verified against `store-builder.
 
 - `oneOf` as a variant selector (the fork's `wb-multiple`). `StoreBuilder` returns
   `undefined` for it, so the field is not rendered.
-- `dependencies` / conditional visibility. The loader's `sanitizeOptions` drops the key.
-- `if` / `then` / `else`.
+- Standard JSON Schema `dependencies` (draft-4 property and schema dependencies) and
+  `if` / `then` / `else`.
 - `wb-autocomplete` and `wb-dynamic-type`. No built-in editors — the field degrades to plain
   text or number.
 - Tabs / categories layout.

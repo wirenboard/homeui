@@ -130,6 +130,7 @@ export default class DashboardsStore {
         const dashboard = this.dashboards.get(id);
         if (dashboard) {
           dashboard.options = { ...dashboard.options, isHidden };
+          this.dashboards.set(id, new Dashboard(dashboard));
         }
       });
     }

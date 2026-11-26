@@ -102,11 +102,6 @@
     color: var(--gray-color);
 }
 
-.mbgate-addMenu .dropdown__menu {
-    width: max-content !important;
-    max-width: var(--dropdown-menu-available-width, 240px) !important;
-}
-
 .mbgate-registersHeader {
     all: unset;
     width: 100%;

@@ -34,6 +34,7 @@ export const RegistersForm = observer(({ store, isAllConfigured, onAdd }: Regist
           ariaLabel={t('mbgate.buttons.add')}
           isDisabled={isAllConfigured}
           isButton
+          menuMaxWidth
           onChange={(option: Option<RegisterTypeSelection>) => option?.value && onAdd(option.value)}
         />
         {isAllConfigured && (

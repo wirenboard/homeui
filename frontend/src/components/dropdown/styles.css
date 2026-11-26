@@ -15,6 +15,11 @@
   max-width: 240px !important;
 }
 
+.dropdown-menuWiderThanControl.dropdown__menu {
+  width: max-content !important;
+  max-width: var(--dropdown-menu-max-width, var(--dropdown-menu-available-width, 240px)) !important;
+}
+
 .dropdown__control.dropdown__control--is-focused {
   transition: border-color 200ms linear, var(--form-element-focus-transition);
   outline: var(--form-element-outline) !important;

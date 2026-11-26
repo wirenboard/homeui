@@ -14,7 +14,7 @@
     overflow: auto;
     width: 100%;
 
-    @media(max-width: 768px) {
+    @media (--max-tablet-width) {
         flex-direction: column;
     }
 }
@@ -33,7 +33,7 @@
         padding-right: 14px;
     }
 
-    @media(max-width: 1200px) {
+    @media (--max-tablet-width) {
         padding: 12px;
         scrollbar-gutter: auto;
     }

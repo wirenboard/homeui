@@ -1,10 +1,135 @@
-wb-mqtt-homeui (2.286.3) stable; urgency=medium
+wb-mqtt-homeui (2.291.2) stable; urgency=medium
 
   * Switch the license to The WB License (MIT-WB): Wiren Board
     as the copyright holder, 2015 as the first publication year, use restricted to Wiren Board equipment
   * Fill debian/copyright in the DEP-5 format
 
- -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 12 Nov 2026 15:46:43 +0300
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Thu, 26 Nov 2026 18:22:05 +0300
+
+wb-mqtt-homeui (2.291.1) stable; urgency=medium
+
+  * Fix a stray blank block above the options list in searchable dropdowns
+  * Let a dropdown's options list grow wider than its control when needed
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 26 Nov 2026 15:00:00 +0300
+
+wb-mqtt-homeui (2.291.0) stable; urgency=medium
+
+  * Add support for allowed_values in template parameters
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 26 Nov 2026 11:26:27 +0300
+
+wb-mqtt-homeui (2.290.4) stable; urgency=medium
+
+  * Remove nexus registry
+
+ -- Victor Zharikov <victor.zharikov@wirenboard.com>  Tue, 24 Nov 2026 16:00:00 +0300
+
+wb-mqtt-homeui (2.290.3) stable; urgency=medium
+
+  * backend: reduce memory usage
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 24 Nov 2026 16:00:15 +0400
+
+wb-mqtt-homeui (2.290.2) stable; urgency=medium
+
+  * Fix long control values/titles and long button labels overlapping or wrapping instead of being truncated with an ellipsis
+  * Fix the dashboard list's "in nav" toggle not updating the sidebar until a reload
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 24 Nov 2026 14:15:00 +0300
+
+wb-mqtt-homeui (2.290.1) stable; urgency=medium
+
+  * Remove nexus registry
+
+ -- Victor Zharikov <victor.zharikov@wirenboard.com>  Tue, 24 Nov 2026 12:30:00 +0300
+
+wb-mqtt-homeui (2.290.0) stable; urgency=medium
+
+  * Device settings: fields that depend on another field are shown only when
+    that field has a matching value (e.g. the string size of a custom channel)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 24 Nov 2026 12:22:44 +0500
+
+wb-mqtt-homeui (2.289.5) stable; urgency=medium
+
+  * Fix opening the root page when the default dashboard has a non-Latin ID
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 23 Nov 2026 16:24:00 +0300
+
+wb-mqtt-homeui (2.289.4) stable; urgency=medium
+
+  * Unify the info button style and accessibility
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 23 Nov 2026 15:51:00 +0300
+
+wb-mqtt-homeui (2.289.3) stable; urgency=medium
+
+  * Add nexus registry
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 23 Nov 2026 12:30:00 +0300
+
+wb-mqtt-homeui (2.289.2) stable; urgency=medium
+
+  * Card and table action buttons are always visible on touch screens
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 20 Nov 2026 12:20:26 +0500
+
+wb-mqtt-homeui (2.289.1) stable; urgency=medium
+
+  * DALI: the device info dialog title no longer runs into the close button,
+    the info button is hidden when there is nothing to show
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 19 Nov 2026 16:36:42 +0500
+
+wb-mqtt-homeui (2.289.0) stable; urgency=medium
+
+  * DALI: compact device info on tablets and laptops, full info opens in a dialog
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Nov 2026 16:53:14 +0500
+
+wb-mqtt-homeui (2.288.0) stable; urgency=medium
+
+  * Improve web UI layout on tablets and small laptops
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Nov 2026 16:42:50 +0500
+
+wb-mqtt-homeui (2.287.2) stable; urgency=medium
+
+  * Fix the devices page staying empty after a hard reload when "show service devices" is enabled
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Nov 2026 11:28:00 +0300
+
+wb-mqtt-homeui (2.287.1) stable; urgency=medium
+
+  * Fix extra padding at the bottom of dashboards in HMI mode
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Nov 2026 10:58:00 +0300
+
+wb-mqtt-homeui (2.287.0) stable; urgency=medium
+
+  * Show table settings (e.g. DALI scenes) as cards on mobile
+  * Fix DALI device header overflow on mobile: truncate long names, show status as an icon
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 16:22:41 +0500
+
+wb-mqtt-homeui (2.286.5) stable; urgency=medium
+
+  * Show icon-only toolbar buttons on the DALI device page on mobile so they fit on one row
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 16 Nov 2026 12:05:01 +0500
+
+wb-mqtt-homeui (2.286.4) stable; urgency=medium
+
+  * Fix web UI not loading when opened by an IPv6 address
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 13 Nov 2026 17:58:37 +0500
+
+wb-mqtt-homeui (2.286.3) stable; urgency=medium
+
+  * Fix unreadable error rows in the DALI bus monitor in the dark theme
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Nov 2026 11:36:30 +0500
 
 wb-mqtt-homeui (2.286.2) stable; urgency=medium
 

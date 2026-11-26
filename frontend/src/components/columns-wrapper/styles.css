@@ -4,7 +4,7 @@
     align-items: flex-start;
     grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
 
-    @media(max-width: 768px) {
+    @media (--max-mobile-width) {
         display: block;
     }
 }

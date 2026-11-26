@@ -1,18 +1,19 @@
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { MAX_TABLET_WIDTH } from '@/common/breakpoints';
 import { Tooltip } from '@/components/tooltip';
 import type { DescriptionStatusProps } from './types';
 import './styles.css';
 
 export const DescriptionStatus = ({ isConnected, isCompact, description }: DescriptionStatusProps) => {
   const { t } = useTranslation();
-  const isDesktop = useMediaQuery({ minWidth: 768 });
+  const showBurgerMenu = useMediaQuery({ maxWidth: MAX_TABLET_WIDTH });
 
   return (
     <div
       className={classNames('descriptionStatus', {
-        'descriptionStatus-mobile': !isDesktop,
+        'descriptionStatus-mobile': showBurgerMenu,
       })}
     >
       {isCompact

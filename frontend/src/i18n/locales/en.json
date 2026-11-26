@@ -866,6 +866,7 @@
          "access-denied": "You don't have enough permissions to view this page",
          "not-found": "Page not found: 404",
          "not-found-description": "You are requesting a page that doesn't exists",
+         "info": "Help and documentation",
          "documentation-current": "Page info",
          "documentation": "Documentation",
          "support": "Technical support"
@@ -1207,6 +1208,7 @@
          "info-hardware": "Hardware",
          "info-oem-gtin": "OEM GTIN",
          "info-oem-identification-number": "OEM ID",
+         "info-device": "Device information",
          "monitor-broadcast": "Broadcast"
       },
       "buttons": {
