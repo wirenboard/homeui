@@ -1,7 +1,7 @@
 import ConfiguratorStore, { ConfigFormatError, ConfigParseError } from './configurator-store';
 
 const yaml = `
-version: '1.0'
+version: '0.1'
 devices:
   - did: 10
     name: Реле
@@ -80,7 +80,7 @@ afterEach(() => {
 });
 
 const mixedYaml = `
-version: '1.0'
+version: '0.1'
 devices:
   - did: 10
     name: A

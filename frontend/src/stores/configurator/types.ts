@@ -111,7 +111,7 @@ export interface ConfigService {
 
 export interface ConfigDevice {
   did: number;
-  name: string;
+  name?: string;
   type: string;
   module: string;
   group?: string;

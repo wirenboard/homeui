@@ -1292,6 +1292,7 @@
          "wb-name": "Name of the device \"{{label}}\"",
          "device-settings": "Device settings",
          "device-name": "Device name",
+         "channel-name-hint": "You can name the channel",
          "new-device": "New device",
          "name-taken": "This name is taken, choose another one",
          "name-duplicate": "Duplicate name",

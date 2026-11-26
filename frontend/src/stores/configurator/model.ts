@@ -67,6 +67,10 @@ export const inheritedName = (device: Pick<Device, 'name' | 'rows'>, row: Device
 export const rowName = (device: Pick<Device, 'name' | 'rows'>, row: DeviceRow) =>
   row.name.trim() || inheritedName(device, row);
 
+// Единственный канал без своего имени: имя в конфиг не пишется.
+export const isUnnamed = (device: Pick<Device, 'rows'>, row: DeviceRow) =>
+  device.rows.length === 1 && !row.name.trim();
+
 const isRole = (role: unknown): role is RoleId => typeof role === 'string' && role in ROLES;
 
 // Конфиг -> модель: записи собираются в устройства по module, нераспознанные — в raw.
@@ -179,13 +183,13 @@ export const toConfig = (
   const drafts: Draft[] = [];
 
   const makeDevice = (
-    did: number, name: string, type: string, module: string, group: string, settings: Record<string, boolean>,
+    did: number, name: string | null, type: string, module: string, group: string, settings: Record<string, boolean>,
     services: [RoleId, string, string][], rawUnit?: string,
   ): ConfigDevice => {
     const unit = rawUnit?.trim();
     return {
       did,
-      name: name.trim() || `did ${did}`,
+      ...(name === null ? {} : { name: name.trim() || `did ${did}` }),
       type,
       module,
       ...(group?.trim() ? { group: group.trim() } : {}),
@@ -206,7 +210,8 @@ export const toConfig = (
         return;
       }
       devices.push(makeDevice(
-        row.did, rowName(device, row), row.type, module, device.group, device.adapterSettings,
+        row.did, isUnnamed(device, row) ? null : rowName(device, row), row.type, module,
+        device.group, device.adapterSettings,
         list.map(({ role, key }) => [role, ...splitKey(key)]),
         row.unit,
       ));
@@ -215,5 +220,5 @@ export const toConfig = (
 
   devices = devices.concat(model.raw as ConfigDevice[]);
   devices.sort((a, b) => (a?.did || 0) - (b?.did || 0));
-  return { config: { version: '1.0', devices }, drafts };
+  return { config: { version: '0.1', devices }, drafts };
 };

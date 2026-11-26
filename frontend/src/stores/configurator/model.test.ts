@@ -12,7 +12,7 @@ const device = (fields: Partial<Device>): Device =>
   ({ id: 'd', name: 'd', group: '', adapterSettings: { matter: true }, rows: [], ...fields });
 
 const relayConfig: Config = {
-  version: '1.0',
+  version: '0.1',
   devices: [{
     did: 10,
     name: 'Реле',
@@ -117,7 +117,7 @@ describe('inheritedName / rowName', () => {
 
   it('reads a channel named like its device as inherited and writes the device name back', () => {
     const named = (did: number, name: string) => ({ ...relayConfig.devices[0], did, name, module: 'Свет' });
-    const parsed = fromConfig({ version: '1.0', devices: [named(10, 'Свет'), named(11, 'Бра')] });
+    const parsed = fromConfig({ version: '0.1', devices: [named(10, 'Свет'), named(11, 'Бра')] });
     expect(parsed.devices[0].rows.map((item) => item.name)).toEqual(['', 'Бра']);
     const live = liveOf({ 'wb-gpio/A1_OUT': { type: 'switch' } });
     expect(toConfig(parsed, live, parsed.orig).config.devices.map((item) => item.name)).toEqual(['Свет', 'Бра']);
@@ -160,7 +160,7 @@ describe('fromConfig / toConfig', () => {
       did: 12, name: 'B', type: 'switch', module: 'm',
       services: [{ sid: 1, role: 'on_off', binding: { state: 'zigbee2mqtt/lamp/state' } }],
     };
-    const parsed = fromConfig({ version: '1.0', devices: [badRole, badTopic] as Config['devices'] });
+    const parsed = fromConfig({ version: '0.1', devices: [badRole, badTopic] as Config['devices'] });
     expect(parsed.devices).toEqual([]);
     expect(parsed.raw).toEqual([badRole, badTopic]);
   });
@@ -188,7 +188,7 @@ describe('fromConfig / toConfig', () => {
       services: [{ sid: 1, role: 'on_off', binding: { state } }],
     });
     const parsed = fromConfig({
-      version: '1.0',
+      version: '0.1',
       devices: [
         entry(10, 'wb-mr6c_1', '/devices/wb-mr6c_1/controls/K1'),
         entry(11, 'Кухня', '/devices/relay/controls/K1'),
@@ -228,7 +228,7 @@ describe('fromConfig / toConfig', () => {
       did, name: `n${did}`, type: 'switch', ...(module === undefined ? {} : { module }),
       services: [{ sid: 1, role: 'on_off', binding: { state: `/devices/r/controls/K${did}` } }],
     });
-    const parsed = fromConfig({ version: '1.0', devices: [entry(10), entry(11, '   ')] as Config['devices'] });
+    const parsed = fromConfig({ version: '0.1', devices: [entry(10), entry(11, '   ')] as Config['devices'] });
 
     expect(parsed.devices.map((item) => [item.name, item.rows.map((row) => row.did)])).toEqual([['', [10, 11]]]);
     expect(toConfig(parsed, liveOf({}), parsed.orig).config.devices.map((item) => item.module))
@@ -356,7 +356,7 @@ describe('fromConfig / toConfig', () => {
       services: [{ sid: 1, role: 'on_off', binding: { state: `/devices/r/controls/K${did}` } }],
     });
 
-    const parsed = fromConfig({ version: '1.0', devices: [entry(10), entry(11, 'Зал'), entry(12, 'Кухня')] });
+    const parsed = fromConfig({ version: '0.1', devices: [entry(10), entry(11, 'Зал'), entry(12, 'Кухня')] });
 
     expect(parsed.devices[0].group).toBe('Зал');
   });
