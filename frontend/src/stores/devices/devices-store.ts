@@ -132,9 +132,18 @@ export default class DevicesStore {
   }
 
   get topics(): Option<string>[] {
+    return this.#buildTopics(this.devices.values());
+  }
+
+  // system__ devices are hidden unless "show-system-devices" is enabled.
+  get filteredTopics(): Option<string>[] {
+    return this.#buildTopics(this.filteredDevices.values());
+  }
+
+  #buildTopics(devices: Iterable<Device>): Option<string>[] {
     const result: Option<string>[] = [];
 
-    for (const device of this.devices.values()) {
+    for (const device of devices) {
       const options: Option<string>[] = [];
 
       for (const cellId of device.cells) {
@@ -158,8 +167,7 @@ export default class DevicesStore {
     return result;
   }
 
-  // For end-user pickers (scenarios, widgets). Alice uses topics directly so
-  // that system controls remain exportable to the smart home.
+  // For end-user pickers (scenarios, widgets).
   get topicsWithoutSystem(): Option<string>[] {
     return this.topics
       .map((group) => {

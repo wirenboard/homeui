@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.291.2) stable; urgency=medium
+
+  * Alice: hide system devices in the MQTT topic dropdown
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 26 Nov 2026 20:14:16 +0400
+
 wb-mqtt-homeui (2.291.1) stable; urgency=medium
 
   * Fix a stray blank block above the options list in searchable dropdowns

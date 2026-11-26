@@ -19,6 +19,7 @@ vi.mock('./property-options-button', () => ({
 vi.mock('@/stores/devices', () => ({
   devicesStore: {
     topics: [{ label: 'Group', options: [{ label: '/wb/temp', value: '/wb/temp' }] }],
+    filteredTopics: [{ label: 'Group', options: [{ label: '/wb/temp', value: '/wb/temp' }] }],
   },
 }));
 vi.mock('@/assets/icons/trash.svg', () => ({ default: () => null }));
