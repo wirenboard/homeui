@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type {
-  MatterBridgeAbout, MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterFabricDevice, MatterOutcome,
-  MatterPairing, MatterSettings,
+  MatterAdvice, MatterBridgeAbout, MatterChannel, MatterDevice, MatterDevices, MatterFabric, MatterFabricDevice,
+  MatterOutcome, MatterPairing, MatterSettings,
 } from '@/stores/matter';
 
 export interface StatusLineProps {
@@ -72,6 +72,20 @@ export interface FabricProps {
 export interface FabricLinesProps extends FabricProps {
   // The clock of the controller, in milliseconds.
   now: number;
+  // Asked by the button of an advice; without it an advice is words only.
+  onAdvice?: (_advice: MatterAdvice) => void;
+}
+
+export interface FabricAdviceProps {
+  // The advice about one line of a fabric, as the bridge told it.
+  advice: MatterAdvice[];
+  onAct?: (_advice: MatterAdvice) => void;
+}
+
+/** The advice whose action is being asked about, and the fabric it is for. */
+export interface AskedAdvice {
+  fabric: MatterFabric;
+  advice: MatterAdvice;
 }
 
 export interface FabricControllerProps {
@@ -87,6 +101,7 @@ export interface FabricsCardProps {
   // of their own. Null or undefined from a service that keeps none.
   fabricsSince?: number | null;
   onAction: (_fabric: MatterFabric, _action: FabricMenuAction) => void;
+  onAdvice?: (_fabric: MatterFabric, _advice: MatterAdvice) => void;
   now?: number;
   // The fabric whose link is being checked, by index.
   checkingIndex?: number | null;

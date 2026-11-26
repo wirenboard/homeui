@@ -288,6 +288,25 @@
     overflow-wrap: anywhere;
 }
 
+.matter-lineRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.matter-advice {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 320px;
+    line-height: 1.5;
+}
+
+.matter-adviceText {
+    margin: 0;
+}
+
 .matter-lineName {
     margin-right: 6px;
     color: var(--gray-color);

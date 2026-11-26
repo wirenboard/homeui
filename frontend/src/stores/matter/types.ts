@@ -193,6 +193,26 @@ export interface MatterLink {
   summary?: MatterLinkSummary;
 }
 
+/** Words the bridge says itself, in both languages of the page. */
+export type MatterWords = Record<'ru' | 'en', string>;
+
+/** What the page knows how to do when an advice of the bridge offers it. */
+export enum MatterAdviceActionKind {
+  Reconnect = 'reconnect',
+}
+
+/**
+ * What to do about a fabric: the bridge tells the words, the page only prints them.
+ * `line` is the line of the row it is about, absent for one that stands only in the
+ * details; an action of a `kind` this page does not know is printed without its button.
+ */
+export interface MatterAdvice {
+  code: string;
+  line?: 'link' | 'devices';
+  text: MatterWords;
+  action?: { kind: string; label: MatterWords; confirm: MatterWords };
+}
+
 export interface MatterFabric {
   index: number;
   // The label the fabric gave itself: FabricDescriptorStruct.Label, written by the app
@@ -221,6 +241,7 @@ export interface MatterFabric {
   paired_kind?: MatterPairedKind;
   // Undefined from a service older than this page.
   overview?: MatterFabricOverview;
+  advice?: MatterAdvice[];
   vendor_name?: string | null;
   paired_via?: MatterPairedVia;
   sessions?: number;
@@ -274,6 +295,7 @@ export interface MatterCard {
 export interface MatterDevice {
   did: number;
   name: string;
+  unnamed?: boolean; // the part has no name of its own: `name` is the name of its device
   // Type of the configurator, e.g. switch or temperature_sensor. Translated through the
   // keys of the configurator, so the names of the types live in one place.
   type: string;

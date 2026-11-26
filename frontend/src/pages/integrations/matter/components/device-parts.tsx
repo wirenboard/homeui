@@ -40,7 +40,8 @@ export const CardName = ({ device, onOpen, isLine = false }: CardNameProps) => {
 /**
  * A part of a device: what an app is given as one device. Its name is the one the app
  * shows, and under it what it is. The type is named by the configurator, so the names of
- * the types live in one place. A part with no card says its group itself.
+ * the types live in one place. A part with no card says its group itself, and a part with
+ * no name of its own says none: it is called as its device, which stands beside it.
  */
 export const PartName = ({ device }: DeviceProps) => {
   const { t } = useTranslation();
@@ -48,7 +49,7 @@ export const PartName = ({ device }: DeviceProps) => {
   const ownGroup = cardOf(device) ? null : device.group;
   return (
     <>
-      <span className="matter-rowName">{device.name}</span>
+      {!device.unnamed && <span className="matter-rowName">{device.name}</span>}
       <span className="matter-rowLine">{ownGroup ? `${type} · ${ownGroup}` : type}</span>
     </>
   );

@@ -6,7 +6,9 @@ import { Confirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
-import { type MatterDevice, type MatterFabric, matterStore } from '@/stores/matter';
+import {
+  MatterAdviceActionKind, type MatterDevice, type MatterFabric, matterStore,
+} from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
 import { AboutCard } from './components/about-card';
 import { DevicesCard } from './components/devices-card';
@@ -14,9 +16,17 @@ import { FabricLabelDialog } from './components/fabric-label-dialog';
 import { FabricsCard } from './components/fabrics-card';
 import { PairingWindow } from './components/pairing-window';
 import { SettingsCard } from './components/settings-card';
-import { FabricMenuAction } from './types';
-import { configuratorSelection, fabricDisplayLabel, timeLeft } from './utils';
+import { type AskedAdvice, FabricMenuAction } from './types';
+import {
+  configuratorSelection, fabricDisplayLabel, said, timeLeft,
+} from './utils';
 import './styles.css';
+
+// What the action of an advice does, by its kind: the bridge names the kind and says the
+// words, this page knows only the doing.
+const ADVISED: Record<string, (_fabric: MatterFabric) => Promise<boolean>> = {
+  [MatterAdviceActionKind.Reconnect]: (fabric) => matterStore.reconnect(fabric.index),
+};
 
 // The menu entry is shipped by wb-mqtt-matter-bridge itself, so its id in the custom
 // menu is the only sign the frontend has that the service is installed. The route exists
@@ -46,7 +56,7 @@ const useNow = (isTicking: boolean) => {
 };
 
 const MatterPage = observer(() => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   // buildMenu fills menuItems and modules in one go, so an empty menu means /ui/menu has
   // not answered yet: the module is not missing, it is still unknown.
@@ -56,6 +66,8 @@ const MatterPage = observer(() => {
   const { status, isLoading, isUnreachable } = matterStore;
   // The fabric whose "unpair" button was pressed, and so the one the dialog talks about.
   const [unpairFrom, setUnpairFrom] = useState<MatterFabric | null>(null);
+  // The advice whose button was pressed: what it does is asked about before it is done.
+  const [asked, setAsked] = useState<AskedAdvice | null>(null);
   // The "change the code" dialog. A dialog and not a plain button because the act has a
   // cost the operator cannot see from here: an app that remembered the old code will
   // offer the wrong one afterwards.
@@ -148,6 +160,7 @@ const MatterPage = observer(() => {
             checkingIndex={matterStore.checkingIndex}
             failedCheckIndex={matterStore.failedCheckIndex}
             onAction={chooseFabricAction}
+            onAdvice={(fabric, advice) => setAsked({ fabric, advice })}
             onCheck={(fabric) => matterStore.checkLink(fabric.index)}
           >
             <PairingWindow
@@ -267,6 +280,35 @@ const MatterPage = observer(() => {
             <p className="matter-dialogText">{t('matter.labels.unpair-why')}</p>
             <p className="matter-dialogText">{t('matter.labels.unpair-code')}</p>
             <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.unpair-here-note')}</p>
+            {matterStore.hasUnpairFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.unpair-failed')}</p>
+            )}
+          </Confirm>
+
+          {/* The action of an advice. The question is in the words of the bridge; once the
+              fabric is gone the dialog has nothing left to talk about and closes, and a
+              way in that did not open is said where the way in is. */}
+          <Confirm
+            isOpened={asked !== null}
+            heading={asked ? said(asked.advice.action.label, i18n.language) : ''}
+            acceptLabel={asked ? said(asked.advice.action.label, i18n.language) : ''}
+            cancelLabel={t('matter.buttons.advice-cancel')}
+            isLoading={matterStore.unpairingIndex !== null || matterStore.isOpeningWindow}
+            closeCallback={() => {
+              setAsked(null);
+              matterStore.forgetDialogFailures();
+            }}
+            confirmCallback={async () => {
+              const isDone = asked && await ADVISED[asked.advice.action.kind]?.(asked.fabric);
+              if (isDone || !matterStore.hasUnpairFailed) {
+                setAsked(null);
+              }
+            }}
+          >
+            <p className="matter-dialogText">
+              {t('matter.labels.advice-fabric', { label: asked ? fabricDisplayLabel(asked.fabric, t) : '' })}
+            </p>
+            <p className="matter-dialogText">{asked ? said(asked.advice.action.confirm, i18n.language) : ''}</p>
             {matterStore.hasUnpairFailed && (
               <p className="matter-dialogText matter-dialogError">{t('matter.labels.unpair-failed')}</p>
             )}

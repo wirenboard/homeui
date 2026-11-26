@@ -212,7 +212,7 @@ describe('FabricDetails, the controllers of a fabric', () => {
     expect(screen.getByRole('heading', { level: 5 }).textContent).toBe('hub.local');
   });
 
-  it('names the devices a controller does not follow, with what to do about it under that controller', () => {
+  it('names the devices a controller does not follow, under that controller', () => {
     show({
       devices: [hub({
         subscriptions: 3,
@@ -225,11 +225,10 @@ describe('FabricDetails, the controllers of a fabric', () => {
 
     expect(valueIn(partial, 'matter.labels.fact-watching')).toBe('matter.labels.watching-some');
     expect(valueIn(partial, 'matter.labels.fact-not-watching')).toBe('Hall socket');
-    expect(within(partial).getByText('matter.labels.link-advice-partly')).toBeInTheDocument();
-    expect(within(quiet).queryByText('matter.labels.link-advice-partly')).not.toBeInTheDocument();
+    expect(within(quiet).queryByText('matter.labels.fact-not-watching')).not.toBeInTheDocument();
   });
 
-  it('marks the problem of a controller at the facts that say it and at the advice, and nothing else', () => {
+  it('marks the problem of a controller at the facts that say it, and nothing else', () => {
     show({
       devices: [hub({
         subscriptions: 3,
@@ -243,8 +242,6 @@ describe('FabricDetails, the controllers of a fabric', () => {
     expect(isMarked(partial, 'matter.labels.fact-watching')).toBe(true);
     expect(isMarked(partial, 'matter.labels.fact-not-watching')).toBe(true);
     expect(isMarked(partial, 'matter.labels.fact-subscriptions')).toBe(false);
-    expect(within(partial).getByText('matter.labels.link-advice-partly').closest('.matter-line')
-      .querySelector('svg.matter-sign')).not.toBeNull();
     // A controller with no problem has no sign and no place kept for one.
     expect(quiet.querySelector('.matter-sign')).toBeNull();
   });
@@ -354,7 +351,7 @@ describe('FabricDetails, the status of a fabric', () => {
     expect(statusSection().getByRole('button', { name: 'matter.buttons.check-link' })).toBeEnabled();
     expect(statusSection().getByText('matter.labels.check-hint')).toBeInTheDocument();
     expect(statusSection().queryByText('matter.labels.fact-checked')).not.toBeInTheDocument();
-    expect(screen.queryByText(/link-advice/)).not.toBeInTheDocument();
+    expect(document.querySelector('.matter-detailsAdvice')).toBeNull();
   });
 
   it('asks for a check by its button, which is busy and says how long while the bridge is asking', () => {
@@ -378,9 +375,16 @@ describe('FabricDetails, the status of a fabric', () => {
         checked_at: NOW - 30000,
         summary: { in_network: 'yes', answers_bridge: 'no', holds_subscriptions: 'no' },
       },
+      // The words are the bridge's: about a line of the row with the sign, otherwise plain.
+      advice: [
+        { code: 'forgot', line: 'link', text: { ru: 'Совет о связи', en: 'Advice on the link' } },
+        { code: 'quiet', text: { ru: 'Просто слова', en: 'Plain words' } },
+      ],
     });
 
-    expect(statusSection().getByText('matter.labels.link-advice-forgot')).toBeInTheDocument();
+    expect(statusSection().getByText('Advice on the link').closest('.matter-line')
+      .querySelector('svg.matter-sign')).not.toBeNull();
+    expect(statusSection().getByText('Plain words').closest('.matter-line')).toBeNull();
     const status = sectionOf('matter.labels.section-status');
     expect(valueIn(status, 'matter.labels.fact-in-network')).toBe('matter.labels.reply-yes');
     expect(valueIn(status, 'matter.labels.fact-answers-bridge')).toBe('matter.labels.reply-no');

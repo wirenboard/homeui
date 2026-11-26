@@ -3,6 +3,7 @@ import type { MatterOutcome } from '@/stores/matter';
 import { useTimes } from '../hooks';
 import type { FabricLinesProps, FabricProps } from '../types';
 import { fabricDisplayLabel, fabricVendor } from '../utils';
+import { FabricAdvice } from './fabric-advice';
 import { NamedLine } from './status-line';
 
 /** The name of a fabric, and under it whose it is: its vendor. */
@@ -22,8 +23,9 @@ export const FabricName = ({ fabric }: FabricProps) => {
  *
  * What each line is and how it came out is the bridge's answer (`overview` in /status);
  * this only puts it into words. A line that is a problem says its words as the reason.
+ * What to do about a line is the bridge's too (`advice`), and stands at the end of it.
  */
-export const FabricLines = ({ fabric, now }: FabricLinesProps) => {
+export const FabricLines = ({ fabric, now, onAdvice }: FabricLinesProps) => {
   const { t } = useTranslation();
   const { ago, span } = useTimes(now);
   // A bridge older than this page tells no lines.
@@ -32,18 +34,22 @@ export const FabricLines = ({ fabric, now }: FabricLinesProps) => {
   }
   const { link, devices, commands } = fabric.overview;
 
-  const line = (name: string, status: MatterOutcome, words: string, isFirst = false) => (
-    <li>
-      <NamedLine
-        status={status}
-        name={t(`matter.labels.line-${name}`)}
-        isFirst={isFirst}
-        reason={status === 'error' ? words : undefined}
-      >
-        {words}
-      </NamedLine>
-    </li>
-  );
+  const line = (name: string, status: MatterOutcome, words: string, isFirst = false) => {
+    const advice = (fabric.advice ?? []).filter((one) => one.line === name);
+    return (
+      <li className="matter-lineRow">
+        <NamedLine
+          status={status}
+          name={t(`matter.labels.line-${name}`)}
+          isFirst={isFirst}
+          reason={status === 'error' ? words : undefined}
+        >
+          {words}
+        </NamedLine>
+        {advice.length > 0 && <FabricAdvice advice={advice} onAct={onAdvice} />}
+      </li>
+    );
+  };
 
   return (
     <ul className="matter-lines">

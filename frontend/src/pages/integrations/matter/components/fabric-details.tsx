@@ -3,14 +3,10 @@ import { Button } from '@/components/button';
 import type { MatterCommand } from '@/stores/matter';
 import { useTimes } from '../hooks';
 import type { DetailsFactsProps, FabricDetailsProps } from '../types';
-import { fabricDisplayLabel, replacedLabelText, vendorHex } from '../utils';
+import { fabricDisplayLabel, replacedLabelText, said, vendorHex } from '../utils';
 import { Details, Facts, Section } from './details';
 import { FabricController } from './fabric-controller';
 import { StatusLine } from './status-line';
-
-// The verdicts with nothing to advise in the section of the status: all is well, or the
-// advice is about what one controller follows and stands with that controller.
-const NO_STATUS_ADVICE = ['online', 'partly'];
 
 /**
  * What the bridge knows of one fabric, under its row: first the short facts of the fabric
@@ -23,14 +19,13 @@ const NO_STATUS_ADVICE = ['online', 'partly'];
 export const FabricDetails = ({
   fabric, now, isChecking, hasCheckFailed, onCheck,
 }: FabricDetailsProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { ago, day, second } = useTimes(now);
   const label = (name: string) => t(`matter.labels.fact-${name}`);
   const deviceName = (name: string | undefined, did: number) => name ?? `#${did}`;
 
   const controllers = fabric.devices ?? [];
   const { link, commands } = fabric;
-  const hasLinkTrouble = fabric.overview?.link.status === 'error';
 
   const vendor = fabric.vendor_name
     ? `${fabric.vendor_name} (${vendorHex(fabric.vendor_id)})`
@@ -121,13 +116,15 @@ export const FabricDetails = ({
               Number.isFinite(fabric.heard_at) ? ago(fabric.heard_at) : t('matter.labels.heard-unknown'),
             ]]}
           />
-          {!NO_STATUS_ADVICE.includes(link.code) && (
-            <span className="matter-detailsAdvice">
-              {hasLinkTrouble
-                ? <StatusLine status="error">{t(`matter.labels.link-advice-${link.code}`)}</StatusLine>
-                : t(`matter.labels.link-advice-${link.code}`)}
+          {/* What to do, in the words of the bridge; the advice about a line the row
+              marked carries the same sign here. */}
+          {fabric.advice?.map((one) => (
+            <span className="matter-detailsAdvice" key={one.code}>
+              {one.line
+                ? <StatusLine status="error">{said(one.text, i18n.language)}</StatusLine>
+                : said(one.text, i18n.language)}
             </span>
-          )}
+          ))}
           <div className="matter-detailsCheck" data-nocopy>
             <Button
               variant="secondary"

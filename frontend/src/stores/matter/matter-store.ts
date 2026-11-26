@@ -172,6 +172,15 @@ export default class MatterStore {
   }
 
   /**
+   * Drops a fabric and opens the way in again at once: what an advice of the bridge calls
+   * reconnecting. A bridge left with no fabric makes its node anew and waits for that
+   * itself before it opens.
+   */
+  async reconnect(index: number) {
+    return await this.unpair(index) && this.openWindow();
+  }
+
+  /**
    * Has the bridge reset. As with unpair, what /status says afterwards is the truth and
    * not what this call returned: the fabrics are gone when the list is empty.
    */

@@ -1,8 +1,11 @@
 import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
 import type {
-  MatterAnswer, MatterCard, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome,
+  MatterAnswer, MatterCard, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome, MatterWords,
 } from '@/stores/matter';
+
+/** Words the bridge said itself, in the language of the page. */
+export const said = (words: MatterWords, language: string) => (language === 'ru' ? words.ru : words.en);
 
 /**
  * How the answer of an app about a device is drawn: one that did not take it is a

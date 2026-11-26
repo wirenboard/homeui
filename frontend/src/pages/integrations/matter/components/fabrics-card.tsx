@@ -26,7 +26,7 @@ import { FabricLines, FabricName } from './fabric-parts';
  * so that the way to add a fabric is the last line of the list of fabrics.
  */
 export const FabricsCard = ({
-  fabrics, fabricsSince, onAction, now = Date.now(), checkingIndex = null, failedCheckIndex = null,
+  fabrics, fabricsSince, onAction, onAdvice, now = Date.now(), checkingIndex = null, failedCheckIndex = null,
   onCheck, children,
 }: PropsWithChildren<FabricsCardProps>) => {
   const { t } = useTranslation();
@@ -49,6 +49,10 @@ export const FabricsCard = ({
         return t('matter.labels.paired-unknown');
     }
   };
+
+  const linesOf = (fabric: MatterFabric) => (
+    <FabricLines fabric={fabric} now={now} onAdvice={onAdvice && ((advice) => onAdvice(fabric, advice))} />
+  );
 
   const buttonsOf = (fabric: MatterFabric) => (
     <>
@@ -80,7 +84,7 @@ export const FabricsCard = ({
             <span className="matter-rowLine">
               {`${t('matter.labels.column-paired')}: ${pairedText(fabric)}`}
             </span>
-            <div className="matter-rowBlock"><FabricLines fabric={fabric} now={now} /></div>
+            <div className="matter-rowBlock">{linesOf(fabric)}</div>
           </div>
           <div className="matter-rowAction">{buttonsOf(fabric)}</div>
           {isOpened(fabric.index) && detailsOf(fabric)}
@@ -114,9 +118,7 @@ export const FabricsCard = ({
               <TableCell verticalAlign="top">
                 <span className="matter-fabricWhen">{pairedText(fabric)}</span>
               </TableCell>
-              <TableCell className="matter-linesCell" verticalAlign="top">
-                <FabricLines fabric={fabric} now={now} />
-              </TableCell>
+              <TableCell className="matter-linesCell" verticalAlign="top">{linesOf(fabric)}</TableCell>
               <TableCell verticalAlign="top">
                 <span className="matter-rowButtons">{buttonsOf(fabric)}</span>
               </TableCell>

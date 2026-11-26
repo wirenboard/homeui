@@ -3,7 +3,6 @@ import { useTimes } from '../hooks';
 import type { FabricControllerProps } from '../types';
 import { roleSaysKey } from '../utils';
 import { Facts } from './details';
-import { StatusLine } from './status-line';
 
 // More names than this in one cell push everything below them off the screen.
 const MISSING_SHOWN = 3;
@@ -81,11 +80,6 @@ export const FabricController = ({ controller, pairedAt, now }: FabricController
           [label('interaction-model'), revision(matter?.interaction_model_revision)],
         ]}
       />
-      {followsOnlySome && (
-        <span className="matter-detailsAdvice">
-          <StatusLine status="error">{t('matter.labels.link-advice-partly')}</StatusLine>
-        </span>
-      )}
     </div>
   );
 };
