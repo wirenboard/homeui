@@ -21,6 +21,7 @@ export interface DropdownProps<T = string | boolean | number | null | string[]> 
   isClearable?: boolean;
   isInvalid?: boolean;
   minWidth?: string;
+  menuMaxWidth?: number | true;
   noOptionsMessage?: string;
   multiselect?: boolean;
   menuPortal?: boolean;

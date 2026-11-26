@@ -36,6 +36,13 @@ const Placeholder = (props: any) => (
   </components.Placeholder>
 );
 
+const Menu = (props: any, menuMaxWidth: DropdownProps['menuMaxWidth']) => (
+  <components.Menu
+    {...props}
+    className={classNames(props.className, { 'dropdown-menuWiderThanControl': menuMaxWidth !== undefined })}
+  />
+);
+
 const DRAG_THRESHOLD_PX = 3;
 const MENU_WINDOW_MARGIN_PX = 8;
 
@@ -117,6 +124,7 @@ export const Dropdown = ({
   formatCreateLabel,
   minWidth = '150px',
   menuPortal = true,
+  menuMaxWidth,
   captureMenuScroll,
   onChange,
 }: DropdownProps) => {
@@ -205,6 +213,7 @@ export const Dropdown = ({
     menuPosition: menuPortal ? ('fixed' as const) : ('absolute' as const),
     components: {
       MenuPortal: (props: any) => MenuPortal({ ...props, className }, size),
+      Menu: (props: any) => Menu(props, menuMaxWidth),
       DropdownIndicator: (props: any) => DropdownIndicator(props, isButton),
       Placeholder: (props: any) => Placeholder(props),
       SingleValue: (props: any) => SingleValue(props),
@@ -220,6 +229,11 @@ export const Dropdown = ({
         const availableWidth = document.documentElement.clientWidth - rect.left - MENU_WINDOW_MARGIN_PX;
         return { ...baseStyles, '--dropdown-menu-available-width': `${availableWidth}px` };
       },
+      menu: (baseStyles: any) => (
+        typeof menuMaxWidth === 'number'
+          ? { ...baseStyles, '--dropdown-menu-max-width': `${menuMaxWidth}px` }
+          : baseStyles
+      ),
       option: (baseStyles: any, { data }: any) => ({
         ...baseStyles,
         display: data?.hidden ? 'none' : baseStyles.display,

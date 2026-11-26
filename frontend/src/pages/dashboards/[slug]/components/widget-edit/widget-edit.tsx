@@ -329,6 +329,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
               placeholder={t('widget.labels.add-control')}
               ariaLabel={t('widget.labels.add-control')}
               options={controlsOptions}
+              menuMaxWidth={320}
               isButton
               isSearchable
               onChange={(option: Option<string>) => {

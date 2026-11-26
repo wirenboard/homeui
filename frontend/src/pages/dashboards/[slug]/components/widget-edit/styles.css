@@ -186,5 +186,8 @@
 
 .widgetEdit-dropdown {
     width: 200px;
+}
+
+.widgetEdit-dropdown:not(.dropdown__menu-portal) {
     padding: 12px 0 4px;
 }
