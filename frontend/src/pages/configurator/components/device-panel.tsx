@@ -14,7 +14,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { StringField } from '@/components/form';
 import { Input } from '@/components/input';
 import {
-  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, inheritedName, primaryRole, rowName, rowServices, splitKey,
+  CHANNEL_CLASSES, configuratorStore, findType, hasUnit, inheritedName, primaryRole, rowName, splitKey,
   type ChannelClass,
   type DeviceRow,
   type RoleId,
@@ -158,7 +158,6 @@ export const DevicePanel = observer(({
         {!item.rows.length && <p className="configurator-empty">{t('configurator.labels.channels-none')}</p>}
         <ul ref={listRef} className="configurator-channels configurator-cards">
           {item.rows.map((row, index) => {
-            const { missing } = rowServices(row);
             const TypeIcon = TYPE_ICONS[row.type];
             const roles = findType(row.type).roles
               .filter(([role, isRequired]) => isRequired || row.bind[role] || hasFit(role));
@@ -258,11 +257,6 @@ export const DevicePanel = observer(({
                         />
                       </div>
                     ))}
-                    {!!missing.length && (
-                      <Alert variant="warn" size="small" className="configurator-alertInline">
-                        {t('configurator.labels.role-required', { ...UNESCAPED, role: roleLabel(missing[0]) })}
-                      </Alert>
-                    )}
                   </div>
                 )}
               </li>

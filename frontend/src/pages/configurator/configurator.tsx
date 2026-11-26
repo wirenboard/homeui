@@ -18,8 +18,8 @@ import { DevicePanel } from './components/device-panel';
 import { DevicesDialog } from './components/devices-dialog';
 import { NewDevicesAlert } from './components/new-devices-alert';
 import { Overview } from './components/overview';
-import type { ImportFile, PageStatus } from './types';
-import { liveControls, UNESCAPED } from './utils';
+import type { ImportFile, IncompleteChannel, PageStatus } from './types';
+import { incompleteChannels, liveControls, roleLabel, UNESCAPED } from './utils';
 import './styles.css';
 
 const ConfiguratorPage = observer(() => {
@@ -33,6 +33,7 @@ const ConfiguratorPage = observer(() => {
   const [isAddEmpty, setIsAddEmpty] = useState(false);
   const [isDevicesOpened, setIsDevicesOpened] = useState(false);
   const [pendingImport, setPendingImport] = useState<ImportFile | null>(null);
+  const [incomplete, setIncomplete] = useState<IncompleteChannel[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
@@ -84,7 +85,12 @@ const ConfiguratorPage = observer(() => {
     setIsDevicesOpened(true);
   };
 
-  const save = async () => {
+  const save = async (withIncomplete = false) => {
+    const found = incompleteChannels(configuratorStore.devices);
+    setIncomplete(withIncomplete ? [] : found);
+    if (found.length && !withIncomplete) {
+      return;
+    }
     setStatus(null);
     try {
       const built = await configuratorStore.save(liveControls, async () => !!(await confirmOverwrite()));
@@ -142,7 +148,7 @@ const ConfiguratorPage = observer(() => {
       disabled={!isDirty || backendState !== 'available' || hasNameConflicts}
       title={hasNameConflicts ? t('configurator.labels.names-duplicate') : undefined}
       isLoading={isSaving}
-      onClick={save}
+      onClick={() => save()}
     />
   );
 
@@ -305,6 +311,28 @@ const ConfiguratorPage = observer(() => {
         }}
       >
         {t('configurator.labels.clear-prompt')}
+      </Confirm>
+
+      <Confirm
+        isOpened={!!incomplete.length}
+        heading={t('configurator.labels.incomplete-title')}
+        acceptLabel={t('configurator.buttons.save-without')}
+        cancelLabel={t('configurator.buttons.open-incomplete', { ...UNESCAPED, name: incomplete[0]?.device.name })}
+        closeCallback={() => {
+          configuratorStore.select({ id: incomplete[0].device.id });
+          setIsPanelShown(true);
+          setIncomplete([]);
+        }}
+        confirmCallback={() => save(true)}
+      >
+        <p>{t('configurator.labels.incomplete-prompt')}</p>
+        <ul className="configurator-incomplete">
+          {incomplete.map(({ device, name, role }) => (
+            <li key={`${device.id}-${name}-${role}`}>
+              {t('configurator.labels.incomplete-item', { ...UNESCAPED, name, role: roleLabel(role) })}
+            </li>
+          ))}
+        </ul>
       </Confirm>
 
       <Confirm

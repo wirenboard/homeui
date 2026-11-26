@@ -18,10 +18,11 @@ import TypeSwitchIcon from '@/assets/icons/type-switch.svg';
 import TypeTemperatureIcon from '@/assets/icons/type-temperature.svg';
 import i18n from '@/i18n/config';
 import {
-  CHANNEL_CLASSES, classify, primaryRole, ROLES, splitKey, type Adapter, type ChannelClass,
+  CHANNEL_CLASSES, classify, primaryRole, ROLES, rowName, rowServices, splitKey, type Adapter, type ChannelClass,
   type Classification, type ControlMeta, type Device, type LiveControls, type RecipeRow,
 } from '@/stores/configurator';
 import { devicesStore, DeviceType, type Cell } from '@/stores/devices';
+import type { IncompleteChannel } from './types';
 
 const t = i18n.t.bind(i18n);
 
@@ -95,6 +96,11 @@ export const deviceTitle = (deviceId: string) => devicesStore.devices.get(device
 // Хотя бы один привязанный контрол устройства сейчас не публикуется.
 export const hasLostBinding = (device: Device) =>
   device.rows.some((row) => Object.values(row.bind).some((key) => !liveControls.meta(...splitKey(key))));
+
+// Каналы без канала для обязательной роли: при сохранении они не пишутся.
+export const incompleteChannels = (devices: Device[]): IncompleteChannel[] => devices.flatMap((device) => device.rows
+  .map((row) => ({ device, name: rowName(device, row) || typeName(row.type), role: rowServices(row).missing[0] }))
+  .filter(({ role }) => role));
 
 export const formatValue = (cell: Cell | undefined): string => {
   if (!cell) {

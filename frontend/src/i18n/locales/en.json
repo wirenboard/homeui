@@ -1259,7 +1259,10 @@
          "no-group": "No group",
          "type": "Type",
          "none": "None",
-         "role-required": "A channel for \"{{role}}\" is required, otherwise the device is not exported",
+         "incomplete": "Incomplete",
+         "incomplete-title": "Some channels are incomplete",
+         "incomplete-prompt": "These channels are not saved until a controller channel is chosen for them:",
+         "incomplete-item": "{{name}} — {{role}}",
          "overview": "Overview",
          "device": "Device",
          "open-device": "Open the settings of the device \"{{name}}\"",
@@ -1339,6 +1342,8 @@
          "unit-placeholder": "Choose or type"
       },
       "buttons": {
+         "save-without": "Save without them",
+         "open-incomplete": "Open “{{name}}”",
          "add": "Add",
          "add-device": "Add device",
          "add-channel": "Add channel",

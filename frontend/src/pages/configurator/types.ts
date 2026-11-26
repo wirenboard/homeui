@@ -141,3 +141,9 @@ export interface GroupFieldProps {
 export interface NewDevicesAlertProps {
   onConfigure: () => void;
 }
+
+export interface IncompleteChannel {
+  device: Device;
+  name: string;
+  role: RoleId;
+}

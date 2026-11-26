@@ -471,6 +471,11 @@
     color: var(--gray-color);
 }
 
+.configurator-incomplete {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
 .configurator-overviewRow {
     cursor: pointer;
 }

@@ -11,7 +11,7 @@ import { Tag } from '@/components/tag';
 import { Tree, type TreeItem } from '@/components/tree';
 import { configuratorStore, rowName, stable, type Device } from '@/stores/configurator';
 import type { DeviceListProps } from '../types';
-import { hasLostBinding } from '../utils';
+import { hasLostBinding, incompleteChannels } from '../utils';
 
 export const DeviceList = observer(({
   onAdd, onAddEmpty, onClear, onSelect,
@@ -58,6 +58,7 @@ export const DeviceList = observer(({
                 : t('configurator.labels.channels-none')}
             </span>
           </span>
+          {!!incompleteChannels([device]).length && <Tag variant="danger">{t('configurator.labels.incomplete')}</Tag>}
           {hasLostBinding(device) && <Tag variant="warn">{t('configurator.labels.not-found')}</Tag>}
           {configuratorStore.nameConflicts.has(device.id) && (
             <Tag variant="warn">{t('configurator.labels.name-duplicate')}</Tag>
