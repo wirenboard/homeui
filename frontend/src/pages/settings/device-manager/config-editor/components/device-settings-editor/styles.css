@@ -85,6 +85,23 @@
     flex-basis: 43%;
 }
 
+.deviceSettingsEditor-allowedValues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.deviceSettingsEditor-allowedValuesDropdown {
+    flex: 3 1 0;
+    min-width: 150px;
+}
+
+.deviceSettingsEditor-allowedValues > .input {
+    flex: 1 1 0;
+    min-width: 100px;
+    box-sizing: border-box;
+}
+
 .deviceSettingsEditor-shouldStoreInConfig .dropdown__control,
 .deviceSettingsEditor-shouldStoreInConfig input {
     border-left: 4px solid var(--gray-color);
