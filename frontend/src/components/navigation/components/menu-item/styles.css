@@ -40,6 +40,12 @@
     transition: background 100ms ease, padding 100ms ease, color 100ms ease, box-shadow 400ms ease;
 }
 
+.navigation-collapseAnimating .menuItem-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .navigation-containerMobile .menuItem-link {
     padding: 10px 10px 10px 20px;
 }

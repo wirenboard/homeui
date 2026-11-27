@@ -10,7 +10,7 @@ import {
   useRole,
 } from '@floating-ui/react';
 import classNames from 'classnames';
-import { type ElementType, useMemo, useRef } from 'react';
+import { type ElementType, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Tooltip } from '@/components/tooltip';
@@ -92,6 +92,17 @@ export const MenuItem = ({
     return !!item.children?.length && !isMenuCompact && openedSubmenus.includes(item.id);
   }, [item.children, isMenuCompact, openedSubmenus]);
 
+  // Scroll the sidebar so the newly revealed items are visible, not just the opened toggle.
+  const subListRef = useRef<HTMLUListElement>(null);
+  const wasOpenedRef = useRef(isOpened);
+  useEffect(() => {
+    const revealed = isOpened && !wasOpenedRef.current;
+    wasOpenedRef.current = isOpened;
+    if (revealed) {
+      subListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [isOpened]);
+
   const isActive = useMemo(() => {
     const matchesUrl = (url?: string) => !!url && page === url;
 
@@ -162,7 +173,7 @@ export const MenuItem = ({
       </Tooltip>
 
       {isOpened && (
-        <ul className={classNames('navigation-list', 'menuItem-subList')}>
+        <ul ref={subListRef} className={classNames('navigation-list', 'menuItem-subList')}>
           {item.children.map((item, i) => (
             <MenuItem
               id={id}

@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.292.1) stable; urgency=medium
+
+  * Auto-scroll the side menu to the end of a submenu when it's expanded
+  * Animate the side menu collapsing into compact mode and back
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 27 Nov 2026 16:01:00 +0300
+
 wb-mqtt-homeui (2.292.0) stable; urgency=medium
 
   * Show a proper 404 page for unknown URLs instead of silently redirecting to the home page,
