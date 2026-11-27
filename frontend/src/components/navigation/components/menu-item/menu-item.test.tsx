@@ -52,3 +52,48 @@ describe('MenuItem external links', () => {
     expect(link.getAttribute('target')).toBeNull();
   });
 });
+
+describe('MenuItem submenu scrolling', () => {
+  const submenuItem = {
+    id: 'settings',
+    label: 'settings',
+    children: [{ id: 'child', url: '/child', label: 'child' }],
+  };
+
+  let scrollIntoView = vi.fn();
+  let original: typeof Element.prototype.scrollIntoView;
+
+  beforeEach(() => {
+    scrollIntoView = vi.fn();
+    original = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scrollIntoView;
+  });
+
+  afterEach(() => {
+    Element.prototype.scrollIntoView = original;
+  });
+
+  test('opening a submenu scrolls its list to the end', () => {
+    const { rerender } = render(
+      <MenuItem {...baseProps} item={submenuItem} openedSubmenus={[]} />,
+    );
+    expect(scrollIntoView).not.toHaveBeenCalled();
+
+    rerender(<MenuItem {...baseProps} item={submenuItem} openedSubmenus={['settings']} />);
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'end' });
+  });
+
+  test('a submenu already open on mount does not scroll', () => {
+    render(<MenuItem {...baseProps} item={submenuItem} openedSubmenus={['settings']} />);
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  });
+
+  test('closing a submenu does not scroll', () => {
+    const { rerender } = render(
+      <MenuItem {...baseProps} item={submenuItem} openedSubmenus={['settings']} />,
+    );
+    rerender(<MenuItem {...baseProps} item={submenuItem} openedSubmenus={[]} />);
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  });
+});

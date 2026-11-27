@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate, useLocation, Link, useParams, useSearchParams } from 'react-router-dom';
@@ -29,6 +29,8 @@ export const Navigation = observer(() => {
   const showSideMenu = useMediaQuery({ minWidth: MIN_LAPTOP_WIDTH });
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
   const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
+  const [isCollapseAnimating, setIsCollapseAnimating] = useState(false);
+  const collapseAnimationTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
   const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
@@ -43,7 +45,13 @@ export const Navigation = observer(() => {
     const value = !isMenuCompact;
     setIsMenuCompact(value);
     localStorage.setItem('isMenuCompact', value.toString());
+
+    setIsCollapseAnimating(true);
+    clearTimeout(collapseAnimationTimeoutRef.current);
+    collapseAnimationTimeoutRef.current = setTimeout(() => setIsCollapseAnimating(false), 200);
   };
+
+  useEffect(() => () => clearTimeout(collapseAnimationTimeoutRef.current), []);
 
   const handleDebugClick = () => {
     consolePanelStore.toggleVisibility();
@@ -94,6 +102,7 @@ export const Navigation = observer(() => {
       <nav
         className={classNames('navigation', {
           'navigation-compact': isMenuCompact,
+          'navigation-collapseAnimating': isCollapseAnimating,
         })}
       >
         <div className="navigation-header">
