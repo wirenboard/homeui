@@ -47,6 +47,10 @@ const DashboardPage = observer(() => {
 
   const dashboard = dashboards.get(params.id);
 
+  const errors = useMemo(() => (
+    !isLoading && !dashboard ? [{ code: 404 }] : []
+  ), [isLoading, dashboard]);
+
   const hasWidgets = dashboard?.flatWidgets.length > 0;
 
   const maxColumns = useMaxColumns(containerRef, hasWidgets);
@@ -230,6 +234,7 @@ const DashboardPage = observer(() => {
         )}
         isHideHeader={!!searchParams.has('hmi')}
         isLoading={isLoading}
+        errors={errors}
         hasRights
       >
         {dashboard?.flatWidgets.length ? (

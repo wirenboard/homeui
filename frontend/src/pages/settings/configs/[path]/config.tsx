@@ -31,7 +31,12 @@ const ConfigPage = observer(() => {
   }, [params.id]);
 
   const [loadConfig, isLoading] = useAsyncAction(async () => {
+    setErrors([]);
     return configsStore.getConfig(path).catch((err) => {
+      if (err.data === 'EditorError') {
+        setErrors([{ code: 404 }]);
+        return;
+      }
       setErrors([{ variant: 'danger', text: `${t('configurations.errors.load')}: ${err.message} ${err.data}` }]);
     });
   });

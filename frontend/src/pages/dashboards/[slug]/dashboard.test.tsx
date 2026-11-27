@@ -114,6 +114,7 @@ function makeDashMock(overrides: Record<string, any> = {}) {
 function resetData() {
   dashStore.widgets.get('w1')!.save.mockReset();
   dashStore.dashboards.set('test-dash', makeDashMock());
+  dashStore.isLoading = false;
 }
 
 beforeEach(() => {
@@ -161,6 +162,22 @@ describe('DashboardPage', () => {
       renderPage('/dashboards/unknown-id');
       expect(screen.queryByText('Test Dashboard')).toBeNull();
       expect(screen.getByText('dashboard.labels.no-widgets')).toBeDefined();
+    });
+
+    test('shows a 404 error for an unknown dashboard once loaded', () => {
+      renderPage('/dashboards/unknown-id');
+      expect(screen.getByTestId('page-error')).toBeDefined();
+    });
+
+    test('does not show a 404 error for an unknown dashboard while dashboards are still loading', () => {
+      dashStore.isLoading = true;
+      renderPage('/dashboards/unknown-id');
+      expect(screen.queryByTestId('page-error')).toBeNull();
+    });
+
+    test('does not show a 404 error for a known dashboard', () => {
+      renderPage();
+      expect(screen.queryByTestId('page-error')).toBeNull();
     });
 
     test('separator without name renders without title', () => {

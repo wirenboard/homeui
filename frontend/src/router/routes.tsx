@@ -26,6 +26,7 @@ const SystemPage = lazy(() => import('@/pages/settings/system'));
 const MqttChannelsPage = lazy(() => import('@/pages/settings/mqtt-channels'));
 const UsersPage = lazy(() => import('@/pages/settings/users'));
 const LogsPage = lazy(() => import('@/pages/settings/logs'));
+const NotFoundPage = lazy(() => import('@/pages/not-found'));
 
 export const routes: RouteObject[] = [
   {
@@ -169,6 +170,10 @@ export const routes: RouteObject[] = [
           },
         ],
       },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
     ],
   },
   // Outdated routes (#!/ prefix handled for in-app navigation)
@@ -184,5 +189,4 @@ export const routes: RouteObject[] = [
       return redirect(`${target}${encoded}`);
     },
   })),
-  { path: '*', loader: () => redirect('/') },
 ];
