@@ -1,25 +1,41 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
+import { useNavigate } from 'react-router-dom';
 import { Confirm } from '@/components/confirm';
-import { Table, TableCell, TableRow } from '@/components/table';
-import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { configuratorStore } from '@/stores/configurator';
-import { type MatterDevice, type MatterFabric, matterStore, pairingQrUrl } from '@/stores/matter';
+import {
+  MatterAdviceActionKind, type MatterDevice, type MatterFabric, matterStore,
+} from '@/stores/matter';
 import { uiStore } from '@/stores/ui';
-import { CopyField } from './components/copy-field';
-import { configuratorSelection, groupManualCode, timeLeft, vendorKey } from './utils';
+import { AboutCard } from './components/about-card';
+import { DevicesCard } from './components/devices-card';
+import { FabricLabelDialog } from './components/fabric-label-dialog';
+import { FabricsCard } from './components/fabrics-card';
+import { PairingWindow } from './components/pairing-window';
+import { SettingsCard } from './components/settings-card';
+import { type AskedAdvice, FabricMenuAction } from './types';
+import {
+  configuratorSelection, fabricDisplayLabel, said, timeLeft,
+} from './utils';
 import './styles.css';
+
+// What the action of an advice does, by its kind: the bridge names the kind and says the
+// words, this page knows only the doing.
+const ADVISED: Record<string, (_fabric: MatterFabric) => Promise<boolean>> = {
+  [MatterAdviceActionKind.Reconnect]: (fabric) => matterStore.reconnect(fabric.index),
+};
 
 // The menu entry is shipped by wb-mqtt-matter-bridge itself, so its id in the custom
 // menu is the only sign the frontend has that the service is installed. The route exists
 // in any case, and without this check the page would ask a service that is not there.
 const MODULE_ID = 'matter';
+
+// The network problems this page has its own words for. Any other code means a service
+// newer than the page, and then its English sentence is better than nothing.
+const NETWORK_CODES = new Set(['no_ipv6', 'config_unread']);
 
 /**
  * Re-renders once a second while a window is open, so the countdown moves between the
@@ -40,7 +56,7 @@ const useNow = (isTicking: boolean) => {
 };
 
 const MatterPage = observer(() => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   // buildMenu fills menuItems and modules in one go, so an empty menu means /ui/menu has
   // not answered yet: the module is not missing, it is still unknown.
@@ -48,9 +64,23 @@ const MatterPage = observer(() => {
   const isInstalled = uiStore.modules.includes(MODULE_ID);
   const isAdmin = authStore.hasRights(UserRole.Admin);
   const { status, isLoading, isUnreachable } = matterStore;
-  // The app whose "unpair" button was pressed, and so the one the dialog talks about.
+  // The fabric whose "unpair" button was pressed, and so the one the dialog talks about.
   const [unpairFrom, setUnpairFrom] = useState<MatterFabric | null>(null);
-  const now = useNow(Boolean(status?.pairing));
+  // The advice whose button was pressed: what it does is asked about before it is done.
+  const [asked, setAsked] = useState<AskedAdvice | null>(null);
+  // The "change the code" dialog. A dialog and not a plain button because the act has a
+  // cost the operator cannot see from here: an app that remembered the old code will
+  // offer the wrong one afterwards.
+  const [isChangingCode, setChangingCode] = useState(false);
+  // The dialog of the reset: what it costs is said before it is done, not after.
+  const [isAskingReset, setAskingReset] = useState(false);
+  // The fabric being labelled. Kept apart from the store so that a poll arriving
+  // mid-edit cannot overwrite what is being typed.
+  const [labelFor, setLabelFor] = useState<MatterFabric | null>(null);
+  // The code is drawn only while the bridge says the block is open: of a bridge that does
+  // not answer the page knows the last state, and a credential is not shown on that.
+  const pairing = isUnreachable ? null : status?.pairing ?? null;
+  const now = useNow(Boolean(pairing));
 
   useEffect(() => {
     if (!isInstalled || !isAdmin) {
@@ -74,58 +104,42 @@ const MatterPage = observer(() => {
     navigate('/configurator');
   };
 
-  /**
-   * What to call a connected app. The label of a fabric is written by the controller of
-   * the ecosystem, and Yandex leaves it empty, so there has to be something else to
-   * show: the name of a vendor we know, or at least its number.
-   */
-  const appName = (fabric: MatterFabric) => {
-    if (fabric.label) {
-      return fabric.label;
+  const chooseFabricAction = (fabric: MatterFabric, action: FabricMenuAction) => {
+    if (action === FabricMenuAction.Unpair) {
+      setUnpairFrom(fabric);
+      return;
     }
-    const key = vendorKey(fabric.vendor_id);
-    return key
-      ? t(`matter.labels.vendor-${key}`)
-      : t('matter.labels.app-unknown', { vendor: fabric.vendor_id });
-  };
-
-  /** The name of the type, taken from the configurator so the names live in one place. */
-  const deviceType = ({ type }: MatterDevice) => t(`configurator.types.${type}.name`, { defaultValue: type });
-
-  /**
-   * Why a device is not given to Matter, in the language of the page. The service sends
-   * a code for exactly this, and its own English sentence stays in /status and in the
-   * journal for support. An unknown code means a newer service than this page: then the
-   * sentence is better than nothing.
-   */
-  const notExposedReason = (device: MatterDevice) => (device.reason_code
-    ? t(`matter.labels.reason-${device.reason_code}`, { defaultValue: device.reason ?? '' })
-    : device.reason ?? '');
-
-  /** What the state column shows: the value of the control, or why there is none. */
-  const deviceState = (device: MatterDevice) => {
-    if (!device.exposed) {
-      return (
-        <Tag variant="gray" title={notExposedReason(device) || undefined}>
-          {t('matter.labels.not-exposed')}
-        </Tag>
-      );
-    }
-    if (device.state === null) {
-      return <Tag variant="warn" title={t('matter.labels.state-silent-hint')}>{t('matter.labels.state-silent')}</Tag>;
-    }
-    return <Tag variant={device.state === 'on' ? 'success' : 'gray'}>{t(`matter.labels.state-${device.state}`)}</Tag>;
+    setLabelFor(fabric);
   };
 
   const errors = [];
   if (isMenuLoaded && !isInstalled) {
     errors.push({ variant: 'danger', text: t('matter.labels.unavailable') });
   } else if (isUnreachable) {
-    errors.push({ variant: 'danger', text: t('matter.labels.unreachable') });
-  } else if (status?.devices.config_error) {
-    // A config that cannot be read leaves the bridge working on the last good one, so
-    // this is a warning over the data and not an error instead of it.
-    errors.push({ variant: 'warn', text: t('matter.labels.config-error', { error: status.devices.config_error }) });
+    // A bridge that has just gone quiet is starting, and says so calmly; one that stays
+    // quiet is the failure.
+    errors.push(matterStore.isStarting
+      ? { variant: 'info', text: t('matter.labels.starting') }
+      : { variant: 'danger', text: t('matter.labels.unreachable') });
+  } else {
+    // Not one instead of another: each of the three is true by itself, and a person who
+    // fixed the first should not find the second only then.
+    if (status?.network_error) {
+      errors.push({
+        variant: 'danger',
+        text: NETWORK_CODES.has(status.network_error.code)
+          ? t(`matter.labels.network-${status.network_error.code}`)
+          : t('matter.labels.network-error', { reason: status.network_error.reason }),
+      });
+    }
+    if (status?.broker_error) {
+      errors.push({ variant: 'danger', text: t('matter.labels.broker-lost') });
+    }
+    if (status?.devices.config_error) {
+      // A config that cannot be read leaves the bridge working on the last good one, so
+      // this is a warning over the data and not an error instead of it.
+      errors.push({ variant: 'warn', text: t('matter.labels.config-error', { error: status.devices.config_error }) });
+    }
   }
 
   return (
@@ -139,158 +153,110 @@ const MatterPage = observer(() => {
         <>
           <p className="matter-subtitle">{t('matter.labels.subtitle')}</p>
 
-          {/* The bridge comes up with the window closed, so this card has two faces: a
-              button that opens one, and the code while it is open. Pairing starts when
-              a person asks for it and never on its own - see R15 in
-              docs/design-config-and-pairing.md of wb-mqtt-matter-bridge. */}
-          {!status.pairing && (
-            <Card className="matter-card" heading={t('matter.labels.pairing')}>
-              <p className="matter-windowText">
-                {t(status.paired ? 'matter.labels.window-closed-paired' : 'matter.labels.window-closed')}
-              </p>
-              <p className="matter-windowText">{t('matter.labels.window-closed-why')}</p>
-              <div className="matter-windowActions">
-                <Button
-                  variant="primary"
-                  label={t('matter.buttons.open-window')}
-                  isLoading={matterStore.isChangingWindow}
-                  disabled={matterStore.isChangingWindow}
-                  onClick={() => matterStore.openWindow()}
-                />
-                {matterStore.hasWindowFailed && (
-                  <span className="matter-dialogError">{t('matter.labels.window-failed')}</span>
-                )}
-              </div>
-            </Card>
-          )}
+          <FabricsCard
+            fabrics={status.fabrics}
+            fabricsSince={status.fabrics_since}
+            now={Date.now() + matterStore.clockOffset}
+            checkingIndex={matterStore.checkingIndex}
+            failedCheckIndex={matterStore.failedCheckIndex}
+            onAction={chooseFabricAction}
+            onAdvice={(fabric, advice) => setAsked({ fabric, advice })}
+            onCheck={(fabric) => matterStore.checkLink(fabric.index)}
+          >
+            <PairingWindow
+              pairing={pairing}
+              isEmpty={status.fabrics.length === 0}
+              devicesCount={status.devices.exposed}
+              left={pairing ? timeLeft(pairing.closes_at, now + matterStore.clockOffset) : ''}
+              isChanging={matterStore.isChangingWindow}
+              isOpening={matterStore.isOpeningWindow}
+              hasFailed={matterStore.hasWindowFailed && !isUnreachable}
+              hasExpired={matterStore.hasWindowExpired}
+              isOffline={Boolean(status.network_error) || isUnreachable}
+              onOpen={() => matterStore.openWindow()}
+              onClose={() => matterStore.closeWindow()}
+            />
+          </FabricsCard>
 
-          {status.pairing && (
-            <Card className="matter-card" heading={t('matter.labels.pairing')}>
-              <div className="matter-pairing">
-                <div className="matter-qr">
-                  <img
-                    className="matter-qrImage"
-                    src={pairingQrUrl(status.pairing.qr_version)}
-                    alt={t('matter.labels.qr-alt')}
-                  />
-                </div>
+          <DevicesCard devices={status.devices} fabrics={status.fabrics} onOpen={openInConfigurator} />
 
-                <div className="matter-pairingBody">
-                  <ol className="matter-steps">
-                    <li>{t('matter.labels.step-app')}</li>
-                    <li>{t('matter.labels.step-add')}</li>
-                    <li>{t('matter.labels.step-scan')}</li>
-                  </ol>
+          <SettingsCard
+            settings={status.settings}
+            fixed={status.settings_fixed}
+            isSaving={matterStore.isSavingSettings}
+            hasFailed={matterStore.hasSettingsFailed}
+            canChangeCode={!status.pairing}
+            isCodeBusy={matterStore.isChangingWindow}
+            onChange={matterStore.setSettings}
+            onNewCode={() => setChangingCode(true)}
+          />
 
-                  <div className="matter-fields">
-                    <CopyField
-                      label={t('matter.labels.manual-code')}
-                      text={groupManualCode(status.pairing.manual_code)}
-                      value={status.pairing.manual_code}
-                    />
-                    <CopyField
-                      label={t('matter.labels.payload')}
-                      text={status.pairing.payload}
-                      value={status.pairing.payload}
-                    />
-                  </div>
+          <AboutCard
+            about={status.bridge}
+            version={status.version}
+            isBusy={matterStore.isResetting || matterStore.isChangingWindow || isUnreachable}
+            onReset={() => setAskingReset(true)}
+          />
 
-                  <div className="matter-windowActions">
-                    <span className="matter-countdown">
-                      {t('matter.labels.window-left', {
-                        left: timeLeft(status.pairing.closes_at, now),
-                      })}
-                    </span>
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      label={t('matter.buttons.close-window')}
-                      isLoading={matterStore.isChangingWindow}
-                      disabled={matterStore.isChangingWindow}
-                      onClick={() => matterStore.closeWindow()}
-                    />
-                  </div>
-                  <p className="matter-hint">{t('matter.labels.window-new-code')}</p>
-                  {matterStore.hasWindowFailed && (
-                    <p className="matter-dialogError">{t('matter.labels.window-failed')}</p>
-                  )}
-                </div>
-              </div>
-            </Card>
-          )}
-
-          <Card className="matter-card" heading={t('matter.labels.ecosystems')}>
-            {status.fabrics.length === 0
-              ? <p className="matter-empty">{t('matter.labels.ecosystems-empty')}</p>
-              : (
-                <ul className="matter-fabrics">
-                  {status.fabrics.map((fabric) => (
-                    <li key={fabric.index}>
-                      {/* The row is a box of its own so that the item keeps its bullet:
-                          a flex list item loses the marker. */}
-                      <div className="matter-fabric">
-                        <span>{appName(fabric)}</span>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          label={t('matter.buttons.unpair')}
-                          onClick={() => setUnpairFrom(fabric)}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            <p className="matter-hint">{t('matter.labels.ecosystems-hint')}</p>
-          </Card>
-
-          <Card className="matter-card" heading={t('matter.labels.devices')}>
-            {status.devices.list.length === 0
-              ? <p className="matter-empty">{t('matter.labels.devices-empty')}</p>
-              : (
-                <Table isFullWidth>
-                  <TableRow isHeading>
-                    <TableCell>{t('matter.labels.column-name')}</TableCell>
-                    <TableCell>{t('matter.labels.column-type')}</TableCell>
-                    <TableCell>{t('matter.labels.column-room')}</TableCell>
-                    <TableCell>{t('matter.labels.column-state')}</TableCell>
-                  </TableRow>
-
-                  {status.devices.list.map((device) => (
-                    <TableRow
-                      key={device.did}
-                      className="matter-deviceRow"
-                      aria-label={t('matter.labels.open-device', { name: device.name })}
-                      // Not the url of the row: the selection has to be set before the
-                      // configurator mounts, and a Link navigates from the cell, which
-                      // is the click target and runs before this handler.
-                      onClick={() => openInConfigurator(device)}
-                    >
-                      <TableCell>{device.name}</TableCell>
-                      <TableCell>{deviceType(device)}</TableCell>
-                      <TableCell>{device.area ?? ''}</TableCell>
-                      <TableCell>{deviceState(device)}</TableCell>
-                    </TableRow>
-                  ))}
-                </Table>
-              )}
-            <p className="matter-hint">
-              {t('matter.labels.devices-count', {
-                count: status.devices.configured, exposed: status.devices.exposed,
-              })}
-              {status.devices.skipped > 0
-                && ` ${t('matter.labels.devices-skipped', { count: status.devices.skipped })}`}
-              {' '}
-              {t('matter.labels.devices-hint')}
-              {' '}
-              <Link to="/configurator">{t('matter.labels.devices-link')}</Link>
-              .
+          <Confirm
+            isOpened={isAskingReset}
+            heading={t('matter.labels.reset-heading')}
+            variant="danger"
+            acceptLabel={t('matter.buttons.reset-confirm')}
+            cancelLabel={t('matter.buttons.reset-cancel')}
+            isLoading={matterStore.isResetting}
+            closeCallback={() => {
+              setAskingReset(false);
+              matterStore.forgetDialogFailures();
+            }}
+            confirmCallback={async () => {
+              if (await matterStore.resetBridge()) {
+                setAskingReset(false);
+              }
+            }}
+          >
+            <p className="matter-dialogText">
+              {status.fabrics.length > 0
+                ? t('matter.labels.reset-fabrics', { count: status.fabrics.length })
+                : t('matter.labels.reset-no-fabrics')}
             </p>
-          </Card>
+            {/* With no fabric there is no app to lose the bridge. */}
+            {status.fabrics.length > 0 && <p className="matter-dialogText">{t('matter.labels.reset-apps')}</p>}
+            <p className="matter-dialogText">{t('matter.labels.reset-ids')}</p>
+            <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.reset-keeps')}</p>
+            {matterStore.hasResetFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.reset-failed')}</p>
+            )}
+          </Confirm>
 
-          {/* Unpairing in the app comes first because unpairing from here leaves the
-              bridge and its devices in that app until somebody deletes them by hand.
-              See docs/ecosystems.md of wb-mqtt-matter-bridge, Я10 and Я11. */}
+          <Confirm
+            isOpened={isChangingCode}
+            heading={t('matter.labels.new-code-heading')}
+            variant="danger"
+            acceptLabel={t('matter.buttons.new-code-confirm')}
+            cancelLabel={t('matter.buttons.new-code-cancel')}
+            isLoading={matterStore.isChangingWindow}
+            closeCallback={() => {
+              setChangingCode(false);
+              matterStore.forgetDialogFailures();
+            }}
+            confirmCallback={async () => {
+              if (await matterStore.changeCode()) {
+                setChangingCode(false);
+              }
+            }}
+          >
+            <p className="matter-dialogText">{t('matter.labels.new-code-why')}</p>
+            <p className="matter-dialogText matter-dialogWarn">{t('matter.labels.new-code-cost')}</p>
+            {matterStore.hasCodeFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.new-code-failed')}</p>
+            )}
+          </Confirm>
+
+          {/* Unpairing in the app comes first: the app then clears its own half. Unpaired
+              from here, the bridge tells the app that it leaves, and not every app acts on
+              that - an Aqara hub removes the bridge, a Yandex station keeps it as offline.
+              See docs/ecosystems.md of wb-mqtt-matter-bridge, Я41, and docs/aqara.md, АК12. */}
           <Confirm
             isOpened={unpairFrom !== null}
             heading={t('matter.labels.unpair-heading')}
@@ -298,7 +264,10 @@ const MatterPage = observer(() => {
             acceptLabel={t('matter.buttons.unpair-here')}
             cancelLabel={t('matter.buttons.unpair-close')}
             isLoading={matterStore.unpairingIndex !== null}
-            closeCallback={() => setUnpairFrom(null)}
+            closeCallback={() => {
+              setUnpairFrom(null);
+              matterStore.forgetDialogFailures();
+            }}
             confirmCallback={async () => {
               if (unpairFrom && await matterStore.unpair(unpairFrom.index)) {
                 setUnpairFrom(null);
@@ -306,7 +275,7 @@ const MatterPage = observer(() => {
             }}
           >
             <p className="matter-dialogText">
-              {t('matter.labels.unpair-where', { app: unpairFrom ? appName(unpairFrom) : '' })}
+              {t('matter.labels.unpair-where', { label: unpairFrom ? fabricDisplayLabel(unpairFrom, t) : '' })}
             </p>
             <p className="matter-dialogText">{t('matter.labels.unpair-why')}</p>
             <p className="matter-dialogText">{t('matter.labels.unpair-code')}</p>
@@ -315,6 +284,43 @@ const MatterPage = observer(() => {
               <p className="matter-dialogText matter-dialogError">{t('matter.labels.unpair-failed')}</p>
             )}
           </Confirm>
+
+          {/* The action of an advice. The question is in the words of the bridge; once the
+              fabric is gone the dialog has nothing left to talk about and closes, and a
+              way in that did not open is said where the way in is. */}
+          <Confirm
+            isOpened={asked !== null}
+            heading={asked ? said(asked.advice.action.label, i18n.language) : ''}
+            acceptLabel={asked ? said(asked.advice.action.label, i18n.language) : ''}
+            cancelLabel={t('matter.buttons.advice-cancel')}
+            isLoading={matterStore.unpairingIndex !== null || matterStore.isOpeningWindow}
+            closeCallback={() => {
+              setAsked(null);
+              matterStore.forgetDialogFailures();
+            }}
+            confirmCallback={async () => {
+              const isDone = asked && await ADVISED[asked.advice.action.kind]?.(asked.fabric);
+              if (isDone || !matterStore.hasUnpairFailed) {
+                setAsked(null);
+              }
+            }}
+          >
+            <p className="matter-dialogText">
+              {t('matter.labels.advice-fabric', { label: asked ? fabricDisplayLabel(asked.fabric, t) : '' })}
+            </p>
+            <p className="matter-dialogText">{asked ? said(asked.advice.action.confirm, i18n.language) : ''}</p>
+            {matterStore.hasUnpairFailed && (
+              <p className="matter-dialogText matter-dialogError">{t('matter.labels.unpair-failed')}</p>
+            )}
+          </Confirm>
+
+          <FabricLabelDialog
+            fabric={labelFor}
+            onClose={() => {
+              setLabelFor(null);
+              matterStore.forgetDialogFailures();
+            }}
+          />
         </>
       )}
     </PageLayout>

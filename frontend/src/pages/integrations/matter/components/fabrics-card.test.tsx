@@ -1,0 +1,209 @@
+// @vitest-environment happy-dom
+import type { MatterFabric } from '@/stores/matter';
+import { fireEvent, render, screen } from '@/test/render';
+import { FabricMenuAction } from '../types';
+import { FabricsCard } from './fabrics-card';
+
+const fabric = (over: Partial<MatterFabric> = {}): MatterFabric => ({
+  index: 14,
+  adminFabricLabel: 'Home Assistant',
+  vendor_id: 0x132F,
+  label: { source: 'admin', text: 'Home Assistant' },
+  ...over,
+});
+
+/** The menu button of a row, which carries the only label it has. */
+const menuButton = (index = 0) => screen.getAllByLabelText('matter.buttons.fabric-actions')[index];
+
+describe('FabricsCard', () => {
+  // The shared Popup renders its content into <div class="floating">, which the app
+  // shell provides (layouts/app/app.tsx). Without it floating-ui has no root and draws
+  // nothing - the menu opens, aria-expanded flips, and the content is simply not in the
+  // document. Nothing else in the suite opens a Popup, so there was no precedent to copy.
+  let floatingRoot: HTMLDivElement;
+
+  beforeEach(() => {
+    floatingRoot = document.createElement('div');
+    floatingRoot.className = 'floating';
+    document.body.append(floatingRoot);
+  });
+
+  afterEach(() => {
+    floatingRoot.remove();
+  });
+
+  it('says so instead of showing an empty table when nothing is paired', () => {
+    render(<FabricsCard fabrics={[]} onAction={vi.fn()} />);
+
+    expect(screen.getByText('matter.labels.fabrics-empty')).toBeInTheDocument();
+    expect(screen.queryByText('matter.labels.column-fabric')).not.toBeInTheDocument();
+  });
+
+  it('shows the pairing date as an absolute date, so rows can be compared', () => {
+    // The column beside it is relative and this one is not, on purpose: this is the
+    // reference fact, and "3 days ago" cannot be lined up between rows.
+    render(
+      <FabricsCard
+        fabrics={[fabric({ paired_at: Date.UTC(2026, 10, 14, 9, 5), paired_kind: 'dated' })]}
+        onAction={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/14\/11\/2026/)).toBeInTheDocument();
+  });
+
+  it('says "before" for a fabric that was paired before the bridge kept dates', () => {
+    render(
+      <FabricsCard
+        fabrics={[fabric({ paired_kind: 'before' })]}
+        fabricsSince={Date.UTC(2026, 10, 1)}
+        onAction={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('matter.labels.paired-before')).toBeInTheDocument();
+  });
+
+  it('admits it does not know when there is no date and nothing to measure from', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+
+    expect(screen.getByText('matter.labels.paired-unknown')).toBeInTheDocument();
+  });
+
+  it('has a column for the fabric, for when it was paired and for its status, and one for the buttons', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+
+    expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual([
+      'matter.labels.column-fabric', 'matter.labels.column-paired', 'matter.labels.column-status',
+      'matter.labels.column-actions',
+    ]);
+  });
+
+  it('says the status of a fabric in the three lines the bridge gave it, and whose it is under its name', () => {
+    // What each line says and how it is drawn: fabric-parts.test.tsx.
+    const overview = {
+      link: { status: 'ok', word: 'online' },
+      devices: {
+        status: 'error', kind: 'some', followed: 7, of: 9,
+      },
+      commands: { status: 'off', last_at: null },
+    } as const;
+    render(<FabricsCard fabrics={[fabric({ overview, vendor_name: 'Yandex' })]} onAction={vi.fn()} />);
+
+    expect(screen.getByText('Yandex')).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.status-online')).toBeInTheDocument();
+    expect(screen.getByText(/matter\.labels\.follows-some/)).toBeInTheDocument();
+    expect(screen.getByText('matter.labels.commands-never')).toBeInTheDocument();
+  });
+
+  it('names a fabric with no label by its number, with its vendor under it like under any other', () => {
+    render(<FabricsCard fabrics={[fabric({ label: { source: 'none', text: null } })]} onAction={vi.fn()} />);
+
+    expect(screen.getByText('matter.labels.fabric-unlabelled')).toBeInTheDocument();
+    expect(screen.getByText('0x132F')).toBeInTheDocument();
+  });
+
+  it('says what a label typed on this controller replaced in the details, not in the row', () => {
+    // A label typed here exists nowhere else, so an operator comparing this page with the
+    // app's own screen has to be able to see which of the two names is ours - and what
+    // clearing it would bring back.
+    const label = {
+      source: 'local', text: 'Hall phone', replaced: { source: 'admin', text: 'Home Assistant' },
+    } as const;
+    render(<FabricsCard fabrics={[fabric({ label })]} onAction={vi.fn()} />);
+
+    expect(screen.getByText('Hall phone')).toBeInTheDocument();
+    expect(screen.queryByText('Home Assistant')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'matter.buttons.fabric-details' }));
+    expect(screen.getByText('matter.labels.fact-app-label').closest('.matter-fact').querySelector('dd').textContent)
+      .toBe('Home Assistant');
+  });
+
+  it('keeps unpairing behind the menu, so a stray click cannot reach it', () => {
+    // Unpairing from here cannot be undone in the app, which keeps the bridge in its own
+    // list until somebody deletes it there. A button one row off is a click somebody
+    // will make.
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+
+    expect(screen.queryByText('matter.buttons.unpair')).not.toBeInTheDocument();
+  });
+
+  it('has two actions in the menu and nothing above them: the row says whose menu it is', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+
+    fireEvent.click(menuButton());
+
+    const menu = screen.getByText('matter.buttons.set-label').closest('.matter-fabricMenuContent');
+    expect([...menu.children].map((item) => item.textContent)).toEqual([
+      'matter.buttons.set-label', 'matter.buttons.unpair',
+    ]);
+  });
+
+  it('reports which fabric and which action were chosen', () => {
+    const onAction = vi.fn();
+    const paired = fabric({ index: 9 });
+    render(<FabricsCard fabrics={[paired]} onAction={onAction} />);
+    fireEvent.click(menuButton());
+
+    fireEvent.click(screen.getByText('matter.buttons.unpair'));
+
+    expect(onAction).toHaveBeenCalledWith(paired, FabricMenuAction.Unpair);
+  });
+
+  it('closes the menu once something is chosen', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+    fireEvent.click(menuButton());
+
+    fireEvent.click(screen.getByText('matter.buttons.set-label'));
+
+    expect(screen.queryByText('matter.buttons.set-label')).not.toBeInTheDocument();
+  });
+
+  it('renders the menu outside the table, not inside the cell', () => {
+    // The table sets `.wb-tableCell * { z-index: 1 }`, which flattens every descendant of
+    // a cell to one layer; paint order then falls back to the DOM, and a menu built
+    // inside the cell was drawn under the rows below it. The shared Popup renders through
+    // a portal, so the menu is not in the table at all and the rule cannot reach it.
+    const { container } = render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+
+    fireEvent.click(menuButton());
+
+    expect(screen.getByText('matter.buttons.set-label')).toBeInTheDocument();
+    expect(container.querySelector('.matter-fabricMenuContent')).toBeNull();
+  });
+
+  it('closes the menu on Escape, like every other popup on the page', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+    fireEvent.click(menuButton());
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByText('matter.buttons.set-label')).not.toBeInTheDocument();
+  });
+
+  it('closes the menu when something else on the page is clicked', () => {
+    render(<FabricsCard fabrics={[fabric()]} onAction={vi.fn()} />);
+    fireEvent.click(menuButton());
+
+    // A column heading, and a pointer press: useDismiss watches pointerdown and decides
+    // by the event target, so pressing the bare document proves less than pressing
+    // something real.
+    fireEvent.pointerDown(screen.getByText('matter.labels.column-paired'));
+
+    expect(screen.queryByText('matter.buttons.set-label')).not.toBeInTheDocument();
+  });
+
+  it('never leaves two menus open at once', () => {
+    // Pressing the second button is an outside press for the first menu, so it closes
+    // before the second opens.
+    const two = [fabric({ index: 8 }), fabric({ index: 9 })];
+    render(<FabricsCard fabrics={two} onAction={vi.fn()} />);
+
+    fireEvent.click(menuButton(0));
+    fireEvent.pointerDown(menuButton(1));
+    fireEvent.click(menuButton(1));
+
+    expect(screen.getAllByText('matter.buttons.set-label')).toHaveLength(1);
+  });
+});

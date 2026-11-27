@@ -1,10 +1,15 @@
 // @vitest-environment happy-dom
-import { closeMatterWindow, getMatterStatus, openMatterWindow } from './api';
-import MatterStore, { POLL_INTERVAL_MS } from './matter-store';
+import {
+  changeMatterCode, closeMatterWindow, getMatterStatus, openMatterWindow,
+} from './api';
+import MatterStore, { POLL_INTERVAL_MS, STARTING_MS } from './matter-store';
 import type { MatterStatus } from './types';
 
 vi.mock('./api', () => ({
-  getMatterStatus: vi.fn(), openMatterWindow: vi.fn(), closeMatterWindow: vi.fn(),
+  getMatterStatus: vi.fn(),
+  openMatterWindow: vi.fn(),
+  closeMatterWindow: vi.fn(),
+  changeMatterCode: vi.fn(),
 }));
 
 const STATUS: MatterStatus = {
@@ -12,7 +17,8 @@ const STATUS: MatterStatus = {
   paired: false,
   fabrics: [],
   pairing: {
-    closes_at: 1762500000000,
+    // Still open: a code whose time is over is not kept through a failed request.
+    closes_at: Date.now() + 15 * 60 * 1000,
     manual_code: '23331712339',
     payload: 'MT:Y.K9042C00KA0648G00',
     qr_version: 'abcdef12',
@@ -75,6 +81,26 @@ describe('MatterStore', () => {
 
     expect(store.isLoading).toBe(false);
     expect(store.status).toBeNull();
+  });
+
+  it('takes a service that has just gone quiet for one that is starting, and not for long', async () => {
+    vi.useFakeTimers();
+    vi.mocked(getMatterStatus).mockRejectedValue(new Error('502'));
+    await store.fetch();
+    expect([store.isUnreachable, store.isStarting]).toEqual([true, true]);
+
+    // Still quiet when it should have come back: that is a failure, and is said as one.
+    vi.advanceTimersByTime(STARTING_MS);
+    await store.fetch();
+    expect([store.isUnreachable, store.isStarting]).toEqual([true, false]);
+
+    // And the count starts again after an answer.
+    vi.mocked(getMatterStatus).mockResolvedValue(STATUS);
+    await store.fetch();
+    vi.mocked(getMatterStatus).mockRejectedValue(new Error('502'));
+    await store.fetch();
+    expect(store.isStarting).toBe(true);
+    vi.useRealTimers();
   });
 
   it('forgets the failure once the service answers again', async () => {
@@ -187,5 +213,55 @@ describe('MatterStore', () => {
     expect(ok).toBe(true);
     expect(closeMatterWindow).toHaveBeenCalledTimes(1);
     expect(getMatterStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('changes the code only when asked, and never as part of opening a window', async () => {
+    // The code of the controller is stable: an app that remembered it keeps working.
+    // Opening a window must not touch it, or a third-party "Share" screen would start
+    // showing a QR that cannot pair.
+    await store.openWindow();
+
+    expect(changeMatterCode).not.toHaveBeenCalled();
+  });
+
+  it('changes the code through the service and rereads the state', async () => {
+    const ok = await store.changeCode();
+
+    expect(ok).toBe(true);
+    expect(changeMatterCode).toHaveBeenCalledTimes(1);
+    expect(getMatterStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the refusal the bridge gives while a window is open', async () => {
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
+
+    expect(await store.changeCode()).toBe(false);
+    expect(store.hasCodeFailed).toBe(true);
+  });
+
+  it('keeps a code that was not changed apart from a window that was not opened', async () => {
+    // Two places say them: the dialog of the code and the line under the button that adds
+    // a fabric. One flag for both put each failure into the other's place.
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
+    await store.changeCode();
+    expect([store.hasCodeFailed, store.hasWindowFailed]).toEqual([true, false]);
+
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: true, closes_at: null });
+    vi.mocked(openMatterWindow).mockRejectedValue(new Error('409'));
+    await store.changeCode();
+    await store.openWindow();
+    expect([store.hasCodeFailed, store.hasWindowFailed]).toEqual([false, true]);
+  });
+
+  it('forgets what a dialog said of its last attempt once the dialog is closed', async () => {
+    vi.mocked(changeMatterCode).mockResolvedValue({ ok: false, closes_at: null });
+    vi.mocked(openMatterWindow).mockRejectedValue(new Error('409'));
+    await store.changeCode();
+    await store.openWindow();
+
+    store.forgetDialogFailures();
+
+    // The line under the button is not a dialog: it stays until the next attempt.
+    expect([store.hasCodeFailed, store.hasWindowFailed]).toEqual([false, true]);
   });
 });

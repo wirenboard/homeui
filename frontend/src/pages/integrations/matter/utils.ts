@@ -1,5 +1,32 @@
+import { type TFunction } from 'i18next';
 import type { Selection } from '@/stores/configurator';
-import type { MatterDevice } from '@/stores/matter';
+import type {
+  MatterAnswer, MatterCard, MatterDevice, MatterDeviceRole, MatterFabric, MatterLabel, MatterOutcome, MatterWords,
+} from '@/stores/matter';
+
+/** Words the bridge said itself, in the language of the page. */
+export const said = (words: MatterWords, language: string) => (language === 'ru' ? words.ru : words.en);
+
+/**
+ * How the answer of an app about a device is drawn: one that did not take it is a
+ * problem, one that cannot be asked now has nothing to say.
+ */
+export const STATUS_OF_ANSWER: Record<MatterAnswer, MatterOutcome> = { yes: 'ok', no: 'error', unknown: 'off' };
+
+/**
+ * The card of the configurator a device is a part of, as the bridge says it. A bridge
+ * older than this page says nothing, and then every device is a card of its own.
+ */
+export const cardOf = (device: MatterDevice): MatterCard | null => {
+  if (device.card !== undefined) {
+    return device.card;
+  }
+  return device.module
+    ? {
+      name: device.module, group: device.group, parts: 1, first: true, last: true,
+    }
+    : null;
+};
 
 /**
  * The manual pairing code, grouped the way the smart home apps print it. The service
@@ -29,17 +56,121 @@ export const configuratorSelection = ({ module }: MatterDevice): Selection => (
   module ? { id: `module:${module}` } : null
 );
 
-/**
- * Only the vendor ids seen on a live fabric: there is no list to import, and an app
- * whose vendor is missing falls back to its number. Needed because Yandex leaves the
- * label of a fabric empty - see docs/ecosystems.md of wb-mqtt-matter-bridge, Я3.
- */
-const KNOWN_VENDORS = new Map<number, string>([
-  // 0x132F.
-  [4911, 'yandex'],
-]);
+const NO_LABEL: MatterLabel = { source: 'none', text: null };
 
-export const vendorKey = (vendorId: number) => KNOWN_VENDORS.get(vendorId) ?? null;
+/**
+ * A label of a fabric in words. Which source won is the bridge's answer; the page has a
+ * word of its own for a vendor it translates, and says the number of a fabric that offers
+ * nothing - that number has to stay visible, or two unlabelled fabrics are two identical
+ * rows.
+ */
+export const labelText = ({ source, text }: MatterLabel, fabric: MatterFabric, t: TFunction) => {
+  switch (source) {
+    case 'vendor':
+      return t(`matter.labels.vendor-${fabric.vendor_id}`, { defaultValue: text });
+    case 'none':
+      return t('matter.labels.fabric-unlabelled', { index: fabric.index });
+    default:
+      return text;
+  }
+};
+
+/** What a fabric is called everywhere on the page: the table, the menu, the unpair dialog. */
+export const fabricDisplayLabel = (fabric: MatterFabric, t: TFunction) => (
+  labelText(fabric.label ?? NO_LABEL, fabric, t)
+);
+
+/**
+ * Whose a fabric is, for the line under its name: the official name of its vendor, and
+ * its number only where the bridge has no name for it. Always the vendor, also under a
+ * fabric that is named by its vendor: the name above may be a word of this page
+ * ("Яндекс"), the line under it is what the vendor is called in the list of the standard.
+ */
+export const fabricVendor = (fabric: MatterFabric) => fabric.vendor_name ?? vendorHex(fabric.vendor_id);
+
+/**
+ * The label the app gave a fabric, where one typed on this controller stands instead of
+ * it; null where none was typed here.
+ */
+export const replacedLabelText = (fabric: MatterFabric, t: TFunction) => {
+  const { source, replaced } = fabric.label ?? NO_LABEL;
+  if (source !== 'local') {
+    return null;
+  }
+  return replaced && replaced.source !== 'none' ? labelText(replaced, fabric, t) : t('matter.labels.none');
+};
+
+/** What an app is called, by the index of its fabric; a bare number for one the page was not told of. */
+export const appLabel = (fabrics: MatterFabric[], index: number, t: TFunction) => {
+  const fabric = fabrics.find((one) => one.index === index);
+  return fabric ? fabricDisplayLabel(fabric, t) : `#${index}`;
+};
+
+/**
+ * A reason of the bridge in the words of the page. A code this page has no words for is
+ * a newer bridge: then what the bridge itself said is better than nothing.
+ */
+export const reasonText = (code: string, t: TFunction, fallback = code) => (
+  t(`matter.labels.reason-${code}`, { defaultValue: fallback })
+);
+
+/** Why a device is not given to Matter; nothing while the bridge has not said. */
+export const deviceReason = ({ reason_code: code, reason }: MatterDevice, t: TFunction) => (
+  code ? reasonText(code, t, reason ?? code) : reason ?? ''
+);
+
+// What is a line of its own in the details: a heading, a fact, a remark.
+const DETAILS_LINES = 'h4, h5, .matter-fact, .matter-detailsNote, .matter-detailsAdvice';
+
+/**
+ * The text of an element with its pieces apart, as they are apart on the screen. A remark
+ * inside stands under its value there: in a line of text it goes into brackets.
+ */
+const wordsOf = (node: Node, isInside = false): string => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent.trim();
+  }
+  const words = [...node.childNodes].map((child) => wordsOf(child, true)).filter(Boolean).join(' ');
+  return isInside && words && (node as Element).matches('.matter-detailsNote') ? `(${words})` : words;
+};
+
+/**
+ * The details of a row as text, to paste into a message: the name of the row, then a
+ * heading on a line of its own and a fact as "name: value". Read from what is drawn, so
+ * the copy says what the page says and nothing else. What is marked data-nocopy is a
+ * control of the page, and is left out.
+ */
+export const detailsText = (title: string, details: HTMLElement) => {
+  const lines = [...details.querySelectorAll<HTMLElement>(DETAILS_LINES)]
+    .filter((line) => !line.parentElement.closest(DETAILS_LINES) && !line.closest('[data-nocopy]'))
+    .map((line) => {
+      if (line.matches('.matter-fact')) {
+        return `${wordsOf(line.querySelector('dt'))}: ${wordsOf(line.querySelector('dd'))}`;
+      }
+      // A section starts after an empty line.
+      return line.matches('h4') ? `\n${wordsOf(line)}` : wordsOf(line);
+    });
+  return [title, ...lines].join('\n');
+};
+
+/**
+ * The vendor id the way every Matter document and every log line writes it. Decimal
+ * 4911 and 0x132F are the same number, but only the second one can be searched for.
+ */
+export const vendorHex = (vendorId: number) => `0x${vendorId.toString(16).toUpperCase().padStart(4, '0')}`;
+
+/** What the role means for this controller, said after its name. A pairing with no date kept has its own wording. */
+export const roleSaysKey = (role: MatterDeviceRole, isDated: boolean) => {
+  const key = {
+    works: 'role-says-works',
+    works_paired: 'role-says-works-paired',
+    paired: 'role-says-paired',
+    paired_alone: 'role-says-paired',
+    silent: 'role-says-silent',
+    idle: 'role-says-idle',
+  }[role];
+  return (role === 'works' || role === 'silent' || role === 'idle' || isDated) ? key : `${key}-undated`;
+};
 
 /**
  * What is left of an open window, as m:ss. A window that is already over reads 0:00
