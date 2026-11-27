@@ -6,7 +6,7 @@ import { SvgDashboardPage } from './svg-dashboard-page';
 
 const navigateMock = vi.fn();
 
-const { storeMock, fullscreen, confirmState } = vi.hoisted(() => {
+const { storeMock, fullscreen, confirmState, dashboardsStoreMock } = vi.hoisted(() => {
   const store = {
     loading: false,
     dashboards: [] as any[],
@@ -30,9 +30,11 @@ const { storeMock, fullscreen, confirmState } = vi.hoisted(() => {
     storeMock: store,
     fullscreen: { value: false, toggle: vi.fn() },
     confirmState: { isOpened: false },
+    dashboardsStoreMock: { isLoading: false },
   };
 });
 
+vi.mock('@/stores/dashboards', () => ({ dashboardsStore: dashboardsStoreMock }));
 vi.mock('@/components/tooltip', () => import('@/test/mocks/tooltip'));
 vi.mock('@/components/confirm', () => ({
   Confirm: ({ isOpened, heading, children }: any) =>
@@ -78,6 +80,7 @@ function renderPage(path = '/dashboards/svg/view/svg1') {
 }
 
 function resetStore() {
+  dashboardsStoreMock.isLoading = false;
   storeMock.loading = false;
   storeMock.dashboardId = 'svg1';
   storeMock.dashboardIndex = 0;
@@ -169,6 +172,22 @@ describe('SvgDashboardPage', () => {
       renderPage();
       expect(screen.queryByTestId('loading')).toBeNull();
       expect(screen.getByTestId('svg-svg1')).toBeDefined();
+    });
+
+    test('shows a 404 error for an unknown dashboard once the dashboards list has loaded', () => {
+      renderPage('/dashboards/svg/view/unknown');
+      expect(screen.getByTestId('page-error')).toBeDefined();
+    });
+
+    test('does not show a 404 error while the dashboards list is still loading', () => {
+      dashboardsStoreMock.isLoading = true;
+      renderPage('/dashboards/svg/view/unknown');
+      expect(screen.queryByTestId('page-error')).toBeNull();
+    });
+
+    test('does not show a 404 error for a known dashboard', () => {
+      renderPage();
+      expect(screen.queryByTestId('page-error')).toBeNull();
     });
   });
 

@@ -186,6 +186,17 @@ describe('ConfigPage', () => {
     });
   });
 
+  test('shows a 404 error when the config file does not exist', async () => {
+    configsStoreMock.getConfig.mockRejectedValue({
+      message: 'File not found',
+      data: 'EditorError',
+    });
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByTestId('page-error')).toBeDefined();
+    });
+  });
+
   test('save calls saveConfig and clears dirty', async () => {
     preventLeaveMock.isDirty = true;
     renderPage();

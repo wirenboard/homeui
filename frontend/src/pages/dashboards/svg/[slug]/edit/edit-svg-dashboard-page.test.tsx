@@ -41,6 +41,7 @@ const { mockStore, dashMock } = vi.hoisted(() => ({
   mockStore: {
     isNew: true,
     isLoading: false,
+    notFound: false,
     isValid: true,
     commonParameters: { id: '', name: 'Test SVG', svg_fullwidth: false },
     swipeParameters: { enable: false, left: null, right: null },
@@ -88,6 +89,7 @@ describe('EditSvgDashboardPage', () => {
     vi.clearAllMocks();
     mockStore.isNew = true;
     mockStore.isValid = true;
+    mockStore.notFound = false;
     mockStore.svgLoadError = false;
     mockStore.idConflictError = false;
     mockStore.bindingsStore.jsonEditMode = false;
@@ -157,6 +159,18 @@ describe('EditSvgDashboardPage', () => {
     mockStore.idConflictError = true;
     renderPage();
     expect(screen.getByText('dashboards.errors.duplicate')).toBeDefined();
+  });
+
+  test('shows a 404 error when the store marks the dashboard as not found', () => {
+    mockStore.isNew = false;
+    mockStore.notFound = true;
+    renderPage('/dashboards/svg/edit/unknown');
+    expect(screen.getByTestId('page-error')).toBeDefined();
+  });
+
+  test('does not show a 404 error for a new dashboard', () => {
+    renderPage();
+    expect(screen.queryByTestId('page-error')).toBeNull();
   });
 
   test('save button disabled when form is invalid', () => {

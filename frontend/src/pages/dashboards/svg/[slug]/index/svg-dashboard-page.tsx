@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import useResizeObserver from 'use-resize-observer';
@@ -13,6 +13,7 @@ import { Confirm, useConfirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { dashboardsStore } from '@/stores/dashboards';
 import { fontsStore } from '@/stores/fonts';
 import { useToggleFullscreen } from '@/utils/full-screen';
 import { useStore } from '@/utils/use-store';
@@ -32,6 +33,10 @@ export const SvgDashboardPage = observer(() => {
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [ confirm, isConfirmOpened, handleConfirm, handleClose ] = useConfirm<any>();
   const { hasRights } = authStore;
+
+  const errors = useMemo(() => (
+    !dashboardsStore.isLoading && !store.getDashboard(params.id) ? [{ code: 404 }] : []
+  ), [dashboardsStore.isLoading, store.getDashboard(params.id)]);
 
   useEffect(() => {
     if (store.dashboardConfigs.length) {
@@ -105,6 +110,7 @@ export const SvgDashboardPage = observer(() => {
         title={store.getDashboard(params.id)?.name}
         infoLink={documentation[i18n.language]?.svgdashboard}
         isLoading={store.loading || store.isSvgLoading(params.id)}
+        errors={errors}
         actions={
           <>
             {hasRights(UserRole.Operator) && !(isFullscreen || searchParams.has('fullscreen')) && (

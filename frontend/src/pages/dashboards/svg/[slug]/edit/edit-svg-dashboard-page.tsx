@@ -50,6 +50,7 @@ const EditSvgDashboardPage = observer(() => {
         isLoading={store.isLoading}
         hasRights={authStore.hasRights(UserRole.Operator)}
         errors={[
+          ...(store.notFound ? [{ code: 404 }] : []),
           ...(store.svgLoadError ? [{ variant: 'danger', text: t('dashboards.errors.svg-load') }] : []),
           ...(store.idConflictError ? [{ variant: 'danger', text: t('dashboards.errors.duplicate') }] : []),
           ...(dashboardsStore.saveError ? [{ variant: 'danger', text: dashboardsStore.saveError }] : []),

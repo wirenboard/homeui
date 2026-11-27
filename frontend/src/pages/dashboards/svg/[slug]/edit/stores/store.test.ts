@@ -30,6 +30,7 @@ describe('EditSvgDashboardPageStore', () => {
     vi.clearAllMocks();
     (dashboardsStore.dashboards as Map<string, any>).clear();
     dashboardsStore.saveError = null;
+    dashboardsStore.isLoading = false;
     (dashboardsStore.loadSvg as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     (dashboardsStore.saveSvgDashboard as ReturnType<typeof vi.fn>).mockResolvedValue('ok');
     store = new EditSvgDashboardPageStore();
@@ -200,6 +201,27 @@ describe('EditSvgDashboardPageStore', () => {
     expect(dashboardsStore.loadSvg).not.toHaveBeenCalled();
     expect(store.svgStore.svg).toBeNull();
     expect(store.isLoading).toBe(false);
+  });
+
+  describe('notFound', () => {
+    test('setDashboard with an unknown id marks notFound, stops loading, and skips the svg fetch', async () => {
+      await store.setDashboard('missing');
+
+      expect(store.notFound).toBe(true);
+      expect(store.isLoading).toBe(false);
+      expect(dashboardsStore.loadSvg).not.toHaveBeenCalled();
+    });
+
+    test('setDashboard with null (creating a new dashboard) does not mark notFound', () => {
+      store.setDashboard(null);
+      expect(store.notFound).toBe(false);
+    });
+
+    test('an unknown id does not mark notFound while the dashboards list is still loading', async () => {
+      dashboardsStore.isLoading = true;
+      await store.setDashboard('missing');
+      expect(store.notFound).toBe(false);
+    });
   });
 
   test('setOriginalId marks as not new', () => {

@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.292.0) stable; urgency=medium
+
+  * Show a proper 404 page for unknown URLs instead of silently redirecting to the home page,
+    including a dashboard, SVG dashboard, SVG dashboard editor, or config file that doesn't exist
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 27 Nov 2026 15:10:00 +0300
+
 wb-mqtt-homeui (2.291.2) stable; urgency=medium
 
   * Control pickers (Alice, dashboards, SVG dashboard editor, rule editor autocomplete,

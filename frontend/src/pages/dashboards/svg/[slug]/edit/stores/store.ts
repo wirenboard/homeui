@@ -8,6 +8,7 @@ export class EditSvgDashboardPageStore {
   public svgStore: SvgStore;
   public dashboard: Dashboard = null;
   public isLoading: boolean = true;
+  public notFound: boolean = false;
   public svgLoadError: boolean = false;
   // Set when a save is rejected on a 409 (id already taken); shows the message, keeps the editor open.
   public idConflictError: boolean = false;
@@ -76,6 +77,19 @@ export class EditSvgDashboardPageStore {
     const token = ++this._loadToken;
 
     const db = dashboardsStore.dashboards.get(dashboardId);
+    // Only trust a miss once the dashboards list has actually finished loading, otherwise an
+    // existing dashboard would flash as not found while the list is still on its way in.
+    if (dashboardId && !dashboardsStore.isLoading && !db) {
+      runInAction(() => {
+        this.notFound = true;
+        this.isLoading = false;
+      });
+      return;
+    }
+    runInAction(() => {
+      this.notFound = false;
+    });
+
     this.setOriginalId(dashboardId);
     this.dashboard = db || this.#createNewDashboard();
     this.commonParameters.id = this.dashboard.id;
