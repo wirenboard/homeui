@@ -14,7 +14,7 @@ const { configsStoreMock, devicesStoreMock, preventLeaveMock } = vi.hoisted(() =
     saveConfig: vi.fn().mockResolvedValue(undefined),
   },
   devicesStoreMock: {
-    topicsWithoutSystem: ['dev/ctrl'],
+    filteredTopics: ['dev/ctrl'],
   },
   preventLeaveMock: {
     isDirty: false,

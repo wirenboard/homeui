@@ -101,7 +101,7 @@ const EditSvgDashboardPage = observer(() => {
           <VisualEditView
             store={store}
             dashboardsStore={dashboardsStore}
-            devices={devicesStore.topics}
+            devices={devicesStore.filteredTopics}
           />
         )}
       </PageLayout>

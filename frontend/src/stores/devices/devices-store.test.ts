@@ -187,14 +187,24 @@ describe('DevicesStore', () => {
     });
   });
 
-  describe('topicsWithoutSystem', () => {
-    test('filters out system__ cell options', () => {
+  describe('filteredTopics', () => {
+    test('hides system__ devices by default', () => {
       seedDevice(store, 'system__wb', ['uptime']);
       seedDevice(store, 'lamp', ['on']);
 
-      const groups = store.topicsWithoutSystem;
+      const groups = store.filteredTopics;
+      expect(groups.map((g) => g.label)).toEqual(['lamp']);
       const allValues = groups.flatMap((g: any) => g.options.map((o: any) => o.value));
-      expect(allValues).not.toContain('system__wb/uptime');
+      expect(allValues).toEqual(['lamp/on']);
+    });
+
+    test('includes system__ devices when setting enabled', () => {
+      storage.set('show-system-devices', 'yes');
+      seedDevice(store, 'system__wb', ['uptime']);
+      seedDevice(store, 'lamp', ['on']);
+
+      const allValues = store.filteredTopics.flatMap((g: any) => g.options.map((o: any) => o.value));
+      expect(allValues).toContain('system__wb/uptime');
       expect(allValues).toContain('lamp/on');
     });
   });

@@ -63,7 +63,7 @@ vi.mock('./stores/store', () => ({
   },
 }));
 vi.mock('@/stores/dashboards', () => ({ dashboardsStore: dashMock }));
-vi.mock('@/stores/devices', () => ({ devicesStore: { topics: [] } }));
+vi.mock('@/stores/devices', () => ({ devicesStore: { filteredTopics: [] } }));
 vi.mock('@/stores/auth', () => ({
   authStore: { hasRights: vi.fn(() => true) },
   UserRole: { Operator: 'operator' },

@@ -17,7 +17,7 @@ const { dashStore, deviceStore } = vi.hoisted(() => ({
     cells: new Map<string, any>([
       ['dev/ctrl', { id: 'dev/ctrl', name: 'Ctrl', value: '42', type: 'text' }],
     ]),
-    topicsWithoutSystem: [],
+    filteredTopics: [],
   },
 }));
 

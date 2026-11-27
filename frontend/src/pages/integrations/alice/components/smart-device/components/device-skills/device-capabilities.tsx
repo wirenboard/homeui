@@ -179,7 +179,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             value={capability.mqtt}
             placeholder={devicesStore.topics.flatMap((g) => g.options)
               .find((o) => o.value === capability.mqtt)?.label}
-            options={devicesStore.topics as any[]}
+            options={devicesStore.filteredTopics as any[]}
             isSearchable
             onChange={({ value }: Option<string>) => {
               onCapabilityChange(capabilities.map((item, i) => (

@@ -243,7 +243,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                     value={property.mqtt}
                     placeholder={devicesStore.topics.flatMap((g) => g.options)
                       .find((o) => o.value === property.mqtt)?.label}
-                    options={devicesStore.topics as any[]}
+                    options={devicesStore.filteredTopics as any[]}
                     isSearchable
                     onChange={({ value }: Option<string>) => {
                       onPropertyChange(properties.map((item, i) => i === key ? { ...item, mqtt: value } : item));

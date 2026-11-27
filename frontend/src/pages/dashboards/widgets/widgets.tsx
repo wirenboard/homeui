@@ -231,7 +231,7 @@ const WidgetsPage = observer(() => {
         <WidgetEdit
           widget={dashboardsStore.widgets.get(widgetToEdit)}
           cells={cells}
-          topics={devicesStore.topicsWithoutSystem}
+          topics={devicesStore.filteredTopics}
           isOpened={!!widgetToEdit}
           onClose={() => {
             setWidgetToEdit(null);
